@@ -1,0 +1,2 @@
+#!/bin/sh
+java -cp .:$PWD/antlr-4.7.1-complete.jar org.antlr.v4.gui.TestRig $*
