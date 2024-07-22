@@ -1,12 +1,15 @@
 grammar guqin;
 
-prog: (class | func | global_declarstat)*;
+prog: (classdef | func | global_declarstat)*;
 typepair: (INT | BOOL | STRING | ID) ID;
 real_type: (INT | BOOL | STRING | ID);
 args: (typepair (',' typepair*))?;
 func: (INT | BOOL | STRING | VOID | ID) ID '(' args ')' '{' stat* '}';
 construct_func: ID '()' '{' stat* '}';
-class: CLASS ID '{' (typepair ';') | construct_func | func '}';
+classdef:
+	CLASS ID '{' (typepair ';')
+	| construct_func
+	| func '}';
 funcall: ID (expr (',' expr)*)?;
 expr:
 	INT_VALUE
@@ -49,14 +52,19 @@ expr:
 	| ID '.' ORD '()';
 assignexpr: ID ASS expr;
 format_string:
-	'f' '"' (('{' (format_string | expr) '}') | CHAR)* '"';
+	'f' '"' (
+		('{' (format_string | expr) '}')
+		| ( '\\' '"' | ~'"')
+	)* '"';
 newexpr:
 	NEW real_type '[]' '{' expr (',' expr)* '}'
 	| NEW real_type ('()')?
 	| NEW real_type ('[' INT ']')*;
 assignstat: assignexpr ';';
-global_declarstat: real_type ID ('=' expr)? (',' ID ('=' expr)?)* ';';
-local_declarstat: real_type ID ('=' expr)? (',' ID ('=' expr)?)* ';';
+global_declarstat:
+	real_type ID ('=' expr)? (',' ID ('=' expr)?)* ';';
+local_declarstat:
+	real_type ID ('=' expr)? (',' ID ('=' expr)?)* ';';
 innercontent: '{' (stat | expr)* '}' | (stat | expr);
 conditstat: IF '(' expr ')' innercontent (ELSE innercontent)?;
 whilestat: WHILE '{' (stat | expr)* '}';
@@ -66,7 +74,8 @@ returnstat: RETURN (expr)? ';';
 contistat: CONTINUE ';';
 breakstat: BREAK ';';
 exprstat: expr ';';
-stat: assignstat
+stat:
+	assignstat
 	| local_declarstat
 	| conditstat
 	| whilestat
@@ -74,10 +83,8 @@ stat: assignstat
 	| returnstat
 	| contistat
 	| breakstat;
-ID: [a-zA-Z][a-zA-Z0-9_]*;
 LINE_COMMENT: '//' .*? '\r'? '\n' -> skip;
 BLOCK_COMMENT: '/*' .*? '*/' -> skip;
-CHAR: ( '\\' ["] | ~["]);
 STRING_VALUE: '"' ( '\\' ["] | ~["])* '"';
 VOID: 'void';
 BOOL: 'bool';
@@ -98,7 +105,7 @@ CONTINUE: 'continue';
 RETURN: 'return';
 PRINT: 'print';
 PRINTLN: 'println';
-PRINTINT: 'printlinInt';
+PRINTINT: 'printlnInt';
 GETSTRING: 'getString';
 GETINT: 'getInt';
 TOSTRING: 'toString';
@@ -106,11 +113,8 @@ LENGTH: 'length';
 SUBSTRING: 'substring';
 PARSEINT: 'parseInt';
 ORD: 'ord';
-ADD: '+';
-MINUS: '-';
-MUL: '*';
-DIV: '/';
-MOD: '%';
+INT_VALUE: [0-9]+;
+ID: [a-zA-Z][a-zA-Z0-9_]*;
 AND: '&&';
 OR: '||';
 NOT: '!';
@@ -129,5 +133,9 @@ BNO: '~';
 LE: '<';
 GE: '>';
 ASS: '=';
-INT_VALUE: [0-9]+;
+ADD: '+';
+MINUS: '-';
+MUL: '*';
+DIV: '/';
+MOD: '%';
 WS: [ \r\n\t]+ -> skip;
