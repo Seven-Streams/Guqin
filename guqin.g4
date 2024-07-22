@@ -38,14 +38,40 @@ expr:
 	| expr OR expr
 	| expr '?' expr ':' expr
 	| assignexpr
-	| format_string;
+	| format_string
+	| GETSTRING '()'
+	| GETINT '()'
+	| TOSTRING '()'
+	| ID '.' LENGTH '()'
+	| ID '.' SUBSTRING '(' expr ',' expr ')'
+	| ID '.' PARSEINT '()'
+	| ID '.' ORD '()';
 assignexpr: ID ASS expr;
 format_string:
 	'f' '"' (('{' (format_string | expr) '}') | CHAR)* '"';
 newexpr:
 	NEW real_type '[]' '{' expr (',' expr)* '}'
+	| NEW real_type ('()')?
 	| NEW real_type ('[' INT ']')*;
-
+assignstat: assignexpr ';';
+declarstat: real_type ID ('=' expr)? (',' ID ('=' expr)?)* ';';
+innercontent: '{' (stat | expr)* '}' | (stat | expr);
+conditstat: IF '(' expr ')' innercontent (ELSE innercontent)?;
+whilestat: WHILE '{' (stat | expr)* '}';
+forstat:
+	FOR '(' (expr)? ';' (expr)? ';' (expr)? ')' innercontent;
+returnstat: RETURN (expr)? ';';
+contistat: CONTINUE ';';
+breakstat: BREAK ';';
+exprstat: expr ';';
+stat: assignstat
+	| declarstat
+	| conditstat
+	| whilestat
+	| forstat
+	| returnstat
+	| contistat
+	| breakstat
 ID: [a-zA-Z][a-zA-Z0-9_]*;
 LINE_COMMENT: '//' .*? '\r'? '\n' -> skip;
 BLOCK_COMMENT: '/*' .*? '*/' -> skip;
@@ -74,6 +100,10 @@ PRINTINT: 'printlinInt';
 GETSTRING: 'getString';
 GETINT: 'getInt';
 TOSTRING: 'toString';
+LENGTH: 'length';
+SUBSTRING: 'substring';
+PARSEINT: 'parseInt';
+ORD: 'ord';
 ADD: '+';
 MINUS: '-';
 MUL: '*';
