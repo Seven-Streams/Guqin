@@ -1,7 +1,7 @@
 grammar guqin;
 
 typepair: (INT | BOOL | STRING | ID) ID;
-real_type: (INT | BOOL | String | ID);
+real_type: (INT | BOOL | STRING | ID);
 args: (typepair (',' typepair*))?;
 func: (INT | BOOL | STRING | VOID | ID) ID '(' args ')' '{' stat* '}';
 construct_func: ID '()' '{' stat* '}';
@@ -71,7 +71,7 @@ stat: assignstat
 	| forstat
 	| returnstat
 	| contistat
-	| breakstat
+	| breakstat;
 ID: [a-zA-Z][a-zA-Z0-9_]*;
 LINE_COMMENT: '//' .*? '\r'? '\n' -> skip;
 BLOCK_COMMENT: '/*' .*? '*/' -> skip;
