@@ -1,0 +1,25 @@
+grammar guqin;
+
+ID: [a-zA-Z][a-zA-Z0-9_]*;
+VOID: 'void';
+BOOL: 'bool';
+INT: 'int';
+STRING: 'string';
+NEW: 'new';
+CLASS: 'class';
+NULL: 'null';
+TRUE: 'true';
+FALSE: 'false';
+THIS: 'this';
+IF: 'if';
+ELSE: 'else';
+FOR: 'for';
+WHILE: 'while';
+BREAK: 'break';
+CONTINUE: 'continue';
+RETURN: 'return';
+LINE_COMMENT: '//' .*? '\r'? '\n' -> skip;
+BLOCK_COMMENT: '/*' .*? '*/' -> skip;
+WS: [ \r\n\t]+ -> skip;
+INT_VALUE: [0-9]+;
+STRING_VALUE: '"' ( '\\' ["] | ~["])* '"';
