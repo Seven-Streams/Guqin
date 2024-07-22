@@ -1,5 +1,6 @@
 grammar guqin;
 
+prog: (class | func | global_declarstat)*;
 typepair: (INT | BOOL | STRING | ID) ID;
 real_type: (INT | BOOL | STRING | ID);
 args: (typepair (',' typepair*))?;
@@ -54,7 +55,8 @@ newexpr:
 	| NEW real_type ('()')?
 	| NEW real_type ('[' INT ']')*;
 assignstat: assignexpr ';';
-declarstat: real_type ID ('=' expr)? (',' ID ('=' expr)?)* ';';
+global_declarstat: real_type ID ('=' expr)? (',' ID ('=' expr)?)* ';';
+local_declarstat: real_type ID ('=' expr)? (',' ID ('=' expr)?)* ';';
 innercontent: '{' (stat | expr)* '}' | (stat | expr);
 conditstat: IF '(' expr ')' innercontent (ELSE innercontent)?;
 whilestat: WHILE '{' (stat | expr)* '}';
@@ -65,7 +67,7 @@ contistat: CONTINUE ';';
 breakstat: BREAK ';';
 exprstat: expr ';';
 stat: assignstat
-	| declarstat
+	| local_declarstat
 	| conditstat
 	| whilestat
 	| forstat
