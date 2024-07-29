@@ -15,10 +15,10 @@ public class MyVisitor extends guqinBaseVisitor<Boolean> {
 	boolean in_class = false;
 	String this_type;
 	String node_type;
+	String func_type;
 	HashMap<String, HashMap<String, String>> class_memory;
 	HashMap<String, HashMap<String, ArrayList<String>>> class_func_memory;
 	HashMap<String, ArrayList<String>> func_memory;
-	HashMap<ParseTree, String> expr_type;
 	ArrayList<HashMap<String, String>> variable_memory;
 
 	public MyVisitor() {
@@ -36,7 +36,7 @@ public class MyVisitor extends guqinBaseVisitor<Boolean> {
 
 	// Done.
 	@Override
-	public Boolean visitClassdefv(guqinParser.ClassdefvContext ctx) {
+	public Boolean visitClassdef(guqinParser.ClassdefContext ctx) {
 		in_class = true;
 		HashMap<String, String> res = new HashMap<>();
 		HashMap<String, ArrayList<String>> res_func_args = new HashMap<>();
@@ -114,9 +114,10 @@ public class MyVisitor extends guqinBaseVisitor<Boolean> {
 
 	// Done.
 	@Override
-	public Boolean visitFuncv(guqinParser.FuncvContext ctx) {
+	public Boolean visitFunc(guqinParser.FuncContext ctx) {
 		String type = ctx.getChild(0).getText();
 		String id = ctx.getChild(1).getText();
+		func_type = type;
 		if (!class_memory.containsKey(type)) {
 			return false;
 		}
@@ -147,11 +148,22 @@ public class MyVisitor extends guqinBaseVisitor<Boolean> {
 
 	// Done.
 	@Override
-	public Boolean visitGlobal_declarstatv(guqinParser.Global_declarstatvContext ctx) {
+	public Boolean visitGlobal_declarstat(guqinParser.Global_declarstatContext ctx) {
 		String type = ctx.getChild(0).getText();
 		Boolean type_check = class_memory.containsKey(type);
 		if (!type_check) {
 			return false;
+		}
+		for (int i = 1; i < ctx.getChildCount(); i++) {
+			if (ctx.getChild(i) instanceof guqinParser.ExprContext) {
+				boolean value_check = visit(ctx.getChild(i));
+				if (!value_check) {
+					return false;
+				}
+				if (node_type != type) {
+					return false;
+				}
+			}
 		}
 		for (int i = 1; i < ctx.getChildCount(); i++) {
 			if (ctx.getChild(i) instanceof guqinParser.IdContext) {
@@ -185,6 +197,7 @@ public class MyVisitor extends guqinBaseVisitor<Boolean> {
 		return true;
 	}
 
+//Not Done.
 	@Override
 	public Boolean visitFuncall(guqinParser.FuncallContext ctx) {
 		return visitChildren(ctx);
@@ -193,7 +206,7 @@ public class MyVisitor extends guqinBaseVisitor<Boolean> {
 	// Done.
 	@Override
 	public Boolean visitPar(guqinParser.ParContext ctx) {
-		return visitChildren(ctx);
+		return visit(ctx.getChild(0));
 	}
 
 	@Override
@@ -262,18 +275,34 @@ public class MyVisitor extends guqinBaseVisitor<Boolean> {
 		return visitChildren(ctx);
 	}
 
+	// Done.
 	@Override
 	public Boolean visitAssign(guqinParser.AssignContext ctx) {
-		return visitChildren(ctx);
+		return visit(ctx.getChild(0));
+	}
+
+	// Done.
+	public Boolean visitAssignexpr(guqinParser.AssignexprContext ctx) {
+		String id = ctx.getChild(0).getText();
+		String type = null;
+		for (int i = ctx.getChildCount() - 1; i >= 0; i--) {
+			if (variable_memory.get(i).containsKey(id)) {
+				type = variable_memory.get(i).get(id);
+				break;
+			}
+		}
+		if (type == null) {
+			return false;
+		}
+		boolean check = visit(ctx.expr());
+		if (node_type != type) {
+			return false;
+		}
+		return check;
 	}
 
 	@Override
 	public Boolean visitThr(guqinParser.ThrContext ctx) {
-		return visitChildren(ctx);
-	}
-
-	@Override
-	public Boolean visitAssignexpr(guqinParser.AssignexprContext ctx) {
 		return visitChildren(ctx);
 	}
 
@@ -287,94 +316,201 @@ public class MyVisitor extends guqinBaseVisitor<Boolean> {
 		return visitChildren(ctx);
 	}
 
-	@Override
-	public Boolean visitAssignstat(guqinParser.AssignstatContext ctx) {
-		return visitChildren(ctx);
-	}
-
-	@Override
-	public Boolean visitGlobal_declarstat(guqinParser.Global_declarstatContext ctx) {
-		return visitChildren(ctx);
-	}
-
+	// Done.
 	@Override
 	public Boolean visitLocal_declarstat(guqinParser.Local_declarstatContext ctx) {
-		return visitChildren(ctx);
+		String type = ctx.real_type().getText();
+		if (!class_memory.containsKey(type)) {
+			return false;
+		}
+		for (int i = 1; i < ctx.getChildCount(); i++) {
+			if (ctx.getChild(i) instanceof guqinParser.ExprContext) {
+				boolean value_check = visit(ctx.getChild(i));
+				if (!value_check) {
+					return false;
+				}
+				if (node_type != type) {
+					return false;
+				}
+			}
+		}
+		for (int i = 1; i < ctx.getChildCount(); i++) {
+			if (ctx.getChild(i) instanceof guqinParser.IdContext) {
+				String id = ctx.getChild(i).getText();
+				if (variable_memory.get(variable_memory.size() - 1).containsKey(id)) {
+					return false;
+				} else {
+					variable_memory.get(variable_memory.size() - 1).put(id, type);
+				}
+			}
+		}
+		return true;
 	}
 
+	// Done.
 	@Override
 	public Boolean visitInnercontent(guqinParser.InnercontentContext ctx) {
-		return visitChildren(ctx);
+		variable_memory.add(new HashMap<>());
+		for (int i = 0; i < ctx.getChildCount(); i++) {
+			boolean check = visit(ctx.getChild(i));
+			if (!check) {
+				variable_memory.remove(variable_memory.size() - 1);
+				return false;
+			}
+		}
+		variable_memory.remove(variable_memory.size() - 1);
+		return true;
 	}
 
+	// Done.
 	@Override
 	public Boolean visitConditstat(guqinParser.ConditstatContext ctx) {
-		return visitChildren(ctx);
+		for (int i = 0; i < ctx.getChildCount(); i++) {
+			boolean check = visit(ctx.getChild(i));
+			if (ctx.getChild(i) instanceof guqinParser.ExprContext) {
+				if (node_type != "bool") {
+					return false;
+				}
+			}
+			if (!check) {
+				return false;
+			}
+		}
+		return true;
 	}
 
+	// Done.
 	@Override
 	public Boolean visitWhilestat(guqinParser.WhilestatContext ctx) {
-		return visitChildren(ctx);
+		for (int i = 0; i < ctx.getChildCount(); i++) {
+			boolean check = visit(ctx.getChild(i));
+			if (ctx.getChild(i) instanceof guqinParser.ExprContext) {
+				if (node_type != "bool") {
+					return false;
+				}
+			}
+			if (!check) {
+				return false;
+			}
+		}
+		return true;
 	}
 
+	// Done.
 	@Override
 	public Boolean visitForstat(guqinParser.ForstatContext ctx) {
-		return visitChildren(ctx);
+		for (int i = 0; i < ctx.getChildCount(); i++) {
+			boolean check = visit(ctx.getChild(i));
+			if (ctx.getChild(i) instanceof guqinParser.ExprContext) {
+				if (node_type != "bool") {
+					return false;
+				}
+			}
+			if (!check) {
+				return false;
+			}
+		}
+		return true;
 	}
 
+	// Done.
 	@Override
 	public Boolean visitReturnstat(guqinParser.ReturnstatContext ctx) {
-		return visitChildren(ctx);
+		boolean check = visit(ctx.expr());
+		if (node_type != func_type) {
+			return false;
+		}
+		return check;
 	}
 
+	// Done.
 	@Override
 	public Boolean visitContistat(guqinParser.ContistatContext ctx) {
-		return visitChildren(ctx);
+		return true;
 	}
 
+	// Done.
 	@Override
 	public Boolean visitBreakstat(guqinParser.BreakstatContext ctx) {
-		return visitChildren(ctx);
+		return true;
 	}
 
+	// Done.
+	@Override
+	public Boolean visitLoopinnercontent(guqinParser.LoopinnercontentContext ctx) {
+		variable_memory.add(new HashMap<>());
+		for (int i = 0; i < ctx.getChildCount(); i++) {
+			boolean check = visit(ctx.getChild(i));
+			if (!check) {
+				variable_memory.remove(variable_memory.size() - 1);
+				return false;
+			}
+		}
+		variable_memory.remove(variable_memory.size() - 1);
+		return true;
+	}
+
+	// Done.
 	@Override
 	public Boolean visitExprstat(guqinParser.ExprstatContext ctx) {
-		return visitChildren(ctx);
+		return visit(ctx.expr());
 	}
 
+	// Done.
 	@Override
 	public Boolean visitStat(guqinParser.StatContext ctx) {
-		return visitChildren(ctx);
+		return visit(ctx.getChild(0));
 	}
 
+	// deprecated.
 	@Override
 	public Boolean visitTypepair(guqinParser.TypepairContext ctx) {
 		return visitChildren(ctx);
 	}
 
+	// deprecated.
 	@Override
 	public Boolean visitReal_type(guqinParser.Real_typeContext ctx) {
 		return visitChildren(ctx);
 	}
 
+	// deprecated.
 	@Override
 	public Boolean visitArgs(guqinParser.ArgsContext ctx) {
 		return visitChildren(ctx);
 	}
 
-	@Override
-	public Boolean visitFunc(guqinParser.FuncContext ctx) {
-		return visitChildren(ctx);
-	}
-
+	// Done.
 	@Override
 	public Boolean visitBef(guqinParser.BefContext ctx) {
-		return visitChildren(ctx);
+		String type;
+		boolean check = visit(ctx.expr());
+		type = node_type;
+		if (type != "int") {
+			return false;
+		}
+		return check;
 	}
 
+	// Done.
 	@Override
 	public Boolean visitMuldivmod(guqinParser.MuldivmodContext ctx) {
-		return visitChildren(ctx);
+		String type1, type2;
+		boolean check = visit(ctx.expr(0));
+		if (!check) {
+			return false;
+		}
+		type1 = node_type;
+		check = visit(ctx.expr(1));
+		if (!check) {
+			return false;
+		}
+		type2 = node_type;
+		if ((type1 != "int") || (type2 != "int")) {
+			return false;
+		}
+		node_type = "int";
+		return true;
 	}
 
 	// Done.
@@ -409,12 +545,12 @@ public class MyVisitor extends guqinBaseVisitor<Boolean> {
 	@Override
 	public Boolean visitBit(guqinParser.BitContext ctx) {
 		String type1, type2;
-		boolean check = visit(ctx.getChild(0));
+		boolean check = visit(ctx.expr(0));
 		if (!check) {
 			return false;
 		}
 		type1 = node_type;
-		check = visit(ctx.getChild(1));
+		check = visit(ctx.expr(1));
 		if (!check) {
 			return false;
 		}
@@ -443,12 +579,12 @@ public class MyVisitor extends guqinBaseVisitor<Boolean> {
 	@Override
 	public Boolean visitEqualogic(guqinParser.EqualogicContext ctx) {
 		String type1, type2;
-		boolean check = visit(ctx.getChild(0));
+		boolean check = visit(ctx.expr(0));
 		if (!check) {
 			return false;
 		}
 		type1 = node_type;
-		check = visit(ctx.getChild(1));
+		check = visit(ctx.expr(1));
 		if (!check) {
 			return false;
 		}
@@ -464,12 +600,12 @@ public class MyVisitor extends guqinBaseVisitor<Boolean> {
 	@Override
 	public Boolean visitBoologic(guqinParser.BoologicContext ctx) {
 		String type1, type2;
-		boolean check = visit(ctx.getChild(0));
+		boolean check = visit(ctx.expr(0));
 		if (!check) {
 			return false;
 		}
 		type1 = node_type;
-		check = visit(ctx.getChild(1));
+		check = visit(ctx.expr(1));
 		if (!check) {
 			return false;
 		}

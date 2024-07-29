@@ -1,16 +1,13 @@
 grammar guqin;
 
-prog:
-	classdef			# classdefv
-	| func				# funcv
-	| global_declarstat	# global_declarstatv;
+prog: classdef | func | global_declarstat;
 typepair: (INT | BOOL | STRING | ID) ID;
 real_type: (INT | BOOL | STRING | ID);
 args: (typepair (',' typepair)*)?;
 func: (INT | BOOL | STRING | VOID | ID) ID (
 		('(' args ')')
 		| ('()')
-	) '{' stat* '}';
+	) '{' (stat | returnstat)* '}';
 construct_func: ID '()' '{' stat* '}';
 classdef:
 	CLASS ID '{' ((typepair ';') | construct_func | func)* '}';
@@ -55,30 +52,29 @@ newexpr:
 	NEW real_type '[]' '{' expr (',' expr)* '}'
 	| NEW real_type ('()')?
 	| NEW real_type ('[' INT ']')*;
-assignstat: assignexpr ';';
 global_declarstat:
 	real_type ID ('=' expr)? (',' ID ('=' expr)?)* ';';
 local_declarstat:
 	real_type ID ('=' expr)? (',' ID ('=' expr)?)* ';';
-innercontent: '{' (stat | expr)* '}' | (stat | expr);
+innercontent: '{' (stat)* '}' | (stat);
+loopinnercontent:
+	'{' (stat | breakstat | contistat)* '}'
+	| (stat | breakstat | contistat);
 conditstat: IF '(' expr ')' innercontent (ELSE innercontent)?;
-whilestat: WHILE '{' (stat | expr)* '}';
+whilestat:
+	WHILE '(' expr ')' '{' (stat | breakstat | contistat)* '}';
 forstat:
-	FOR '(' (expr)? ';' (expr)? ';' (expr)? ')' innercontent;
+	FOR '(' (stat | ';') (expr)? ';' expr ')' loopinnercontent;
 returnstat: RETURN (expr)? ';';
 contistat: CONTINUE ';';
 breakstat: BREAK ';';
 exprstat: expr ';';
 stat:
-	assignstat
-	| exprstat
+	exprstat
 	| local_declarstat
 	| conditstat
 	| whilestat
-	| forstat
-	| returnstat
-	| contistat
-	| breakstat;
+	| forstat;
 LINE_COMMENT: '//' .*? '\r'? '\n' -> skip;
 BLOCK_COMMENT: '/*' .*? '*/' -> skip;
 STRING_VALUE: '"' ( '\\' ["] | ~["])* '"';
