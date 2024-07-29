@@ -10,9 +10,7 @@ args: (typepair (',' typepair)*)?;
 func: (INT | BOOL | STRING | VOID | ID) ID (('(' args ')') |('()')) '{' stat* '}';
 construct_func: ID '()' '{' stat* '}';
 classdef:
-	CLASS ID '{' (typepair ';')
-	| construct_func
-	| func '}';
+	CLASS ID '{' ((typepair ';')| construct_func| func)* '}';
 funcall: ID (expr (',' expr)*)?;
 expr:
 	(INT_VALUE | STRING_VALUE | TRUE | FALSE)	# liter

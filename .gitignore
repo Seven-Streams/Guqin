@@ -4,7 +4,8 @@ requirement.pdf
 testcases
 tools
 tutorial
-.gitmodules
+/.vscode
+/lib
 guqin.interp
 guqin.tokens
 guqinBaseListener.java
@@ -48,3 +49,4 @@ test.txt
 .antlr/guqinLexer.interp
 .antlr/guqinLexer.java
 .antlr/guqinLexer.tokens
+
