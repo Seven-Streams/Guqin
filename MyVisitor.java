@@ -5,177 +5,57 @@ import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.misc.*;
 import org.antlr.v4.runtime.tree.*;
+
 /*notations of types:
  * bool, int, class_name, void, string
  * In the string-pair hashmap, the id is the first, and the type is the second one.
  */
-
 public class MyVisitor extends guqinBaseVisitor<Boolean> {
 	ArrayList<Integer> loops;
-	boolean in_class = false;
+	boolean in_class;
 	String this_type;
 	String node_type;
 	String func_type;
-	HashMap<String, HashMap<String, String>> class_memory;
-	HashMap<String, HashMap<String, ArrayList<String>>> class_func_memory;
-	HashMap<String, ArrayList<String>> func_memory;
-	ArrayList<HashMap<String, String>> variable_memory;
+	String node_id;
+	int dim;
+	ArrayList<Mypair> function_args;
+	HashMap<String, HashMap<String, Mypair>> class_memory;
+	HashMap<String, HashMap<String, ArrayList<Mypair>>> class_func_memory;
+	HashMap<String, ArrayList<Mypair>> func_memory;
+	ArrayList<HashMap<String, Mypair>> variable_memory;
+	HashMap<String, Boolean> construction;
 
 	public MyVisitor() {
+		function_args = new ArrayList<>();
+		in_class = false;
+		dim = 0;
+		construction = new HashMap<>();
 		loops = new ArrayList<>();
 		class_memory = new HashMap<>();
 		class_func_memory = new HashMap<>();
 		func_memory = new HashMap<>();
 		variable_memory = new ArrayList<>();
-		HashMap<String, String> initialMap = new HashMap<>();
+		HashMap<String, Mypair> initialMap = new HashMap<>();
 		class_memory.put("int", null);
 		class_memory.put("string", null);
 		class_memory.put("bool", null);
 		variable_memory.add(initialMap);
 	}
 
-	// Done.
+	// refac.
 	@Override
 	public Boolean visitClassdef(guqinParser.ClassdefContext ctx) {
-		in_class = true;
-		HashMap<String, String> res = new HashMap<>();
-		HashMap<String, ArrayList<String>> res_func_args = new HashMap<>();
-		boolean construct = false;
-		String id = ctx.getChild(1).getText();
-		this_type = id;
-		if (class_memory.containsKey(id)) {
-			return false;
-		}
-		for (int i = 2; i < ctx.getChildCount(); i++) {
-			if (ctx.getChild(i) instanceof guqinParser.TypepairContext) {
-				String type = ctx.getChild(i).getChild(0).getText();
-				String mem_id = ctx.getChild(i).getChild(1).getText();
-				if (!class_memory.containsKey(type)) {
-					in_class = false;
-					return false;
-				}
-				if (res.containsKey(mem_id)) {
-					in_class = false;
-					return false;
-				}
-				res.put(mem_id, type);
-			}
-		} // First, check all the member of the class.
-		variable_memory.add(res);
-		for (int i = 2; i < ctx.getChildCount(); i++) {
-			if (ctx.getChild(i) instanceof guqinParser.Construct_funcContext) {
-				if (construct) {
-					variable_memory.remove(variable_memory.size() - 1);
-					in_class = false;
-					return false;
-				}
-				Boolean check = visit(ctx.getChild(i));
-				if (!check) {
-					in_class = false;
-					variable_memory.remove(variable_memory.size() - 1);
-					return false;
-				}
-				construct = true;
-			}
-			if (ctx.getChild(i) instanceof guqinParser.FuncContext) {
-				Boolean check = visit(ctx.getChild(i));
-				String func_id = ctx.getChild(i).getChild(1).getText();
-				if (!check) {
-					in_class = false;
-					variable_memory.remove(variable_memory.size() - 1);
-					return false;
-				}
-				ArrayList<String> arg_types = new ArrayList<>();
-				String func_type = ctx.getChild(i).getChild(0).getText();
-				if (func_type != "void" && !class_memory.containsKey(func_type)) {
-					variable_memory.remove(variable_memory.size() - 1);
-					in_class = false;
-					return false;
-				}
-				if (res.containsKey(func_id)) {
-					variable_memory.remove(variable_memory.size() - 1);
-					in_class = false;
-					return false;
-				}
-				ParseTree func_args = ctx.getChild(i).getChild(2);
-				for (int j = 0; j < func_args.getChildCount(); j++) {
-					arg_types.add(func_args.getChild(j).getChild(0).getText());
-				}
-				res.put(func_id, func_type);
-				res_func_args.put(func_type, arg_types);
-			}
-		}
-		class_func_memory.put(id, res_func_args);
-		class_memory.put(id, res);
-		in_class = false;
-		variable_memory.remove(variable_memory.size() - 1);
-		return true;
 	}
 
-	// Done.
+	// refac.
 	@Override
 	public Boolean visitFunc(guqinParser.FuncContext ctx) {
-		String type = ctx.getChild(0).getText();
-		String id = ctx.getChild(1).getText();
-		func_type = type;
-		if (!class_memory.containsKey(type)) {
-			return false;
-		}
-		if (class_memory.containsKey(id)) {
-			return false;
-		}
-		ParseTree args = ctx.getChild(2);
-		HashMap<String, String> variable_res = new HashMap<>();
-		for (int i = 0; i < args.getChildCount(); i++) {
-			String v_id = args.getChild(1).getText();
-			String v_type = args.getChild(0).getText();
-			if (class_memory.containsKey(v_type)) {
-				return false;
-			}
-			variable_res.put(v_id, v_type);
-		}
-		variable_memory.add(variable_res);
-		for (int i = 3; i < ctx.getChildCount(); i++) {
-			Boolean check = visit(ctx.getChild(i));
-			if (!check) {
-				variable_memory.remove(variable_memory.size() - 1);
-				return false;
-			}
-		}
-		variable_memory.remove(variable_memory.size() - 1);
-		return true;
 	}
 
-	// Done.
+	// refac.
 	@Override
 	public Boolean visitGlobal_declarstat(guqinParser.Global_declarstatContext ctx) {
-		String type = ctx.getChild(0).getText();
-		Boolean type_check = class_memory.containsKey(type);
-		if (!type_check) {
-			return false;
-		}
-		for (int i = 1; i < ctx.getChildCount(); i++) {
-			if (ctx.getChild(i) instanceof guqinParser.ExprContext) {
-				boolean value_check = visit(ctx.getChild(i));
-				if (!value_check) {
-					return false;
-				}
-				if (node_type != type) {
-					return false;
-				}
-			}
-		}
-		for (int i = 1; i < ctx.getChildCount(); i++) {
-			if (ctx.getChild(i) instanceof guqinParser.IdContext) {
-				String id = ctx.getChild(i).getText();
-				if (variable_memory.get(0).containsKey(id)) {
-					return false;
-				} else {
-					variable_memory.get(0).put(id, type);
-				}
-			}
-		}
-		return true;
+
 	}
 
 	// Done.
@@ -320,24 +200,8 @@ public class MyVisitor extends guqinBaseVisitor<Boolean> {
 		return visit(ctx.getChild(0));
 	}
 
-	// Done.
+	// refac.
 	public Boolean visitAssignexpr(guqinParser.AssignexprContext ctx) {
-		String id = ctx.getChild(0).getText();
-		String type = null;
-		for (int i = ctx.getChildCount() - 1; i >= 0; i--) {
-			if (variable_memory.get(i).containsKey(id)) {
-				type = variable_memory.get(i).get(id);
-				break;
-			}
-		}
-		if (type == null) {
-			return false;
-		}
-		boolean check = visit(ctx.expr());
-		if (node_type != type) {
-			return false;
-		}
-		return check;
 	}
 
 	// Done.
@@ -389,35 +253,9 @@ public class MyVisitor extends guqinBaseVisitor<Boolean> {
 		return visitChildren(ctx);
 	}
 
-	// Done.
+	// refac.
 	@Override
 	public Boolean visitLocal_declarstat(guqinParser.Local_declarstatContext ctx) {
-		String type = ctx.real_type().getText();
-		if (!class_memory.containsKey(type)) {
-			return false;
-		}
-		for (int i = 1; i < ctx.getChildCount(); i++) {
-			if (ctx.getChild(i) instanceof guqinParser.ExprContext) {
-				boolean value_check = visit(ctx.getChild(i));
-				if (!value_check) {
-					return false;
-				}
-				if (node_type != type) {
-					return false;
-				}
-			}
-		}
-		for (int i = 1; i < ctx.getChildCount(); i++) {
-			if (ctx.getChild(i) instanceof guqinParser.IdContext) {
-				String id = ctx.getChild(i).getText();
-				if (variable_memory.get(variable_memory.size() - 1).containsKey(id)) {
-					return false;
-				} else {
-					variable_memory.get(variable_memory.size() - 1).put(id, type);
-				}
-			}
-		}
-		return true;
 	}
 
 	// Done.
@@ -474,11 +312,6 @@ public class MyVisitor extends guqinBaseVisitor<Boolean> {
 	public Boolean visitForstat(guqinParser.ForstatContext ctx) {
 		for (int i = 0; i < ctx.getChildCount(); i++) {
 			boolean check = visit(ctx.getChild(i));
-			if (ctx.getChild(i) instanceof guqinParser.ExprContext) {
-				if (node_type != "bool") {
-					return false;
-				}
-			}
 			if (!check) {
 				return false;
 			}
@@ -487,9 +320,27 @@ public class MyVisitor extends guqinBaseVisitor<Boolean> {
 	}
 
 	// Done.
+	public Boolean visitCond(guqinParser.CondContext ctx) {
+		if (ctx.isEmpty()) {
+			node_type = "void";
+			return true;
+		}
+		boolean check = visit(ctx.expr());
+		if (node_type != "bool") {
+			return false;
+		}
+		return check;
+	}
+
+	// Done.
 	@Override
 	public Boolean visitReturnstat(guqinParser.ReturnstatContext ctx) {
-		boolean check = visit(ctx.expr());
+		boolean check = true;
+		if (ctx.getChildCount() != 0) {
+			check = visit(ctx.getChild(0));
+		} else {
+			node_type = "void";
+		}
 		if (node_type != func_type) {
 			return false;
 		}
@@ -637,11 +488,26 @@ public class MyVisitor extends guqinBaseVisitor<Boolean> {
 
 	// Done.
 	@Override
+	public Boolean visitIdexpr(guqinParser.IdexprContext ctx) {
+		String id = ctx.getText();
+		for (int i = variable_memory.size() - 1; i >= 0; i--) {
+			if (variable_memory.get(i).containsKey(id)) {
+				node_type = variable_memory.get(i).get(id).type;
+				dim = variable_memory.get(i).get(id).dim;
+				return true;
+			}
+		}
+		return false;
+	}
+
+	// Done.
+	@Override
 	public Boolean visitId(guqinParser.IdContext ctx) {
 		String id = ctx.getText();
 		for (int i = variable_memory.size() - 1; i >= 0; i--) {
 			if (variable_memory.get(i).containsKey(id)) {
-				node_type = variable_memory.get(i).get(id);
+				node_type = variable_memory.get(i).get(id).type;
+				dim = variable_memory.get(i).get(id).dim;
 				return true;
 			}
 		}
@@ -687,6 +553,64 @@ public class MyVisitor extends guqinBaseVisitor<Boolean> {
 			return false;
 		}
 		node_type = "bool";
+		return true;
+	}
+
+	public Boolean visitDimension(guqinParser.DimensionContext ctx) {
+		if (ctx.getChildCount() == 0) {
+			return true;
+		}
+		boolean check = visit(ctx.getChild(0));
+		if (!check) {
+			return false;
+		}
+		if (node_type != "int") {
+			return false;
+		}
+		return true;
+	}
+
+	public Boolean visitMust_dimension(guqinParser.Must_dimensionContext ctx) {
+		boolean check = visit(ctx.getChild(0));
+		if (!check) {
+			return false;
+		}
+		if (node_type != "int") {
+			return false;
+		}
+		return true;
+	}
+
+	public Boolean visitDimensions(guqinParser.DimensionsContext ctx) {
+		for (int i = 0; i < ctx.getChildCount(); i++) {
+			boolean check = visit(ctx.getChild(i));
+			if (!check) {
+				return false;
+			}
+		}
+		dim = ctx.getChildCount();
+		return true;
+	}
+
+	public Boolean visitDimensions_declar(guqinParser.Dimensions_declarContext ctx) {
+		for (int i = 0; i < ctx.getChildCount(); i++) {
+			boolean check = visit(ctx.getChild(i));
+			if (!check) {
+				return false;
+			}
+		}
+		dim = ctx.getChildCount();
+		return true;
+	}
+
+	public Boolean visitDimensions_choose(guqinParser.Dimensions_chooseContext ctx) {
+		for (int i = 0; i < ctx.getChildCount(); i++) {
+			boolean check = visit(ctx.getChild(i));
+			if (!check) {
+				return false;
+			}
+		}
+		dim = ctx.getChildCount();
 		return true;
 	}
 }

@@ -1,22 +1,24 @@
 grammar guqin;
 
+id: ID;
 prog: classdef | func | global_declarstat;
 dimension: '[' expr? ']';
 must_dimension: '[' expr ']';
-typepair: (INT | BOOL | STRING | ID) dimensions ID;
+typepair: real_type dimensions id;
 dimensions: (dimension)*;
-dimensions_declar: must_dimension dimension*;
-real_type: (INT | BOOL | STRING | ID);
+dimensions_choose: must_dimension*;
+dimensions_declar: (must_dimension dimension*)?;
+real_type: (INT | BOOL | STRING | id);
 args: (typepair (',' typepair)*)?;
-func: (INT | BOOL | STRING | VOID | ID) dimensions ID (
+func: (real_type dimensions)|VOID id (
 		('(' args ')')
 		| ('()')
 	) '{' (stat | returnstat)* '}';
-construct_func: ID '()' '{' stat* '}';
+construct_func: id '()' '{' stat* '}';
 classdef:
-	CLASS ID '{' (local_declarstat | construct_func | func)* '}';
+	CLASS id '{' (local_declarstat | construct_func | func)* '}';
 funcall:
-	ID ('[' expr ']')? ('.' (ID ('[' expr ']') '.')*) (
+	id ('[' expr ']')? ('.' (id ('[' expr ']') '.')*) (
 		expr (',' expr)*
 	)?;
 expr:
@@ -25,11 +27,11 @@ expr:
 	| STRING_VALUE									# str_lit
 	| TRUE											# true
 	| FALSE											# false
-	| ID											# id
+	| id											# idexpr
 	| THIS											# this
 	| funcall										# funcallv
-	| ID '.' ID										# member
-	| ID '[' expr ']'								# memnum
+	| id '.' id										# member
+	| id '[' expr ']'								# memnum
 	| newexpr										# new
 	| expr MINUS expr								# minus
 	| expr ADD expr									# add
@@ -46,9 +48,9 @@ expr:
 	| format_string									# fstr
 	| op = (GETSTRING | GETINT) '()'				# kb
 	| TOSTRING '(' expr ')'							# tostr
-	| ID '.' op = (LENGTH | PARSEINT | ORD) '()'	# strfunc
-	| ID '.' SUBSTRING '(' expr ',' expr ')'		# substr;
-assignexpr: ID ASS expr;
+	| id '.' op = (LENGTH | PARSEINT | ORD) '()'	# strfunc
+	| id '.' SUBSTRING '(' expr ',' expr ')'		# substr;
+assignexpr: id dimensions_choose ASS expr;
 format_string:
 	'f' '"' (
 		('{' (format_string | expr) '}')
@@ -60,12 +62,12 @@ newexpr:
 	| NEW real_type ('()')?
 	| NEW real_type ('[' INT ']') ();
 global_declarstat:
-	real_type dimensions_declar? ID ('=' expr)? (
-		',' ID ('=' expr)?
+	real_type dimensions_declar id ('=' expr)? (
+		',' id ('=' expr)?
 	)* ';';
 local_declarstat:
-	real_type dimensions_declar? ID ('=' expr)? (
-		',' ID ('=' expr)?
+	real_type dimensions_declar id ('=' expr)? (
+		',' id ('=' expr)?
 	)* ';';
 innercontent: '{' (stat)* '}' | (stat);
 loopinnercontent:
@@ -75,8 +77,9 @@ conditstat: IF '(' expr ')' innercontent (ELSE innercontent)?;
 whilestat:
 	WHILE '(' expr ')' '{' (stat | breakstat | contistat)* '}';
 forstat:
-	FOR '(' (stat | ';') (expr)? ';' expr ')' loopinnercontent;
-returnstat: RETURN (expr)? ';';
+	FOR '(' (stat | ';') cond ';' expr ')' loopinnercontent;
+cond: (expr)?;
+returnstat: RETURN cond ';';
 contistat: CONTINUE ';';
 breakstat: BREAK ';';
 exprstat: expr ';';
