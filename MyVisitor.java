@@ -13,6 +13,7 @@ import org.antlr.v4.runtime.tree.*;
 
 public class MyVisitor extends guqinBaseVisitor<Boolean> {
 	boolean in_class = false;
+	String this_type;
 	HashMap<String, HashMap<String, String>> class_memory;
 	HashMap<String, HashMap<String, ArrayList<String>>> class_func_memory;
 	HashMap<String, ArrayList<String>> func_memory;
@@ -37,6 +38,7 @@ public class MyVisitor extends guqinBaseVisitor<Boolean> {
 		HashMap<String, ArrayList<String>> res_func_args = new HashMap<>();
 		boolean construct = false;
 		String id = ctx.getChild(1).getText();
+		this_type = id;
 		if (class_memory.containsKey(id)) {
 			return false;
 		}
@@ -108,7 +110,34 @@ public class MyVisitor extends guqinBaseVisitor<Boolean> {
 
 	@Override
 	public Boolean visitFuncv(guqinParser.FuncvContext ctx) {
-		return visitChildren(ctx);
+		String type = ctx.getChild(0).getText();
+		String id = ctx.getChild(1).getText();
+		if (!class_memory.containsKey(type)) {
+			return false;
+		}
+		if (class_memory.containsKey(id)) {
+			return false;
+		}
+		ParseTree args = ctx.getChild(2);
+		HashMap<String, String> variable_res = new HashMap<>();
+		for (int i = 0; i < args.getChildCount(); i++) {
+			String v_id = args.getChild(1).getText();
+			String v_type = args.getChild(0).getText();
+			if (class_memory.containsKey(v_type)) {
+				return false;
+			}
+			variable_res.put(v_id, v_type);
+		}
+		variable_memory.add(variable_res);
+		for (int i = 3; i < ctx.getChildCount(); i++) {
+			Boolean check = visit(ctx.getChild(i));
+			if (!check) {
+				variable_memory.remove(variable_memory.size() - 1);
+				return false;
+			}
+		}
+		variable_memory.remove(variable_memory.size() - 1);
+		return true;
 	}
 
 	@Override
