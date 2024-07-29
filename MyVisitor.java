@@ -1,4 +1,3 @@
-import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 import java.util.HashMap;
 import java.util.ArrayList;
 import org.antlr.v4.runtime.atn.*;
@@ -12,14 +11,18 @@ import org.antlr.v4.runtime.tree.*;
  */
 
 public class MyVisitor extends guqinBaseVisitor<Boolean> {
+	ArrayList<Integer> loops;
 	boolean in_class = false;
 	String this_type;
+	String node_type;
 	HashMap<String, HashMap<String, String>> class_memory;
 	HashMap<String, HashMap<String, ArrayList<String>>> class_func_memory;
 	HashMap<String, ArrayList<String>> func_memory;
+	HashMap<ParseTree, String> expr_type;
 	ArrayList<HashMap<String, String>> variable_memory;
 
 	public MyVisitor() {
+		loops = new ArrayList<>();
 		class_memory = new HashMap<>();
 		class_func_memory = new HashMap<>();
 		func_memory = new HashMap<>();
@@ -31,6 +34,7 @@ public class MyVisitor extends guqinBaseVisitor<Boolean> {
 		variable_memory.add(initialMap);
 	}
 
+	// Done.
 	@Override
 	public Boolean visitClassdefv(guqinParser.ClassdefvContext ctx) {
 		in_class = true;
@@ -108,6 +112,7 @@ public class MyVisitor extends guqinBaseVisitor<Boolean> {
 		return true;
 	}
 
+	// Done.
 	@Override
 	public Boolean visitFuncv(guqinParser.FuncvContext ctx) {
 		String type = ctx.getChild(0).getText();
@@ -140,6 +145,7 @@ public class MyVisitor extends guqinBaseVisitor<Boolean> {
 		return true;
 	}
 
+	// Done.
 	@Override
 	public Boolean visitGlobal_declarstatv(guqinParser.Global_declarstatvContext ctx) {
 		String type = ctx.getChild(0).getText();
@@ -160,29 +166,23 @@ public class MyVisitor extends guqinBaseVisitor<Boolean> {
 		return true;
 	}
 
-	@Override
-	public Boolean visitTypepair(guqinParser.TypepairContext ctx) {
-		return visitChildren(ctx);
-	}
-
-	@Override
-	public Boolean visitArgs(guqinParser.ArgsContext ctx) {
-		return visitChildren(ctx);
-	}
-
-	@Override
-	public Boolean visitFunc(guqinParser.FuncContext ctx) {
-		return visitChildren(ctx);
-	}
-
+	// Done.
 	@Override
 	public Boolean visitConstruct_func(guqinParser.Construct_funcContext ctx) {
-		return visitChildren(ctx);
-	}
-
-	@Override
-	public Boolean visitClassdef(guqinParser.ClassdefContext ctx) {
-		return visitChildren(ctx);
+		String type = ctx.getChild(0).getText();
+		if (type != this_type) {
+			return false;
+		}
+		variable_memory.add(new HashMap<>());
+		for (int i = 3; i < ctx.getChildCount(); i++) {
+			Boolean check = visit(ctx.getChild(i));
+			if (!check) {
+				variable_memory.remove(variable_memory.size() - 1);
+				return false;
+			}
+		}
+		variable_memory.remove(variable_memory.size() - 1);
+		return true;
 	}
 
 	@Override
@@ -190,6 +190,7 @@ public class MyVisitor extends guqinBaseVisitor<Boolean> {
 		return visitChildren(ctx);
 	}
 
+	// Done.
 	@Override
 	public Boolean visitPar(guqinParser.ParContext ctx) {
 		return visitChildren(ctx);
@@ -210,14 +211,10 @@ public class MyVisitor extends guqinBaseVisitor<Boolean> {
 		return visitChildren(ctx);
 	}
 
+	// Done.
 	@Override
 	public Boolean visitThis(guqinParser.ThisContext ctx) {
 		return in_class;
-	}
-
-	@Override
-	public Boolean visitMemfunc(guqinParser.MemfuncContext ctx) {
-		return visitChildren(ctx);
 	}
 
 	@Override
@@ -348,5 +345,139 @@ public class MyVisitor extends guqinBaseVisitor<Boolean> {
 	@Override
 	public Boolean visitStat(guqinParser.StatContext ctx) {
 		return visitChildren(ctx);
+	}
+
+	@Override
+	public Boolean visitTypepair(guqinParser.TypepairContext ctx) {
+		return visitChildren(ctx);
+	}
+
+	@Override
+	public Boolean visitReal_type(guqinParser.Real_typeContext ctx) {
+		return visitChildren(ctx);
+	}
+
+	@Override
+	public Boolean visitArgs(guqinParser.ArgsContext ctx) {
+		return visitChildren(ctx);
+	}
+
+	@Override
+	public Boolean visitFunc(guqinParser.FuncContext ctx) {
+		return visitChildren(ctx);
+	}
+
+	@Override
+	public Boolean visitBef(guqinParser.BefContext ctx) {
+		return visitChildren(ctx);
+	}
+
+	@Override
+	public Boolean visitMuldivmod(guqinParser.MuldivmodContext ctx) {
+		return visitChildren(ctx);
+	}
+
+	// Done.
+	@Override
+	public Boolean visitInt_lit(guqinParser.Int_litContext ctx) {
+		node_type = "int";
+		return true;
+	}
+
+	// Done.
+	@Override
+	public Boolean visitFalse(guqinParser.FalseContext ctx) {
+		node_type = "bool";
+		return true;
+	}
+
+	// Done.
+	@Override
+	public Boolean visitStr_lit(guqinParser.Str_litContext ctx) {
+		node_type = "string";
+		return true;
+	}
+
+	// Done.
+	@Override
+	public Boolean visitTrue(guqinParser.TrueContext ctx) {
+		node_type = "bool";
+		return true;
+	}
+
+	// Done.
+	@Override
+	public Boolean visitBit(guqinParser.BitContext ctx) {
+		String type1, type2;
+		boolean check = visit(ctx.getChild(0));
+		if (!check) {
+			return false;
+		}
+		type1 = node_type;
+		check = visit(ctx.getChild(1));
+		if (!check) {
+			return false;
+		}
+		type2 = node_type;
+		if ((type1 != "int") || (type2 != "int")) {
+			return false;
+		}
+		node_type = "int";
+		return true;
+	}
+
+	// Done.
+	@Override
+	public Boolean visitId(guqinParser.IdContext ctx) {
+		String id = ctx.getText();
+		for (int i = variable_memory.size() - 1; i >= 0; i--) {
+			if (variable_memory.get(i).containsKey(id)) {
+				node_type = variable_memory.get(i).get(id);
+				return true;
+			}
+		}
+		return false;
+	}
+
+	// Done.
+	@Override
+	public Boolean visitEqualogic(guqinParser.EqualogicContext ctx) {
+		String type1, type2;
+		boolean check = visit(ctx.getChild(0));
+		if (!check) {
+			return false;
+		}
+		type1 = node_type;
+		check = visit(ctx.getChild(1));
+		if (!check) {
+			return false;
+		}
+		type2 = node_type;
+		if (type1 != type2) {
+			return false;
+		}
+		node_type = "bool";
+		return true;
+	}
+
+	// Done.
+	@Override
+	public Boolean visitBoologic(guqinParser.BoologicContext ctx) {
+		String type1, type2;
+		boolean check = visit(ctx.getChild(0));
+		if (!check) {
+			return false;
+		}
+		type1 = node_type;
+		check = visit(ctx.getChild(1));
+		if (!check) {
+			return false;
+		}
+		type2 = node_type;
+		if ((type1 != "bool") || (type2 != "bool")) {
+			return false;
+		}
+		node_type = "bool";
+		return true;
 	}
 }

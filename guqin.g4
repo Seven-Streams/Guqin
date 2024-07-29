@@ -7,35 +7,44 @@ prog:
 typepair: (INT | BOOL | STRING | ID) ID;
 real_type: (INT | BOOL | STRING | ID);
 args: (typepair (',' typepair)*)?;
-func: (INT | BOOL | STRING | VOID | ID) ID (('(' args ')') |('()')) '{' stat* '}';
+func: (INT | BOOL | STRING | VOID | ID) ID (
+		('(' args ')')
+		| ('()')
+	) '{' stat* '}';
 construct_func: ID '()' '{' stat* '}';
 classdef:
-	CLASS ID '{' ((typepair ';')| construct_func| func)* '}';
-funcall: ID (expr (',' expr)*)?;
+	CLASS ID '{' ((typepair ';') | construct_func | func)* '}';
+funcall:
+	ID ('[' expr ']')? ('.' (ID ('[' expr ']') '.')*) (
+		expr (',' expr)*
+	)?;
 expr:
-	(INT_VALUE | STRING_VALUE | TRUE | FALSE)	# liter
-	| ID										# id
-	| THIS										# this
-	| funcall									# funcallv
-	| ID '.' ID									# member
-	| ID '.' funcall							# memfunc
-	| ID '[' INT ']'							# memnum
-	| newexpr									# new
-	| expr op = (ADD | MINUS) expr				# addminus
-	| expr op = (MUL | DIV | MOD) expr			# muldivmod
-	| '(' expr ')'								# par
-	| op = (SAD | SMI) expr						# bef
-	| expr op = (SAD | SMI)						# aft
-	| op = (NOT | BNO | MINUS) expr # single
-	| expr op = (OR | AND | UEQ | EQ) expr #logic
-	| expr op = (BAN | BOR | XOR) expr #bit
-	| expr '?' expr ':' expr #thr
-	| assignexpr #assign
-	| format_string #fstr
-	| op = (GETSTRING | GETINT) '()' # kb
-	| TOSTRING '(' expr ')' #tostr
-	| ID '.' op = (LENGTH | PARSEINT | ORD) '()' # strfunc
-	| ID '.' SUBSTRING '(' expr ',' expr ')' #substr;
+	INT_VALUE										# int_lit
+	| STRING_VALUE									# str_lit
+	| TRUE											# true
+	| FALSE											# false
+	| ID											# id
+	| THIS											# this
+	| funcall										# funcallv
+	| ID '.' ID										# member
+	| ID '[' expr ']'								# memnum
+	| newexpr										# new
+	| expr op = (ADD | MINUS) expr					# addminus
+	| expr op = (MUL | DIV | MOD) expr				# muldivmod
+	| '(' expr ')'									# par
+	| op = (SAD | SMI) expr							# bef
+	| expr op = (SAD | SMI)							# aft
+	| op = (NOT | BNO | MINUS) expr					# single
+	| expr op = (OR | AND) expr						# boologic
+	| expr op = (UEQ | EQ) expr						# equalogic
+	| expr op = (BAN | BOR | XOR) expr				# bit
+	| expr '?' expr ':' expr						# thr
+	| assignexpr									# assign
+	| format_string									# fstr
+	| op = (GETSTRING | GETINT) '()'				# kb
+	| TOSTRING '(' expr ')'							# tostr
+	| ID '.' op = (LENGTH | PARSEINT | ORD) '()'	# strfunc
+	| ID '.' SUBSTRING '(' expr ',' expr ')'		# substr;
 assignexpr: ID ASS expr;
 format_string:
 	'f' '"' (
