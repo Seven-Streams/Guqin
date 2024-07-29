@@ -197,7 +197,7 @@ public class MyVisitor extends guqinBaseVisitor<Boolean> {
 		return true;
 	}
 
-//Not Done.
+	// Not Done.
 	@Override
 	public Boolean visitFuncall(guqinParser.FuncallContext ctx) {
 		return visitChildren(ctx);
@@ -260,9 +260,48 @@ public class MyVisitor extends guqinBaseVisitor<Boolean> {
 		return visitChildren(ctx);
 	}
 
+	// Done.
 	@Override
-	public Boolean visitAddminus(guqinParser.AddminusContext ctx) {
-		return visitChildren(ctx);
+	public Boolean visitAdd(guqinParser.AddContext ctx) {
+		String type1, type2;
+		boolean check = visit(ctx.expr(0));
+		if (!check) {
+			return false;
+		}
+		type1 = node_type;
+		check = visit(ctx.expr(1));
+		if (!check) {
+			return false;
+		}
+		type2 = node_type;
+		if (type1 != type2) {
+			return false;
+		}
+		if ((type1 != "int") && (type1 != "string")) {
+			return false;
+		}
+		return true;
+	}
+
+	// Done.
+	@Override
+	public Boolean visitMinus(guqinParser.MinusContext ctx) {
+		String type1, type2;
+		boolean check = visit(ctx.expr(0));
+		if (!check) {
+			return false;
+		}
+		type1 = node_type;
+		check = visit(ctx.expr(1));
+		if (!check) {
+			return false;
+		}
+		type2 = node_type;
+		if ((type1 != "int") || (type2 != "int")) {
+			return false;
+		}
+		node_type = "int";
+		return true;
 	}
 
 	@Override
@@ -301,14 +340,48 @@ public class MyVisitor extends guqinBaseVisitor<Boolean> {
 		return check;
 	}
 
+	// Done.
 	@Override
 	public Boolean visitThr(guqinParser.ThrContext ctx) {
-		return visitChildren(ctx);
+		boolean check;
+		check = visit(ctx.expr(0));
+		if (!check) {
+			return false;
+		}
+		if (node_type != "bool") {
+			return false;
+		}
+		String type;
+		check = visit(ctx.expr(1));
+		if (!check) {
+			return false;
+		}
+		type = node_type;
+		check = visit(ctx.expr(2));
+		if (!check) {
+			return false;
+		}
+		if (type != node_type) {
+			return false;
+		}
+		return true;
 	}
 
+	// Done.
 	@Override
 	public Boolean visitFormat_string(guqinParser.Format_stringContext ctx) {
-		return visitChildren(ctx);
+		for (int i = 0; i < ctx.getChildCount(); i++) {
+			boolean check = visit(ctx.getChild(i));
+			if (!check) {
+				return false;
+			}
+			if (ctx.getChild(i) instanceof guqinParser.ExprContext) {
+				if ((node_type != "int") && (node_type != "string") && (node_type != "bool")) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 
 	@Override

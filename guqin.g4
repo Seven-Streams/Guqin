@@ -26,7 +26,8 @@ expr:
 	| ID '.' ID										# member
 	| ID '[' expr ']'								# memnum
 	| newexpr										# new
-	| expr op = (ADD | MINUS) expr					# addminus
+	| expr MINUS expr								# minus
+	| expr ADD expr									# add
 	| expr op = (MUL | DIV | MOD) expr				# muldivmod
 	| '(' expr ')'									# par
 	| op = (SAD | SMI) expr							# bef
