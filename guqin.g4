@@ -1,22 +1,27 @@
 grammar guqin;
 
 prog: classdef | func | global_declarstat;
-typepair: (INT | BOOL | STRING | ID) ID;
+dimension: '[' expr? ']';
+must_dimension: '[' expr ']';
+typepair: (INT | BOOL | STRING | ID) dimensions ID;
+dimensions: (dimension)*;
+dimensions_declar: must_dimension dimension*;
 real_type: (INT | BOOL | STRING | ID);
 args: (typepair (',' typepair)*)?;
-func: (INT | BOOL | STRING | VOID | ID) ID (
+func: (INT | BOOL | STRING | VOID | ID) dimensions ID (
 		('(' args ')')
 		| ('()')
 	) '{' (stat | returnstat)* '}';
 construct_func: ID '()' '{' stat* '}';
 classdef:
-	CLASS ID '{' ((typepair ';') | construct_func | func)* '}';
+	CLASS ID '{' (local_declarstat | construct_func | func)* '}';
 funcall:
 	ID ('[' expr ']')? ('.' (ID ('[' expr ']') '.')*) (
 		expr (',' expr)*
 	)?;
 expr:
 	INT_VALUE										# int_lit
+	| NULL											# null
 	| STRING_VALUE									# str_lit
 	| TRUE											# true
 	| FALSE											# false
@@ -51,12 +56,17 @@ format_string:
 	)* '"';
 newexpr:
 	NEW real_type '[]' '{' expr (',' expr)* '}'
+	| NEW real_type dimensions_declar
 	| NEW real_type ('()')?
-	| NEW real_type ('[' INT ']')*;
+	| NEW real_type ('[' INT ']') ();
 global_declarstat:
-	real_type ID ('=' expr)? (',' ID ('=' expr)?)* ';';
+	real_type dimensions_declar? ID ('=' expr)? (
+		',' ID ('=' expr)?
+	)* ';';
 local_declarstat:
-	real_type ID ('=' expr)? (',' ID ('=' expr)?)* ';';
+	real_type dimensions_declar? ID ('=' expr)? (
+		',' ID ('=' expr)?
+	)* ';';
 innercontent: '{' (stat)* '}' | (stat);
 loopinnercontent:
 	'{' (stat | breakstat | contistat)* '}'
