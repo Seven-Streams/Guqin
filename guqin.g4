@@ -1,10 +1,13 @@
 grammar guqin;
 
-prog: (classdef | func | global_declarstat)*;
+prog:
+	classdef			# classdefv
+	| func				# funcv
+	| global_declarstat	# global_declarstatv;
 typepair: (INT | BOOL | STRING | ID) ID;
 real_type: (INT | BOOL | STRING | ID);
-args: (typepair (',' typepair*))?;
-func: (INT | BOOL | STRING | VOID | ID) ID '(' args ')' '{' stat* '}';
+args: (typepair (',' typepair)*)?;
+func: (INT | BOOL | STRING | VOID | ID) ID (('(' args ')') |('()')) '{' stat* '}';
 construct_func: ID '()' '{' stat* '}';
 classdef:
 	CLASS ID '{' (typepair ';')
@@ -12,44 +15,29 @@ classdef:
 	| func '}';
 funcall: ID (expr (',' expr)*)?;
 expr:
-	INT_VALUE
-	| STRING_VALUE
-	| TRUE
-	| FALSE
-	| ID
-	| THIS
-	| funcall
-	| ID '.' ID
-	| ID '.' funcall
-	| ID '[' INT ']'
-	| newexpr
-	| expr ADD expr
-	| expr MINUS expr
-	| expr MUL expr
-	| expr DIV expr
-	| expr MOD expr
-	| '(' expr ')'
-	| SAD expr
-	| expr SAD
-	| SMI expr
-	| expr SMI
-	| NOT expr
-	| BNO expr
-	| MINUS expr
-	| expr EQ expr
-	| expr UEQ expr
-	| expr AND expr
-	| expr OR expr
-	| expr '?' expr ':' expr
-	| assignexpr
-	| format_string
-	| GETSTRING '()'
-	| GETINT '()'
-	| TOSTRING '()'
-	| ID '.' LENGTH '()'
-	| ID '.' SUBSTRING '(' expr ',' expr ')'
-	| ID '.' PARSEINT '()'
-	| ID '.' ORD '()';
+	(INT_VALUE | STRING_VALUE | TRUE | FALSE)	# liter
+	| ID										# id
+	| THIS										# this
+	| funcall									# funcallv
+	| ID '.' ID									# member
+	| ID '.' funcall							# memfunc
+	| ID '[' INT ']'							# memnum
+	| newexpr									# new
+	| expr op = (ADD | MINUS) expr				# addminus
+	| expr op = (MUL | DIV | MOD) expr			# muldivmod
+	| '(' expr ')'								# par
+	| op = (SAD | SMI) expr						# bef
+	| expr op = (SAD | SMI)						# aft
+	| op = (NOT | BNO | MINUS) expr # single
+	| expr op = (OR | AND | UEQ | EQ) expr #logic
+	| expr op = (BAN | BOR | XOR) expr #bit
+	| expr '?' expr ':' expr #thr
+	| assignexpr #assign
+	| format_string #fstr
+	| op = (GETSTRING | GETINT) '()' # kb
+	| TOSTRING '(' expr ')' #tostr
+	| ID '.' op = (LENGTH | PARSEINT | ORD) '()' # strfunc
+	| ID '.' SUBSTRING '(' expr ',' expr ')' #substr;
 assignexpr: ID ASS expr;
 format_string:
 	'f' '"' (
@@ -76,6 +64,7 @@ breakstat: BREAK ';';
 exprstat: expr ';';
 stat:
 	assignstat
+	| exprstat
 	| local_declarstat
 	| conditstat
 	| whilestat
