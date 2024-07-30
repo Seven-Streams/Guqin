@@ -15,6 +15,7 @@ guqinLexer.tokens
 guqinParser$BitContext.class
 guqinListener.java
 guqinParser.java
+/bin
 guqinParser$CondContext.class
 guqinParser$BoologicContext.class
 guqinBaseListener.class
