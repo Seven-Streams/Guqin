@@ -15,35 +15,36 @@ func: (real_type dimensions)
 construct_func: id '()' '{' stat* '}';
 classdef:
 	CLASS id '{' (local_declarstat | construct_func | func)* '}';
-funcall:
-	id '(' (expr (',' expr)*)? ')';
+funcall: id '(' (expr (',' expr)*)? ')';
 expr:
-	INT_VALUE												# int_lit
-	| NULL													# null
-	| STRING_VALUE											# str_lit
-	| TRUE													# true
-	| FALSE													# false
-	| (id dimensions_choose ('.' id dimensions_choose)*)	# idexpr
-	| (id dimensions_choose ('.' id dimensions_choose)*) '.' funcall # memfunc
-	| THIS													# this
-	| newexpr												# new
-	| expr MINUS expr										# minus
-	| expr ADD expr											# add
-	| expr op = (MUL | DIV | MOD) expr						# muldivmod
-	| '(' expr ')'											# par
-	| op = (SAD | SMI) expr									# bef
-	| expr op = (SAD | SMI)									# aft
-	| op = (NOT | BNO | MINUS) expr							# single
-	| expr op = (OR | AND) expr								# boologic
-	| expr op = (UEQ | EQ) expr								# equalogic
-	| expr op = (BAN | BOR | XOR) expr						# bit
-	| expr '?' expr ':' expr								# thr
-	| assignexpr											# assign
-	| format_string											# fstr
-	| op = (GETSTRING | GETINT) '()'						# kb
-	| TOSTRING '(' expr ')'									# tostr
-	| id '.' op = (LENGTH | PARSEINT | ORD) '()'			# strfunc
-	| id '.' SUBSTRING '(' expr ',' expr ')'				# substr;
+	INT_VALUE															# int_lit
+	| NULL																# null
+	| STRING_VALUE														# str_lit
+	| TRUE																# true
+	| FALSE																# false
+	| (id dimensions_choose ('.' id dimensions_choose)*)				# idexpr
+	| (id dimensions_choose ('.' id dimensions_choose)*) '.' funcall	# memfunc
+	| THIS																# this
+	| newexpr															# new
+	| expr MINUS expr													# minus
+	| expr ADD expr														# add
+	| expr op = (MUL | DIV | MOD) expr									# muldivmod
+	| '(' expr ')'														# par
+	| op = (SAD | SMI) expr												# bef
+	| expr op = (SAD | SMI)												# aft
+	| op = (NOT | BNO | MINUS) expr										# single
+	| expr op = (OR | AND) expr											# boologic
+	| expr op = (UEQ | EQ) expr											# equalogic
+	| expr op = (GE | GEQ | LE | LEQ) expr								# order
+	| expr op = (BAN | BOR | XOR | RLH | RSH) expr						# bit
+	| expr '?' expr ':' expr											# thr
+	| assignexpr														# assign
+	| format_string														# fstr
+	| GETSTRING '()'													# getstr
+	| GETINT '()'														# getint
+	| TOSTRING '(' expr ')'												# tostr
+	| expr '.' op = (LENGTH | PARSEINT | ORD) '()'						# strfunc
+	| expr '.' SUBSTRING '(' expr ',' expr ')'							# substr;
 assignexpr: id dimensions_choose ASS expr;
 format_string:
 	'f' '"' (
@@ -77,12 +78,15 @@ returnstat: RETURN cond ';';
 contistat: CONTINUE ';';
 breakstat: BREAK ';';
 exprstat: expr ';';
+printstat: (PRINTINT | PRINTLNINT) '(' expr ')'	# pint
+	| (PRINTLN | PRINT) '(' expr ')'			# pstr;
 stat:
 	exprstat
 	| local_declarstat
 	| conditstat
 	| whilestat
-	| forstat;
+	| forstat
+	| printstat;
 LINE_COMMENT: '//' .*? '\r'? '\n' -> skip;
 BLOCK_COMMENT: '/*' .*? '*/' -> skip;
 STRING_VALUE: '"' ( '\\' ["] | ~["])* '"';
@@ -105,7 +109,8 @@ CONTINUE: 'continue';
 RETURN: 'return';
 PRINT: 'print';
 PRINTLN: 'println';
-PRINTINT: 'printlnInt';
+PRINTLNINT: 'printlnInt';
+PRINTINT: 'printint';
 GETSTRING: 'getString';
 GETINT: 'getInt';
 TOSTRING: 'toString';
