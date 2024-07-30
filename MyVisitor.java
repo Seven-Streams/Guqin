@@ -11,17 +11,19 @@ import org.antlr.v4.runtime.tree.*;
  * In the string-pair hashmap, the id is the first, and the type is the second one.
  */
 public class MyVisitor extends guqinBaseVisitor<Boolean> {
-	ArrayList<Integer> loops;
 	boolean in_class;
 	String this_type;
 	String node_type;
 	String func_type;
 	String node_id;
 	int dim;
+	int func_dim;
 	ArrayList<Mypair> function_args;
 	HashMap<String, HashMap<String, Mypair>> class_memory;
-	HashMap<String, HashMap<String, ArrayList<Mypair>>> class_func_memory;
+	HashMap<String, HashMap<String, Mypair>> class_func_memory;
+	HashMap<String, HashMap<String, ArrayList<Mypair>>> class_func_args;
 	HashMap<String, ArrayList<Mypair>> func_memory;
+	HashMap<String, Mypair> func_return;
 	ArrayList<HashMap<String, Mypair>> variable_memory;
 	HashMap<String, Boolean> construction;
 
@@ -30,16 +32,17 @@ public class MyVisitor extends guqinBaseVisitor<Boolean> {
 		in_class = false;
 		dim = 0;
 		construction = new HashMap<>();
-		loops = new ArrayList<>();
 		class_memory = new HashMap<>();
 		class_func_memory = new HashMap<>();
+		class_func_args = new HashMap<>();
+		func_return = new HashMap<>();
 		func_memory = new HashMap<>();
 		variable_memory = new ArrayList<>();
 		HashMap<String, Mypair> initialMap = new HashMap<>();
+		variable_memory.add(initialMap);
 		class_memory.put("int", null);
 		class_memory.put("string", null);
 		class_memory.put("bool", null);
-		variable_memory.add(initialMap);
 	}
 
 	// refac.
@@ -47,15 +50,92 @@ public class MyVisitor extends guqinBaseVisitor<Boolean> {
 	public Boolean visitClassdef(guqinParser.ClassdefContext ctx) {
 	}
 
-	// refac.
+	// Done.
 	@Override
 	public Boolean visitFunc(guqinParser.FuncContext ctx) {
+		if (ctx.VOID() != null) {
+			func_type = "void";
+		} else {
+			func_type = ctx.real_type().getText();
+			if (!class_memory.containsKey(func_type)) {
+				return false;
+			}
+			boolean check = visit(ctx.dimensions());
+			if (!check) {
+				return false;
+			}
+			func_dim = dim;
+		}
+		String func_id = ctx.id().getText();
+		HashMap<String, Mypair> res_var = new HashMap<>();
+		ArrayList<Mypair> res_args = new ArrayList<>();
+		ParseTree arg_check = ctx.args();
+		for (int i = 0; i < arg_check.getChildCount(); i++) {
+			boolean check = visit(arg_check.getChild(i));
+			if (!check) {
+				return false;
+			}
+			if (!class_memory.containsKey(node_type)) {
+				return false;
+			}
+			if (res_var.containsKey(node_id)) {
+				return false;
+			}
+			Mypair to_put = new Mypair(node_type, dim);
+			res_var.put(func_type, to_put);
+		}
+		variable_memory.add(res_var);
+		for (int i = 0; i < ctx.getChildCount(); i++) {
+			if (ctx.getChild(i) instanceof guqinParser.StatContext) {
+				boolean check = visit(ctx.getChild(i));
+				if (!check) {
+					variable_memory.remove(variable_memory.size() - 1);
+					return false;
+				}
+			}
+		}
+		if (in_class) {
+			function_args = res_args;
+		} else {
+			func_memory.put(func_id, res_args);
+			Mypair function_type = new Mypair(func_type, dim);
+			func_return.put(func_id, function_type);
+		}
+		variable_memory.remove(variable_memory.size() - 1);
+		return true;
 	}
 
-	// refac.
+	// Done.
 	@Override
 	public Boolean visitGlobal_declarstat(guqinParser.Global_declarstatContext ctx) {
-
+		String type = ctx.real_type().getText();
+		if (!class_memory.containsKey(type)) {
+			return false;
+		}
+		boolean check = visit(ctx.dimensions_declar());
+		if (!check) {
+			return false;
+		}
+		int res_dim = dim;
+		for (int i = 0; i < ctx.getChildCount(); i++) {
+			if (ctx.getChild(i) instanceof guqinParser.IdContext) {
+				String id = ctx.getChild(i).getText();
+				if (variable_memory.get(variable_memory.size() - 1).containsKey(id)) {
+					return false;
+				}
+				Mypair res = new Mypair(type, res_dim);
+				variable_memory.get(variable_memory.size() - 1).put(id, res);
+			} else {
+				check = visit(ctx.getChild(i));
+				if (!check) {
+					return false;
+				}
+				if (node_type != type) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 
 	// Done.
@@ -253,9 +333,37 @@ public class MyVisitor extends guqinBaseVisitor<Boolean> {
 		return visitChildren(ctx);
 	}
 
-	// refac.
+	// Done.
 	@Override
 	public Boolean visitLocal_declarstat(guqinParser.Local_declarstatContext ctx) {
+		String type = ctx.real_type().getText();
+		if (!class_memory.containsKey(type)) {
+			return false;
+		}
+		boolean check = visit(ctx.dimensions_declar());
+		if (!check) {
+			return false;
+		}
+		int res_dim = dim;
+		for (int i = 0; i < ctx.getChildCount(); i++) {
+			if (ctx.getChild(i) instanceof guqinParser.IdContext) {
+				String id = ctx.getChild(i).getText();
+				if (variable_memory.get(variable_memory.size() - 1).containsKey(id)) {
+					return false;
+				}
+				Mypair res = new Mypair(type, res_dim);
+				variable_memory.get(variable_memory.size() - 1).put(id, res);
+			} else {
+				check = visit(ctx.getChild(i));
+				if (!check) {
+					return false;
+				}
+				if (node_type != type) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 
 	// Done.
@@ -386,10 +494,13 @@ public class MyVisitor extends guqinBaseVisitor<Boolean> {
 		return visit(ctx.getChild(0));
 	}
 
-	// deprecated.
+	// Done.
 	@Override
 	public Boolean visitTypepair(guqinParser.TypepairContext ctx) {
-		return visitChildren(ctx);
+		node_type = ctx.real_type().getText();
+		visit(ctx.dimensions());
+		node_id = ctx.id().getText();
+		return true;
 	}
 
 	// deprecated.
