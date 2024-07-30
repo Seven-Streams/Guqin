@@ -8,6 +8,10 @@ typepair: real_type dimensions id;
 dimensions: (dimension)*;
 dimensions_choose: must_dimension*;
 dimensions_declar: (must_dimension dimension*)?;
+array: '{'(expr (',' expr)*)?'}';
+multiarray: 
+array
+| '{' multiarray (',' multiarray)*'}';
 real_type: (INT | BOOL | STRING | id);
 args: (typepair (',' typepair)*)?;
 func: (real_type dimensions)
@@ -23,7 +27,7 @@ expr:
 	| TRUE																# true
 	| FALSE																# false
 	| (id dimensions_choose ('.' id dimensions_choose)*)				# idexpr
-	| idexpr '.' funcall	# memfunc
+	| (id dimensions_choose ('.' id dimensions_choose)*) '.' funcall	# memfunc
 	| THIS																# this
 	| newexpr															# new
 	| expr MINUS expr													# minus
