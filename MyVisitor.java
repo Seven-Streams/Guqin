@@ -257,20 +257,12 @@ public class MyVisitor extends guqinBaseVisitor<Boolean> {
 		return visitChildren(ctx);
 	}
 
-	@Override
-	public Boolean visitMemnum(guqinParser.MemnumContext ctx) {
-		return visitChildren(ctx);
-	}
 
 	@Override
 	public Boolean visitKb(guqinParser.KbContext ctx) {
 		return visitChildren(ctx);
 	}
 
-	@Override
-	public Boolean visitMember(guqinParser.MemberContext ctx) {
-		return visitChildren(ctx);
-	}
 
 	// Done.
 	@Override
@@ -322,7 +314,7 @@ public class MyVisitor extends guqinBaseVisitor<Boolean> {
 	}
 
 	@Override
-	public Boolean visitFuncallv(guqinParser.FuncallvContext ctx) {
+	public Boolean visitMemfunc(guqinParser.MemfuncContext ctx) {
 		return visitChildren(ctx);
 	}
 
@@ -332,8 +324,37 @@ public class MyVisitor extends guqinBaseVisitor<Boolean> {
 		return visit(ctx.getChild(0));
 	}
 
-	// refac.
+	// Done.
 	public Boolean visitAssignexpr(guqinParser.AssignexprContext ctx) {
+		Mypair l_type = new Mypair(null, 0);
+		String id = ctx.id().getText();
+		boolean exist = false;
+		for(int i = variable_memory.size() - 1; i >= 0; i--) {
+			if(variable_memory.get(i).containsKey(id)) {
+				l_type = new Mypair(variable_memory.get(i).get(id).type, variable_memory.get(i).get(id).dim);
+				exist = true;
+				break;
+			}
+		}
+		if(!exist) {
+			return false;
+		}
+		boolean check = visit(ctx.dimensions_choose());
+		if(!check) {
+			return false;
+		}
+		int reduced_dim = dim;
+		check = visit(ctx.expr());
+		if(!check) {
+			return false;
+		}
+		if(node_type != l_type.type) {
+			return false;
+		}
+		if((l_type.dim - reduced_dim) != dim) {
+			return false;
+		}
+		return true;
 	}
 
 	// Done.

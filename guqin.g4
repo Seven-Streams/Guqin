@@ -10,45 +10,40 @@ dimensions_choose: must_dimension*;
 dimensions_declar: (must_dimension dimension*)?;
 real_type: (INT | BOOL | STRING | id);
 args: (typepair (',' typepair)*)?;
-func: (real_type dimensions)|VOID id (
-		('(' args ')')
-	) '{' (stat | returnstat)* '}';
+func: (real_type dimensions)
+	| VOID id (('(' args ')')) '{' (stat | returnstat)* '}';
 construct_func: id '()' '{' stat* '}';
 classdef:
 	CLASS id '{' (local_declarstat | construct_func | func)* '}';
 funcall:
-	id ('[' expr ']')? ('.' (id ('[' expr ']') '.')*) (
-		expr (',' expr)*
-	)?;
+	id '(' (expr (',' expr)*)? ')';
 expr:
-	INT_VALUE										# int_lit
-	| NULL											# null
-	| STRING_VALUE									# str_lit
-	| TRUE											# true
-	| FALSE											# false
-	| id											# idexpr
-	| THIS											# this
-	| funcall										# funcallv
-	| id '.' id										# member
-	| id '[' expr ']'								# memnum
-	| newexpr										# new
-	| expr MINUS expr								# minus
-	| expr ADD expr									# add
-	| expr op = (MUL | DIV | MOD) expr				# muldivmod
-	| '(' expr ')'									# par
-	| op = (SAD | SMI) expr							# bef
-	| expr op = (SAD | SMI)							# aft
-	| op = (NOT | BNO | MINUS) expr					# single
-	| expr op = (OR | AND) expr						# boologic
-	| expr op = (UEQ | EQ) expr						# equalogic
-	| expr op = (BAN | BOR | XOR) expr				# bit
-	| expr '?' expr ':' expr						# thr
-	| assignexpr									# assign
-	| format_string									# fstr
-	| op = (GETSTRING | GETINT) '()'				# kb
-	| TOSTRING '(' expr ')'							# tostr
-	| id '.' op = (LENGTH | PARSEINT | ORD) '()'	# strfunc
-	| id '.' SUBSTRING '(' expr ',' expr ')'		# substr;
+	INT_VALUE												# int_lit
+	| NULL													# null
+	| STRING_VALUE											# str_lit
+	| TRUE													# true
+	| FALSE													# false
+	| (id dimensions_choose ('.' id dimensions_choose)*)	# idexpr
+	| (id dimensions_choose ('.' id dimensions_choose)*) '.' funcall # memfunc
+	| THIS													# this
+	| newexpr												# new
+	| expr MINUS expr										# minus
+	| expr ADD expr											# add
+	| expr op = (MUL | DIV | MOD) expr						# muldivmod
+	| '(' expr ')'											# par
+	| op = (SAD | SMI) expr									# bef
+	| expr op = (SAD | SMI)									# aft
+	| op = (NOT | BNO | MINUS) expr							# single
+	| expr op = (OR | AND) expr								# boologic
+	| expr op = (UEQ | EQ) expr								# equalogic
+	| expr op = (BAN | BOR | XOR) expr						# bit
+	| expr '?' expr ':' expr								# thr
+	| assignexpr											# assign
+	| format_string											# fstr
+	| op = (GETSTRING | GETINT) '()'						# kb
+	| TOSTRING '(' expr ')'									# tostr
+	| id '.' op = (LENGTH | PARSEINT | ORD) '()'			# strfunc
+	| id '.' SUBSTRING '(' expr ',' expr ')'				# substr;
 assignexpr: id dimensions_choose ASS expr;
 format_string:
 	'f' '"' (
