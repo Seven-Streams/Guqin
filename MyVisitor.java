@@ -575,7 +575,7 @@ public class MyVisitor extends guqinBaseVisitor<Boolean> {
 
 	@Override
 	public Boolean visitNull(guqinParser.NullContext ctx) {
-		return visit(ctx.getChild(0));
+		return true;
 	}
 
 	// Done.
@@ -598,6 +598,7 @@ public class MyVisitor extends guqinBaseVisitor<Boolean> {
 			return false;
 		}
 		int reduced_dim = dim;
+		System.out.println(ctx.expr().getText());
 		check = visit(ctx.expr());
 		if (!check) {
 			return false;
@@ -648,7 +649,10 @@ public class MyVisitor extends guqinBaseVisitor<Boolean> {
 	// Done.
 	@Override
 	public Boolean visitFormat_string(guqinParser.Format_stringContext ctx) {
-		for (int i = 0; i < ctx.getChildCount(); i++) {
+		if(!ctx.id().getText().equals("f")) {
+			return false;
+		}
+		for (int i = 1; i < ctx.getChildCount(); i++) {
 			boolean check = visit(ctx.getChild(i));
 			if (!check) {
 				return false;
@@ -1048,7 +1052,7 @@ public class MyVisitor extends guqinBaseVisitor<Boolean> {
 			return false;
 		}
 		type2 = node_type;
-		if (!type1.equals( type2)) {
+		if (!type1.equals(type2)) {
 			return false;
 		}
 		if (res_dim != dim) {

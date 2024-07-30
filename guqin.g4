@@ -19,7 +19,7 @@ func: ((real_type dimensions) | VOID) id (
 	) '{' (stat | returnstat)* '}';
 construct_func: id '()' '{' stat* '}';
 classdef:
-	CLASS id '{' (local_declarstat | construct_func | func)* '}';
+	CLASS id '{' (local_declarstat | construct_func | func)* '};';
 expr:
 	INT_VALUE												# int_lit
 	| NULL													# null
@@ -55,7 +55,7 @@ expr:
 	| expr '.' SUBSTRING '(' expr ',' expr ')'		# substr;
 assignexpr: id dimensions_choose ASS expr;
 format_string:
-	'f' '"' (
+	id '"' (
 		('{' (format_string | expr) '}')
 		| ( '\\' '"' | ~'"')
 	)* '"';
@@ -85,8 +85,8 @@ returnstat: RETURN cond ';';
 contistat: CONTINUE ';';
 breakstat: BREAK ';';
 exprstat: expr ';';
-printstat: (PRINTINT | PRINTLNINT) '(' expr ')'	# pint
-	| (PRINTLN | PRINT) '(' expr ')'			# pstr;
+printstat: (PRINTINT | PRINTLNINT) '(' expr ')'';'	# pint
+	| (PRINTLN | PRINT) '(' expr ')'';'			# pstr;
 stat:
 	exprstat
 	| local_declarstat

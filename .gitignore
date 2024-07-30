@@ -16,6 +16,7 @@ guqinParser$BitContext.class
 guqinListener.java
 guqinParser.java
 /bin
+/test
 guqinParser$CondContext.class
 guqinParser$BoologicContext.class
 guqinBaseListener.class

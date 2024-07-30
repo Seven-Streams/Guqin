@@ -12,12 +12,19 @@ public class semantic {
         guqinParser parser = new guqinParser(tokens);
         MyVisitor visitor = new MyVisitor();
         ParseTree res = parser.prog();
+        if (parser.getNumberOfSyntaxErrors() > 0) {
+            System.out.println(-1);
+            System.exit(-1);
+            return;
+        }
         Boolean check = visitor.visit(res);
-        if(check) {
-            System.out.println(0);
+        if (check) {
+            System.exit(0);
         } else {
             System.out.println(-1);
+            System.exit(-1);
         }
+        return;
     }
 
 }
