@@ -590,9 +590,45 @@ public class MyVisitor extends guqinBaseVisitor<Boolean> {
 		return true;
 	}
 
+	// Done.
 	@Override
-	public Boolean visitNewexpr(guqinParser.NewexprContext ctx) {
-		return visitChildren(ctx);
+	public Boolean visitArray_new(guqinParser.Array_newContext ctx) {
+		boolean check = visit(ctx.array());
+		if (!check) {
+			return false;
+		}
+		String desired_type = ctx.real_type().getText();
+		if (node_type != desired_type) {
+			return false;
+		}
+		return true;
+	}
+
+	// Done.
+	@Override
+	public Boolean visitDim_new(guqinParser.Dim_newContext ctx) {
+		boolean check = visit(ctx.dimensions_declar());
+		if (!check) {
+			return false;
+		}
+		String res_type = ctx.real_type().getText();
+		if (!class_memory.containsKey(res_type)) {
+			return false;
+		}
+		node_type = res_type;
+		return true;
+	}
+
+	// done.
+	@Override
+	public Boolean visitSingle_new(guqinParser.Single_newContext ctx) {
+		String res_type = ctx.real_type().getText();
+		if (!class_memory.containsKey(res_type)) {
+			return false;
+		}
+		node_type = res_type;
+		dim = 0;
+		return true;
 	}
 
 	// Done.

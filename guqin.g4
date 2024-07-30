@@ -8,10 +8,8 @@ typepair: real_type dimensions id;
 dimensions: (dimension)*;
 dimensions_choose: must_dimension*;
 dimensions_declar: (must_dimension dimension*)?;
-array: '{'(expr (',' expr)*)?'}';
-multiarray: 
-array
-| '{' multiarray (',' multiarray)*'}';
+array: '{' (expr (',' expr)*)? '}';
+multiarray: array | '{' multiarray (',' multiarray)* '}';
 real_type: (INT | BOOL | STRING | id);
 args: (typepair (',' typepair)*)?;
 func: (real_type dimensions)
@@ -57,10 +55,9 @@ format_string:
 		| ( '\\' '"' | ~'"')
 	)* '"';
 newexpr:
-	NEW real_type '[]' '{' expr (',' expr)* '}'
-	| NEW real_type dimensions_declar
-	| NEW real_type ('()')?
-	| NEW real_type ('[' INT ']') ();
+	NEW real_type '[]' array # array_new
+	| NEW real_type dimensions_declar # dim_new
+	| NEW real_type ('()')? #single_new;
 global_declarstat:
 	real_type dimensions_declar id ('=' expr)? (
 		',' id ('=' expr)?
