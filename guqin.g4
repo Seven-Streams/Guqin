@@ -23,7 +23,7 @@ expr:
 	| TRUE																# true
 	| FALSE																# false
 	| (id dimensions_choose ('.' id dimensions_choose)*)				# idexpr
-	| (id dimensions_choose ('.' id dimensions_choose)*) '.' funcall	# memfunc
+	| idexpr '.' funcall	# memfunc
 	| THIS																# this
 	| newexpr															# new
 	| expr MINUS expr													# minus
@@ -43,7 +43,8 @@ expr:
 	| GETSTRING '()'													# getstr
 	| GETINT '()'														# getint
 	| TOSTRING '(' expr ')'												# tostr
-	| expr '.' op = (LENGTH | PARSEINT | ORD) '()'						# strfunc
+	| expr '.' op = (LENGTH | PARSEINT) '()'							# strint
+	| expr '.' ORD '(' expr ')'											# strord
 	| expr '.' SUBSTRING '(' expr ',' expr ')'							# substr;
 assignexpr: id dimensions_choose ASS expr;
 format_string:
