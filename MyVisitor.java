@@ -45,9 +45,60 @@ public class MyVisitor extends guqinBaseVisitor<Boolean> {
 		class_memory.put("bool", null);
 	}
 
-	// refac.
+	// Done.
 	@Override
 	public Boolean visitClassdef(guqinParser.ClassdefContext ctx) {
+		in_class = true;
+		boolean construct = false;
+		this_type = ctx.id().getText();
+		if(class_memory.containsKey(this_type)) {
+			return false;
+		}
+		HashMap<String, Mypair> res_var = new HashMap<>();
+		HashMap<String, Mypair> res_func = new HashMap<>();
+		HashMap<String, ArrayList<Mypair>> res_args = new HashMap<>();
+		variable_memory.add(res_var);
+		for(int i = 0; i < ctx.getChildCount(); i++) {
+			if(ctx.getChild(i) instanceof guqinParser.Local_declarstatContext) {
+				boolean check = visit(ctx.getChild(i));
+				if(!check) {
+					variable_memory.remove(variable_memory.size() - 1);
+					return false;
+				}
+			}
+		}
+		class_memory.put(this_type, res_var);
+		for(int i = 0; i < ctx.getChildCount(); i++) {
+			if(ctx.getChild(i) instanceof guqinParser.Construct_funcContext) {
+				boolean check = visit(ctx.getChild(i));
+				if(!check) {
+					return false;
+				}
+				if(construct) {
+					return false;
+				}
+				construct = true;
+				construction.put(this_type, null);
+			}
+			if(ctx.getChild(i) instanceof guqinParser.FuncContext) {
+				boolean check = visit(ctx.getChild(i));
+				if(!check){
+					return false;
+				}
+				if(res_var.containsKey(node_id)) {
+					return false;
+				}
+				res_args.put(node_id, function_args);
+				Mypair to_push = new Mypair(func_type, dim);
+				res_func.put(func_type, to_push);
+			}
+		}
+		variable_memory.remove(variable_memory.size() - 1);
+		class_memory.put(this_type, res_var);
+		class_func_memory.put(this_type, res_func);
+		class_func_args.put(this_type, res_args);
+		in_class = false;
+		return true;
 	}
 
 	// Done.
@@ -101,6 +152,7 @@ public class MyVisitor extends guqinBaseVisitor<Boolean> {
 			Mypair function_type = new Mypair(func_type, dim);
 			func_return.put(func_id, function_type);
 		}
+		node_id = func_id;
 		variable_memory.remove(variable_memory.size() - 1);
 		return true;
 	}
@@ -363,6 +415,8 @@ public class MyVisitor extends guqinBaseVisitor<Boolean> {
 				}
 			}
 		}
+		node_type = type;
+		dim = res_dim;
 		return true;
 	}
 
