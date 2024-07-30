@@ -1,10 +1,10 @@
 import java.util.HashMap;
 import java.util.ArrayList;
-import org.antlr.v4.runtime.atn.*;
-import org.antlr.v4.runtime.dfa.DFA;
-import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.misc.*;
 import org.antlr.v4.runtime.tree.*;
+// import org.antlr.v4.runtime.atn.*;
+// import org.antlr.v4.runtime.dfa.DFA;
+// import org.antlr.v4.runtime.*;
+// import org.antlr.v4.runtime.misc.*;
 
 /*notations of types:
  * bool, int, class_name, void, string
@@ -214,7 +214,114 @@ public class MyVisitor extends guqinBaseVisitor<Boolean> {
 	// Not Done.
 	@Override
 	public Boolean visitFuncall(guqinParser.FuncallContext ctx) {
-		return visitChildren(ctx);
+		if (ctx.dimensions_choose(0) == null) {// it's a big function.
+			String type = ctx.id(0).getText();
+			if (!func_memory.containsKey(type)) {
+				return false;
+			}
+			ArrayList<Mypair> to_check = new ArrayList<>();
+			ArrayList<Mypair> demand = func_memory.get(type);
+			for (int i = 0; i < ctx.getChildCount(); i++) {
+				if (ctx.getChild(i) instanceof guqinParser.ExprContext) {
+					boolean check = visit(ctx.getChild(i));
+					if (!check) {
+						return false;
+					}
+					Mypair res = new Mypair(node_type, dim);
+					to_check.add(res);
+				}
+			}
+			if (demand.size() != to_check.size()) {
+				return false;
+			}
+			for (int i = 0; i < to_check.size(); i++) {
+				if (to_check.get(i).dim != demand.get(i).dim) {
+					return false;
+				}
+				if (to_check.get(i).type != demand.get(i).type) {
+					return false;
+				}
+			}
+			node_type = func_return.get(type).type;
+			dim = func_return.get(type).dim;
+			return true;
+		} else {
+			String id = ctx.id(0).getText();
+			boolean check = visit(ctx.dimensions_choose(0));
+			if (!check) {
+				return false;
+			}
+			int reduced_dim = dim;
+			boolean exist = false;
+			Mypair var_type = new Mypair(null, 0);
+			for (int i = variable_memory.size() - 1; i >= 0; i--) {
+				if (variable_memory.get(i).containsKey(id)) {
+					var_type.dim = variable_memory.get(i).get(id).dim;
+					var_type.type = variable_memory.get(i).get(id).type;
+					exist = true;
+					break;
+				}
+			}
+			if (!exist) {
+				return false;
+			}
+			if (var_type.dim != reduced_dim) {
+				return false;
+			}
+			String func_name = null;
+			for (int i = 1; i < ctx.getChildCount(); i++) {
+				if (ctx.dimensions_choose(i) == null) {
+					func_name = ctx.id(i).getText();
+					break;
+				} else {
+					String res_var_type = ctx.id(i).getText();
+					if (!class_memory.get(var_type.type).containsKey(res_var_type)) {
+						return false;
+					}
+					Mypair res_info = new Mypair(class_memory.get(var_type.type).get(res_var_type).type,
+							class_memory.get(var_type.type).get(res_var_type).dim);
+					check = visit(ctx.dimensions_choose(i));
+					if(!check) {
+						return false;
+					}
+					if(dim != res_info.dim) {
+						return false;
+					}
+					var_type.type = res_var_type;
+				}
+			}
+			check = class_func_memory.containsKey(func_name);
+			if(!check) {
+				return false;
+			}
+			ArrayList<Mypair> desired_args = class_func_args.get(var_type.type).get(func_name);
+			ArrayList<Mypair> to_check = new ArrayList<>();
+			for(int i = 0; i < ctx.getChildCount(); i++) {
+				if(ctx.getChild(i) instanceof guqinParser.ExprContext) {
+					check = visit(ctx.getChild(i));
+					if(!check) {
+						return false;
+					}
+					Mypair res = new Mypair(node_type, dim);
+					to_check.add(res);
+				}
+			}
+			if(to_check.size() != desired_args.size()) {
+				return false;
+			}
+			for(int i = 0; i < to_check.size(); i++) {
+				if(to_check.get(i).type != desired_args.get(i).type) {
+					return false;
+				}
+				if(to_check.get(i).dim != desired_args.get(i).dim) {
+					return false;
+				}
+			}
+			Mypair return_value = class_func_memory.get(var_type.type).get(func_name);
+			dim = return_value.dim;
+			node_type = return_value.type;
+			return true;
+		}
 	}
 
 	// Done.
@@ -459,44 +566,6 @@ public class MyVisitor extends guqinBaseVisitor<Boolean> {
 
 	// Done.
 	@Override
-	public Boolean visitMemfunc(guqinParser.MemfuncContext ctx) {
-		Mypair res = new Mypair(null, 0);
-		String id;
-		for (int i = 0; i < ctx.getChildCount(); i++) {
-			if (ctx.getChild(i) instanceof guqinParser.IdContext) {
-				if (res.dim != 0) {
-					return false;
-				}
-				id = ctx.getChild(i).getText();
-				for (int j = variable_memory.size() - 1; j >= 0; j--) {
-					if (variable_memory.get(j).containsKey(id)) {
-						res.type = variable_memory.get(j).get(id).type;
-						res.dim = variable_memory.get(j).get(id).dim;
-						break;
-					}
-				}
-			}
-			if (ctx.getChild(i) instanceof guqinParser.Dimensions_chooseContext) {
-				boolean check = visit(ctx.getChild(i));
-				if (!check) {
-					return false;
-				}
-				res.dim -= dim;
-			}
-		}
-		if (dim != 0) {
-			return false;
-		}
-		func_type = res.type;
-		boolean check = visit(ctx.funcall());
-		if (!check) {
-			return false;
-		}
-		return true;
-	}
-
-	// Done.
-	@Override
 	public Boolean visitAssign(guqinParser.AssignContext ctx) {
 		return visit(ctx.getChild(0));
 	}
@@ -619,7 +688,7 @@ public class MyVisitor extends guqinBaseVisitor<Boolean> {
 		return true;
 	}
 
-	// done.
+	// Done.
 	@Override
 	public Boolean visitSingle_new(guqinParser.Single_newContext ctx) {
 		String res_type = ctx.real_type().getText();

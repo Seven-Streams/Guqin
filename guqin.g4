@@ -17,7 +17,6 @@ func: (real_type dimensions)
 construct_func: id '()' '{' stat* '}';
 classdef:
 	CLASS id '{' (local_declarstat | construct_func | func)* '}';
-funcall: id '(' (expr (',' expr)*)? ')';
 expr:
 	INT_VALUE															# int_lit
 	| NULL																# null
@@ -25,7 +24,7 @@ expr:
 	| TRUE																# true
 	| FALSE																# false
 	| (id dimensions_choose ('.' id dimensions_choose)*)				# idexpr
-	| (id dimensions_choose ('.' id dimensions_choose)*) '.' funcall	# memfunc
+	| ((id dimensions_choose ('.' id dimensions_choose)*) '.')? id '(' (expr (',' expr)*)? ')'	# funcall
 	| THIS																# this
 	| newexpr															# new
 	| expr MINUS expr													# minus
