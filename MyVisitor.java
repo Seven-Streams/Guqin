@@ -29,6 +29,7 @@ public class MyVisitor extends guqinBaseVisitor<Boolean> {
 	HashMap<String, Boolean> construction;
 
 	public MyVisitor() {
+		super();
 		function_args = new ArrayList<>();
 		in_class = false;
 		dim = 0;
@@ -123,19 +124,21 @@ public class MyVisitor extends guqinBaseVisitor<Boolean> {
 		HashMap<String, Mypair> res_var = new HashMap<>();
 		ArrayList<Mypair> res_args = new ArrayList<>();
 		ParseTree arg_check = ctx.args();
-		for (int i = 0; i < arg_check.getChildCount(); i++) {
-			boolean check = visit(arg_check.getChild(i));
-			if (!check) {
-				return false;
+		if (arg_check != null) {
+			for (int i = 0; i < arg_check.getChildCount(); i++) {
+				boolean check = visit(arg_check.getChild(i));
+				if (!check) {
+					return false;
+				}
+				if (!class_memory.containsKey(node_type)) {
+					return false;
+				}
+				if (res_var.containsKey(node_id)) {
+					return false;
+				}
+				Mypair to_put = new Mypair(node_type, dim);
+				res_var.put(func_type, to_put);
 			}
-			if (!class_memory.containsKey(node_type)) {
-				return false;
-			}
-			if (res_var.containsKey(node_id)) {
-				return false;
-			}
-			Mypair to_put = new Mypair(node_type, dim);
-			res_var.put(func_type, to_put);
 		}
 		variable_memory.add(res_var);
 		for (int i = 0; i < ctx.getChildCount(); i++) {
@@ -281,39 +284,39 @@ public class MyVisitor extends guqinBaseVisitor<Boolean> {
 					Mypair res_info = new Mypair(class_memory.get(var_type.type).get(res_var_type).type,
 							class_memory.get(var_type.type).get(res_var_type).dim);
 					check = visit(ctx.dimensions_choose(i));
-					if(!check) {
+					if (!check) {
 						return false;
 					}
-					if(dim != res_info.dim) {
+					if (dim != res_info.dim) {
 						return false;
 					}
 					var_type.type = res_var_type;
 				}
 			}
 			check = class_func_memory.containsKey(func_name);
-			if(!check) {
+			if (!check) {
 				return false;
 			}
 			ArrayList<Mypair> desired_args = class_func_args.get(var_type.type).get(func_name);
 			ArrayList<Mypair> to_check = new ArrayList<>();
-			for(int i = 0; i < ctx.getChildCount(); i++) {
-				if(ctx.getChild(i) instanceof guqinParser.ExprContext) {
+			for (int i = 0; i < ctx.getChildCount(); i++) {
+				if (ctx.getChild(i) instanceof guqinParser.ExprContext) {
 					check = visit(ctx.getChild(i));
-					if(!check) {
+					if (!check) {
 						return false;
 					}
 					Mypair res = new Mypair(node_type, dim);
 					to_check.add(res);
 				}
 			}
-			if(to_check.size() != desired_args.size()) {
+			if (to_check.size() != desired_args.size()) {
 				return false;
 			}
-			for(int i = 0; i < to_check.size(); i++) {
-				if(to_check.get(i).type != desired_args.get(i).type) {
+			for (int i = 0; i < to_check.size(); i++) {
+				if (to_check.get(i).type != desired_args.get(i).type) {
 					return false;
 				}
-				if(to_check.get(i).dim != desired_args.get(i).dim) {
+				if (to_check.get(i).dim != desired_args.get(i).dim) {
 					return false;
 				}
 			}
@@ -395,7 +398,7 @@ public class MyVisitor extends guqinBaseVisitor<Boolean> {
 
 	@Override
 	public Boolean visitNew(guqinParser.NewContext ctx) {
-		return visitChildren(ctx);
+		return visit(ctx.getChild(0));
 	}
 
 	// Done.
@@ -561,7 +564,7 @@ public class MyVisitor extends guqinBaseVisitor<Boolean> {
 	public Boolean visitFstr(guqinParser.FstrContext ctx) {
 		dim = 0;
 		node_type = "string";
-		return visitChildren(ctx);
+		return visit(ctx.getChild(0));
 	}
 
 	// Done.
@@ -872,16 +875,14 @@ public class MyVisitor extends guqinBaseVisitor<Boolean> {
 		return true;
 	}
 
-	// deprecated.
 	@Override
 	public Boolean visitReal_type(guqinParser.Real_typeContext ctx) {
-		return visitChildren(ctx);
+		return true;
 	}
 
-	// deprecated.
 	@Override
 	public Boolean visitArgs(guqinParser.ArgsContext ctx) {
-		return visitChildren(ctx);
+		return true;
 	}
 
 	// Done.
@@ -1295,6 +1296,24 @@ public class MyVisitor extends guqinBaseVisitor<Boolean> {
 		}
 		dim = res_dim + 1;
 		node_type = type;
+		return true;
+	}
+
+	@Override
+	public Boolean visitProg(guqinParser.ProgContext ctx) {
+		System.out.println("MY");
+		if (ctx.getChildCount() == 0) {
+			return false;
+		}
+		for (int i = 0; i < ctx.getChildCount(); i++) {
+			boolean check = visit(ctx.getChild(i));
+			if (!check) {
+				return false;
+			}
+		}
+		if (!func_memory.containsKey("main")) {
+			return false;
+		}
 		return true;
 	}
 }

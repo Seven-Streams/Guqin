@@ -20,6 +20,7 @@ guqinParser$BoologicContext.class
 guqinBaseListener.class
 guqinParser$BefContext.class
 guqinParser$Dim_newContext.class
+antlr-4.13.1-complete.jar
 guqinParser$EqualogicContext.class
 guqinLexer.class
 guqinParser$DimensionsContext.class

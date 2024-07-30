@@ -1,52 +1,58 @@
 grammar guqin;
 
 id: ID;
-prog: classdef | func | global_declarstat;
-dimension: '[' expr? ']';
+prog: (classdef | func | global_declarstat)+;
+dimension: '[' expr ']' | '[]';
 must_dimension: '[' expr ']';
 typepair: real_type dimensions id;
 dimensions: (dimension)*;
 dimensions_choose: must_dimension*;
-dimensions_declar: (must_dimension dimension*)?;
+dimensions_declar: dimension*?;
 array: '{' (expr (',' expr)*)? '}';
 multiarray: array | '{' multiarray (',' multiarray)* '}';
 real_type: (INT | BOOL | STRING | id);
 args: (typepair (',' typepair)*)?;
-func: (real_type dimensions)
-	| VOID id (('(' args ')')) '{' (stat | returnstat)* '}';
+func: ((real_type dimensions) | VOID) id (
+		('(' args ')')
+		|
+		| '()'
+	) '{' (stat | returnstat)* '}';
 construct_func: id '()' '{' stat* '}';
 classdef:
 	CLASS id '{' (local_declarstat | construct_func | func)* '}';
 expr:
-	INT_VALUE															# int_lit
-	| NULL																# null
-	| STRING_VALUE														# str_lit
-	| TRUE																# true
-	| FALSE																# false
-	| (id dimensions_choose ('.' id dimensions_choose)*)				# idexpr
-	| ((id dimensions_choose ('.' id dimensions_choose)*) '.')? id '(' (expr (',' expr)*)? ')'	# funcall
-	| THIS																# this
-	| newexpr															# new
-	| expr MINUS expr													# minus
-	| expr ADD expr														# add
-	| expr op = (MUL | DIV | MOD) expr									# muldivmod
-	| '(' expr ')'														# par
-	| op = (SAD | SMI) expr												# bef
-	| expr op = (SAD | SMI)												# aft
-	| op = (NOT | BNO | MINUS) expr										# single
-	| expr op = (OR | AND) expr											# boologic
-	| expr op = (UEQ | EQ) expr											# equalogic
-	| expr op = (GE | GEQ | LE | LEQ) expr								# order
-	| expr op = (BAN | BOR | XOR | RLH | RSH) expr						# bit
-	| expr '?' expr ':' expr											# thr
-	| assignexpr														# assign
-	| format_string														# fstr
-	| GETSTRING '()'													# getstr
-	| GETINT '()'														# getint
-	| TOSTRING '(' expr ')'												# tostr
-	| expr '.' op = (LENGTH | PARSEINT) '()'							# strint
-	| expr '.' ORD '(' expr ')'											# strord
-	| expr '.' SUBSTRING '(' expr ',' expr ')'							# substr;
+	INT_VALUE												# int_lit
+	| NULL													# null
+	| STRING_VALUE											# str_lit
+	| TRUE													# true
+	| FALSE													# false
+	| (id dimensions_choose ('.' id dimensions_choose)*)	# idexpr
+	| ((id dimensions_choose ('.' id dimensions_choose)*) '.')? id (
+		'(' (expr (',' expr)*)? ')'
+		| '()'
+	)												# funcall
+	| THIS											# this
+	| newexpr										# new
+	| expr MINUS expr								# minus
+	| expr ADD expr									# add
+	| expr op = (MUL | DIV | MOD) expr				# muldivmod
+	| '(' expr ')'									# par
+	| op = (SAD | SMI) expr							# bef
+	| expr op = (SAD | SMI)							# aft
+	| op = (NOT | BNO | MINUS) expr					# single
+	| expr op = (OR | AND) expr						# boologic
+	| expr op = (UEQ | EQ) expr						# equalogic
+	| expr op = (GE | GEQ | LE | LEQ) expr			# order
+	| expr op = (BAN | BOR | XOR | RLH | RSH) expr	# bit
+	| expr '?' expr ':' expr						# thr
+	| assignexpr									# assign
+	| format_string									# fstr
+	| GETSTRING '()'								# getstr
+	| GETINT '()'									# getint
+	| TOSTRING '(' expr ')'							# tostr
+	| expr '.' op = (LENGTH | PARSEINT) '()'		# strint
+	| expr '.' ORD '(' expr ')'						# strord
+	| expr '.' SUBSTRING '(' expr ',' expr ')'		# substr;
 assignexpr: id dimensions_choose ASS expr;
 format_string:
 	'f' '"' (
@@ -54,9 +60,9 @@ format_string:
 		| ( '\\' '"' | ~'"')
 	)* '"';
 newexpr:
-	NEW real_type '[]' array # array_new
-	| NEW real_type dimensions_declar # dim_new
-	| NEW real_type ('()')? #single_new;
+	NEW real_type '[]' array			# array_new
+	| NEW real_type dimensions_declar	# dim_new
+	| NEW real_type ('()')?				# single_new;
 global_declarstat:
 	real_type dimensions_declar id ('=' expr)? (
 		',' id ('=' expr)?
