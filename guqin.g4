@@ -24,7 +24,8 @@ expr:
 	INT_VALUE												# int_lit
 	| NULL													# null
 	| STRING_VALUE											# str_lit
-	| (FALSE | TRUE)										# bool_lit
+	| TRUE													# true
+	| FALSE													# false
 	| (id dimensions_choose ('.' id dimensions_choose)*)	# idexpr
 	| ((id dimensions_choose ('.' id dimensions_choose)*) '.')? id (
 		'(' (expr (',' expr)*)? ')'
@@ -32,17 +33,17 @@ expr:
 	)												# funcall
 	| THIS											# this
 	| newexpr										# new
-	| op = (NOT | BNO | MINUS) expr					# single
-	| expr op = (MUL | DIV | MOD) expr				# muldivmod
 	| expr MINUS expr								# minus
 	| expr ADD expr									# add
+	| expr op = (MUL | DIV | MOD) expr				# muldivmod
 	| '(' expr ')'									# par
 	| op = (SAD | SMI) expr							# bef
 	| expr op = (SAD | SMI)							# aft
-	| expr op = (BAN | BOR | XOR | RLH | RSH) expr	# bit
+	| op = (NOT | BNO | MINUS) expr					# single
+	| expr op = (OR | AND) expr						# boologic
 	| expr op = (UEQ | EQ) expr						# equalogic
 	| expr op = (GE | GEQ | LE | LEQ) expr			# order
-	| expr op = (OR | AND) expr						# boologic
+	| expr op = (BAN | BOR | XOR | RLH | RSH) expr	# bit
 	| expr '?' expr ':' expr						# thr
 	| assignexpr									# assign
 	| format_string									# fstr
@@ -51,12 +52,13 @@ expr:
 	| TOSTRING '(' expr ')'							# tostr
 	| expr '.' op = (LENGTH | PARSEINT) '()'		# strint
 	| expr '.' ORD '(' expr ')'						# strord
-	| expr '.' SUBSTRING '(' expr ',' expr ')'		# substr
-	| array #arrayexpr;
+	| expr '.' SUBSTRING '(' expr ',' expr ')'		# substr;
 assignexpr: id dimensions_choose ASS expr;
 format_string:
-	'f"' ('{' format_inner '}' | (STRING_VALUE_NO_QUO))* '"';
-format_inner: (format_string | expr)?;
+	id '"' (
+		('{' (format_string | expr) '}')
+		| ( '\\' '"' | ~'"')
+	)* '"';
 newexpr:
 	NEW real_type '[]' array			# array_new
 	| NEW real_type dimensions_declar	# dim_new
@@ -83,8 +85,8 @@ returnstat: RETURN cond ';';
 contistat: CONTINUE ';';
 breakstat: BREAK ';';
 exprstat: expr ';';
-printstat: (PRINTINT | PRINTLNINT) '(' expr ')' ';'	# pint
-	| (PRINTLN | PRINT) '(' expr ')' ';'			# pstr;
+printstat: (PRINTINT | PRINTLNINT) '(' expr ')'';'	# pint
+	| (PRINTLN | PRINT) '(' expr ')'';'			# pstr;
 stat:
 	exprstat
 	| local_declarstat
@@ -95,7 +97,6 @@ stat:
 LINE_COMMENT: '//' .*? '\r'? '\n' -> skip;
 BLOCK_COMMENT: '/*' .*? '*/' -> skip;
 STRING_VALUE: '"' ( '\\' ["] | ~["])* '"';
-STRING_VALUE_NO_QUO: ( '\\' ["] | ~["])+; 
 VOID: 'void';
 BOOL: 'bool';
 INT: 'int';

@@ -7,6 +7,7 @@ import nodes.*;
 
 @SuppressWarnings("CheckReturnValue")
 public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
+	DimensionNode universal_dnode = new DimensionNode();
 
 	@Deprecated
 	public ASTNode visitId(guqinParser.IdContext ctx) {
@@ -15,7 +16,7 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 
 	// Done.
 	@Override
-	public ASTNode visitProg(guqinParser.ProgContext ctx) {
+	public ProgNode visitProg(guqinParser.ProgContext ctx) {
 		ProgNode res = new ProgNode();
 		for (int i = 0; i < ctx.getChildCount(); i++) {
 			res.trees.add(visit(ctx.getChild(i)));
@@ -27,31 +28,21 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 	public DimensionNode visitDimension(guqinParser.DimensionContext ctx) {
 		int cnt = 0;
 		DimensionNode res = new DimensionNode();
-		for(int i = 0 ;i < ctx.getChildCount(); i++) {
-			if(ctx.getChild(i).getText().equals("[")) {
-				cnt++;
-			}
-			if(ctx.getChild(i) instanceof guqinParser.ExprContext) {
-				res.dim_expr.put(cnt, visit(ctx.getChild(i)));
-			}
+		if (ctx.expr() != null) {
+			cnt++;
+			res.dim_expr.put(1, visit(ctx.expr()));
 		}
 		res.dim = cnt;
+		universal_dnode = res;
 		return res;
 	}
 
 	@Override
 	public DimensionNode visitMust_dimension(guqinParser.Must_dimensionContext ctx) {
-		int cnt = 0;
 		DimensionNode res = new DimensionNode();
-		for(int i = 0 ;i < ctx.getChildCount(); i++) {
-			if(ctx.getChild(i).getText().equals("[")) {
-				cnt++;
-			}
-			if(ctx.getChild(i) instanceof guqinParser.ExprContext) {
-				res.dim_expr.put(cnt, visit(ctx.getChild(i)));
-			}
-		}
-		res.dim = cnt;
+		res.dim = 1;
+		res.dim_expr.put(1, visit(ctx.expr()));
+		universal_dnode = res;
 		return res;
 	}
 
@@ -60,96 +51,82 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 		IdNode res = new IdNode();
 		res.type = ctx.real_type().getText();
 		ASTNode dims = visit(ctx.dimensions());
-		res.dim = dims.GetInt();
+		res.dim = dims.dim;
 		return res;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
-	 */
 	@Override
-	public ASTNode visitDimensions(guqinParser.DimensionsContext ctx) {
-		return visitChildren(ctx);
+	public DimensionNode visitDimensions(guqinParser.DimensionsContext ctx) {
+		DimensionNode res = new DimensionNode();
+		for (int i = 0; i < ctx.getChildCount(); i++) {
+			visit(ctx.getChild(i));
+			if (universal_dnode.dim_expr.containsKey(1)) {
+				res.dim_expr.put(i + 1, universal_dnode.dim_expr.get(1));
+			}
+		}
+		res.dim = ctx.getChildCount();
+		return res;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
-	 */
 	@Override
 	public ASTNode visitDimensions_choose(guqinParser.Dimensions_chooseContext ctx) {
-		return visitChildren(ctx);
+		DimensionNode res = new DimensionNode();
+		for (int i = 0; i < ctx.getChildCount(); i++) {
+			visit(ctx.getChild(i));
+			if (universal_dnode.dim_expr.containsKey(1)) {
+				res.dim_expr.put(i + 1, universal_dnode.dim_expr.get(1));
+			}
+		}
+		res.dim = ctx.getChildCount();
+		return res;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
-	 */
 	@Override
 	public ASTNode visitDimensions_declar(guqinParser.Dimensions_declarContext ctx) {
-		return visitChildren(ctx);
+		DimensionNode res = new DimensionNode();
+		for (int i = 0; i < ctx.getChildCount(); i++) {
+			visit(ctx.getChild(i));
+			if (universal_dnode.dim_expr.containsKey(1)) {
+				res.dim_expr.put(i + 1, universal_dnode.dim_expr.get(1));
+			}
+		}
+		res.dim = ctx.getChildCount();
+		return res;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
-	 */
 	@Override
-	public ASTNode visitArray(guqinParser.ArrayContext ctx) {
-		return visitChildren(ctx);
+	public ArrayNode visitArray(guqinParser.ArrayContext ctx) {
+		ArrayNode res = new ArrayNode();
+		res.dim = 1;
+		for (int i = 0; i < ctx.getChildCount(); i++) {
+			if (ctx.getChild(i) instanceof guqinParser.ExprContext) {
+				res.elements.add(visit(ctx.getChild(i)));
+			}
+		}
+		return res;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
-	 */
 	@Override
-	public ASTNode visitMultiarray(guqinParser.MultiarrayContext ctx) {
-		return visitChildren(ctx);
+	public MultiarrayNode visitMultiarray(guqinParser.MultiarrayContext ctx) {
+		MultiarrayNode res = new MultiarrayNode();
+		for (int i = 0; i < ctx.getChildCount(); i++) {
+			if (ctx.getChild(i) instanceof guqinParser.MultiarrayContext ||
+			ctx.getChild(i) instanceof guqinParser.ArrayContext) {
+				res.elements.add(visit(ctx.getChild(i)));
+			}
+		}
+		res.dim = res.elements.get(0).dim + 1;
+		return res;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
-	 */
 	@Override
 	public ASTNode visitReal_type(guqinParser.Real_typeContext ctx) {
-		return visitChildren(ctx);
+		ASTNode res = new ASTNode();
+		res.dim = 0;
+		res.type = ctx.getText();
+		return res;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
-	 */
 	@Override
 	public ASTNode visitArgs(guqinParser.ArgsContext ctx) {
 		return visitChildren(ctx);
