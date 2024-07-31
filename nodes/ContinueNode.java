@@ -1,5 +1,5 @@
 package nodes;
 
-public class ContinueNode extends AstNode {
+public class ContinueNode extends StatNode {
   
 }

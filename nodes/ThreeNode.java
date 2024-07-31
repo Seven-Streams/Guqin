@@ -1,7 +1,7 @@
 package nodes;
 
 public class ThreeNode extends ExprNode {
-  public ExprNode condition = null;
-  public ExprNode value1 = null;
-  public ExprNode value2 = null;
+  public ASTNode condition = null;
+  public ASTNode value1 = null;
+  public ASTNode value2 = null;
 }

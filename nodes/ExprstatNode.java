@@ -1,5 +1,5 @@
 package nodes;
 
-public class ExprstatNode extends AstNode{
-  public ExprNode expr = null;
+public class ExprstatNode extends StatNode{
+  public ASTNode expr = null;
 }

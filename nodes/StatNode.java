@@ -1,4 +1,4 @@
 package nodes;
-public class StatNode extends AstNode{
+public class StatNode extends ASTNode{
   
 }

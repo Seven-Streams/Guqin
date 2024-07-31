@@ -3,7 +3,7 @@ package nodes;
 import java.util.ArrayList;
 
 public class IfNode extends StatNode{
-  public ExprNode condition = null;
-  public ArrayList<StatNode> branch = new ArrayList<>();
-  public ArrayList<StatNode> else_branch = new ArrayList<>();
+  public ASTNode condition = null;
+  public ArrayList<ASTNode> branch = new ArrayList<>();
+  public ArrayList<ASTNode> else_branch = new ArrayList<>();
 }
