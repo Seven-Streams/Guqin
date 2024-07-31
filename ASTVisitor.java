@@ -512,11 +512,11 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 		int cnt = 0;
 		for (int i = 0; i < ctx.getChildCount(); i++) {
 			if (ctx.getChild(i) instanceof guqinParser.IdContext) {
+				cnt++;
 				res.ID.add(ctx.getChild(i).getText());
 			}
 			if (ctx.getChild(i) instanceof guqinParser.ExprContext) {
 				res.Initial.put(cnt, visit(ctx.getChild(i)));
-				cnt++;
 			}
 		}
 		return res;
@@ -532,10 +532,10 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 		for (int i = 0; i < ctx.getChildCount(); i++) {
 			if (ctx.getChild(i) instanceof guqinParser.IdContext) {
 				res.ID.add(ctx.getChild(i).getText());
+				cnt++;
 			}
 			if (ctx.getChild(i) instanceof guqinParser.ExprContext) {
 				res.Initial.put(cnt, visit(ctx.getChild(i)));
-				cnt++;
 			}
 		}
 		return res;
