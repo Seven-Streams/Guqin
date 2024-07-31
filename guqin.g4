@@ -24,8 +24,7 @@ expr:
 	INT_VALUE												# int_lit
 	| NULL													# null
 	| STRING_VALUE											# str_lit
-	| TRUE													# true
-	| FALSE													# false
+	| (FALSE | TRUE)													# bool_lit
 	| (id dimensions_choose ('.' id dimensions_choose)*)	# idexpr
 	| ((id dimensions_choose ('.' id dimensions_choose)*) '.')? id (
 		'(' (expr (',' expr)*)? ')'
@@ -56,7 +55,7 @@ expr:
 assignexpr: id dimensions_choose ASS expr;
 format_string:
 	id '"' (
-		('{' (format_string | expr) '}')
+		('{' expr (format_string | expr) '}')
 		| ( '\\' '"' | ~'"')
 	)* '"';
 newexpr:
