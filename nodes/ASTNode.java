@@ -4,6 +4,7 @@ import java.util.ArrayList;
 public class ASTNode  {
   public int dim = 0;
   public String type = null;
+  public static String this_class = null;
   public static boolean in_class = false;
   public static HashMap<String, Boolean> construction;
   public static HashMap<String, HashMap<String, Mypair>> class_memory = new HashMap<>();

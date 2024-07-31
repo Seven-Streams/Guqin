@@ -7,7 +7,7 @@ public class Mypair {
 		dim = di;
 	}
 	public Mypair() {
-		type = null;
+		type = "";
 		dim = 0;
 	}
 }
