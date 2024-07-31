@@ -14,7 +14,6 @@ real_type: (INT | BOOL | STRING | id);
 args: (typepair (',' typepair)*)?;
 func: ((real_type dimensions) | VOID) id (
 		('(' args ')')
-		|
 		| '()'
 	) '{' (stat | returnstat)* '}';
 construct_func: id '()' '{' stat* '}';

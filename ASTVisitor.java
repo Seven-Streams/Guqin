@@ -1,3 +1,4 @@
+import org.antlr.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 import java.util.ArrayList;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
@@ -126,58 +127,72 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 		return res;
 	}
 
-	@Override
+	@Deprecated
 	public ASTNode visitArgs(guqinParser.ArgsContext ctx) {
 		return visitChildren(ctx);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
-	 */
 	@Override
-	public ASTNode visitFunc(guqinParser.FuncContext ctx) {
-		return visitChildren(ctx);
+	public FuncNode visitFunc(guqinParser.FuncContext ctx) {
+		FuncNode res = new FuncNode();
+		res.dim = 0;
+		if (ctx.real_type() == null) {
+			res.type = "void";
+		} else {
+			res.type = ctx.real_type().getText();
+			ASTNode check = visit(ctx.dimensions());
+			res.dim = check.dim;
+		}
+		res.id = ctx.id().getText();
+		guqinParser.ArgsContext args = ctx.args();
+		for (int i = 0; i < args.getChildCount(); i++) {
+			if (args.getChild(i) instanceof guqinParser.TypepairContext) {
+				ASTNode arg = visit(args.getChild(i));
+				res.args.add(arg);
+			}
+		}
+		for (int i = 0; i < ctx.getChildCount(); i++) {
+			if (ctx.getChild(i) instanceof guqinParser.StatContext) {
+				res.stats.add(visit(ctx.getChild(i)));
+			}
+		}
+		return res;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
-	 */
 	@Override
-	public ASTNode visitConstruct_func(guqinParser.Construct_funcContext ctx) {
-		return visitChildren(ctx);
+	public FuncNode visitConstruct_func(guqinParser.Construct_funcContext ctx) {
+		FuncNode res = new FuncNode();
+		res.dim = 0;
+		res.type = ctx.id().getText();
+		res.id = ctx.id().getText();
+		for (int i = 0; i < ctx.getChildCount(); i++) {
+			if (ctx.getChild(i) instanceof guqinParser.StatContext) {
+				res.stats.add(visit(ctx.getChild(i)));
+			}
+		}
+		return res;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
-	 */
 	@Override
-	public ASTNode visitClassdef(guqinParser.ClassdefContext ctx) {
-		return visitChildren(ctx);
+	public ClassNode visitClassdef(guqinParser.ClassdefContext ctx) {
+		ClassNode res = new ClassNode();
+		res.name = ctx.id().getText();
+		for (int i = 0; i < ctx.getChildCount(); i++) {
+			if (ctx.getChild(i) instanceof guqinParser.Construct_funcContext) {
+				if (res.construct != null) {
+					throw new IllegalArgumentException("Re-definition of construct function.");
+				} else {
+					res.construct = visit(ctx.getChild(i));
+				}
+			}
+			if (ctx.getChild(i) instanceof guqinParser.FuncContext
+					|| ctx.getChild(i) instanceof guqinParser.Local_declarstatContext) {
+					res.member.add(visit(ctx.getChild(i)));
+				}
+			}
+		return res;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
-	 */
 	@Override
 	public ASTNode visitTostr(guqinParser.TostrContext ctx) {
 		return visitChildren(ctx);
