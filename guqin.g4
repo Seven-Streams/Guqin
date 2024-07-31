@@ -12,24 +12,23 @@ array: '{' (expr (',' expr)*)? '}';
 multiarray: array | '{' multiarray (',' multiarray)* '}';
 real_type: (INT | BOOL | STRING | id);
 args: (typepair (',' typepair)*)?;
-func: ((real_type dimensions) | VOID) id (
-		('(' args ')')
-		| '()'
-	) '{' (stat | returnstat)* '}';
+funcall: id ( '(' (expr (',' expr)*)? ')' | '()');
+func: ((real_type dimensions) | VOID) id (('(' args ')') | '()') '{' (
+		stat
+		| returnstat
+	)* '}';
+idexpr: (id dimensions_choose ('.' id dimensions_choose)*);
 construct_func: id '()' '{' stat* '}';
 classdef:
 	CLASS id '{' (local_declarstat | construct_func | func)* '};';
 expr:
-	INT_VALUE												# int_lit
-	| NULL													# null
-	| STRING_VALUE											# str_lit
-	| TRUE													# true
-	| FALSE													# false
-	| (id dimensions_choose ('.' id dimensions_choose)*)	# idexpr
-	| ((id dimensions_choose ('.' id dimensions_choose)*) '.')? id (
-		'(' (expr (',' expr)*)? ')'
-		| '()'
-	)													# funcall
+	INT_VALUE											# int_lit
+	| NULL												# null
+	| STRING_VALUE										# str_lit
+	| TRUE												# true
+	| FALSE												# false
+	| idexpr											# idexprs
+	| ((idexpr) '.')? funcall							# funcallexpr
 	| THIS												# this
 	| newexpr											# new
 	| '(' expr ')'										# par
@@ -48,12 +47,9 @@ expr:
 	| expr BOR expr										# bor
 	| expr AND expr										# and
 	| expr OR expr										# or
-	|<assoc = right> expr '?' expr ':' expr 			# thr
+	| <assoc = right> expr '?' expr ':' expr			# thr
 	| assignexpr										# assign
-	| format_string										# fstr
-	| GETSTRING '()'									# getstr
-	| GETINT '()'										# getint
-	| TOSTRING '(' expr ')'								# tostr;
+	| format_string										# fstr;
 
 assignexpr: id dimensions_choose ASS expr;
 format_string:
