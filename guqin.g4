@@ -53,7 +53,7 @@ expr:
 
 assignexpr: id dimensions_choose ASS expr;
 format_string:
-	id '"' (('{' (format_string | expr) '}') | ( '\\' '"' | ~'"'))* '"';
+	'f"' (('{' (expr) '}') | ( '\\' '"' | ~'"'))* '"';
 newexpr:
 	NEW real_type '[]' array			# array_new
 	| NEW real_type dimensions_declar	# dim_new

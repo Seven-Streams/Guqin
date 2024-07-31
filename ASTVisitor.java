@@ -403,121 +403,83 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 		return res;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
-	 */
 	@Override
 	public ASTNode visitEqualogic(guqinParser.EqualogicContext ctx) {
-		return visitChildren(ctx);
+		DoubleNode res = new DoubleNode();
+		res.symbol = ctx.op.getText();
+		res.value1 = visit(ctx.expr(0));
+		res.value2 = visit(ctx.expr(1));
+		return res;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
-	 */
 	@Override
 	public ASTNode visitNull(guqinParser.NullContext ctx) {
-		return visitChildren(ctx);
+		LiterNode res = new LiterNode();
+		res.type = "null";
+		res.value = "null";
+		res.dim = 0;
+		return res;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
-	 */
 	@Override
 	public ASTNode visitInt_lit(guqinParser.Int_litContext ctx) {
-		return visitChildren(ctx);
+		LiterNode res = new LiterNode();
+		res.type = "string";
+		res.dim = 0;
+		res.value = ctx.getText();
+		return res;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
-	 */
 	@Override
 	public ASTNode visitTrue(guqinParser.TrueContext ctx) {
-		return visitChildren(ctx);
+		LiterNode res = new LiterNode();
+		res.type = "bool";
+		res.dim = 0;
+		res.value = "true";
+		return res;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
-	 */
 	@Override
 	public ASTNode visitFstr(guqinParser.FstrContext ctx) {
-		return visitChildren(ctx);
+		return visit(ctx.format_string());
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
-	 */
 	@Override
 	public ASTNode visitAssign(guqinParser.AssignContext ctx) {
-		return visitChildren(ctx);
+		return visit(ctx.assignexpr());
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
-	 */
 	@Override
 	public ASTNode visitThr(guqinParser.ThrContext ctx) {
-		return visitChildren(ctx);
+		ThreeNode res = new ThreeNode();
+		res.condition = visit(ctx.expr(0));
+		res.value1 = visit(ctx.expr(1));
+		res.value2 = visit(ctx.expr(2));
+		return res;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
-	 */
 	@Override
 	public ASTNode visitAssignexpr(guqinParser.AssignexprContext ctx) {
-		return visitChildren(ctx);
+		AssignNode res = new AssignNode();
+		for (int i = 0; i < ctx.getChildCount(); i++) {
+			if (ctx.getChild(i) instanceof guqinParser.IdContext) {
+				res.ids.add(ctx.getChild(i).getText());
+			}
+		}
+		res.values = visit(ctx.expr());
+		return res;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
-	 */
 	@Override
 	public ASTNode visitFormat_string(guqinParser.Format_stringContext ctx) {
-		return visitChildren(ctx);
+		FstringNode res = new FstringNode();
+		res.value = ctx.getText();
+		for (int i = 0; i < ctx.getChildCount(); i++) {
+			if (ctx.getChild(i) instanceof guqinParser.ExprContext) {
+				res.contents.put(ctx.getChild(i).getText(), visit(ctx.getChild(i)));
+			}
+		}
+		return res;
 	}
 
 	/**
