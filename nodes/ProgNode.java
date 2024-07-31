@@ -1,7 +1,98 @@
 package nodes;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
-public class ProgNode extends ASTNode{
+public class ProgNode extends ASTNode {
   public ArrayList<ASTNode> trees = new ArrayList<>();
+
+  @Override
+  public Mypair check() {
+    if (variable_memory.isEmpty()) {
+      variable_memory.add(new HashMap<>());
+    }
+    in_class = false;
+		class_memory.put("int", null);
+		class_memory.put("string", null);
+		class_memory.put("bool", null);
+    for (ASTNode tree : trees) {
+      if (tree instanceof ClassNode) {
+        HashMap<String, Mypair> res_members = new HashMap<>();
+        HashMap<String, Mypair> res_func_return = new HashMap<>();
+        HashMap<String, ArrayList<Mypair>> res_func_arg = new HashMap<>();
+        ClassNode res = (ClassNode) tree;
+        String class_name = res.name;
+        if (class_memory.containsKey(class_name)) {
+          throw new IllegalArgumentException("Re-definition of classes and functions.");
+        }
+        if (func_return.containsKey(class_name)) {
+          throw new IllegalArgumentException("Re-definition of classes and functions.");
+        }
+        for (ASTNode member : res.member) {
+          if (member instanceof DeclarNode) {
+            DeclarNode declar = (DeclarNode) member;
+            String type = declar.type;
+            int member_dim = declar.dim;
+            Mypair mem_Mypair = new Mypair(type, member_dim);
+            for (String id : declar.ID) {
+              if (res_members.containsKey(id) || res_func_return.containsKey(id)) {
+                throw new IllegalArgumentException("Re-definition in the class.");
+              }
+              res_members.put(id, mem_Mypair);
+            }
+          }
+          if (member instanceof FuncNode) {
+            FuncNode func = (FuncNode) member;
+            if (func.id.equals(class_name)) {
+              if (!construction.containsKey(class_name)) {
+                construction.put(class_name, null);
+              }
+            }
+            String type = func.type;
+            int res_dim = func.dim;
+            Mypair func_Mypair = new Mypair(type, res_dim);
+            if (res_func_return.containsKey(func.id) || res_members.containsKey(func.id)) {
+              throw new IllegalArgumentException("Re-definition in the class.");
+            }
+            res_func_return.put(func.id, func_Mypair);
+            ArrayList<Mypair> res_args = new ArrayList<>();
+            for (ASTNode arg : func.args) {
+              res_args.add(new Mypair(arg.type, arg.dim));
+            }
+            res_func_arg.put(func.id, res_args);
+          }
+        }
+        class_memory.put(class_name, res_members);
+        class_func_return.put(class_name, res_func_return);
+        class_func_args.put(class_name, res_func_arg);
+      }
+      if (tree instanceof FuncNode) {
+        FuncNode func = (FuncNode) tree;
+        String func_name = func.id;
+        if (class_memory.containsKey(func_name)) {
+          throw new IllegalArgumentException("Re-definition of classes and functions.");
+        }
+        if (func_return.containsKey(func_name)) {
+          throw new IllegalArgumentException("Re-definition of classes and functions.");
+        }
+        String type = func.type;
+        int res_dim = func.dim;
+        Mypair func_Mypair = new Mypair(type, res_dim);
+        func_return.put(func.id, func_Mypair);
+        ArrayList<Mypair> res_args = new ArrayList<>();
+        for (ASTNode arg : func.args) {
+          res_args.add(new Mypair(arg.type, arg.dim));
+        }
+        func_args.put(func.id, res_args);
+      }
+    }
+    // This part is to build the class and the functions.
+    if (!func_return.containsKey("main")) {
+      throw new IllegalArgumentException("No main function.");
+    }
+    for (ASTNode tree : trees) {
+      tree.check();
+    }
+    return new Mypair();
+  }
 }

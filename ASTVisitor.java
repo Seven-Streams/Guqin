@@ -119,12 +119,9 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 		return res;
 	}
 
-	@Override
+	@Deprecated
 	public ASTNode visitReal_type(guqinParser.Real_typeContext ctx) {
-		ASTNode res = new ASTNode();
-		res.dim = 0;
-		res.type = ctx.getText();
-		return res;
+		return visitChildren(ctx);
 	}
 
 	@Deprecated
@@ -510,8 +507,8 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 	public ASTNode visitGlobal_declarstat(guqinParser.Global_declarstatContext ctx) {
 		DeclarNode res = new DeclarNode();
 		res.type = ctx.real_type().getText();
-		res.dim = universal_dnode.dim;
 		res.dim_number = visit(ctx.dimensions_declar());
+		res.dim = universal_dnode.dim;
 		int cnt = 0;
 		for (int i = 0; i < ctx.getChildCount(); i++) {
 			if (ctx.getChild(i) instanceof guqinParser.IdContext) {
@@ -529,8 +526,8 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 	public ASTNode visitLocal_declarstat(guqinParser.Local_declarstatContext ctx) {
 		DeclarNode res = new DeclarNode();
 		res.type = ctx.real_type().getText();
-		res.dim = universal_dnode.dim;
 		res.dim_number = visit(ctx.dimensions_declar());
+		res.dim = universal_dnode.dim;
 		int cnt = 0;
 		for (int i = 0; i < ctx.getChildCount(); i++) {
 			if (ctx.getChild(i) instanceof guqinParser.IdContext) {
