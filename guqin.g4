@@ -30,35 +30,35 @@ expr:
 	| ((id dimensions_choose ('.' id dimensions_choose)*) '.')? id (
 		'(' (expr (',' expr)*)? ')'
 		| '()'
-	)												# funcall
-	| THIS											# this
-	| newexpr										# new
-	| expr MINUS expr								# minus
-	| expr ADD expr									# add
-	| expr op = (MUL | DIV | MOD) expr				# muldivmod
-	| '(' expr ')'									# par
-	| op = (SAD | SMI) expr							# bef
-	| expr op = (SAD | SMI)							# aft
-	| op = (NOT | BNO | MINUS) expr					# single
-	| expr op = (OR | AND) expr						# boologic
-	| expr op = (UEQ | EQ) expr						# equalogic
-	| expr op = (GE | GEQ | LE | LEQ) expr			# order
-	| expr op = (BAN | BOR | XOR | RLH | RSH) expr	# bit
-	| expr '?' expr ':' expr						# thr
-	| assignexpr									# assign
-	| format_string									# fstr
-	| GETSTRING '()'								# getstr
-	| GETINT '()'									# getint
-	| TOSTRING '(' expr ')'							# tostr
-	| expr '.' op = (LENGTH | PARSEINT) '()'		# strint
-	| expr '.' ORD '(' expr ')'						# strord
-	| expr '.' SUBSTRING '(' expr ',' expr ')'		# substr;
+	)													# funcall
+	| THIS												# this
+	| newexpr											# new
+	| '(' expr ')'										# par
+	| expr op = (SAD | SMI)								# aft
+	| op = (SAD | SMI | MINUS | ADD | NOT | BNO) expr	# bef
+	| expr '.' op = (LENGTH | PARSEINT) '()'			# strint
+	| expr '.' ORD '(' expr ')'							# strord
+	| expr '.' SUBSTRING '(' expr ',' expr ')'			# substr
+	| expr op = (MUL | DIV | MOD) expr					# muldivmod
+	| expr op = (MINUS | ADD) expr						# addmin
+	| expr op = (LSH | RSH) expr						# shift
+	| expr op = (GE | GEQ | LE | LEQ) expr				# order
+	| expr op = (UEQ | EQ) expr							# equalogic
+	| expr BAN expr										# ban
+	| expr XOR expr										# xor
+	| expr BOR expr										# bor
+	| expr AND expr										# and
+	| expr OR expr										# or
+	|<assoc = right> expr '?' expr ':' expr 			# thr
+	| assignexpr										# assign
+	| format_string										# fstr
+	| GETSTRING '()'									# getstr
+	| GETINT '()'										# getint
+	| TOSTRING '(' expr ')'								# tostr;
+
 assignexpr: id dimensions_choose ASS expr;
 format_string:
-	id '"' (
-		('{' (format_string | expr) '}')
-		| ( '\\' '"' | ~'"')
-	)* '"';
+	id '"' (('{' (format_string | expr) '}') | ( '\\' '"' | ~'"'))* '"';
 newexpr:
 	NEW real_type '[]' array			# array_new
 	| NEW real_type dimensions_declar	# dim_new
@@ -85,8 +85,8 @@ returnstat: RETURN cond ';';
 contistat: CONTINUE ';';
 breakstat: BREAK ';';
 exprstat: expr ';';
-printstat: (PRINTINT | PRINTLNINT) '(' expr ')'';'	# pint
-	| (PRINTLN | PRINT) '(' expr ')'';'			# pstr;
+printstat: (PRINTINT | PRINTLNINT) '(' expr ')' ';'	# pint
+	| (PRINTLN | PRINT) '(' expr ')' ';'			# pstr;
 stat:
 	exprstat
 	| local_declarstat
@@ -135,7 +135,7 @@ LEQ: '<=';
 EQ: '==';
 UEQ: '!=';
 RSH: '>>';
-RLH: '<<';
+LSH: '<<';
 SAD: '++';
 SMI: '--';
 BAN: '&';

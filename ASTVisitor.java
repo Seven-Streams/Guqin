@@ -1,7 +1,5 @@
-
-// Generated from guqin.g4 by ANTLR 4.13.1
+import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 import java.util.ArrayList;
-
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 import nodes.*;
 
@@ -49,6 +47,7 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 	@Override
 	public ASTNode visitTypepair(guqinParser.TypepairContext ctx) {
 		IdNode res = new IdNode();
+		res.id = ctx.id().getText();
 		res.type = ctx.real_type().getText();
 		ASTNode dims = visit(ctx.dimensions());
 		res.dim = dims.dim;
@@ -111,7 +110,7 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 		MultiarrayNode res = new MultiarrayNode();
 		for (int i = 0; i < ctx.getChildCount(); i++) {
 			if (ctx.getChild(i) instanceof guqinParser.MultiarrayContext ||
-			ctx.getChild(i) instanceof guqinParser.ArrayContext) {
+					ctx.getChild(i) instanceof guqinParser.ArrayContext) {
 				res.elements.add(visit(ctx.getChild(i)));
 			}
 		}
@@ -193,19 +192,6 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 	 * </p>
 	 */
 	@Override
-	public ASTNode visitMinus(guqinParser.MinusContext ctx) {
-		return visitChildren(ctx);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
-	 */
-	@Override
 	public ASTNode visitFuncall(guqinParser.FuncallContext ctx) {
 		return visitChildren(ctx);
 	}
@@ -245,6 +231,19 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 	 * </p>
 	 */
 	@Override
+	public ASTNode visitBor(guqinParser.BorContext ctx) {
+		return visitChildren(ctx);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>
+	 * The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.
+	 * </p>
+	 */
+	@Override
 	public ASTNode visitStrord(guqinParser.StrordContext ctx) {
 		return visitChildren(ctx);
 	}
@@ -258,7 +257,7 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 	 * </p>
 	 */
 	@Override
-	public ASTNode visitBoologic(guqinParser.BoologicContext ctx) {
+	public ASTNode visitShift(guqinParser.ShiftContext ctx) {
 		return visitChildren(ctx);
 	}
 
@@ -284,33 +283,20 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 	 * </p>
 	 */
 	@Override
-	public ASTNode visitBit(guqinParser.BitContext ctx) {
-		return visitChildren(ctx);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
-	 */
-	@Override
-	public ASTNode visitBool_lit(guqinParser.Bool_litContext ctx) {
-		return visitChildren(ctx);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
-	 */
-	@Override
 	public ASTNode visitIdexpr(guqinParser.IdexprContext ctx) {
+		return visitChildren(ctx);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>
+	 * The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.
+	 * </p>
+	 */
+	@Override
+	public ASTNode visitBan(guqinParser.BanContext ctx) {
 		return visitChildren(ctx);
 	}
 
@@ -349,7 +335,20 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 	 * </p>
 	 */
 	@Override
-	public ASTNode visitArrayexpr(guqinParser.ArrayexprContext ctx) {
+	public ASTNode visitAnd(guqinParser.AndContext ctx) {
+		return visitChildren(ctx);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>
+	 * The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.
+	 * </p>
+	 */
+	@Override
+	public ASTNode visitXor(guqinParser.XorContext ctx) {
 		return visitChildren(ctx);
 	}
 
@@ -401,7 +400,7 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 	 * </p>
 	 */
 	@Override
-	public ASTNode visitAdd(guqinParser.AddContext ctx) {
+	public ASTNode visitNew(guqinParser.NewContext ctx) {
 		return visitChildren(ctx);
 	}
 
@@ -414,7 +413,33 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 	 * </p>
 	 */
 	@Override
-	public ASTNode visitNew(guqinParser.NewContext ctx) {
+	public ASTNode visitOr(guqinParser.OrContext ctx) {
+		return visitChildren(ctx);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>
+	 * The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.
+	 * </p>
+	 */
+	@Override
+	public ASTNode visitAddmin(guqinParser.AddminContext ctx) {
+		return visitChildren(ctx);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>
+	 * The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.
+	 * </p>
+	 */
+	@Override
+	public ASTNode visitFalse(guqinParser.FalseContext ctx) {
 		return visitChildren(ctx);
 	}
 
@@ -479,19 +504,6 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 	 * </p>
 	 */
 	@Override
-	public ASTNode visitSingle(guqinParser.SingleContext ctx) {
-		return visitChildren(ctx);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
-	 */
-	@Override
 	public ASTNode visitNull(guqinParser.NullContext ctx) {
 		return visitChildren(ctx);
 	}
@@ -506,6 +518,19 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 	 */
 	@Override
 	public ASTNode visitInt_lit(guqinParser.Int_litContext ctx) {
+		return visitChildren(ctx);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>
+	 * The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.
+	 * </p>
+	 */
+	@Override
+	public ASTNode visitTrue(guqinParser.TrueContext ctx) {
 		return visitChildren(ctx);
 	}
 
@@ -571,19 +596,6 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 	 */
 	@Override
 	public ASTNode visitFormat_string(guqinParser.Format_stringContext ctx) {
-		return visitChildren(ctx);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
-	 */
-	@Override
-	public ASTNode visitFormat_inner(guqinParser.Format_innerContext ctx) {
 		return visitChildren(ctx);
 	}
 
@@ -778,7 +790,7 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 	 * </p>
 	 */
 	@Override
-	public StatNode visitExprstat(guqinParser.ExprstatContext ctx) {
+	public ASTNode visitExprstat(guqinParser.ExprstatContext ctx) {
 		return visitChildren(ctx);
 	}
 
