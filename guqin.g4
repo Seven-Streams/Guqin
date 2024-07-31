@@ -72,7 +72,7 @@ loopinnercontent:
 	| (stat | breakstat | contistat);
 conditstat: IF '(' expr ')' innercontent (ELSE innercontent)?;
 whilestat:
-	WHILE '(' expr ')' '{' (stat | breakstat | contistat)* '}';
+	WHILE '(' expr ')' loopinnercontent;
 forstat:
 	FOR '(' (stat | ';') cond ';' expr ')' loopinnercontent;
 cond: (expr)?;

@@ -482,237 +482,169 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 		return res;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
-	 */
 	@Override
 	public ASTNode visitArray_new(guqinParser.Array_newContext ctx) {
-		return visitChildren(ctx);
+
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
-	 */
 	@Override
 	public ASTNode visitDim_new(guqinParser.Dim_newContext ctx) {
-		return visitChildren(ctx);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
-	 */
 	@Override
 	public ASTNode visitSingle_new(guqinParser.Single_newContext ctx) {
-		return visitChildren(ctx);
+
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
-	 */
 	@Override
 	public ASTNode visitGlobal_declarstat(guqinParser.Global_declarstatContext ctx) {
-		return visitChildren(ctx);
+		DeclarNode res = new DeclarNode();
+		res.type = ctx.real_type().getText();
+		res.dim = universal_dnode.dim;
+		res.dim_number = visit(ctx.dimensions_declar());
+		int cnt = 0;
+		for (int i = 0; i < ctx.getChildCount(); i++) {
+			if (ctx.getChild(i) instanceof guqinParser.IdContext) {
+				res.ID.add(ctx.getChild(i).getText());
+			}
+			if (ctx.getChild(i) instanceof guqinParser.ExprContext) {
+				res.Initial.put(cnt, visit(ctx.getChild(i)));
+				cnt++;
+			}
+		}
+		return res;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
-	 */
 	@Override
 	public ASTNode visitLocal_declarstat(guqinParser.Local_declarstatContext ctx) {
-		return visitChildren(ctx);
+		DeclarNode res = new DeclarNode();
+		res.type = ctx.real_type().getText();
+		res.dim = universal_dnode.dim;
+		res.dim_number = visit(ctx.dimensions_declar());
+		int cnt = 0;
+		for (int i = 0; i < ctx.getChildCount(); i++) {
+			if (ctx.getChild(i) instanceof guqinParser.IdContext) {
+				res.ID.add(ctx.getChild(i).getText());
+			}
+			if (ctx.getChild(i) instanceof guqinParser.ExprContext) {
+				res.Initial.put(cnt, visit(ctx.getChild(i)));
+				cnt++;
+			}
+		}
+		return res;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
-	 */
 	@Override
 	public ASTNode visitInnercontent(guqinParser.InnercontentContext ctx) {
-		return visitChildren(ctx);
+		StatsNode res = new StatsNode();
+		for (int i = 0; i < ctx.getChildCount(); i++) {
+			if (ctx.getChild(i) instanceof guqinParser.StatContext) {
+				res.stats.add(visit(ctx.getChild(i)));
+			}
+		}
+		return res;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
-	 */
 	@Override
 	public ASTNode visitLoopinnercontent(guqinParser.LoopinnercontentContext ctx) {
-		return visitChildren(ctx);
+		StatsNode res = new StatsNode();
+		for (int i = 0; i < ctx.getChildCount(); i++) {
+			if (ctx.getChild(i) instanceof guqinParser.StatContext) {
+				res.stats.add(visit(ctx.getChild(i)));
+			}
+		}
+		return res;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
-	 */
 	@Override
 	public ASTNode visitConditstat(guqinParser.ConditstatContext ctx) {
-		return visitChildren(ctx);
+		IfNode res = new IfNode();
+		res.condition = visit(ctx.expr());
+		res.branch = visit(ctx.innercontent(0));
+		if (ctx.ELSE() != null) {
+			res.else_branch = visit(ctx.innercontent(1));
+		}
+		return res;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
-	 */
 	@Override
 	public ASTNode visitWhilestat(guqinParser.WhilestatContext ctx) {
-		return visitChildren(ctx);
+		WhileNode res = new WhileNode();
+		res.condition = visit(ctx.expr());
+		res.stats = visit(ctx.loopinnercontent());
+		return res;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
-	 */
 	@Override
 	public ASTNode visitForstat(guqinParser.ForstatContext ctx) {
-		return visitChildren(ctx);
+		ForNode res = new ForNode();
+		if (ctx.stat() != null) {
+			res.init = visit(ctx.stat());
+		}
+		res.condition = visit(ctx.cond());
+		if (ctx.expr() != null) {
+			res.iterator = visit(ctx.expr());
+		}
+		res.stats = visit(ctx.loopinnercontent());
+		return res;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
-	 */
 	@Override
 	public ASTNode visitCond(guqinParser.CondContext ctx) {
-		return visitChildren(ctx);
+		ASTNode res = new ASTNode();
+		res.dim = 0;
+		res.type = "void";
+		if (ctx.expr() != null) {
+			return visit(ctx.expr());
+		} else {
+			return res;
+		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
-	 */
 	@Override
 	public ASTNode visitReturnstat(guqinParser.ReturnstatContext ctx) {
-		return visitChildren(ctx);
+		return visit(ctx.cond());
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
-	 */
 	@Override
 	public ASTNode visitContistat(guqinParser.ContistatContext ctx) {
-		return visitChildren(ctx);
+		return new ContinueNode();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
-	 */
 	@Override
 	public ASTNode visitBreakstat(guqinParser.BreakstatContext ctx) {
-		return visitChildren(ctx);
+		return new BreakNode();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
-	 */
 	@Override
 	public ASTNode visitExprstat(guqinParser.ExprstatContext ctx) {
-		return visitChildren(ctx);
+		return visit(ctx.expr());
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
-	 */
 	@Override
 	public ASTNode visitPint(guqinParser.PintContext ctx) {
-		return visitChildren(ctx);
+		PrintNode res = new PrintNode();
+		res.type = "int";
+		if (ctx.PRINTINT() != null) {
+			res.change_line = true;
+		}
+		res.value = visit(ctx.expr());
+		return res;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
-	 */
 	@Override
 	public ASTNode visitPstr(guqinParser.PstrContext ctx) {
-		return visitChildren(ctx);
+		PrintNode res = new PrintNode();
+		res.type = "string";
+		if (ctx.PRINT() != null) {
+			res.change_line = true;
+		}
+		res.value = visit(ctx.expr());
+		return res;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
-	 */
 	@Override
 	public ASTNode visitStat(guqinParser.StatContext ctx) {
-		return visitChildren(ctx);
+		return visit(ctx.getChild(0));
 	}
 }
