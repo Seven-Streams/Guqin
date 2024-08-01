@@ -15,6 +15,6 @@ public class ASTNode  {
 	 public static HashMap<String, Mypair> func_return = new HashMap<>();
 	 public static ArrayList<HashMap<String, Mypair>> variable_memory = new ArrayList<>();
   public Mypair check() throws Exception{
-    return new Mypair();
+    return new Mypair(type, dim);
   }
 }

@@ -23,7 +23,7 @@ classdef:
 	CLASS id '{' (local_declarstat | construct_func | func)* '};';
 format_string:
 	FORMAT_ST
-	| FORMAT_L ((expr? FORMAT_INNER)*)  expr? FORMAT_R;
+	| FORMAT_L ((expr? FORMAT_INNER)*) FORMAT_R;
 expr:
 	INT_VALUE											# int_lit
 	| NULL												# null
@@ -52,9 +52,9 @@ expr:
 	| expr MYAND expr									# and
 	| expr OR expr										# or
 	| <assoc = right> expr '?' expr ':' expr			# thr
-	| assignexpr										# assign;
+	| <assoc = right>assignexpr							# assign;
 
-assignexpr: id dimensions_choose ASS expr;
+assignexpr: idexpr (',' idexpr)* ASS expr;
 newexpr:
 	NEW real_type '[]' array			# array_new
 	| NEW real_type dimensions_declar	# dim_new
@@ -146,8 +146,8 @@ MUL: '*';
 DIV: '/';
 MOD: '%';
 WS: [ \r\n\t]+ -> skip;
-CHAR: ~[{}"] | '{{' | '}}';
-fORMAT_L: 'f"' CHAR* '{';
-fORMAT_R: '}' CHAR* '"';
-fORMAT_INNER: '}' CHAR* '{';
+fragment CHAR: ~[{}"] | '{{' | '}}';
+FORMAT_L: 'f"' CHAR* '{';
+FORMAT_R: '}' CHAR* '"';
+FORMAT_INNER: '}' CHAR* '{';
 FORMAT_ST: 'f"' CHAR* '"';

@@ -207,6 +207,7 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 	@Override
 	public SingleNode visitBef(guqinParser.BefContext ctx) {
 		SingleNode res = new SingleNode();
+		res.symbol_left = true;
 		res.symbol = ctx.op.getText();
 		res.value = visit(ctx.expr());
 		return res;
@@ -282,9 +283,9 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 		MemNode res = new MemNode();
 		for (int i = 0; i < ctx.getChildCount(); i++) {
 			if (ctx.getChild(i) instanceof guqinParser.IdContext) {
-				res.calling.add(visit(ctx.getChild(i)));
+				res.calling.add(ctx.getChild(i).getText());
 			}
-			if (ctx.getChild(i) instanceof guqinParser.IdContext) {
+			if (ctx.getChild(i) instanceof guqinParser.Dimensions_chooseContext) {
 				res.dims.add(visit(ctx.getChild(i)));
 			}
 		}
@@ -394,8 +395,9 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 	}
 
 	@Override
-	public ASTNode visitAft(guqinParser.AftContext ctx) {
+	public SingleNode visitAft(guqinParser.AftContext ctx) {
 		SingleNode res = new SingleNode();
+		res.symbol_left = false;
 		res.symbol = ctx.op.getText();
 		res.value = visit(ctx.expr());
 		return res;
@@ -460,8 +462,8 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 	public ASTNode visitAssignexpr(guqinParser.AssignexprContext ctx) {
 		AssignNode res = new AssignNode();
 		for (int i = 0; i < ctx.getChildCount(); i++) {
-			if (ctx.getChild(i) instanceof guqinParser.IdContext) {
-				res.ids.add(ctx.getChild(i).getText());
+			if (ctx.getChild(i) instanceof guqinParser.IdexprContext) {
+				res.ids.add(visit(ctx.getChild(i)));
 			}
 		}
 		res.values = visit(ctx.expr());
