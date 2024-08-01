@@ -21,12 +21,14 @@ idexpr: (id dimensions_choose ('.' id dimensions_choose)*);
 construct_func: id '()' '{' stat* '}';
 classdef:
 	CLASS id '{' (local_declarstat | construct_func | func)* '};';
+format_string: 'f"' (('{'expr*'}') | '{{' | '}}')* '"';
 expr:
 	INT_VALUE											# int_lit
 	| NULL												# null
 	| STRING_VALUE										# str_lit
 	| TRUE												# true
 	| FALSE												# false
+	| format_string										# fstr
 	| idexpr											# idexprs
 	| ((idexpr) '.')? funcall							# funcallexpr
 	| THIS												# this
@@ -45,15 +47,12 @@ expr:
 	| expr BAN expr										# ban
 	| expr XOR expr										# xor
 	| expr BOR expr										# bor
-	| expr AND expr										# and
+	| expr MYAND expr									# and
 	| expr OR expr										# or
 	| <assoc = right> expr '?' expr ':' expr			# thr
-	| assignexpr										# assign
-	| format_string										# fstr;
+	| assignexpr										# assign;
 
 assignexpr: id dimensions_choose ASS expr;
-format_string:
-	'f"' (('{' (expr) '}') | ( '\\' '"' | ~'"'))* '"';
 newexpr:
 	NEW real_type '[]' array			# array_new
 	| NEW real_type dimensions_declar	# dim_new
@@ -71,8 +70,7 @@ loopinnercontent:
 	'{' (stat | breakstat | contistat)* '}'
 	| (stat | breakstat | contistat);
 conditstat: IF '(' expr ')' innercontent (ELSE innercontent)?;
-whilestat:
-	WHILE '(' expr ')' loopinnercontent;
+whilestat: WHILE '(' expr ')' loopinnercontent;
 forstat:
 	FOR '(' (stat | ';') cond ';' expr ')' loopinnercontent;
 cond: (expr)?;
@@ -122,7 +120,7 @@ PARSEINT: 'parseInt';
 ORD: 'ord';
 INT_VALUE: [0-9]+;
 ID: [a-zA-Z][a-zA-Z0-9_]*;
-AND: '&&';
+MYAND: '&&';
 OR: '||';
 NOT: '!';
 GEQ: '>=';
@@ -146,3 +144,4 @@ MUL: '*';
 DIV: '/';
 MOD: '%';
 WS: [ \r\n\t]+ -> skip;
+CHAR: ~[{}"];
