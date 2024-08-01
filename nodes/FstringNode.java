@@ -1,8 +1,8 @@
 package nodes;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class FstringNode extends ExprNode{
-  public HashMap<String, ASTNode> contents = new HashMap<>();
-  public String value = null;
+  public ArrayList<ASTNode> exprs = new ArrayList<>();
 }

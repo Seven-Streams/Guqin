@@ -21,7 +21,9 @@ idexpr: (id dimensions_choose ('.' id dimensions_choose)*);
 construct_func: id '()' '{' stat* '}';
 classdef:
 	CLASS id '{' (local_declarstat | construct_func | func)* '};';
-format_string: 'f"' (('{'expr*'}') | '{{' | '}}')* '"';
+format_string:
+	FORMAT_ST
+	| FORMAT_L ((expr? FORMAT_INNER)*)  expr? FORMAT_R;
 expr:
 	INT_VALUE											# int_lit
 	| NULL												# null
@@ -144,4 +146,8 @@ MUL: '*';
 DIV: '/';
 MOD: '%';
 WS: [ \r\n\t]+ -> skip;
-CHAR: ~[{}"];
+CHAR: ~[{}"] | '{{' | '}}';
+fORMAT_L: 'f"' CHAR* '{';
+fORMAT_R: '}' CHAR* '"';
+fORMAT_INNER: '}' CHAR* '{';
+FORMAT_ST: 'f"' CHAR* '"';

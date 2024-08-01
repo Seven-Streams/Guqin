@@ -1,5 +1,7 @@
 import org.antlr.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
+import org.antlr.v4.runtime.tree.TerminalNode;
+
 import java.util.ArrayList;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 import nodes.*;
@@ -469,12 +471,28 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 
 	@Override
 	public ASTNode visitFormat_string(guqinParser.Format_stringContext ctx) {
+		if (ctx.FORMAT_ST() != null) {
+			LiterNode res = new LiterNode();
+			res.type = "string";
+			res.dim = 0;
+			res.value = ctx.getText().substring(2, ctx.getText().length() - 1);
+			return res;
+		}
 		FstringNode res = new FstringNode();
 		res.type = "string";
-		res.value = ctx.getText();
 		for (int i = 0; i < ctx.getChildCount(); i++) {
 			if (ctx.getChild(i) instanceof guqinParser.ExprContext) {
-				res.contents.put(ctx.getChild(i).getText(), visit(ctx.getChild(i)));
+				res.exprs.add(visit(ctx.getChild(i)));
+			} else {
+				LiterNode res_str = new LiterNode();
+				res_str.dim = 0;
+				res_str.type = "string";
+				String f_res_str = ctx.getChild(i).getText();
+				if (f_res_str.charAt(0) == 'f') {
+					res_str.value = f_res_str.substring(2, f_res_str.length() - 1);
+				} else {
+					res_str.value = f_res_str.substring(1, f_res_str.length() - 1);
+				}
 			}
 		}
 		return res;
