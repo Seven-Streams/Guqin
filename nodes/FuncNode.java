@@ -9,6 +9,11 @@ public class FuncNode extends ASTNode {
   public ArrayList<ASTNode> stats = new ArrayList<>();
   @Override public Mypair check() throws Exception{
     variable_memory.add(new HashMap<>());
+    if(in_class) {
+      return_value = class_func_return.get(this_class).get(id);
+    } else {
+      return_value = func_return.get(id);
+    }
     for(ASTNode arg: args) {
       Mypair res = arg.check();
       IdNode res_id = (IdNode)arg;

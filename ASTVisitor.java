@@ -257,7 +257,6 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 		res.name = "ord";
 		res.args.add(visit(ctx.expr(0)));
 		res.args.add(visit(ctx.expr(1)));
-		res.args.add(visit(ctx.expr(2)));
 		return res;
 	}
 
@@ -493,6 +492,7 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 				} else {
 					res_str.value = f_res_str.substring(1, f_res_str.length() - 1);
 				}
+				res.exprs.add(res_str);
 			}
 		}
 		return res;

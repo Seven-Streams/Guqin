@@ -9,6 +9,7 @@ public class FuncallNode extends ExprNode {
 
   @Override
   public Mypair check() throws Exception {
+    is_left = false;
     if (from == null) {
       if (!func_return.containsKey(name)) {
         throw new Exception("The function doesn't exist.");
