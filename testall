@@ -1,0 +1,2 @@
+#!/bin/sh
+testcases/sema/scripts/test_all.bash 'java -cp lib/antlr-runtime-4.13.1.jar:bin Guqin' testcases/sema
