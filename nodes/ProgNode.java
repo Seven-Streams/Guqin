@@ -15,6 +15,17 @@ public class ProgNode extends ASTNode {
 		class_memory.put("int", null);
 		class_memory.put("string", null);
 		class_memory.put("bool", null);
+    Mypair getstr = new Mypair("string", 0);
+    Mypair getint = new Mypair("int", 0);
+    Mypair tostr = new Mypair("string", 0);
+    func_return.put("toString", tostr);
+    func_return.put("getInt", getint);
+    func_return.put("getString", getstr);
+    func_args.put("getString", new ArrayList<>());
+    func_args.put("getInt", new ArrayList<>());
+    ArrayList<Mypair> a_int = new ArrayList<Mypair>();
+    a_int.add(new Mypair("int", 0));
+    func_args.put("toString", a_int);
     for (ASTNode tree : trees) {
       if (tree instanceof ClassNode) {
         HashMap<String, Mypair> res_members = new HashMap<>();

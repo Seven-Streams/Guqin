@@ -5,6 +5,7 @@ import java.util.ArrayList;
 public class MemNode extends ExprNode {
   public ArrayList<String> calling = new ArrayList<>();
   public ArrayList<ASTNode> dims = new ArrayList<>();
+
   @Override
   public Mypair check() throws Exception {
     is_left = true;
@@ -14,8 +15,8 @@ public class MemNode extends ExprNode {
         String id = calling.get(0);
         for (int j = variable_memory.size() - 1; j >= 0; j--) {
           if (variable_memory.get(j).containsKey(id)) {
-            res_type = variable_memory.get(j).get(id);
-            res_type = new Mypair();
+            Mypair res_type_ori = variable_memory.get(j).get(id);
+            res_type = new Mypair(res_type_ori.type, res_type_ori.dim);
             break;
           }
         }

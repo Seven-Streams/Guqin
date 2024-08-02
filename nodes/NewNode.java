@@ -16,6 +16,6 @@ public class NewNode extends ExprNode{
       return res;
     }
     Mypair res = dims.check();
-    return res;
+    return new Mypair(type, res.dim);
   }
 }

@@ -1,9 +1,3 @@
-import org.antlr.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
-import org.antlr.v4.runtime.tree.TerminalNode;
-
-import java.util.ArrayList;
-import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 import nodes.*;
 
 @SuppressWarnings("CheckReturnValue")
@@ -93,6 +87,7 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 			}
 		}
 		res.dim = ctx.getChildCount();
+		universal_dnode = res;
 		return res;
 	}
 
@@ -144,10 +139,12 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 		}
 		res.id = ctx.id().getText();
 		guqinParser.ArgsContext args = ctx.args();
-		for (int i = 0; i < args.getChildCount(); i++) {
-			if (args.getChild(i) instanceof guqinParser.TypepairContext) {
-				ASTNode arg = visit(args.getChild(i));
-				res.args.add(arg);
+		if (args != null) {
+			for (int i = 0; i < args.getChildCount(); i++) {
+				if (args.getChild(i) instanceof guqinParser.TypepairContext) {
+					ASTNode arg = visit(args.getChild(i));
+					res.args.add(arg);
+				}
 			}
 		}
 		for (int i = 0; i < ctx.getChildCount(); i++) {
@@ -424,7 +421,7 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 	@Override
 	public ASTNode visitInt_lit(guqinParser.Int_litContext ctx) {
 		LiterNode res = new LiterNode();
-		res.type = "string";
+		res.type = "int";
 		res.dim = 0;
 		res.value = ctx.getText();
 		return res;

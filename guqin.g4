@@ -13,14 +13,14 @@ multiarray: array | '{' multiarray (',' multiarray)* '}';
 real_type: (INT | BOOL | STRING | id);
 args: (typepair (',' typepair)*)?;
 funcall: id ( '(' (expr (',' expr)*)? ')' | '()');
-func: ((real_type dimensions) | VOID) id (('(' args ')') | '()') '{' (
+func: ((real_type dimensions) | VOID) id (('(' args ')') | '()') ('{' (
 		stat
 		| returnstat
-	)* '}';
+	)* '}');
 idexpr: (id dimensions_choose ('.' id dimensions_choose)*);
 construct_func: id '()' '{' stat* '}';
 classdef:
-	CLASS id '{' (local_declarstat | construct_func | func)* '};';
+	CLASS id '{' (local_declarstat | construct_func | func)* '};' ;
 format_string:
 	FORMAT_ST
 	| FORMAT_L ((expr? FORMAT_INNER)*) FORMAT_R;
@@ -113,9 +113,6 @@ PRINT: 'print';
 PRINTLN: 'println';
 PRINTLNINT: 'printlnInt';
 PRINTINT: 'printint';
-GETSTRING: 'getString';
-GETINT: 'getInt';
-TOSTRING: 'toString';
 LENGTH: 'length';
 SUBSTRING: 'substring';
 PARSEINT: 'parseInt';
@@ -146,7 +143,7 @@ MUL: '*';
 DIV: '/';
 MOD: '%';
 WS: [ \r\n\t]+ -> skip;
-fragment CHAR: ~[{}"] | '{{' | '}}';
+fragment CHAR: ~[{}"\r\n] | '{{' | '}}';
 FORMAT_L: 'f"' CHAR* '{';
 FORMAT_R: '}' CHAR* '"';
 FORMAT_INNER: '}' CHAR* '{';
