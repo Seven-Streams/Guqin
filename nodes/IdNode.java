@@ -2,7 +2,7 @@ package nodes;
 
 public class IdNode extends ExprNode {
   public String id = null;
-
+  public ExprNode from = null;
   @Override
   public Mypair check() throws Exception{
     is_left = true;

@@ -18,7 +18,7 @@ public class FormatNode extends ExprNode {
           if (to_check.dim != 0) {
             throw new Exception("Invalid dimension in format string.");
           }
-          if ((!to_check.type.equals("int")) && (!to_check.type.equals("bool")) && (!to_check.equals("string"))) {
+          if ((!to_check.type.equals("int")) && (!to_check.type.equals("bool")) && (!to_check.type.equals("string"))) {
             throw new Exception("Invalid types in format string.");
           }
         }

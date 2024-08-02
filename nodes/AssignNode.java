@@ -11,6 +11,10 @@ public class AssignNode extends ExprNode {
     Mypair demanded = values.check();
     Mypair output = null;
     for (ASTNode id : ids) {
+      ExprNode node_check = (ExprNode)id;
+      if(!node_check.is_left) {
+        throw new Exception("The assigned value should be a left value!");
+      }
       Mypair to_check = id.check();
       if (!demanded.type.equals("null")) {
         if (to_check.dim != demanded.dim) {

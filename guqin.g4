@@ -1,8 +1,5 @@
 grammar guqin;
 
-@lexer::members {
-	int f_mode = 0;
-}
 
 id: ID;
 prog: (classdef | func | global_declarstat)+;
@@ -21,12 +18,10 @@ funcall: id ( '(' (expr (',' expr)*)? ')' | '()');
 func: ((real_type dimensions) | VOID) id (('(' args ')') | '()') (
 		'{' ( stat | returnstat)* '}'
 	);
-idexpr: (id dimensions_choose ('.' id dimensions_choose)*);
-memexpr:
-	newexpr dimensions_choose ('.' idexpr)? (funcall)?
-	 # newmem
-	| ((idexpr) '.')? funcall dimensions_choose ('.' idexpr?)? (funcall)?
-	 # funmem;
+newexpr:
+	NEW real_type '[]' multiarray		# array_new
+	| NEW real_type dimensions_declar	# dim_new
+	| NEW real_type ('()')?				# single_new;
 construct_func: id '()' '{' stat* '}';
 classdef:
 	CLASS id '{' (local_declarstat | construct_func | func)* '};';
@@ -36,10 +31,9 @@ expr:
 	| STRING_VALUE										# str_lit
 	| TRUE												# true
 	| FALSE												# false
-	| memexpr											# mem
 	| format_string										# fstr
-	| idexpr											# idexprs
-	| ((idexpr) '.')? funcall							# funcallexpr
+	| ID											# id_single
+	| funcall							# funcallexpr
 	| THIS												# this
 	| newexpr											# new
 	| '(' expr ')'										# par
@@ -59,14 +53,11 @@ expr:
 	| expr MYAND expr									# and
 	| expr OR expr										# or
 	| multiarray										# arrexpr
-	| <assoc = right> expr '?' expr ':' expr			# thr
-	| <assoc = right>assignexpr							# assign;
-
-assignexpr: idexpr (',' idexpr)* ASS expr;
-newexpr:
-	NEW real_type '[]' multiarray		# array_new
-	| NEW real_type dimensions_declar	# dim_new
-	| NEW real_type ('()')?				# single_new;
+	| expr dimensions_exist								# dimen
+	| expr ('.' funcall)								# memfun
+	| expr ('.' ID)										# mem
+	| <assoc = right> expr '?' expr ':' expr			# thr;
+assignexpr: expr (',' expr)* ASS expr;
 global_declarstat:
 	real_type dimensions_declar id ('=' expr)? (
 		',' id ('=' expr)?
@@ -92,6 +83,7 @@ printstat: (PRINTINT | PRINTLNINT) '(' expr ')' ';'	# pint
 	| (PRINTLN | PRINT) '(' expr ')' ';'			# pstr;
 stat:
 	exprstat
+	| assignexpr';'
 	| local_declarstat
 	| conditstat
 	| whilestat
@@ -154,11 +146,9 @@ MUL: '*';
 DIV: '/';
 MOD: '%';
 WS: [ \r\n\t]+ -> skip;
-fragment CHAR: ~[{}"\r\n] | '{{' | '}}';
+fragment CHAR: ~[$"\r\n] | '{{' | '}}';
 FORMAT_L:
-	'f"' CHAR* '{' {
-	f_mode++;
-};
-FORMAT_R: '}' CHAR* '"' {f_mode--;};
-FORMAT_INNER: {f_mode > 0}? '}' CHAR* '{';
+	'f"' CHAR* '{';
+FORMAT_R: '}' CHAR* '"' ;
+FORMAT_INNER:  '}' CHAR* '{';
 FORMAT_ST: 'f"' CHAR* '"';

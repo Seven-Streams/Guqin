@@ -92,6 +92,20 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 	}
 
 	@Override
+	public ASTNode visitDimensions_exist(guqinParser.Dimensions_existContext ctx) {
+		DimensionNode res = new DimensionNode();
+		for (int i = 0; i < ctx.getChildCount(); i++) {
+			visit(ctx.getChild(i));
+			if (universal_dnode.dim_expr.containsKey(1)) {
+				res.dim_expr.put(i, universal_dnode.dim_expr.get(1));
+			}
+		}
+		res.dim = ctx.getChildCount();
+		universal_dnode = res;
+		return res;
+	}
+
+	@Override
 	public ArrayNode visitArray(guqinParser.ArrayContext ctx) {
 		ArrayNode res = new ArrayNode();
 		res.dim = 1;
@@ -212,16 +226,8 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 	}
 
 	@Override
-	public ASTNode visitIdexprs(guqinParser.IdexprsContext ctx) {
-		return visit(ctx.idexpr());
-	}
-
-	@Override
 	public ASTNode visitFuncallexpr(guqinParser.FuncallexprContext ctx) {
 		FuncallNode res = new FuncallNode();
-		if (ctx.idexpr() != null) {
-			res.from = visit(ctx.idexpr());
-		}
 		guqinParser.FuncallContext to_check = ctx.funcall();
 		res.name = to_check.id().getText();
 		for (int i = 0; i < to_check.getChildCount(); i++) {
@@ -273,20 +279,6 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 		InnerNode res = new InnerNode();
 		res.name = ctx.op.getText();
 		res.args.add(visit(ctx.expr()));
-		return res;
-	}
-
-	@Override
-	public ASTNode visitIdexpr(guqinParser.IdexprContext ctx) {
-		MemNode res = new MemNode();
-		for (int i = 0; i < ctx.getChildCount(); i++) {
-			if (ctx.getChild(i) instanceof guqinParser.IdContext) {
-				res.calling.add(ctx.getChild(i).getText());
-			}
-			if (ctx.getChild(i) instanceof guqinParser.Dimensions_chooseContext) {
-				res.dims.add(visit(ctx.getChild(i)));
-			}
-		}
 		return res;
 	}
 
@@ -443,11 +435,6 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 	}
 
 	@Override
-	public ASTNode visitAssign(guqinParser.AssignContext ctx) {
-		return visit(ctx.assignexpr());
-	}
-
-	@Override
 	public ASTNode visitThr(guqinParser.ThrContext ctx) {
 		ThreeNode res = new ThreeNode();
 		res.condition = visit(ctx.expr(0));
@@ -459,12 +446,16 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 	@Override
 	public ASTNode visitAssignexpr(guqinParser.AssignexprContext ctx) {
 		AssignNode res = new AssignNode();
+		ASTNode check = null;
 		for (int i = 0; i < ctx.getChildCount(); i++) {
-			if (ctx.getChild(i) instanceof guqinParser.IdexprContext) {
-				res.ids.add(visit(ctx.getChild(i)));
+			if (ctx.getChild(i) instanceof guqinParser.ExprContext) {
+				if (check != null) {
+					res.ids.add(check);
+				}
+				check = (visit(ctx.getChild(i)));
 			}
 		}
-		res.values = visit(ctx.expr());
+		res.values = check;
 		return res;
 	}
 
@@ -682,30 +673,36 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 		ASTNode res = visit(ctx.multiarray());
 		return res;
 	}
+
 	@Override
-	public ASTNode visitNewmem(guqinParser.NewmemContext ctx) {
-		RightmemNode res = new RightmemNode();
-		res.right_value = visit(ctx.newexpr());
-		res.right_dim = visit(ctx.dimensions_choose());
-		if(ctx.idexpr() != null) {
-			guqinParser.IdexprContext to_check = ctx.idexpr();
-			for (int i = 0; i < ctx.getChildCount(); i++) {
-			if (ctx.getChild(i) instanceof guqinParser.IdContext) {
-				res.calling.add(ctx.getChild(i).getText());
-			}
-			if (ctx.getChild(i) instanceof guqinParser.Dimensions_chooseContext) {
-				res.dims.add(visit(ctx.getChild(i)));
-			}
-		}
-		}
-		if(ctx.funcall() != null) {
-			
-		}
+	public ASTNode visitId_single(guqinParser.Id_singleContext ctx) {
+		IdNode res = new IdNode();
+		res.id = ctx.getText();
+		return res;
 	}
 
 	@Override
-	public ASTNode visitFunmem(guqinParser.FunmemContext ctx) {
-		return visitChildren(ctx);
+	public FuncallNode visitMemfun(guqinParser.MemfunContext ctx) {
+		FuncallNode res = (FuncallNode) visit(ctx.funcall());
+		res.from = visit(ctx.expr());
+		return res;
 	}
+
+	@Override
+	public MemNode visitMem(guqinParser.MemContext ctx) {
+		MemNode res = new MemNode();
+		res.from = (ExprNode) visit(ctx.expr());
+		res.id = ctx.ID().getText();
+		return res;
+	}
+
+	@Override
+	public With_dimenNode visitDimen(guqinParser.DimenContext ctx) {
+		With_dimenNode res = new With_dimenNode();
+		res.dim_node = (DimensionNode)visit(ctx.dimensions_exist());
+		res.ex = (ExprNode)visit(ctx.expr());
+		return res;
+	}
+
+
 }
-printlin
