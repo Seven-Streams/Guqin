@@ -6,7 +6,6 @@ public class AssignNode extends ExprNode {
   public ArrayList<ASTNode> ids = new ArrayList<>();
   public ASTNode values = null;
   int clock = 0;
-
   @Override
   public Mypair check() throws Exception {
     Mypair demanded = values.check();

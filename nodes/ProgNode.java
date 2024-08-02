@@ -101,6 +101,9 @@ public class ProgNode extends ASTNode {
     if (!func_return.containsKey("main")) {
       throw new Exception("No main function.");
     }
+    if(func_args.get("main").size() != 0) {
+      throw new Exception("The main function shouldn't have args!");
+    }
     if (!func_return.get("main").type.equals("int")) {
       throw new Exception("The main function of return should be a int.");
     }

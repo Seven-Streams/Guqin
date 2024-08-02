@@ -10,7 +10,7 @@ public class IfNode extends StatNode{
     if(cond.dim != 0) {
       throw new Exception("Invalid dimension in condition.");
     }
-    if(cond.type != "bool") {
+    if(!cond.type.equals("bool")) {
       throw new Exception("Invalid type in condition.");
     }
     branch.check();

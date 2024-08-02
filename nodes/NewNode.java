@@ -4,7 +4,7 @@ public class NewNode extends ExprNode{
   public ASTNode value = null;
   public ASTNode dims = null;
   @Override public Mypair check() throws Exception {
-    is_left = false;
+    is_left = true;
     if((value == null) && (dims == null)) {
       return new Mypair(type, dim);
     }

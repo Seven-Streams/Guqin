@@ -4,7 +4,6 @@ public class With_dimenNode extends ExprNode {
   public DimensionNode dim_node = null;
   public ExprNode ex = null;
   @Override public Mypair check() throws Exception {
-    System.out.println(ex.type);
     Mypair ex_pair = ex.check();
     Mypair dim_pair = dim_node.check();
     if(ex_pair.dim < dim_pair.dim) {

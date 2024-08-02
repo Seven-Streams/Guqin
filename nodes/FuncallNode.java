@@ -10,7 +10,11 @@ public class FuncallNode extends ExprNode {
 
   @Override
   public Mypair check() throws Exception {
-    is_left = false;
+    if(return_func_left.containsKey(name)) {
+    is_left = return_func_left.get(name);
+    } else {
+      is_left = true;
+    }
     if ((from == null) && (from_type == null)) {
       if (!func_return.containsKey(name)) {
         throw new Exception("The function doesn't exist.");
@@ -27,7 +31,7 @@ public class FuncallNode extends ExprNode {
         if (true_arg.get(i).dim != res_arg.get(i).dim) {
           throw new Exception("The dimension of args isn't correct.");
         }
-        if (true_arg.get(i).type.equals(res_arg.get(i).type)) {
+        if (!true_arg.get(i).type.equals(res_arg.get(i).type)) {
           throw new Exception("The type of args isn't correct.");
         }
       }
@@ -57,7 +61,7 @@ public class FuncallNode extends ExprNode {
         if (true_arg.get(i).dim != res_arg.get(i).dim) {
           throw new Exception("The dimension of args isn't correct.");
         }
-        if (true_arg.get(i).type.equals(res_arg.get(i).type)) {
+        if (!true_arg.get(i).type.equals(res_arg.get(i).type)) {
           throw new Exception("The type of args isn't correct.");
         }
       }

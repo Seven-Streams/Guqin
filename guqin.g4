@@ -3,7 +3,7 @@ grammar guqin;
 
 id: ID;
 prog: (classdef | func | global_declarstat)+;
-dimension: '[' expr ']' | '[]';
+dimension: '[' expr? ']' | '[]';
 must_dimension: '[' expr ']';
 typepair: real_type dimensions id;
 dimensions: (dimension)*;
@@ -73,7 +73,7 @@ loopinnercontent:
 conditstat: IF '(' expr ')' innercontent (ELSE innercontent)?;
 whilestat: WHILE '(' expr ')' loopinnercontent;
 forstat:
-	FOR '(' (stat | ';') cond ';' expr ')' loopinnercontent;
+	FOR '(' (stat | ';') cond ';' expr? ')' loopinnercontent;
 cond: (expr)?;
 returnstat: RETURN cond ';';
 contistat: CONTINUE ';';
