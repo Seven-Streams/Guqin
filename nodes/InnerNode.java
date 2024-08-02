@@ -9,7 +9,6 @@ public class InnerNode extends ExprNode {
   @Override
   public Mypair check() throws Exception {
     is_left = false;
-    System.out.println(name);
     if (name.equals("ord")) {
       Mypair to_check = args.get(0).check();
       if (!to_check.type.equals("string")) {
@@ -28,7 +27,7 @@ public class InnerNode extends ExprNode {
       }
       return new Mypair("int", 0);
     }
-    if (name.equals("length") || name.equals("parseint")) {
+    if (name.equals("length") || name.equals("parseInt")) {
       Mypair to_check = args.get(0).check();
       if (!to_check.type.equals("string")) {
         throw new Exception("Invalid type in string function.");

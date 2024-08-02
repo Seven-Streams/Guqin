@@ -9,6 +9,7 @@ public class ASTNode {
   public static boolean return_left;
   public static String this_class = null;
   public static boolean in_class = false;
+  public static boolean in_func = false;
   public static Mypair return_value = new Mypair();
   public static HashMap<String, Boolean> construction;
   public static HashMap<String, HashMap<String, Mypair>> class_memory = new HashMap<>();

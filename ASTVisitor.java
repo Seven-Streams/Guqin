@@ -700,10 +700,19 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 	@Override
 	public With_dimenNode visitDimen(guqinParser.DimenContext ctx) {
 		With_dimenNode res = new With_dimenNode();
-		res.dim_node = (DimensionNode)visit(ctx.dimensions_exist());
-		res.ex = (ExprNode)visit(ctx.expr());
+		res.dim_node = (DimensionNode) visit(ctx.dimensions_exist());
+		res.ex = (ExprNode) visit(ctx.expr());
 		return res;
 	}
 
-
+	@Override
+	public ASTNode visitScooped_stat(guqinParser.Scooped_statContext ctx) {
+		ScoopNode res = new ScoopNode();
+		for(int i = 0; i < ctx.getChildCount(); i++) {
+			if(ctx.getChild(i) instanceof guqinParser.StatContext) {
+				res.stats.add(visit(ctx.getChild(i)));
+			}
+		}
+		return res;
+	}
 }

@@ -11,7 +11,9 @@ public class ForNode extends StatNode {
   @Override
   public Mypair check() throws Exception {
     variable_memory.add(new HashMap<>());
-    init.check();
+    if (init != null) {
+      init.check();
+    }
     if (condition != null) {
       Mypair res_cond = condition.check();
       if (res_cond.dim != 0) {

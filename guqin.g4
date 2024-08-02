@@ -16,7 +16,7 @@ real_type: (INT | BOOL | STRING | id);
 args: (typepair (',' typepair)*)?;
 funcall: id ( '(' (expr (',' expr)*)? ')' | '()');
 func: ((real_type dimensions) | VOID) id (('(' args ')') | '()') (
-		'{' ( stat | returnstat)* '}'
+		'{' ( stat)* '}'
 	);
 newexpr:
 	NEW real_type '[]' multiarray		# array_new
@@ -79,6 +79,7 @@ returnstat: RETURN cond ';';
 contistat: CONTINUE ';';
 breakstat: BREAK ';';
 exprstat: expr ';';
+scooped_stat: '{' stat* '}';
 printstat: (PRINTINT | PRINTLNINT) '(' expr ')' ';'	# pint
 	| (PRINTLN | PRINT) '(' expr ')' ';'			# pstr;
 stat:
@@ -88,7 +89,9 @@ stat:
 	| conditstat
 	| whilestat
 	| forstat
-	| printstat;
+	| returnstat
+	| printstat
+	| scooped_stat;
 format_string:
 	FORMAT_ST
 	| FORMAT_L ((expr? FORMAT_INNER)* expr) FORMAT_R;

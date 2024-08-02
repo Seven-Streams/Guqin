@@ -5,6 +5,9 @@ public class ReturnNode extends StatNode {
 
   @Override
   public Mypair check() throws Exception {
+    if(!in_func) {
+      throw new Exception("Return should be in a function!");
+    }
     Mypair to_check = value.check();
     if (!to_check.type.equals(return_value.type)) {
       throw new Exception("The return value is incorrect!");

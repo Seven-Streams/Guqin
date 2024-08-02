@@ -11,6 +11,7 @@ public class FuncNode extends ASTNode {
 
   @Override
   public Mypair check() throws Exception {
+    in_func = true;
     variable_memory.add(new HashMap<>());
     if (in_class) {
       return_value = class_func_return.get(this_class).get(id);
@@ -36,6 +37,7 @@ public class FuncNode extends ASTNode {
     } else {
       return_func_left.put(id, false);
     }
+    in_func = false;
     return new Mypair();
   }
 }
