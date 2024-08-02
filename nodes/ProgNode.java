@@ -7,14 +7,14 @@ public class ProgNode extends ASTNode {
   public ArrayList<ASTNode> trees = new ArrayList<>();
 
   @Override
-  public Mypair check() throws Exception{
+  public Mypair check() throws Exception {
     if (variable_memory.isEmpty()) {
       variable_memory.add(new HashMap<>());
     }
     in_class = false;
-		class_memory.put("int", null);
-		class_memory.put("string", null);
-		class_memory.put("bool", null);
+    class_memory.put("int", null);
+    class_memory.put("string", null);
+    class_memory.put("bool", null);
     Mypair getstr = new Mypair("string", 0);
     Mypair getint = new Mypair("int", 0);
     Mypair tostr = new Mypair("string", 0);
@@ -100,6 +100,12 @@ public class ProgNode extends ASTNode {
     // This part is to build the class and the functions.
     if (!func_return.containsKey("main")) {
       throw new Exception("No main function.");
+    }
+    if (!func_return.get("main").type.equals("int")) {
+      throw new Exception("The main function of return should be a int.");
+    }
+    if (func_return.get("main").dim != 0) {
+      throw new Exception("The dimension of main function should be 0.");
     }
     for (ASTNode tree : trees) {
       tree.check();

@@ -1,5 +1,9 @@
 grammar guqin;
 
+@lexer::members {
+	int f_mode = 0;
+}
+
 id: ID;
 prog: (classdef | func | global_declarstat)+;
 dimension: '[' expr ']' | '[]';
@@ -13,17 +17,13 @@ multiarray: array | '{' multiarray (',' multiarray)* '}';
 real_type: (INT | BOOL | STRING | id);
 args: (typepair (',' typepair)*)?;
 funcall: id ( '(' (expr (',' expr)*)? ')' | '()');
-func: ((real_type dimensions) | VOID) id (('(' args ')') | '()') ('{' (
-		stat
-		| returnstat
-	)* '}');
+func: ((real_type dimensions) | VOID) id (('(' args ')') | '()') (
+		'{' ( stat | returnstat)* '}'
+	);
 idexpr: (id dimensions_choose ('.' id dimensions_choose)*);
 construct_func: id '()' '{' stat* '}';
 classdef:
-	CLASS id '{' (local_declarstat | construct_func | func)* '};' ;
-format_string:
-	FORMAT_ST
-	| FORMAT_L ((expr? FORMAT_INNER)*) FORMAT_R;
+	CLASS id '{' (local_declarstat | construct_func | func)* '};';
 expr:
 	INT_VALUE											# int_lit
 	| NULL												# null
@@ -51,12 +51,13 @@ expr:
 	| expr BOR expr										# bor
 	| expr MYAND expr									# and
 	| expr OR expr										# or
+	| multiarray										# arrexpr
 	| <assoc = right> expr '?' expr ':' expr			# thr
 	| <assoc = right>assignexpr							# assign;
 
 assignexpr: idexpr (',' idexpr)* ASS expr;
 newexpr:
-	NEW real_type '[]' array			# array_new
+	NEW real_type '[]' multiarray		# array_new
 	| NEW real_type dimensions_declar	# dim_new
 	| NEW real_type ('()')?				# single_new;
 global_declarstat:
@@ -89,6 +90,9 @@ stat:
 	| whilestat
 	| forstat
 	| printstat;
+format_string:
+	FORMAT_ST
+	| FORMAT_L ((expr? FORMAT_INNER)* expr) FORMAT_R;
 LINE_COMMENT: '//' .*? '\r'? '\n' -> skip;
 BLOCK_COMMENT: '/*' .*? '*/' -> skip;
 STRING_VALUE: '"' ( '\\' ["] | ~["])* '"';
@@ -144,7 +148,10 @@ DIV: '/';
 MOD: '%';
 WS: [ \r\n\t]+ -> skip;
 fragment CHAR: ~[{}"\r\n] | '{{' | '}}';
-FORMAT_L: 'f"' CHAR* '{';
-FORMAT_R: '}' CHAR* '"';
-FORMAT_INNER: '}' CHAR* '{';
+FORMAT_L:
+	'f"' CHAR* '{' {
+	f_mode++;
+};
+FORMAT_R: '}' CHAR* '"' {f_mode--;};
+FORMAT_INNER: {f_mode > 0}? '}' CHAR* '{';
 FORMAT_ST: 'f"' CHAR* '"';

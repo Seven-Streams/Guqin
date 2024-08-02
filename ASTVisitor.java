@@ -148,7 +148,8 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 			}
 		}
 		for (int i = 0; i < ctx.getChildCount(); i++) {
-			if (ctx.getChild(i) instanceof guqinParser.StatContext) {
+			if (ctx.getChild(i) instanceof guqinParser.StatContext
+					|| ctx.getChild(i) instanceof guqinParser.ReturnstatContext) {
 				res.stats.add(visit(ctx.getChild(i)));
 			}
 		}
@@ -501,7 +502,7 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 	public ASTNode visitArray_new(guqinParser.Array_newContext ctx) {
 		NewNode res = new NewNode();
 		res.type = ctx.real_type().getText();
-		res.value = visit(ctx.array());
+		res.value = visit(ctx.multiarray());
 		return res;
 	}
 
@@ -674,5 +675,11 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 	@Override
 	public ASTNode visitStat(guqinParser.StatContext ctx) {
 		return visit(ctx.getChild(0));
+	}
+
+	@Override
+	public ASTNode visitArrexpr(guqinParser.ArrexprContext ctx) {
+		ASTNode res = visit(ctx.multiarray());
+		return res;
 	}
 }

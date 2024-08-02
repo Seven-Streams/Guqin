@@ -13,7 +13,10 @@ public class DeclarNode extends StatNode {
   public Mypair check() throws Exception {
     dim_number.check();
     Mypair resMypair = new Mypair(type, dim);
-    int cnt = 0;
+    if(!class_memory.containsKey(type)) {
+      throw new Exception("The class doesn't exist!");
+    }
+    int cnt = 1;
     for (String id : ID) {
       if (variable_memory.get(variable_memory.size() - 1).containsKey(id)) {
         throw new Exception("The same name of variables");

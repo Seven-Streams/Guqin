@@ -14,22 +14,27 @@ public class Guqin {
         CharStream input = CharStreams.fromStream(is);
         guqinLexer lexer = new guqinLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
-        guqinParser parser = new guqinParser(tokens);
-        int numberOfSyntaxErrors = parser.getNumberOfSyntaxErrors();
-        if (numberOfSyntaxErrors > 0) {
-            System.out.println(numberOfSyntaxErrors);
-            System.exit(-1);
-        }
-        ParseTree tree = parser.prog();
-        ASTVisitor AST = new ASTVisitor();
-        System.out.println("OK");
-        ASTNode res = AST.visit(tree);
         try {
-            res.check();
-        } catch (Exception e) {
+            guqinParser parser = new guqinParser(tokens);
+            ParseTree tree = parser.prog();
+            int numberOfSyntaxErrors = parser.getNumberOfSyntaxErrors();
+            if (numberOfSyntaxErrors > 0) {
+                System.out.println("Syntax Error.");
+                System.exit(-1);
+            }
+            ASTVisitor AST = new ASTVisitor();
+            ASTNode res = AST.visit(tree);
+            try {
+                res.check();
+            } catch (Exception e) {
+                System.out.println(e);
+                System.exit(-1);
+            }
+            System.out.println("OK");
+            System.exit(0);
+        } catch (RecognitionException e) {
             System.out.println(e);
             System.exit(-1);
         }
-        System.exit(0);
     }
 }

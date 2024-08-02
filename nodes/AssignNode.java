@@ -13,6 +13,8 @@ public class AssignNode extends ExprNode {
     for (ASTNode id : ids) {
       Mypair to_check = id.check();
       if (!demanded.type.equals("null")) {
+        System.out.println(to_check.dim);
+        System.out.print(demanded.dim);
         if (to_check.dim != demanded.dim) {
           throw new Exception("The assigned dimension is invalid!");
         }
