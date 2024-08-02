@@ -3,6 +3,8 @@ import nodes.*;
 @SuppressWarnings("CheckReturnValue")
 public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 	DimensionNode universal_dnode = new DimensionNode();
+	String func_name = "";
+	boolean is_return = true;
 
 	@Deprecated
 	public ASTNode visitId(guqinParser.IdContext ctx) {
@@ -152,6 +154,7 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 			res.dim = check.dim;
 		}
 		res.id = ctx.id().getText();
+		func_name = res.id;
 		guqinParser.ArgsContext args = ctx.args();
 		if (args != null) {
 			for (int i = 0; i < args.getChildCount(); i++) {
@@ -163,7 +166,8 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 		}
 		for (int i = 0; i < ctx.getChildCount(); i++) {
 			if ((ctx.getChild(i) instanceof guqinParser.StatContext
-					|| ctx.getChild(i) instanceof guqinParser.ReturnstatContext) && !(ctx.getChild(i) instanceof guqinParser.Empty_statContext)) {
+					|| ctx.getChild(i) instanceof guqinParser.ReturnstatContext)
+					&& !(ctx.getChild(i) instanceof guqinParser.Empty_statContext)) {
 				res.stats.add(visit(ctx.getChild(i)));
 			}
 		}
@@ -177,7 +181,8 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 		res.type = ctx.id().getText();
 		res.id = ctx.id().getText();
 		for (int i = 0; i < ctx.getChildCount(); i++) {
-			if (ctx.getChild(i) instanceof guqinParser.StatContext && !(ctx.getChild(i) instanceof guqinParser.Empty_statContext)) {
+			if (ctx.getChild(i) instanceof guqinParser.StatContext
+					&& !(ctx.getChild(i) instanceof guqinParser.Empty_statContext)) {
 				res.stats.add(visit(ctx.getChild(i)));
 			}
 		}
@@ -484,6 +489,11 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 	@Override
 	public ASTNode visitArray_new(guqinParser.Array_newContext ctx) {
 		NewNode res = new NewNode();
+		if (is_return) {
+			res.return_func_left.put(func_name, true);
+		} else {
+			res.return_func_left.put(func_name, false);
+		}
 		res.type = ctx.real_type().getText();
 		res.value = visit(ctx.multiarray());
 		return res;
@@ -492,6 +502,11 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 	@Override
 	public ASTNode visitDim_new(guqinParser.Dim_newContext ctx) {
 		NewNode res = new NewNode();
+		if (is_return) {
+			res.return_func_left.put(func_name, true);
+		} else {
+			res.return_func_left.put(func_name, false);
+		}
 		res.type = ctx.real_type().getText();
 		res.dims = visit(ctx.dimensions_declar());
 		return res;
@@ -500,6 +515,11 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 	@Override
 	public ASTNode visitSingle_new(guqinParser.Single_newContext ctx) {
 		NewNode res = new NewNode();
+		if (is_return) {
+			res.return_func_left.put(func_name, true);
+		} else {
+			res.return_func_left.put(func_name, false);
+		}
 		res.type = ctx.real_type().getText();
 		return res;
 	}
@@ -546,7 +566,8 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 	public ASTNode visitInnercontent(guqinParser.InnercontentContext ctx) {
 		StatsNode res = new StatsNode();
 		for (int i = 0; i < ctx.getChildCount(); i++) {
-			if (ctx.getChild(i) instanceof guqinParser.StatContext && !(ctx.getChild(i) instanceof guqinParser.Empty_statContext)) {
+			if (ctx.getChild(i) instanceof guqinParser.StatContext
+					&& !(ctx.getChild(i) instanceof guqinParser.Empty_statContext)) {
 				res.stats.add(visit(ctx.getChild(i)));
 			}
 		}
@@ -557,7 +578,8 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 	public ASTNode visitLoopinnercontent(guqinParser.LoopinnercontentContext ctx) {
 		StatsNode res = new StatsNode();
 		for (int i = 0; i < ctx.getChildCount(); i++) {
-			if (ctx.getChild(i) instanceof guqinParser.StatContext && !(ctx.getChild(i) instanceof guqinParser.Empty_statContext)) {
+			if (ctx.getChild(i) instanceof guqinParser.StatContext
+					&& !(ctx.getChild(i) instanceof guqinParser.Empty_statContext)) {
 				res.stats.add(visit(ctx.getChild(i)));
 			}
 		}
@@ -611,8 +633,10 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 
 	@Override
 	public ASTNode visitReturnstat(guqinParser.ReturnstatContext ctx) {
+		is_return = true;
 		ReturnNode res = new ReturnNode();
 		res.value = visit(ctx.cond());
+		is_return = false;
 		return res;
 	}
 
@@ -677,7 +701,6 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 	@Override
 	public FuncallNode visitMemfun(guqinParser.MemfunContext ctx) {
 		FuncallNode res = (FuncallNode) visit(ctx.funcall());
-		assert(ctx.expr() != null);
 		res.from = visit(ctx.expr());
 		return res;
 	}
@@ -701,8 +724,9 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 	@Override
 	public ASTNode visitScooped_stat(guqinParser.Scooped_statContext ctx) {
 		ScoopNode res = new ScoopNode();
-		for(int i = 0; i < ctx.getChildCount(); i++) {
-			if(ctx.getChild(i) instanceof guqinParser.StatContext && !(ctx.getChild(i) instanceof guqinParser.Empty_statContext)) {
+		for (int i = 0; i < ctx.getChildCount(); i++) {
+			if (ctx.getChild(i) instanceof guqinParser.StatContext
+					&& !(ctx.getChild(i) instanceof guqinParser.Empty_statContext)) {
 				res.stats.add(visit(ctx.getChild(i)));
 			}
 		}

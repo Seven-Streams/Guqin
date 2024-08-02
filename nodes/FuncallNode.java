@@ -13,7 +13,7 @@ public class FuncallNode extends ExprNode {
     if(return_func_left.containsKey(name)) {
     is_left = return_func_left.get(name);
     } else {
-      is_left = true;
+      is_left = false;
     }
     if(in_class) {
       from_type = this_class;

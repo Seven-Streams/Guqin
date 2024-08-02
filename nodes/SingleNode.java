@@ -20,12 +20,12 @@ public class SingleNode extends ExprNode {
       is_left = false;
       return new Mypair("bool", 0);
     }
-    if (((symbol.equals("++")) || (symbol.equals("--"))) && symbol_left) {
+    if (((symbol.equals("++")) || (symbol.equals("--")))) {
       ExprNode real_value = (ExprNode) (value);
       if (!real_value.is_left) {
         throw new Exception("The value should be a left_value!");
       }
-      is_left = true;
+      is_left = symbol_left;
     }
     if (!to_check.type.equals("int")) {
       System.out.println(symbol);
