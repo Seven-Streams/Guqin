@@ -12,16 +12,27 @@ public class Guqin {
         InputStream is = args.length > 0 ? new FileInputStream(args[0]) : System.in;
 
         CharStream input = CharStreams.fromStream(is);
-        guqinLexer lexer = new guqinLexer(input);
-        CommonTokenStream tokens = new CommonTokenStream(lexer);
         try {
+            guqinLexer lexer = new guqinLexer(input);
+            lexer.addErrorListener(new BaseErrorListener() {
+                @Override
+                public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line,
+                        int charPositionInLine, String msg, RecognitionException e) {
+                    System.err.println("Lexer Error at line " + line + ":" + charPositionInLine + " - " + msg);
+                    System.exit(-1);
+                }
+            });
+            CommonTokenStream tokens = new CommonTokenStream(lexer);
             guqinParser parser = new guqinParser(tokens);
+            parser.addErrorListener(new BaseErrorListener() {
+                @Override
+                public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line,
+                        int charPositionInLine, String msg, RecognitionException e) {
+                    System.err.println("Lexer Error at line " + line + ":" + charPositionInLine + " - " + msg);
+                    System.exit(-1);
+                }
+            });
             ParseTree tree = parser.prog();
-            int numberOfSyntaxErrors = parser.getNumberOfSyntaxErrors();
-            if (numberOfSyntaxErrors > 0) {
-                System.out.println("Syntax Error.");
-                System.exit(-1);
-            }
             ASTVisitor AST = new ASTVisitor();
             ASTNode res = AST.visit(tree);
             try {

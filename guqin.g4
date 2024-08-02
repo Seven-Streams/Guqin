@@ -1,5 +1,8 @@
 grammar guqin;
 
+@lexer::members {
+	int left = 0;
+}
 id: ID;
 prog: (classdef | func | global_declarstat)+;
 dimension: '[' expr? ']' | '[]';
@@ -78,11 +81,11 @@ returnstat: RETURN cond ';';
 contistat: CONTINUE ';';
 breakstat: BREAK ';';
 exprstat: expr ';';
-scooped_stat: '{' stat* '}';
 printstat: (PRINTINT | PRINTLNINT) '(' expr ')' ';'	# pint
 	| (PRINTLN | PRINT) '(' expr ')' ';'			# pstr;
 stat:
-	exprstat
+	 scooped_stat
+	| exprstat
 	| assignexpr ';'
 	| local_declarstat
 	| conditstat
@@ -90,7 +93,9 @@ stat:
 	| forstat
 	| returnstat
 	| printstat
-	| scooped_stat;
+	| empty_stat;
+empty_stat:';';
+scooped_stat: '{' (stat*?) '}';
 format_string:
 	FORMAT_ST
 	| FORMAT_L ((expr? FORMAT_INNER)* expr) FORMAT_R;
