@@ -5,12 +5,13 @@ import java.util.ArrayList;
 public class FuncallNode extends ExprNode {
   public String name = null;
   public ASTNode from = null;
+  public String from_type = null;
   public ArrayList<ASTNode> args = new ArrayList<>();
 
   @Override
   public Mypair check() throws Exception {
     is_left = false;
-    if (from == null) {
+    if ((from == null) && (from_type == null)) {
       if (!func_return.containsKey(name)) {
         throw new Exception("The function doesn't exist.");
       }
@@ -32,7 +33,12 @@ public class FuncallNode extends ExprNode {
       }
       return func_return.get(name);
     } else {
-      Mypair res = from.check();
+      Mypair res = null;
+      if (from != null) {
+        res = from.check();
+      } else {
+        res = new Mypair(from_type, 0);
+      }
       if (res.dim != 0) {
         throw new Exception("The dimension of variable is incorrect.");
       }

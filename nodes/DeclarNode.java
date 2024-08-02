@@ -13,7 +13,7 @@ public class DeclarNode extends StatNode {
   public Mypair check() throws Exception {
     dim_number.check();
     Mypair resMypair = new Mypair(type, dim);
-    if(!class_memory.containsKey(type)) {
+    if (!class_memory.containsKey(type)) {
       throw new Exception("The class doesn't exist!");
     }
     int cnt = 1;
@@ -26,11 +26,19 @@ public class DeclarNode extends StatNode {
       }
       if (Initial.containsKey(cnt)) {
         Mypair res = Initial.get(cnt).check();
-        if (!resMypair.type.equals(res.type)) {
-          throw new Exception("Invalid type in initialization.");
+        if (!res.type.equals("null")) {
+          if (!resMypair.type.equals(res.type)) {
+            throw new Exception("Invalid type in initialization.");
+          }
+          if (resMypair.dim != res.dim) {
+            throw new Exception("Invalid dimension in initialization.");
+          }
+        } else {
+          if(resMypair.dim == 0) {
+        if (resMypair.type.equals("string")|| resMypair.type.equals("int") || resMypair.type.equals("bool")) {
+          throw new Exception("Inner type can't be assigned with null!");
         }
-        if (resMypair.dim != res.dim) {
-          throw new Exception("Invalid dimension in initialization.");
+          }
         }
       }
       variable_memory.get(variable_memory.size() - 1).put(id, resMypair);

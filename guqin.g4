@@ -10,6 +10,7 @@ dimension: '[' expr ']' | '[]';
 must_dimension: '[' expr ']';
 typepair: real_type dimensions id;
 dimensions: (dimension)*;
+dimensions_exist: must_dimension+;
 dimensions_choose: must_dimension*;
 dimensions_declar: dimension*?;
 array: '{' (expr (',' expr)*)? '}';
@@ -21,6 +22,11 @@ func: ((real_type dimensions) | VOID) id (('(' args ')') | '()') (
 		'{' ( stat | returnstat)* '}'
 	);
 idexpr: (id dimensions_choose ('.' id dimensions_choose)*);
+memexpr:
+	newexpr dimensions_choose ('.' idexpr)? (funcall)?
+	 # newmem
+	| ((idexpr) '.')? funcall dimensions_choose ('.' idexpr?)? (funcall)?
+	 # funmem;
 construct_func: id '()' '{' stat* '}';
 classdef:
 	CLASS id '{' (local_declarstat | construct_func | func)* '};';
@@ -30,6 +36,7 @@ expr:
 	| STRING_VALUE										# str_lit
 	| TRUE												# true
 	| FALSE												# false
+	| memexpr											# mem
 	| format_string										# fstr
 	| idexpr											# idexprs
 	| ((idexpr) '.')? funcall							# funcallexpr

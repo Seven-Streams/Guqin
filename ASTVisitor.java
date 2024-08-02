@@ -682,4 +682,30 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 		ASTNode res = visit(ctx.multiarray());
 		return res;
 	}
+	@Override
+	public ASTNode visitNewmem(guqinParser.NewmemContext ctx) {
+		RightmemNode res = new RightmemNode();
+		res.right_value = visit(ctx.newexpr());
+		res.right_dim = visit(ctx.dimensions_choose());
+		if(ctx.idexpr() != null) {
+			guqinParser.IdexprContext to_check = ctx.idexpr();
+			for (int i = 0; i < ctx.getChildCount(); i++) {
+			if (ctx.getChild(i) instanceof guqinParser.IdContext) {
+				res.calling.add(ctx.getChild(i).getText());
+			}
+			if (ctx.getChild(i) instanceof guqinParser.Dimensions_chooseContext) {
+				res.dims.add(visit(ctx.getChild(i)));
+			}
+		}
+		}
+		if(ctx.funcall() != null) {
+			
+		}
+	}
+
+	@Override
+	public ASTNode visitFunmem(guqinParser.FunmemContext ctx) {
+		return visitChildren(ctx);
+	}
 }
+printlin
