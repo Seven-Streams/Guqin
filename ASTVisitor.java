@@ -675,8 +675,9 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 	}
 
 	@Override
-	public ASTNode visitId_single(guqinParser.Id_singleContext ctx) {
+	public IdNode visitId_single(guqinParser.Id_singleContext ctx) {
 		IdNode res = new IdNode();
+		res.is_left = true;
 		res.id = ctx.getText();
 		return res;
 	}

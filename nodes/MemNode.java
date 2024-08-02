@@ -1,6 +1,5 @@
 package nodes;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class MemNode extends ExprNode {

@@ -9,7 +9,7 @@ typepair: real_type dimensions id;
 dimensions: (dimension)*;
 dimensions_exist: must_dimension+;
 dimensions_choose: must_dimension*;
-dimensions_declar: dimension*?;
+dimensions_declar: dimension*;
 array: '{' (expr (',' expr)*)? '}';
 multiarray: array | '{' multiarray (',' multiarray)* '}';
 real_type: (INT | BOOL | STRING | id);

@@ -11,11 +11,11 @@ public class DeclarNode extends StatNode {
 
   @Override
   public Mypair check() throws Exception {
-    dim_number.check();
     Mypair resMypair = new Mypair(type, dim);
     if (!class_memory.containsKey(type)) {
       throw new Exception("The class doesn't exist!");
     }
+    dim_number.check();
     int cnt = 1;
     for (String id : ID) {
       if (variable_memory.get(variable_memory.size() - 1).containsKey(id)) {
@@ -34,10 +34,10 @@ public class DeclarNode extends StatNode {
             throw new Exception("Invalid dimension in initialization.");
           }
         } else {
-          if(resMypair.dim == 0) {
-        if (resMypair.type.equals("string")|| resMypair.type.equals("int") || resMypair.type.equals("bool")) {
-          throw new Exception("Inner type can't be assigned with null!");
-        }
+          if (resMypair.dim == 0) {
+            if (resMypair.type.equals("string") || resMypair.type.equals("int") || resMypair.type.equals("bool")) {
+              throw new Exception("Inner type can't be assigned with null!");
+            }
           }
         }
       }
