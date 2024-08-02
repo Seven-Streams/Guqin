@@ -12,7 +12,6 @@ public class InnerNode extends ExprNode {
     if (name.equals("ord")) {
       Mypair to_check = args.get(0).check();
       if (!to_check.type.equals("string")) {
-        System.out.println(to_check.type);
         throw new Exception("Invalid type in string function.");
       }
       if (to_check.dim != 0) {

@@ -1,6 +1,5 @@
 grammar guqin;
 
-
 id: ID;
 prog: (classdef | func | global_declarstat)+;
 dimension: '[' expr? ']' | '[]';
@@ -32,16 +31,19 @@ expr:
 	| TRUE												# true
 	| FALSE												# false
 	| format_string										# fstr
-	| ID											# id_single
-	| funcall							# funcallexpr
+	| ID												# id_single
+	| expr dimensions_exist								# dimen
+	| funcall											# funcallexpr
+	| expr '.' op = (LENGTH | PARSEINT) '()'			# strint
+	| expr '.' ORD '(' expr ')'							# strord
+	| expr '.' SUBSTRING '(' expr ',' expr ')'			# substr
+	| expr ('.' funcall)								# memfun
+	| expr ('.' ID)										# mem
 	| THIS												# this
 	| newexpr											# new
 	| '(' expr ')'										# par
 	| expr op = (SAD | SMI)								# aft
 	| op = (SAD | SMI | MINUS | ADD | NOT | BNO) expr	# bef
-	| expr '.' op = (LENGTH | PARSEINT) '()'			# strint
-	| expr '.' ORD '(' expr ')'							# strord
-	| expr '.' SUBSTRING '(' expr ',' expr ')'			# substr
 	| expr op = (MUL | DIV | MOD) expr					# muldivmod
 	| expr op = (MINUS | ADD) expr						# addmin
 	| expr op = (LSH | RSH) expr						# shift
@@ -53,9 +55,6 @@ expr:
 	| expr MYAND expr									# and
 	| expr OR expr										# or
 	| multiarray										# arrexpr
-	| expr dimensions_exist								# dimen
-	| expr ('.' funcall)								# memfun
-	| expr ('.' ID)										# mem
 	| <assoc = right> expr '?' expr ':' expr			# thr;
 assignexpr: expr (',' expr)* ASS expr;
 global_declarstat:
@@ -84,7 +83,7 @@ printstat: (PRINTINT | PRINTLNINT) '(' expr ')' ';'	# pint
 	| (PRINTLN | PRINT) '(' expr ')' ';'			# pstr;
 stat:
 	exprstat
-	| assignexpr';'
+	| assignexpr ';'
 	| local_declarstat
 	| conditstat
 	| whilestat
@@ -150,8 +149,7 @@ DIV: '/';
 MOD: '%';
 WS: [ \r\n\t]+ -> skip;
 fragment CHAR: ~[$"\r\n] | '{{' | '}}';
-FORMAT_L:
-	'f"' CHAR* '{';
-FORMAT_R: '}' CHAR* '"' ;
-FORMAT_INNER:  '}' CHAR* '{';
+FORMAT_L: 'f"' CHAR* '{';
+FORMAT_R: '}' CHAR* '"';
+FORMAT_INNER: '}' CHAR* '{';
 FORMAT_ST: 'f"' CHAR* '"';
