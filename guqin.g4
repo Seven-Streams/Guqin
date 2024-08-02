@@ -95,7 +95,7 @@ stat:
 	| printstat
 	| empty_stat;
 empty_stat:';';
-scooped_stat: '{' (stat*?) '}';
+scooped_stat: '{' (stat+) '}';
 format_string:
 	FORMAT_ST
 	| FORMAT_L ((expr? FORMAT_INNER)* expr) FORMAT_R;
@@ -154,7 +154,7 @@ DIV: '/';
 MOD: '%';
 WS: [ \r\n\t]+ -> skip;
 fragment CHAR: ~[$"\r\n] | '{{' | '}}';
-FORMAT_L: 'f"' CHAR* '{';
-FORMAT_R: '}' CHAR* '"';
-FORMAT_INNER: '}' CHAR* '{';
+FORMAT_L: 'f"' CHAR* '$';
+FORMAT_R: '$' CHAR* '"';
+FORMAT_INNER: '$' CHAR* '$';
 FORMAT_ST: 'f"' CHAR* '"';
