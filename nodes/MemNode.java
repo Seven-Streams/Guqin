@@ -9,17 +9,17 @@ public class MemNode extends ExprNode {
   @Override
   public Mypair check() throws Exception {
     Mypair to_check = from.check();
-    if(from.is_left) {
+    if (from.is_left) {
       is_left = true;
     } else {
-      if(from instanceof LiterNode) {
-        LiterNode res_check = (LiterNode)from;
-        if(res_check.value.equals("this")) {
+      if (from instanceof LiterNode) {
+        LiterNode res_check = (LiterNode) from;
+        if (res_check.value.equals("this")) {
           is_left = true;
         }
       }
     }
-    if(to_check.dim != 0) {
+    if (to_check.dim != 0) {
       throw new Exception("Invalid dimension of a member!");
     }
     HashMap<String, Mypair> resed = class_memory.get(to_check.type);

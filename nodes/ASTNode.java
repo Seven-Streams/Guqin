@@ -13,7 +13,7 @@ public class ASTNode {
   public static boolean in_class = false;
   public static boolean in_func = false;
   public static Mypair return_value = new Mypair();
-  public static HashMap<String, Boolean> construction;
+  public static HashMap<String, Boolean> construction = new HashMap<>();
   public static HashMap<String, HashMap<String, Mypair>> class_memory = new HashMap<>();
   public static HashMap<String, HashMap<String, Mypair>> class_func_return = new HashMap<>();
   public static HashMap<String, HashMap<String, ArrayList<Mypair>>> class_func_args = new HashMap<>();

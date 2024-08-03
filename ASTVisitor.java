@@ -201,15 +201,8 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 		ClassNode res = new ClassNode();
 		res.name = ctx.id().getText();
 		for (int i = 0; i < ctx.getChildCount(); i++) {
-			if (ctx.getChild(i) instanceof guqinParser.Construct_funcContext) {
-				if (res.construct != null) {
-					throw new IllegalArgumentException("Re-definition of construct function.");
-				} else {
-					res.construct = visit(ctx.getChild(i));
-				}
-			}
 			if (ctx.getChild(i) instanceof guqinParser.FuncContext
-					|| ctx.getChild(i) instanceof guqinParser.Local_declarstatContext) {
+					|| ctx.getChild(i) instanceof guqinParser.Local_declarstatContext ||  ctx.getChild(i) instanceof guqinParser.Construct_funcContext) {
 				res.member.add(visit(ctx.getChild(i)));
 			}
 		}
