@@ -172,8 +172,7 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 		}
 		for (int i = 0; i < ctx.getChildCount(); i++) {
 			if ((ctx.getChild(i) instanceof guqinParser.StatContext
-					|| ctx.getChild(i) instanceof guqinParser.ReturnstatContext)
-					&& !(ctx.getChild(i) instanceof guqinParser.Empty_statContext)) {
+					|| ctx.getChild(i) instanceof guqinParser.ReturnstatContext)) {
 				res.stats.add(visit(ctx.getChild(i)));
 			}
 		}
@@ -188,8 +187,7 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 		res.type = ctx.id().getText();
 		res.id = ctx.id().getText();
 		for (int i = 0; i < ctx.getChildCount(); i++) {
-			if (ctx.getChild(i) instanceof guqinParser.StatContext
-					&& !(ctx.getChild(i) instanceof guqinParser.Empty_statContext)) {
+			if (ctx.getChild(i) instanceof guqinParser.StatContext) {
 				res.stats.add(visit(ctx.getChild(i)));
 			}
 		}
@@ -202,7 +200,8 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 		res.name = ctx.id().getText();
 		for (int i = 0; i < ctx.getChildCount(); i++) {
 			if (ctx.getChild(i) instanceof guqinParser.FuncContext
-					|| ctx.getChild(i) instanceof guqinParser.Local_declarstatContext ||  ctx.getChild(i) instanceof guqinParser.Construct_funcContext) {
+					|| ctx.getChild(i) instanceof guqinParser.Local_declarstatContext
+					|| ctx.getChild(i) instanceof guqinParser.Construct_funcContext) {
 				res.member.add(visit(ctx.getChild(i)));
 			}
 		}
@@ -566,8 +565,7 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 	public ASTNode visitInnercontent(guqinParser.InnercontentContext ctx) {
 		StatsNode res = new StatsNode();
 		for (int i = 0; i < ctx.getChildCount(); i++) {
-			if (ctx.getChild(i) instanceof guqinParser.StatContext
-					&& !(ctx.getChild(i) instanceof guqinParser.Empty_statContext)) {
+			if (ctx.getChild(i) instanceof guqinParser.StatContext) {
 				res.stats.add(visit(ctx.getChild(i)));
 			}
 		}
@@ -578,8 +576,7 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 	public ASTNode visitLoopinnercontent(guqinParser.LoopinnercontentContext ctx) {
 		StatsNode res = new StatsNode();
 		for (int i = 0; i < ctx.getChildCount(); i++) {
-			if (ctx.getChild(i) instanceof guqinParser.StatContext
-					&& !(ctx.getChild(i) instanceof guqinParser.Empty_statContext)) {
+			if (ctx.getChild(i) instanceof guqinParser.StatContext) {
 				res.stats.add(visit(ctx.getChild(i)));
 			}
 		}
@@ -725,11 +722,15 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 	public ASTNode visitScooped_stat(guqinParser.Scooped_statContext ctx) {
 		ScoopNode res = new ScoopNode();
 		for (int i = 0; i < ctx.getChildCount(); i++) {
-			if (ctx.getChild(i) instanceof guqinParser.StatContext
-					&& !(ctx.getChild(i) instanceof guqinParser.Empty_statContext)) {
+			if (ctx.getChild(i) instanceof guqinParser.StatContext) {
 				res.stats.add(visit(ctx.getChild(i)));
 			}
 		}
 		return res;
+	}
+
+	@Override
+	public StatNode visitEmpty_stat(guqinParser.Empty_statContext ctx) {
+		return new StatNode();
 	}
 }
