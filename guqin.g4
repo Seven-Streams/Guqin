@@ -97,13 +97,13 @@ stat:
 	| scooped_stat
 	| empty_stat;
 empty_stat: ';';
-scooped_stat: '{' (stat+) '}' | ('{' '}');
+scooped_stat: '{' (stat*?) ('}' | '};') | ('{)' ('}' | '};'));
 format_string:
 	FORMAT_ST
 	| FORMAT_L ((expr? FORMAT_INNER)* expr) FORMAT_R;
 LINE_COMMENT: '//' .*? '\r'? '\n' -> skip;
 BLOCK_COMMENT: '/*' .*? '*/' -> skip;
-STRING_VALUE: '"' ( '\\' ["] | ~["])* '"';
+STRING_VALUE: '"' ((~["\\]) | '\\"'| '\\\\' | '\\n' |'\\r')* '"';
 VOID: 'void';
 BOOL: 'bool';
 INT: 'int';

@@ -11,8 +11,8 @@ public class FuncallNode extends ExprNode {
   @Override
   public Mypair check() throws Exception {
     is_left = false;
-    if(in_class) {
-      if(class_func_return.get(this_class).containsKey(name)) {
+    if (in_class) {
+      if (class_func_return.get(this_class).containsKey(name)) {
         from_type = this_class;
       }
     }
@@ -31,10 +31,15 @@ public class FuncallNode extends ExprNode {
       }
       for (int i = 0; i < res_arg.size(); i++) {
         if (true_arg.get(i).dim != res_arg.get(i).dim) {
-          throw new Exception("The dimension of args isn't correct.");
+          if (!res_arg.get(i).type.equals("null")) {
+            throw new Exception("The dimension of args isn't correct.");
+          }
         }
         if (!true_arg.get(i).type.equals(res_arg.get(i).type)) {
-          throw new Exception("The type of args isn't correct.");
+          if ((!res_arg.get(i).type.equals("null")) | ((true_arg.get(i).dim == 0) && (true_arg.get(i).type.equals("int")
+              || true_arg.get(i).type.equals("string") || true_arg.get(i).type.equals("bool")))) {
+            throw new Exception("The type of args isn't correct.");
+          }
         }
       }
       return func_return.get(name);
@@ -46,7 +51,7 @@ public class FuncallNode extends ExprNode {
         res = new Mypair(from_type, 0);
       }
       if (res.dim != 0) {
-        if(name.equals("size") && (args.isEmpty())) {
+        if (name.equals("size") && (args.isEmpty())) {
           return new Mypair("int", 0);
         }
         throw new Exception("The dimension of variable is incorrect.");
