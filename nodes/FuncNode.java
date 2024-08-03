@@ -32,11 +32,11 @@ public class FuncNode extends ASTNode {
       stat.check();
     }
     variable_memory.remove(variable_memory.size() - 1);
-    if (return_left) {
-      return_func_left.put(id, true);
-    } else {
-      return_func_left.put(id, false);
-    }
+    // if (return_left) {
+    //   return_func_left.put(id, true);
+    // } else {
+    //   return_func_left.put(id, false);
+    // }
     in_func = false;
     return new Mypair();
   }

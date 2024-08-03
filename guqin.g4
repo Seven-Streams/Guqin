@@ -28,37 +28,37 @@ construct_func: id '()' '{' stat* '}';
 classdef:
 	CLASS id '{' (local_declarstat | construct_func | func)* '};';
 expr:
-	INT_VALUE											# int_lit
-	| NULL												# null
-	| STRING_VALUE										# str_lit
-	| TRUE												# true
-	| FALSE												# false
-	| format_string										# fstr
-	| ID												# id_single
-	| expr dimensions_exist								# dimen
-	| funcall											# funcallexpr
-	| expr '.' op = (LENGTH | PARSEINT) '()'			# strint
-	| expr '.' ORD '(' expr ')'							# strord
-	| expr '.' SUBSTRING '(' expr ',' expr ')'			# substr
-	| expr ('.' funcall)								# memfun
-	| expr ('.' ID)										# mem
-	| THIS												# this
-	| newexpr											# new
-	| '(' expr ')'										# par
-	| expr op = (SAD | SMI)								# aft
-	| op = (SAD | SMI | MINUS | ADD | NOT | BNO) expr	# bef
-	| expr op = (MUL | DIV | MOD) expr					# muldivmod
-	| expr op = (MINUS | ADD) expr						# addmin
-	| expr op = (LSH | RSH) expr						# shift
-	| expr op = (GE | GEQ | LE | LEQ) expr				# order
-	| expr op = (UEQ | EQ) expr							# equalogic
-	| expr BAN expr										# ban
-	| expr XOR expr										# xor
-	| expr BOR expr										# bor
-	| expr MYAND expr									# and
-	| expr OR expr										# or
-	| multiarray										# arrexpr
-	| <assoc = right> expr '?' expr ':' expr			# thr;
+	INT_VALUE															# int_lit
+	| NULL																# null
+	| STRING_VALUE														# str_lit
+	| TRUE																# true
+	| FALSE																# false
+	| format_string														# fstr
+	| ID																# id_single
+	| expr dimensions_exist												# dimen
+	| funcall															# funcallexpr
+	| expr '.' op = (LENGTH | PARSEINT) '()'							# strint
+	| expr '.' ORD '(' expr ')'											# strord
+	| expr '.' SUBSTRING '(' expr ',' expr ')'							# substr
+	| expr ('.' funcall)												# memfun
+	| expr ('.' ID)														# mem
+	| THIS																# this
+	| <assoc = right> newexpr											# new
+	| '(' expr ')'														# par
+	| expr op = (SAD | SMI)												# aft
+	| <assoc = right> op = (SAD | SMI | MINUS | ADD | NOT | BNO) expr	# bef
+	| expr op = (MUL | DIV | MOD) expr									# muldivmod
+	| expr op = (MINUS | ADD) expr										# addmin
+	| expr op = (LSH | RSH) expr										# shift
+	| expr op = (GE | GEQ | LE | LEQ) expr								# order
+	| expr op = (UEQ | EQ) expr											# equalogic
+	| expr BAN expr														# ban
+	| expr XOR expr														# xor
+	| expr BOR expr														# bor
+	| expr MYAND expr													# and
+	| expr OR expr														# or
+	| multiarray														# arrexpr
+	| <assoc = right> expr '?' expr ':' expr							# thr;
 assignexpr: expr (',' expr)* ASS expr;
 global_declarstat:
 	real_type dimensions_declar id ('=' expr)? (
@@ -84,7 +84,8 @@ exprstat: expr ';';
 printstat: (PRINTINT | PRINTLNINT) '(' expr ')' ';'	# pint
 	| (PRINTLN | PRINT) '(' expr ')' ';'			# pstr;
 stat:
-	 scooped_stat
+	scooped_stat
+	| printstat
 	| exprstat
 	| assignexpr ';'
 	| local_declarstat
@@ -92,9 +93,8 @@ stat:
 	| whilestat
 	| forstat
 	| returnstat
-	| printstat
 	| empty_stat;
-empty_stat:';';
+empty_stat: ';';
 scooped_stat: '{' (stat+) '}';
 format_string:
 	FORMAT_ST
@@ -122,7 +122,7 @@ RETURN: 'return';
 PRINT: 'print';
 PRINTLN: 'println';
 PRINTLNINT: 'printlnInt';
-PRINTINT: 'printint';
+PRINTINT: 'printInt';
 LENGTH: 'length';
 SUBSTRING: 'substring';
 PARSEINT: 'parseInt';

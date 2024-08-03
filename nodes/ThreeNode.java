@@ -11,16 +11,18 @@ public class ThreeNode extends ExprNode {
     if (res.dim != 0) {
       throw new Exception("Invalid dimension in condition of 3-arg expression.");
     }
-    if (res.type != "bool") {
+    if (!res.type.equals("bool")) {
       throw new Exception("Invalid type in condition of 3-arg expression.");
     }
     Mypair res1 = value1.check();
     Mypair res2 = value2.check();
     if (res1.dim != res2.dim) {
-      throw new Exception("Different dimension in condition of 3-arg expression.");
+      throw new Exception("Different dimension in  3-arg expression.");
     }
     if (!res1.type.equals(res2.type)) {
-      throw new Exception("Different type in condition of 3-arg expression.");
+      System.out.println(res1.type);
+      System.out.println(res2.type);
+      throw new Exception("Different type in 3-arg expression.");
     }
     is_left = false;
     return res1;
