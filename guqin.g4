@@ -122,7 +122,7 @@ RETURN: 'return';
 PRINT: 'print';
 PRINTLN: 'println';
 PRINTLNINT: 'printlnInt';
-PRINTINT: 'printint';
+PRINTINT: 'printInt';
 LENGTH: 'length';
 SUBSTRING: 'substring';
 PARSEINT: 'parseInt';
