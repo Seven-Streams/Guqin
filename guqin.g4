@@ -75,7 +75,7 @@ loopinnercontent:
 conditstat: IF '(' expr ')' innercontent (ELSE innercontent)?;
 whilestat: WHILE '(' expr ')' loopinnercontent;
 forstat:
-	FOR '(' (stat | ';') cond ';' expr? ')' loopinnercontent;
+	FOR '(' (stat | ';') cond ';' (expr | assignexpr)? ')' loopinnercontent;
 cond: (expr)?;
 returnstat: RETURN cond ';';
 contistat: CONTINUE ';';
