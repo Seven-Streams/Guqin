@@ -6,6 +6,7 @@ import java.util.ArrayList;
 public class ASTNode {
   public int dim = 0;
   public String type = null;
+  public static boolean in_construct;
   public static boolean return_left;
   public static boolean has_return = false;
   public static String this_class = null;

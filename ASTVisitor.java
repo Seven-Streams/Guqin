@@ -155,6 +155,12 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 		}
 		res.id = ctx.id().getText();
 		func_name = res.id;
+		if ((res.type.equals("void") || res.type.equals("int") || res.type.equals("bool") || res.type.equals("string"))
+				&& (res.dim == 0)) {
+			res.return_func_left.put(res.id, false);
+		} else {
+			res.return_func_left.put(res.id, true);
+		}
 		guqinParser.ArgsContext args = ctx.args();
 		if (args != null) {
 			for (int i = 0; i < args.getChildCount(); i++) {
@@ -178,6 +184,7 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 	public FuncNode visitConstruct_func(guqinParser.Construct_funcContext ctx) {
 		FuncNode res = new FuncNode();
 		res.dim = 0;
+		res.is_construct = true;
 		res.type = ctx.id().getText();
 		res.id = ctx.id().getText();
 		for (int i = 0; i < ctx.getChildCount(); i++) {

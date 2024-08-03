@@ -10,6 +10,13 @@ public class ReturnNode extends StatNode {
       throw new Exception("Return should be in a function!");
     }
     Mypair to_check = value.check();
+    if (in_construct) {
+      if(!to_check.type.equals("void")) {
+      throw new Exception("Return shouldn't be in a construct function!");
+      } else {
+        return new Mypair();
+      }
+    }
     if (!to_check.type.equals(return_value.type)) {
       throw new Exception("The return value is incorrect!");
     }

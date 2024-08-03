@@ -5,19 +5,26 @@ import java.util.HashMap;
 
 public class FuncNode extends ASTNode {
   public String id = null;
-  boolean is_left = false;
+  public boolean is_construct;
+  public boolean is_left = false;
   public ArrayList<ASTNode> args = new ArrayList<>();
   public ArrayList<ASTNode> stats = new ArrayList<>();
 
   @Override
   public Mypair check() throws Exception {
+    in_construct = is_construct;
+    if (in_construct && (!id.equals(this_class))) {
+      throw new Exception("Invalid construction function name!");
+    }
     has_return = false;
     in_func = true;
     variable_memory.add(new HashMap<>());
-    if (in_class) {
-      return_value = class_func_return.get(this_class).get(id);
-    } else {
-      return_value = func_return.get(id);
+    if (!is_construct) {
+      if (in_class) {
+        return_value = class_func_return.get(this_class).get(id);
+      } else {
+        return_value = func_return.get(id);
+      }
     }
     for (ASTNode arg : args) {
       IdNode res_id = (IdNode) arg;
@@ -33,10 +40,11 @@ public class FuncNode extends ASTNode {
       stat.check();
     }
     variable_memory.remove(variable_memory.size() - 1);
-    if ((!return_value.type.equals("void")) && (!has_return) && (!id.equals("main"))) {
+    if ((!return_value.type.equals("void")) && (!has_return) && (!id.equals("main")) && (!is_construct)) {
       throw new Exception("Non-void function should have a return value!");
     }
     in_func = false;
+    in_construct = false;
     return new Mypair();
   }
 }
