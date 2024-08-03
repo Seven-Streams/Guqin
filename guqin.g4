@@ -100,7 +100,7 @@ empty_stat: ';';
 scooped_stat: '{' (stat*?) ('}' | '};') | ('{)' ('}' | '};'));
 format_string:
 	FORMAT_ST
-	| FORMAT_L ((expr? FORMAT_INNER)* expr) FORMAT_R;
+	| FORMAT_L expr? (FORMAT_INNER expr?)* FORMAT_R;
 LINE_COMMENT: '//' .*? '\r'? '\n' -> skip;
 BLOCK_COMMENT: '/*' .*? '*/' -> skip;
 STRING_VALUE: '"' ((~["\\]) | '\\"'| '\\\\' | '\\n' |'\\r')* '"';
