@@ -5,7 +5,8 @@ public class ReturnNode extends StatNode {
 
   @Override
   public Mypair check() throws Exception {
-    if(!in_func) {
+    has_return = true;
+    if (!in_func) {
       throw new Exception("Return should be in a function!");
     }
     Mypair to_check = value.check();

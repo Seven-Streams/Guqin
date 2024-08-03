@@ -84,8 +84,7 @@ exprstat: expr ';';
 printstat: (PRINTINT | PRINTLNINT) '(' expr ')' ';'	# pint
 	| (PRINTLN | PRINT) '(' expr ')' ';'			# pstr;
 stat:
-	scooped_stat
-	| printstat
+	printstat
 	| exprstat
 	| assignexpr ';'
 	| local_declarstat
@@ -93,9 +92,10 @@ stat:
 	| whilestat
 	| forstat
 	| returnstat
+	| scooped_stat
 	| empty_stat;
 empty_stat: ';';
-scooped_stat: '{' (stat+) '}';
+scooped_stat: '{' (stat+) '}' | ('{' '}');
 format_string:
 	FORMAT_ST
 	| FORMAT_L ((expr? FORMAT_INNER)* expr) FORMAT_R;

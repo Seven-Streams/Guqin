@@ -11,6 +11,7 @@ public class FuncNode extends ASTNode {
 
   @Override
   public Mypair check() throws Exception {
+    has_return = false;
     in_func = true;
     variable_memory.add(new HashMap<>());
     if (in_class) {
@@ -32,11 +33,15 @@ public class FuncNode extends ASTNode {
       stat.check();
     }
     variable_memory.remove(variable_memory.size() - 1);
-    // if (return_left) {
-    //   return_func_left.put(id, true);
-    // } else {
-    //   return_func_left.put(id, false);
-    // }
+    if (in_class) {
+      if ((!(class_func_return.get(this_class).get(id).type.equals("void"))) && (!has_return)) {
+        throw new Exception("Non-void function should have a return value!");
+      }
+    } else {
+      if ((!func_return.get(id).type.equals("void")) && (!has_return)) {
+        throw new Exception("Non-void function should have a return value!");
+      }
+    }
     in_func = false;
     return new Mypair();
   }

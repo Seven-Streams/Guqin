@@ -15,11 +15,11 @@ public class ClassNode extends ASTNode {
     this_class = name;
     HashMap<String, Mypair> res = class_memory.get(name);
     variable_memory.add(res);
-    for(ASTNode dim: dims) {
+    for (ASTNode dim : dims) {
       dim.check();
     }
-    for(ASTNode mem:member) {
-      if(mem instanceof FuncNode) {
+    for (ASTNode mem : member) {
+      if (mem instanceof FuncNode) {
         mem.check();
       }
     }

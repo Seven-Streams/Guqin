@@ -11,9 +11,6 @@ public class DoubleNode extends ExprNode {
     Mypair type1 = value1.check();
     Mypair type2 = value2.check();
     if (!type1.type.equals(type2.type)) {
-      System.out.print(symbol);
-      System.out.println(type1.type);
-      System.out.println(type2.type);
       throw new Exception("Different type in two-arg expression.");
     }
     if (type1.dim != type2.dim) {

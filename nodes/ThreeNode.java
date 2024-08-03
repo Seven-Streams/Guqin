@@ -16,15 +16,13 @@ public class ThreeNode extends ExprNode {
     }
     Mypair res1 = value1.check();
     Mypair res2 = value2.check();
-    if (res1.dim != res2.dim) {
+    if ((res1.dim != res2.dim) && (!res1.type.equals("null")) && (!res2.type.equals("null"))) {
       throw new Exception("Different dimension in  3-arg expression.");
     }
-    if (!res1.type.equals(res2.type)) {
-      System.out.println(res1.type);
-      System.out.println(res2.type);
+    if ((!res1.type.equals(res2.type)) && (!res1.type.equals("null")) && (!res2.type.equals("null"))) {
       throw new Exception("Different type in 3-arg expression.");
     }
     is_left = false;
-    return res1;
+    return res1.type.equals("null") ? res2 : res1;
   }
 }

@@ -7,6 +7,7 @@ public class ASTNode {
   public int dim = 0;
   public String type = null;
   public static boolean return_left;
+  public static boolean has_return = false;
   public static String this_class = null;
   public static boolean in_class = false;
   public static boolean in_func = false;

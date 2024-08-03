@@ -20,7 +20,6 @@ public class FuncallNode extends ExprNode {
     }
     if ((from == null) && (from_type == null)) {
       if (!func_return.containsKey(name)) {
-        System.out.println(name);
         throw new Exception("The function doesn't exist.");
       }
       ArrayList<Mypair> res_arg = new ArrayList<>();
