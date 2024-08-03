@@ -59,7 +59,7 @@ expr:
 	| expr OR expr										# or
 	| multiarray										# arrexpr
 	| <assoc = right> expr '?' expr ':' expr			# thr;
-assignexpr: expr (',' expr)* ASS expr;
+assignexpr: <assoc = right>expr (',' expr)* ASS expr;
 global_declarstat:
 	real_type dimensions_declar id ('=' expr)? (
 		',' id ('=' expr)?

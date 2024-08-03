@@ -10,11 +10,7 @@ public class FuncallNode extends ExprNode {
 
   @Override
   public Mypair check() throws Exception {
-    if(return_func_left.containsKey(name)) {
-    is_left = return_func_left.get(name);
-    } else {
-      is_left = false;
-    }
+    is_left = false;
     if(in_class) {
       if(class_func_return.get(this_class).containsKey(name)) {
         from_type = this_class;
@@ -50,6 +46,9 @@ public class FuncallNode extends ExprNode {
         res = new Mypair(from_type, 0);
       }
       if (res.dim != 0) {
+        if(name.equals("size") && (args.isEmpty())) {
+          return new Mypair("int", 0);
+        }
         throw new Exception("The dimension of variable is incorrect.");
       }
       if ((!class_func_return.containsKey(res.type))) {

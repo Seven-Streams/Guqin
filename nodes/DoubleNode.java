@@ -10,10 +10,10 @@ public class DoubleNode extends ExprNode {
     is_left = false;
     Mypair type1 = value1.check();
     Mypair type2 = value2.check();
-    if (!type1.type.equals(type2.type)) {
+    if ((!type1.type.equals(type2.type)) && (!type1.type.equals("null")) && (!type2.type.equals("null"))) {
       throw new Exception("Different type in two-arg expression.");
     }
-    if (type1.dim != type2.dim) {
+    if ((type1.dim != type2.dim) && (!type1.type.equals("null")) && (!type2.type.equals("null"))) {
       throw new Exception("Different dimension in two-arg expression.");
     }
     if (symbol.equals("*") || symbol.equals("/") || symbol.equals("%") || symbol.equals("-") || symbol.equals("<<")

@@ -17,7 +17,7 @@ public class ReturnNode extends StatNode {
         return new Mypair();
       }
     }
-    if (!to_check.type.equals(return_value.type)) {
+    if ((!to_check.type.equals(return_value.type)) && (!to_check.type.equals("null"))) {
       throw new Exception("The return value is incorrect!");
     }
     if (to_check.dim != return_value.dim) {
