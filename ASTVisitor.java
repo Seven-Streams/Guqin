@@ -3,6 +3,8 @@ import nodes.*;
 @SuppressWarnings("CheckReturnValue")
 public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 	DimensionNode universal_dnode = new DimensionNode();
+	String func_name = "";
+	boolean is_return = true;
 
 	@Deprecated
 	public ASTNode visitId(guqinParser.IdContext ctx) {
@@ -152,12 +154,7 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 			res.dim = check.dim;
 		}
 		res.id = ctx.id().getText();
-		if((res.type.equals("void") || res.type.equals("int") || res.type.equals("bool") || res.type.equals("string") ) && (res.dim == 0)) {
-			
-			res.return_func_left.put(res.id, false);
-		} else {
-			res.return_func_left.put(res.id, true);
-		}
+		func_name = res.id;
 		guqinParser.ArgsContext args = ctx.args();
 		if (args != null) {
 			for (int i = 0; i < args.getChildCount(); i++) {
@@ -492,6 +489,11 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 	@Override
 	public ASTNode visitArray_new(guqinParser.Array_newContext ctx) {
 		NewNode res = new NewNode();
+		if (is_return) {
+			res.return_func_left.put(func_name, true);
+		} else {
+			res.return_func_left.put(func_name, false);
+		}
 		res.type = ctx.real_type().getText();
 		res.value = visit(ctx.multiarray());
 		return res;
@@ -500,6 +502,11 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 	@Override
 	public ASTNode visitDim_new(guqinParser.Dim_newContext ctx) {
 		NewNode res = new NewNode();
+		if (is_return) {
+			res.return_func_left.put(func_name, true);
+		} else {
+			res.return_func_left.put(func_name, false);
+		}
 		res.type = ctx.real_type().getText();
 		res.dims = visit(ctx.dimensions_declar());
 		return res;
@@ -508,6 +515,11 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 	@Override
 	public ASTNode visitSingle_new(guqinParser.Single_newContext ctx) {
 		NewNode res = new NewNode();
+		if (is_return) {
+			res.return_func_left.put(func_name, true);
+		} else {
+			res.return_func_left.put(func_name, false);
+		}
 		res.type = ctx.real_type().getText();
 		return res;
 	}
@@ -621,8 +633,10 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 
 	@Override
 	public ASTNode visitReturnstat(guqinParser.ReturnstatContext ctx) {
+		is_return = true;
 		ReturnNode res = new ReturnNode();
 		res.value = visit(ctx.cond());
+		is_return = false;
 		return res;
 	}
 

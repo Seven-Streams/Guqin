@@ -33,14 +33,8 @@ public class FuncNode extends ASTNode {
       stat.check();
     }
     variable_memory.remove(variable_memory.size() - 1);
-    if (in_class) {
-      if ((!(class_func_return.get(this_class).get(id).type.equals("void"))) && (!has_return)) {
-        throw new Exception("Non-void function should have a return value!");
-      }
-    } else {
-      if ((!func_return.get(id).type.equals("void")) && (!has_return)) {
-        throw new Exception("Non-void function should have a return value!");
-      }
+    if ((!return_value.type.equals("void")) && (!has_return) && (!id.equals("main"))) {
+      throw new Exception("Non-void function should have a return value!");
     }
     in_func = false;
     return new Mypair();
