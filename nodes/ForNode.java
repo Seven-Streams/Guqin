@@ -10,6 +10,7 @@ public class ForNode extends StatNode {
 
   @Override
   public Mypair check() throws Exception {
+    in_loop++;
     variable_memory.add(new HashMap<>());
     if (init != null) {
       init.check();
@@ -29,6 +30,7 @@ public class ForNode extends StatNode {
     }
     stats.check();
     variable_memory.remove(variable_memory.size() - 1);
+    in_loop--;
     return new Mypair();
   }
 }

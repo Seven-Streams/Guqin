@@ -6,6 +6,7 @@ public class WhileNode extends StatNode{
   public ASTNode condition = null;
   public ASTNode stats = null;
   @Override public Mypair check() throws Exception {
+    in_loop++;
     Mypair to_check = condition.check();
     if(to_check.dim != 0) {
       throw new Exception("Invalid dimension in condition!");
@@ -16,6 +17,7 @@ public class WhileNode extends StatNode{
     variable_memory.add(new HashMap<>());
       stats.check();
     variable_memory.remove(variable_memory.size() - 1);
+    in_loop--;
     return new Mypair();
   }
 }

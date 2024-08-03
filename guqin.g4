@@ -70,8 +70,8 @@ local_declarstat:
 	)* ';';
 innercontent: '{' (stat)* '}' | (stat);
 loopinnercontent:
-	'{' (stat | breakstat | contistat)* '}'
-	| (stat | breakstat | contistat);
+	'{' (stat)* '}'
+	| (stat);
 conditstat: IF '(' expr ')' innercontent (ELSE innercontent)?;
 whilestat: WHILE '(' expr ')' loopinnercontent;
 forstat:
@@ -90,6 +90,8 @@ stat:
 	| local_declarstat
 	| conditstat
 	| whilestat
+	| breakstat
+	| contistat
 	| forstat
 	| returnstat
 	| scooped_stat
