@@ -24,4 +24,4 @@ Guqin is a kind of Chinese traditional musical instrument. For example, the famo
 
 ## Warning
 
-Don't copy my code before the class ends. Otherwises, I **will** find you, no matter where you are.
+Don't copy my code before the class ends. Otherwise, I **will** find you, no matter where you are.
