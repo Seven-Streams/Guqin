@@ -10,8 +10,8 @@ Guqin is a kind of Chinese traditional musical instrument. For example, the famo
   - [x] Build an CST with antlr
   - [x] Build an AST with Java
   - [x] Finish semantic check
-- [] Codegen
-- [] Optimization
+- [ ] Codegen
+- [ ] Optimization
 
 ## The songs I love listening when coding
 
