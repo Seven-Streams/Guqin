@@ -1,5 +1,8 @@
 package ASTnodes;
 
+import Composer.*;
+import IRSentence.*;
+
 import java.util.HashMap;
 
 public class ForNode extends StatNode {
@@ -32,5 +35,28 @@ public class ForNode extends StatNode {
     variable_memory.remove(variable_memory.size() - 1);
     in_loop--;
     return new Mypair();
+  }
+
+  @Override
+  public Info GenerateIR(Composer machine) {
+    LoopInfo res_label = new LoopInfo();
+    res_label.condition = ++machine.label_number;
+    res_label.body = ++machine.label_number;
+    res_label.iteration = ++machine.label_number;
+    res_label.end = ++machine.label_number;
+    Info.loop.add(res_label);
+    init.GenerateIR(machine);
+    machine.generated.add(new IRLabel(res_label.condition));
+    Info cond_reg = condition.GenerateIR(machine);
+    Conditionjmp cond_jmp = new Conditionjmp(res_label.body, res_label.end, cond_reg.reg);
+    machine.generated.add(cond_jmp);
+    machine.generated.add(new IRLabel(res_label.body));
+    stats.GenerateIR(machine);
+    machine.generated.add(new IRLabel(res_label.iteration));
+    cond_reg = iterator.GenerateIR(machine);
+    IRjmp check_jmp = new IRjmp(res_label.condition);
+    machine.generated.add(check_jmp);
+    machine.generated.add(new IRLabel(res_label.end));
+    return new Info();
   }
 }
