@@ -2,7 +2,6 @@ package nodes;
 
 import java.util.HashMap;
 import java.util.ArrayList;
-
 public class ASTNode {
   public int dim = 0;
   public String type = null;

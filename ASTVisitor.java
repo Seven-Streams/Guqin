@@ -157,9 +157,9 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 		func_name = res.id;
 		if ((res.type.equals("void") || res.type.equals("int") || res.type.equals("bool") || res.type.equals("string"))
 				&& (res.dim == 0)) {
-			res.return_func_left.put(res.id, false);
+			ASTNode.return_func_left.put(res.id, false);
 		} else {
-			res.return_func_left.put(res.id, true);
+			ASTNode.return_func_left.put(res.id, true);
 		}
 		guqinParser.ArgsContext args = ctx.args();
 		if (args != null) {
@@ -489,9 +489,9 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 	public ASTNode visitArray_new(guqinParser.Array_newContext ctx) {
 		NewNode res = new NewNode();
 		if (is_return) {
-			res.return_func_left.put(func_name, true);
+			ASTNode.return_func_left.put(func_name, true);
 		} else {
-			res.return_func_left.put(func_name, false);
+			ASTNode.return_func_left.put(func_name, false);
 		}
 		res.type = ctx.real_type().getText();
 		res.value = visit(ctx.multiarray());
@@ -502,9 +502,9 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 	public ASTNode visitDim_new(guqinParser.Dim_newContext ctx) {
 		NewNode res = new NewNode();
 		if (is_return) {
-			res.return_func_left.put(func_name, true);
+			ASTNode.return_func_left.put(func_name, true);
 		} else {
-			res.return_func_left.put(func_name, false);
+			ASTNode.return_func_left.put(func_name, false);
 		}
 		res.type = ctx.real_type().getText();
 		res.dims = visit(ctx.dimensions_declar());
@@ -515,9 +515,9 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 	public ASTNode visitSingle_new(guqinParser.Single_newContext ctx) {
 		NewNode res = new NewNode();
 		if (is_return) {
-			res.return_func_left.put(func_name, true);
+			ASTNode.return_func_left.put(func_name, true);
 		} else {
-			res.return_func_left.put(func_name, false);
+			ASTNode.return_func_left.put(func_name, false);
 		}
 		res.type = ctx.real_type().getText();
 		return res;

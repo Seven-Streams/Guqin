@@ -1,6 +1,7 @@
 import org.antlr.v4.runtime.tree.ParseTree;
 
 import nodes.ASTNode;
+import nodes.ProgNode;
 
 import org.antlr.v4.runtime.*;
 import java.io.InputStream;
@@ -42,6 +43,8 @@ public class Guqin {
                 System.exit(-1);
             }
             System.out.println("OK");
+            Translator Yuchuan = new Translator();
+            Yuchuan.translate((ProgNode)res);
             System.exit(0);
         } catch (RecognitionException e) {
             System.out.println(e);

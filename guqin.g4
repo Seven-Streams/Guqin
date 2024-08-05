@@ -1,8 +1,5 @@
 grammar guqin;
 
-@lexer::members {
-	int left = 0;
-}
 id: ID;
 prog: (classdef | func | global_declarstat)+;
 dimension: '[' expr? ']' | '[]';
@@ -100,7 +97,7 @@ empty_stat: ';';
 scooped_stat: '{' (stat*?) ('}' | '};') | ('{)' ('}' | '};'));
 format_string:
 	FORMAT_ST
-	| FORMAT_L expr? (FORMAT_INNER expr?)* FORMAT_R;
+	| FORMAT_L expr (FORMAT_INNER expr)* FORMAT_R;
 LINE_COMMENT: '//' .*? '\r'? '\n' -> skip;
 BLOCK_COMMENT: '/*' .*? '*/' -> skip;
 STRING_VALUE: '"' ((~["\\]) | '\\"'| '\\\\' | '\\n' |'\\r')* '"';
@@ -155,7 +152,7 @@ MUL: '*';
 DIV: '/';
 MOD: '%';
 WS: [ \r\n\t]+ -> skip;
-fragment CHAR: ~[$"\r\n] | '{{' | '}}';
+fragment CHAR: ~[$"\r\n] | '{{' | '}}' | '$$';
 FORMAT_L: 'f"' CHAR* '$';
 FORMAT_R: '$' CHAR* '"';
 FORMAT_INNER: '$' CHAR* '$';
