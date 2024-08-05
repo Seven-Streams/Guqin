@@ -1,7 +1,11 @@
 import org.antlr.v4.runtime.tree.ParseTree;
 
-import nodes.ASTNode;
-import nodes.ProgNode;
+import ASTnodes.ASTNode;
+import ASTnodes.ProgNode;
+import Composer.Composer;
+import Visitor.ASTVisitor;
+import basic_grammar.guqinLexer;
+import basic_grammar.guqinParser;
 
 import org.antlr.v4.runtime.*;
 import java.io.InputStream;
@@ -35,16 +39,16 @@ public class Guqin {
             });
             ParseTree tree = parser.prog();
             ASTVisitor AST = new ASTVisitor();
-            ASTNode res = AST.visit(tree);
+            ASTNode entry = AST.visit(tree);
             try {
-                res.check();
+                entry.check();
             } catch (Exception e) {
                 System.out.println(e);
                 System.exit(-1);
             }
             System.out.println("OK");
-            Translator Yuchuan = new Translator();
-            Yuchuan.translate((ProgNode)res);
+            Composer Yuchuan = new Composer(AST);
+            Yuchuan.translate((ProgNode) entry);
             System.exit(0);
         } catch (RecognitionException e) {
             System.out.println(e);

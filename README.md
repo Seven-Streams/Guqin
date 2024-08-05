@@ -23,6 +23,7 @@ Guqin is a kind of Chinese traditional musical instrument. For example, the famo
 - もしも命が描けたら
 - 雲雀
 - 好きだから。
+- 生きてるだけでえらいよ
 
 ## Warning
 

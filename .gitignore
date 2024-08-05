@@ -6,6 +6,7 @@ tools
 tutorial
 /.vscode
 /lib
+/basic_grammar
 guqin.interp
 guqin.tokens
 guqinBaseListener.java
