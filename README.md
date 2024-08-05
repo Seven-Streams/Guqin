@@ -17,13 +17,16 @@ Guqin is a kind of Chinese traditional musical instrument. For example, the famo
 
 ## The songs I love listening when coding
 
-- アイロニ
-- ツバメ
-- あさひ
-- もしも命が描けたら
-- 雲雀
-- 好きだから。
-- 生きてるだけでえらいよ
+- [アイロニ](https://music.163.com/song?id=31421442)
+- [ツバメ](https://music.163.com/song?id=1885359359)
+- [あさひ](https://music.163.com/song?id=2042046337)
+- [もしも命が描けたら](https://music.163.com/song?id=1893592988)
+- [雲雀](https://music.163.com/song?id=1388185341)
+- [雪语](https://music.163.com/song?id=1830652902)
+- [好きだから。](https://music.163.com/song?id=1889339132)
+- [生きてるだけでえらいよ](https://music.163.com/song?id=1840218133)
+- [月と花束](https://music.163.com/song?id=541480240)
+- [25時の情熱](https://music.163.com/song?id=2156224250)
 
 ## Warning
 

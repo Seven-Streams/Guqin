@@ -6,6 +6,6 @@ public class IRGlobal extends IRCode{
   public String type = null;
   @Override
   public void CodePrint() {
-    System.out.println("@" + name + "= global" + type + '0');
+    System.out.println(name + "= global" + type + '0');
   }
 }
