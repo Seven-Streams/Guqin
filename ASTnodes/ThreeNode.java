@@ -1,5 +1,7 @@
 package ASTnodes;
 
+import Composer.*;
+
 public class ThreeNode extends ExprNode {
   public ASTNode condition = null;
   public ASTNode value1 = null;
@@ -25,4 +27,5 @@ public class ThreeNode extends ExprNode {
     is_left = false;
     return res1.type.equals("null") ? res2 : res1;
   }
+  
 }

@@ -1,9 +1,39 @@
 package ASTnodes;
 
-public class PrintNode extends StatNode{
+import Composer.*;
+import IRSentence.*;
+
+public class PrintNode extends StatNode {
   public boolean change_line = false;
   public ASTNode value = null;
-  @Override public Mypair check() throws Exception {
+
+  @Override
+  public Mypair check() throws Exception {
     return new Mypair();
+  }
+
+  @Override
+  public Info GenerateIR(Composer machine) {
+    Info to_print = value.GenerateIR(machine);
+    IRFuncall res = new IRFuncall();
+    res.func_type = "void";
+    res.reg.add(to_print.reg);
+    if (value.type == "int") {
+      res.type.add("i32");
+      if (change_line) {
+        res.func_name = "printIntln";
+      } else {
+        res.func_name = "printInt";
+      }
+    } else {
+      if (change_line) {
+        res.func_name = "println";
+      } else {
+        res.func_name = "print";
+      }
+      res.type.add("ptr");
+    }
+    machine.generated.add(res);
+    return new Info();
   }
 }

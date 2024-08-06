@@ -1,4 +1,3 @@
-
 int scanf(const char *__restrict format, ...);
 int puts(const char *str);
 int printf(const char *format, ...);
@@ -8,6 +7,8 @@ void *malloc(unsigned long size);
 void *calloc(unsigned long num, unsigned long size);
 char *strcpy(char *dest, const char *src);
 void free(void *ptr);
+char* strcat(char *, const char *);
+int strcmp(const char *, const char *);
 void println(const char *str) {
   puts(str);
   puts("\n");
@@ -80,6 +81,14 @@ int string_parseInt(char *str) {
 
 int string_ord(char *str, int num) {
   return *(str + num);
+}
+
+int string_cmp(char *str1, char *str2){
+  return strcmp(str1, str2);
+}
+
+char* string_cat(char *str1, char *str2){
+  return strcat(str1, str2);
 }
 
 int main() {
