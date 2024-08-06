@@ -1,0 +1,87 @@
+
+int scanf(const char *__restrict format, ...);
+int puts(const char *str);
+int printf(const char *format, ...);
+int sprintf(char *__restrict s, const char *__restrict format, ...);
+unsigned long strlen(const char *s);
+void *malloc(unsigned long size);
+void *calloc(unsigned long num, unsigned long size);
+char *strcpy(char *dest, const char *src);
+void free(void *ptr);
+void println(const char *str) {
+  puts(str);
+  puts("\n");
+  return;
+}
+
+void print(const char *str) {
+  puts(str);
+  return;
+}
+
+void printInt(int x) {
+  printf("%d", x);
+  return;
+}
+
+void printIntln(int x) {
+  printf("%d\n", x);
+  return;
+}
+
+char *toString(int x) {
+  char *buffer = (char*)malloc(15);
+  sprintf(buffer, "%d", x);
+  char *output = (char*)malloc(strlen(buffer) + 1);
+  strcpy(output, buffer);
+  free(buffer);
+  return output;
+}
+
+int getInt() {
+  int x;
+  scanf("%d", &x);
+  return x;
+}
+
+char *getString() {
+  char *buffer = (char*)malloc(4096);
+  scanf("%s", buffer);
+  char *output = (char*)malloc(strlen(buffer) + 1);
+  strcpy(output, buffer);
+  free(buffer);
+  return output;
+}
+
+int string_length(char *str) { return strlen(str); }
+
+char *string_substring(char *str, int left, int right) {
+  char *res = (char*)malloc(sizeof(str) + 1);
+  strcpy(res, str + left);
+  *(res + (right - left)) = 0;
+  char *output = (char*)malloc(strlen(res) + 1);
+  strcpy(output, res);
+  free(res);
+  return output;
+}
+
+int string_parseInt(char *str) {
+  int ans = 0;
+  for (int i = 0; i < strlen(str); i++) {
+    if ((*(str + i) >= '0') && (*(str + i) <= '9')) {
+      ans *= 10;
+      ans += *(str + i) - '0';
+    } else {
+      break;
+    }
+  }
+  return ans;
+}
+
+int string_ord(char *str, int num) {
+  return *(str + num);
+}
+
+int main() {
+  getString();
+}
