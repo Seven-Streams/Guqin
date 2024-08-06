@@ -91,6 +91,18 @@ char* string_cat(char *str1, char *str2){
   return strcat(str1, str2);
 }
 
-int main() {
-  getString();
+void* ptr_array(int number) {
+  int* res = (int*)malloc(number * sizeof(void*) + sizeof(int));
+  *res = number;
+  return res + 1;
+}
+
+int* int_array(int number) {
+  int* res = (int*)malloc((number + 1) * sizeof(int));
+  *res = number;
+  return res + 1;
+}
+
+int array_size(void* ptr) {
+  return *((int*)(ptr) - 1);
 }

@@ -2,6 +2,7 @@ package ASTnodes;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import Composer.*;
 
 public class ProgNode extends ASTNode {
   public ArrayList<ASTNode> trees = new ArrayList<>();
@@ -101,7 +102,7 @@ public class ProgNode extends ASTNode {
     if (!func_return.containsKey("main")) {
       throw new Exception("No main function.");
     }
-    if(func_args.get("main").size() != 0) {
+    if (func_args.get("main").size() != 0) {
       throw new Exception("The main function shouldn't have args!");
     }
     if (!func_return.get("main").type.equals("int")) {
@@ -115,4 +116,13 @@ public class ProgNode extends ASTNode {
     }
     return new Mypair();
   }
+
+  @Override
+  public Info GenerateIR(Composer machine) {
+    for (ASTNode tree : trees) {
+      tree.GenerateIR(machine);
+    }
+    return new Info();
+  }
+
 }

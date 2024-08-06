@@ -31,6 +31,7 @@ public class WhileNode extends StatNode {
   @Override
   public Info GenerateIR(Composer machine) {
     machine.now_name.push(new HashMap<>());
+    machine.scope_time++;
     LoopInfo res_label = new LoopInfo();
     res_label.condition = ++machine.label_number;
     res_label.body = ++machine.label_number;

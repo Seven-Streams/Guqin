@@ -11,6 +11,7 @@ import Visitor.ASTVisitor;
 public class Composer {
   public int tmp_time = 0;
   public int label_number = 0;
+  public int scope_time = 0;
   public ASTVisitor from = null;
   public String func_type = null;
   public ArrayList<IRCode> generated = new ArrayList<>();

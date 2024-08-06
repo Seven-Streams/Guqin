@@ -32,6 +32,7 @@ public class IfNode extends StatNode {
   @Override
   public Info GenerateIR(Composer machine) {
     machine.now_name.push(new HashMap<>());
+    machine.scope_time++;
     Info judge = condition.GenerateIR(machine);
     int branch_lb = ++machine.label_number;
     int else_branch_lb = ++machine.label_number;

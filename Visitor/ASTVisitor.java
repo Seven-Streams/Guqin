@@ -529,6 +529,7 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 	@Override
 	public ASTNode visitGlobal_declarstat(guqinParser.Global_declarstatContext ctx) {
 		DeclarNode res = new DeclarNode();
+		res.is_global = true;
 		res.type = ctx.real_type().getText();
 		res.dim_number = visit(ctx.dimensions_declar());
 		res.dim = universal_dnode.dim;
