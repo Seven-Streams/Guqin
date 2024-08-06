@@ -2,6 +2,12 @@ package ASTnodes;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import Composer.*;
+import IRSentence.IRCode;
+import IRSentence.IRGlobal;
+import IRSentence.IRLocal;
+import IRSentence.IRStore;
+import IRSentence.TypeNamePair;
 
 public class DeclarNode extends StatNode {
   public boolean is_global = false;
@@ -46,5 +52,73 @@ public class DeclarNode extends StatNode {
       cnt++;
     }
     return new Mypair();
+  }
+
+  @Override
+  public Info GenerateIR(Composer machine) {
+    String llvm_type = null;
+    if (dim != 0) {
+      llvm_type = "ptr";
+    } else {
+      switch (type) {
+        case ("int"): {
+          llvm_type = "i32";
+          break;
+        }
+        case ("bool"): {
+          llvm_type = "i1";
+          break;
+        }
+        default: {
+          llvm_type = "ptr";
+          break;
+        }
+      }
+    }
+    if (is_global) {
+      ArrayList<IRCode> res_codes = machine.generated;
+      for (int i = 0; i < ID.size(); i++) {
+        TypeNamePair res = new TypeNamePair();
+        res.type = type;
+        res.dim = dim;
+        res.new_name = "@" + ID.get(i) + Integer.toString(machine.scope_time);
+        machine.now_name.peek().put(ID.get(i), res);
+        IRGlobal to_add = new IRGlobal();
+        to_add.name = new String(res.new_name);
+        to_add.type = res.type;
+        machine.generated.add(to_add);
+        if (Initial.containsKey(i)) {
+          machine.generated = machine.init;
+          Info init_info = Initial.get(i).GenerateIR(machine);
+          IRStore to_store = new IRStore();
+          to_store.name = res.new_name;
+          to_store.from = init_info.reg;
+          to_store.type = llvm_type;
+          machine.generated.add(to_store);
+          machine.generated = res_codes;
+        }
+      }
+    } else {
+      for (int i = 0; i < ID.size(); i++) {
+        TypeNamePair res = new TypeNamePair();
+        res.type = type;
+        res.dim = dim;
+        res.new_name = "%" + ID.get(i) + Integer.toString(machine.scope_time);
+        machine.now_name.peek().put(ID.get(i), res);
+        IRLocal to_add = new IRLocal();
+        to_add.name = new String(res.new_name);
+        to_add.type = res.type;
+        machine.generated.add(to_add);
+        if (Initial.containsKey(i)) {
+          Info init_info = Initial.get(i).GenerateIR(machine);
+          IRStore to_store = new IRStore();
+          to_store.name = res.new_name;
+          to_store.from = init_info.reg;
+          to_store.type = llvm_type;
+          machine.generated.add(to_store);
+        }
+      }
+    }
+    return new Info();
   }
 }
