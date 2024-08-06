@@ -71,7 +71,7 @@ public class DoubleNode extends ExprNode {
     Info return_value = new Info();
     if (type.equals("int")) {
       int tmp = ++machine.tmp_time;
-      String target_reg = "%reg" + Integer.toString(tmp);
+      String target_reg = "%" + Integer.toString(tmp);
       Info info1 = value1.GenerateIR(machine);
       Info info2 = value2.GenerateIR(machine);
       if (symbol.equals("==") || symbol.equals("!=") || symbol.equals("<") || symbol.equals(">") || symbol.equals("<=")
@@ -100,7 +100,7 @@ public class DoubleNode extends ExprNode {
     if (type == "bool") {
       if (symbol.equals("==") || symbol.equals("!=")) {
         int tmp = ++machine.tmp_time;
-        String target_reg = "%reg" + Integer.toString(tmp);
+        String target_reg = "%" + Integer.toString(tmp);
         IRBin res = new IRBin();
         Info info1 = value1.GenerateIR(machine);
         Info info2 = value2.GenerateIR(machine);
