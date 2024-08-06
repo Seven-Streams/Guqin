@@ -81,7 +81,7 @@ public class DeclarNode extends StatNode {
         TypeNamePair res = new TypeNamePair();
         res.type = type;
         res.dim = dim;
-        res.new_name = "@" + ID.get(i) + Integer.toString(machine.scope_time);
+        res.new_name = "@" + ID.get(i) + "." + Integer.toString(machine.scope_time);
         machine.now_name.peek().put(ID.get(i), res);
         IRGlobal to_add = new IRGlobal();
         to_add.name = new String(res.new_name);
@@ -103,7 +103,7 @@ public class DeclarNode extends StatNode {
         TypeNamePair res = new TypeNamePair();
         res.type = type;
         res.dim = dim;
-        res.new_name = "%" + ID.get(i) + Integer.toString(machine.scope_time);
+        res.new_name = "%" + ID.get(i) + "." + Integer.toString(machine.scope_time);
         machine.now_name.peek().put(ID.get(i), res);
         IRLocal to_add = new IRLocal();
         to_add.name = new String(res.new_name);

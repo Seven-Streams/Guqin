@@ -16,12 +16,11 @@ public class Composer {
   public String func_type = null;
   public ArrayList<IRCode> init = new ArrayList<>();
   public ArrayList<IRCode> generated = new ArrayList<>();
+  public HashMap<String, String> class_now_name = new HashMap<>();
+  public HashMap<String, String> class_mem_num = new HashMap<>();
   public HashMap<String, Integer> now_class = new HashMap<>();
   // It's used to check now_name of the variable.
-  public HashMap<String, HashMap<String, Integer>> class_func = new HashMap<>();
-  public HashMap<String, HashMap<String, Integer>> class_mem_number = new HashMap<>();
   public Stack<HashMap<String, TypeNamePair>> now_name = new Stack<>();
-  // It's used to give each member in a class a number to visit.
   public Composer(ASTVisitor _src) {
     from = _src;
   }
