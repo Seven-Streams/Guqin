@@ -47,6 +47,7 @@ public class LiterNode extends ExprNode {
           i++;
         }
       }
+      to_add.size = str_size;
       machine.const_str.add(to_add);
       IRFuncall to_call = new IRFuncall();
       to_call.func_name = ("string_copy");

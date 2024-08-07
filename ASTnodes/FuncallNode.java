@@ -2,6 +2,9 @@ package ASTnodes;
 
 import java.util.ArrayList;
 
+import Composer.*;
+import IRSentence.IRFuncall;
+
 public class FuncallNode extends ExprNode {
   public String name = null;
   public ASTNode from = null;
@@ -47,6 +50,7 @@ public class FuncallNode extends ExprNode {
       Mypair res = null;
       if (from != null) {
         res = from.check();
+        from_type = new String(res.type);
       } else {
         res = new Mypair(from_type, 0);
       }
@@ -78,5 +82,75 @@ public class FuncallNode extends ExprNode {
       Mypair return_value = class_func_return.get(res.type).get(name);
       return new Mypair(return_value.type, return_value.dim);
     }
+  }
+
+  @Override
+  public Info GenerateIR(Composer machine) {
+    IRFuncall res = new IRFuncall();
+    Info return_value = new Info();
+    Mypair return_check;
+    ArrayList<Mypair> type_check;
+    if (from_type.equals("null")) {
+      res.func_name = name;
+      return_check = func_return.get(name);
+      if (!return_check.type.equals("void")) {
+        String res_target = "%" + Integer.toString(++machine.tmp_time);
+        res.target_reg = res_target;
+        return_value.reg = res_target;
+      }
+      type_check = func_args.get(name);
+    } else {
+      res.func_name = from_type + name;
+      return_check = class_func_return.get(from_type).get(name);
+      type_check = class_func_args.get(from_type).get(name);
+      if (!return_check.type.equals("void")) {
+        String res_target = "%" + Integer.toString(++machine.tmp_time);
+        res.target_reg = res_target;
+        return_value.reg = res_target;
+      }
+    }
+    if (return_check.dim != 0) {
+      res.func_type = "ptr";
+    } else {
+      switch (return_check.type) {
+        case ("int"): {
+          res.func_type = "i32";
+          break;
+        }
+        case ("bool"): {
+          res.func_type = "i1";
+          break;
+        }
+        default: {
+          res.func_type = "ptr";
+          break;
+        }
+      }
+    }
+    for (ASTNode arg : args) {
+      Info to_add = arg.GenerateIR(machine);
+      res.reg.add(to_add.reg);
+    }
+    for (Mypair type : type_check) {
+      if (type.dim != 0) {
+        res.type.add("ptr");
+      } else {
+        switch (type.type) {
+          case ("int"): {
+            res.type.add("i32");
+            break;
+          }
+          case ("bool"): {
+            res.type.add("i1");
+            break;
+          }
+          default: {
+            res.type.add("ptr");
+            break;
+          }
+        }
+      }
+    }
+    return return_value;
   }
 }
