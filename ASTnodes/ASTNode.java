@@ -26,5 +26,9 @@ public class ASTNode {
   }
   public Info GenerateIR(Composer machine) {
     return new Info();
-  };
+  }//All this part will get a right value.
+
+  public Info GetLeftValue(Composer machine) {
+    return new Info();
+  }
 }

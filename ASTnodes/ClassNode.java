@@ -63,11 +63,16 @@ public class ClassNode extends ASTNode {
         }
       }
     }
+    machine.class_now_name.put(name, res.name);
+    machine.class_mem_num.put(name, res_num);
+    machine.now_name.add(null);
     for(ASTNode func: member) {
       if(func instanceof FuncNode) {
         func.GenerateIR(machine);
       }
     }
+    machine.now_name.pop();
+    in_class = false;
     return new Info();
   }
 }

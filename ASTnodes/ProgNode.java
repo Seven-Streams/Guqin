@@ -124,5 +124,4 @@ public class ProgNode extends ASTNode {
     }
     return new Info();
   }
-
 }

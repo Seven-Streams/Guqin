@@ -19,7 +19,7 @@ public class Composer {
   public ArrayList<IRCode> generated = new ArrayList<>();
   public ArrayList<IRCode> const_str = new ArrayList<>();
   public HashMap<String, String> class_now_name = new HashMap<>();
-  public HashMap<String, String> class_mem_num = new HashMap<>();
+  public HashMap<String, HashMap<String, Integer>> class_mem_num = new HashMap<>();
   public HashMap<String, Integer> now_class = new HashMap<>();
   // It's used to check now_name of the variable.
   public Stack<HashMap<String, TypeNamePair>> now_name = new Stack<>();
