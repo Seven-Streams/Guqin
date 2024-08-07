@@ -479,6 +479,7 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 				String f_res_str = ctx.getChild(i).getText();
 				if (f_res_str.charAt(0) == 'f') {
 					res_str.value = f_res_str.substring(2, f_res_str.length() - 1);
+					res_str.value = res_str.value.replace("$", "$$");
 				} else {
 					res_str.value = f_res_str.substring(1, f_res_str.length() - 1);
 				}

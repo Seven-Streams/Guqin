@@ -94,4 +94,31 @@ public class IdNode extends ExprNode {
     return_value.reg = target_reg;
     return return_value;
   }
+
+@Override
+  public Info GetLeftValuePtr(Composer machine) {
+    Info return_value = new Info();
+   for (int i = machine.now_name.size() - 1; i >= 0; i--) {
+      if (machine.now_name.get(i) == null) {
+        HashMap<String, Integer> class_mem = machine.class_mem_num.get(this_class);
+        if (class_mem.containsKey(id)) {
+          IRElement ele = new IRElement();
+          ele.now_type = machine.class_now_name.get(this_class);
+          ele.num = machine.class_mem_num.get(this_class).get(id);
+          ele.output = "%" + Integer.toString(++machine.tmp_time);
+          ele.src = "%0";
+          machine.generated.add(ele);
+          return_value.reg = ele.output;
+          break;
+        }
+      } else {
+        if (machine.now_name.get(i).containsKey(id)) {
+          TypeNamePair to_check = machine.now_name.get(i).get(id);
+          return_value.reg = new String(to_check.new_name);
+          break;
+        }
+      }
+    }
+    return return_value;
+  }
 }

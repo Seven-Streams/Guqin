@@ -9,6 +9,7 @@ char *strcpy(char *dest, const char *src);
 void free(void *ptr);
 char *strcat(char *, const char *);
 int strcmp(const char *, const char *);
+#define bool _Bool
 void println(const char *str) {
   puts(str);
   puts("\n");
@@ -37,6 +38,10 @@ char *toString(int x) {
   strcpy(output, buffer);
   free(buffer);
   return output;
+}
+
+char *bool_toString(bool x) {
+  char *buffer = (char*)malloc(5);
 }
 
 int getInt() {

@@ -28,7 +28,7 @@ public class ASTNode {
     return new Info();
   }//All this part will get a right value.
 
-  public Info GetLeftValue(Composer machine) {
+  public Info GetLeftValuePtr(Composer machine) {
     return new Info();
   }
 }

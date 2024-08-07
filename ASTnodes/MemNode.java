@@ -60,4 +60,18 @@ public class MemNode extends ExprNode {
     return_value.reg = target_reg;
     return return_value;
   }
+
+  @Override
+  public Info GetLeftValuePtr(Composer machine) {
+    IRElement ele_res = new IRElement();
+    String target_reg = new String("%" + Integer.toString(++machine.tmp_time));
+    ele_res.now_type = new String("%struct." + type);
+    ele_res.output = target_reg;
+    Info from_reg = from.GenerateIR(machine);
+    ele_res.src = from_reg.reg;
+    machine.generated.add(ele_res);
+    Info return_value = new Info();
+    return_value.reg = target_reg;
+    return return_value;
+  }
 }

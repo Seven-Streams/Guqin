@@ -3,6 +3,7 @@ package ASTnodes;
 import java.util.ArrayList;
 import java.util.HashMap;
 import Composer.*;
+import IRSentence.IRChararray;
 
 public class ProgNode extends ASTNode {
   public ArrayList<ASTNode> trees = new ArrayList<>();
@@ -119,6 +120,20 @@ public class ProgNode extends ASTNode {
 
   @Override
   public Info GenerateIR(Composer machine) {
+    IRChararray to_add = new IRChararray();
+    to_add.reg = new String("@.true");
+    to_add.value = "true";
+    to_add.size = 5;
+    machine.const_str.add(to_add);
+    IRChararray to_add1 = new IRChararray();
+    to_add1.reg = new String("@.false");
+    to_add1.value = "false";
+    to_add1.size = 6;
+    IRChararray to_add2 = new IRChararray();
+    to_add1.reg = new String("@.null");
+    to_add1.value = "";
+    to_add1.size = 1;
+    machine.const_str.add(to_add2);
     for (ASTNode tree : trees) {
       tree.GenerateIR(machine);
     }
