@@ -3,6 +3,7 @@ package ASTnodes;
 import Composer.*;
 import IRSentence.Conditionjmp;
 import IRSentence.IRBin;
+import IRSentence.IRFuncall;
 import IRSentence.IRIcmp;
 import IRSentence.IRLabel;
 import IRSentence.IRjmp;
@@ -69,9 +70,10 @@ public class DoubleNode extends ExprNode {
   @Override
   public Info GenerateIR(Composer machine) {
     Info return_value = new Info();
+    int tmp = ++machine.tmp_time;
+    String target_reg = "%" + Integer.toString(tmp);
+    return_value.reg = target_reg;
     if (type.equals("int")) {
-      int tmp = ++machine.tmp_time;
-      String target_reg = "%" + Integer.toString(tmp);
       Info info1 = value1.GenerateIR(machine);
       Info info2 = value2.GenerateIR(machine);
       if (symbol.equals("==") || symbol.equals("!=") || symbol.equals("<") || symbol.equals(">") || symbol.equals("<=")
@@ -97,10 +99,8 @@ public class DoubleNode extends ExprNode {
         return return_value;
       }
     }
-    if (type == "bool") {
+    if (type.equals("bool")) {
       if (symbol.equals("==") || symbol.equals("!=")) {
-        int tmp = ++machine.tmp_time;
-        String target_reg = "%" + Integer.toString(tmp);
         IRBin res = new IRBin();
         Info info1 = value1.GenerateIR(machine);
         Info info2 = value2.GenerateIR(machine);
@@ -112,9 +112,213 @@ public class DoubleNode extends ExprNode {
         return_value.reg = target_reg;
         return return_value;
       }
-      if(symbol.equals("||")) {
-        //TODO:Finish the part of bool expression.
+      if (symbol.equals("||")) {
+        int br1 = ++machine.label_number;
+        int br2 = ++machine.label_number;
+        int let0 = ++machine.label_number;
+        int let1 = ++machine.label_number;
+        int end = ++machine.label_number;
+        machine.generated.add(new IRLabel(br1));
+        Info info1 = value1.GenerateIR(machine);
+        Conditionjmp judge0 = new Conditionjmp(let1, br2, info1.reg);
+        machine.generated.add(judge0);
+        machine.generated.add(new IRLabel(br2));
+        Info info2 = value2.GenerateIR(machine);
+        Conditionjmp judge1 = new Conditionjmp(let1, let0, info2.reg);
+        machine.generated.add(judge1);
+        machine.generated.add(new IRLabel(let1));
+        IRBin res_bin = new IRBin();
+        res_bin.op1 = "1";
+        res_bin.op2 = "0";
+        res_bin.type = "i1";
+        res_bin.symbol = "+";
+        res_bin.target_reg = target_reg;
+        machine.generated.add(res_bin);
+        IRjmp jmp_to_end = new IRjmp(end);
+        machine.generated.add(jmp_to_end);
+        machine.generated.add(new IRLabel(let0));
+        IRBin res_bin0 = new IRBin();
+        res_bin0.op1 = "0";
+        res_bin0.op2 = "0";
+        res_bin0.type = "i1";
+        res_bin0.symbol = "+";
+        res_bin0.target_reg = target_reg;
+        machine.generated.add(res_bin0);
+        machine.generated.add(jmp_to_end);
+        machine.generated.add(new IRLabel(end));
+        return return_value;
+      }
+      if (symbol.equals("&&")) {
+        int br1 = ++machine.label_number;
+        int br2 = ++machine.label_number;
+        int let0 = ++machine.label_number;
+        int let1 = ++machine.label_number;
+        int end = ++machine.label_number;
+        machine.generated.add(new IRLabel(br1));
+        Info info1 = value1.GenerateIR(machine);
+        Conditionjmp judge0 = new Conditionjmp(br2, let0, info1.reg);
+        machine.generated.add(judge0);
+        machine.generated.add(new IRLabel(br2));
+        Info info2 = value2.GenerateIR(machine);
+        Conditionjmp judge1 = new Conditionjmp(let1, let0, info2.reg);
+        machine.generated.add(judge1);
+        machine.generated.add(new IRLabel(let1));
+        IRBin res_bin = new IRBin();
+        res_bin.op1 = "1";
+        res_bin.op2 = "0";
+        res_bin.type = "i1";
+        res_bin.symbol = "+";
+        res_bin.target_reg = target_reg;
+        machine.generated.add(res_bin);
+        IRjmp jmp_to_end = new IRjmp(end);
+        machine.generated.add(jmp_to_end);
+        machine.generated.add(new IRLabel(let0));
+        IRBin res_bin0 = new IRBin();
+        res_bin0.op1 = "0";
+        res_bin0.op2 = "0";
+        res_bin0.type = "i1";
+        res_bin0.symbol = "+";
+        res_bin0.target_reg = target_reg;
+        machine.generated.add(res_bin0);
+        machine.generated.add(jmp_to_end);
+        machine.generated.add(new IRLabel(end));
+        return return_value;
       }
     }
+    if (type.equals("string")) {
+      Info string1 = value1.GenerateIR(machine);
+      Info string2 = value2.GenerateIR(machine);
+      switch (symbol) {
+        case ("=="): {
+          IRFuncall func = new IRFuncall();
+          String tmp1 = new String("%" + Integer.toString(++machine.tmp_time));
+          func.target_reg = tmp1;
+          func.reg.add(string1.reg);
+          func.reg.add(string2.reg);
+          func.func_type = "i32";
+          func.func_name = "string_cmp";
+          machine.generated.add(func);
+          IRIcmp res = new IRIcmp();
+          res.op1 = tmp1;
+          res.op2 = "0";
+          res.symbol = "==";
+          res.type = "i32";
+          machine.generated.add(res);
+          return return_value;
+        }
+        case ("!="): {
+          IRFuncall func = new IRFuncall();
+          String tmp1 = new String("%" + Integer.toString(++machine.tmp_time));
+          func.target_reg = tmp1;
+          func.reg.add(string1.reg);
+          func.reg.add(string2.reg);
+          func.func_type = "i32";
+          func.func_name = "string_cmp";
+          machine.generated.add(func);
+          IRIcmp res = new IRIcmp();
+          res.op1 = tmp1;
+          res.op2 = "0";
+          res.symbol = "!=";
+          res.type = "i32";
+          machine.generated.add(res);
+          return return_value;
+        }
+        case (">="): {
+          IRFuncall func = new IRFuncall();
+          String tmp1 = new String("%" + Integer.toString(++machine.tmp_time));
+          func.target_reg = tmp1;
+          func.reg.add(string1.reg);
+          func.reg.add(string2.reg);
+          func.func_type = "i32";
+          func.func_name = "string_cmp";
+          machine.generated.add(func);
+          IRIcmp res = new IRIcmp();
+          res.op1 = tmp1;
+          res.op2 = "0";
+          res.symbol = ">=";
+          res.type = "i32";
+          machine.generated.add(res);
+          return return_value;
+        }
+        case ("<="): {
+          IRFuncall func = new IRFuncall();
+          String tmp1 = new String("%" + Integer.toString(++machine.tmp_time));
+          func.target_reg = tmp1;
+          func.reg.add(string1.reg);
+          func.reg.add(string2.reg);
+          func.func_type = "i32";
+          func.func_name = "string_cmp";
+          machine.generated.add(func);
+          IRIcmp res = new IRIcmp();
+          res.op1 = tmp1;
+          res.op2 = "0";
+          res.symbol = "<=";
+          res.type = "i32";
+          machine.generated.add(res);
+          return return_value;
+        }
+        case (">"): {
+          IRFuncall func = new IRFuncall();
+          String tmp1 = new String("%" + Integer.toString(++machine.tmp_time));
+          func.target_reg = tmp1;
+          func.reg.add(string1.reg);
+          func.reg.add(string2.reg);
+          func.func_type = "i32";
+          func.func_name = "string_cmp";
+          machine.generated.add(func);
+          IRIcmp res = new IRIcmp();
+          res.op1 = tmp1;
+          res.op2 = "0";
+          res.symbol = ">";
+          res.type = "i32";
+          machine.generated.add(res);
+          return return_value;
+        }
+        case ("<"): {
+          IRFuncall func = new IRFuncall();
+          String tmp1 = new String("%" + Integer.toString(++machine.tmp_time));
+          func.target_reg = tmp1;
+          func.reg.add(string1.reg);
+          func.reg.add(string2.reg);
+          func.func_type = "i32";
+          func.func_name = "string_cmp";
+          machine.generated.add(func);
+          IRIcmp res = new IRIcmp();
+          res.op1 = tmp1;
+          res.op2 = "0";
+          res.symbol = "<";
+          res.type = "i32";
+          machine.generated.add(res);
+          return return_value;
+        }
+        case("+"): {
+          IRFuncall func = new IRFuncall();
+          func.target_reg = target_reg;
+          func.func_name = "string_cat";
+          func.func_type = "ptr";
+          func.reg.add(string1.reg);
+          func.reg.add(string2.reg);
+          machine.generated.add(func);
+          return return_value;
+        }
+        default:{
+          System.out.println("Unexpected operator in String!");
+          break;
+        }
+      }
+    }
+    Info info1 = value1.GenerateIR(machine);
+    Info info2 = value2.GenerateIR(machine);
+    IRIcmp cmp = new IRIcmp();
+    cmp.op1 = info1.reg;
+    cmp.op2 = info2.reg;
+    if(!cmp.symbol.equals("==")) {
+      System.out.println("A surprising symbol!");
+    }
+    cmp.symbol = "==";
+    cmp.type = "ptr";
+    cmp.target_reg = target_reg;
+    machine.generated.add(cmp);
+    return return_value;
   }
 }
