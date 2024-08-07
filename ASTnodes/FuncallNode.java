@@ -151,6 +151,7 @@ public class FuncallNode extends ExprNode {
         }
       }
     }
+    machine.generated.add(res);
     return return_value;
   }
 }
