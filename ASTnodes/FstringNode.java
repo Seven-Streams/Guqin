@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import Composer.*;
 import IRSentence.Conditionjmp;
 import IRSentence.IRFuncall;
-import IRSentence.IRIcmp;
 import IRSentence.IRLabel;
 import IRSentence.IRjmp;
 
@@ -20,7 +19,7 @@ public class FstringNode extends ExprNode {
       if (to_check.dim != 0) {
         throw new Exception("Invalid dimension in fstring.");
       }
-      if (to_check.type != "bool" && to_check.type != "int" && to_check.type != "string") {
+      if (!to_check.type.equals("bool") && !to_check.type.equals("int") && !to_check.type.equals("string")) {
         throw new Exception("Invalid type in fstring.");
       }
     }
@@ -34,7 +33,7 @@ public class FstringNode extends ExprNode {
       Info expr = exprs.get(i).GenerateIR(machine);
       switch (types.get(i)) {
         case ("int"): {
-          String tmp = new String("%" + Integer.toString(++machine.tmp_time));
+          String tmp = new String("%reg" + Integer.toString(++machine.tmp_time));
           IRFuncall to_string = new IRFuncall();
           to_string.func_name = "toString";
           to_string.func_type = "ptr";
@@ -46,7 +45,7 @@ public class FstringNode extends ExprNode {
           cat.func_type = "ptr";
           cat.reg.add(new String(res));
           cat.reg.add(new String(tmp));
-          cat.target_reg = new String("%" + Integer.toString(++machine.tmp_time));
+          cat.target_reg = new String("%reg" + Integer.toString(++machine.tmp_time));
           cat.type.add("ptr");
           cat.type.add("ptr");
           machine.generated.add(cat);
@@ -54,7 +53,7 @@ public class FstringNode extends ExprNode {
           break;
         }
         case ("bool"): {
-          String tmp = new String("%" + Integer.toString(++machine.tmp_time));
+          String tmp = new String("%reg" + Integer.toString(++machine.tmp_time));
           int label_true = ++machine.label_number;
           int label_false = ++machine.label_number;
           int end = ++machine.label_number;
@@ -87,7 +86,7 @@ public class FstringNode extends ExprNode {
           cat.func_type = "ptr";
           cat.reg.add(new String(res));
           cat.reg.add(new String(tmp));
-          cat.target_reg = new String("%" + Integer.toString(++machine.tmp_time));
+          cat.target_reg = new String("%reg" + Integer.toString(++machine.tmp_time));
           cat.type.add("ptr");
           cat.type.add("ptr");
           machine.generated.add(cat);
@@ -100,7 +99,7 @@ public class FstringNode extends ExprNode {
           cat.func_type = "ptr";
           cat.reg.add(new String(res));
           cat.reg.add(new String(expr.reg));
-          cat.target_reg = new String("%" + Integer.toString(++machine.tmp_time));
+          cat.target_reg = new String("%reg" + Integer.toString(++machine.tmp_time));
           cat.type.add("ptr");
           cat.type.add("ptr");
           machine.generated.add(cat);

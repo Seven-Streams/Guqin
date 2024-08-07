@@ -28,13 +28,13 @@ public class MemNode extends ExprNode {
   @Override
   public Info GenerateIR(Composer machine) {
     IRElement ele_res = new IRElement();
-    String target_reg = new String("%" + Integer.toString(++machine.tmp_time));
+    String target_reg = new String("%reg" + Integer.toString(++machine.tmp_time));
     ele_res.now_type = new String("%struct." + type);
     ele_res.output = target_reg;
     Info from_reg = from.GenerateIR(machine);
     ele_res.src = from_reg.reg;
     machine.generated.add(ele_res);
-    String output_reg = new String("%" + Integer.toString(++machine.tmp_time));
+    String output_reg = new String("%reg" + Integer.toString(++machine.tmp_time));
     IRLoad load_res = new IRLoad();
     load_res.des = new String(output_reg);
     load_res.src = target_reg;
@@ -64,7 +64,7 @@ public class MemNode extends ExprNode {
   @Override
   public Info GetLeftValuePtr(Composer machine) {
     IRElement ele_res = new IRElement();
-    String target_reg = new String("%" + Integer.toString(++machine.tmp_time));
+    String target_reg = new String("%reg" + Integer.toString(++machine.tmp_time));
     ele_res.now_type = new String("%struct." + type);
     ele_res.output = target_reg;
     Info from_reg = from.GenerateIR(machine);

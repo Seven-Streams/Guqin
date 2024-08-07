@@ -34,10 +34,10 @@ public class DeclarNode extends StatNode {
       if (Initial.containsKey(cnt)) {
         Mypair res = Initial.get(cnt).check();
         if (!res.type.equals("null")) {
-          if (!resMypair.type.equals(res.type)) {
+          if (!resMypair.type.equals(res.type) && (!res.type.equals(""))) {
             throw new Exception("Invalid type in initialization.");
           }
-          if (resMypair.dim != res.dim) {
+          if ((resMypair.dim != res.dim) && (!res.type.equals(""))) {
             throw new Exception("Invalid dimension in initialization.");
           }
         } else {

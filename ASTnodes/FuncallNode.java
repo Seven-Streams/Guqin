@@ -94,7 +94,7 @@ public class FuncallNode extends ExprNode {
       res.func_name = name;
       return_check = func_return.get(name);
       if (!return_check.type.equals("void")) {
-        String res_target = "%" + Integer.toString(++machine.tmp_time);
+        String res_target = "%reg" + Integer.toString(++machine.tmp_time);
         res.target_reg = res_target;
         return_value.reg = res_target;
       }
@@ -104,7 +104,7 @@ public class FuncallNode extends ExprNode {
       return_check = class_func_return.get(from_type).get(name);
       type_check = class_func_args.get(from_type).get(name);
       if (!return_check.type.equals("void")) {
-        String res_target = "%" + Integer.toString(++machine.tmp_time);
+        String res_target = "%reg" + Integer.toString(++machine.tmp_time);
         res.target_reg = res_target;
         return_value.reg = res_target;
       }

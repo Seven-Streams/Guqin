@@ -20,7 +20,10 @@ public class ArrayNode extends ASTNode {
       } else {
         throw new Exception("Invalid type in array.");
       }
+      if(check.dim != 0) {
+        dim = check.dim + 1;
+      }
     }
-    return new Mypair(res.type, 1);
+    return new Mypair(res.type, dim);
   }
 }

@@ -67,7 +67,7 @@ public class InnerNode extends ExprNode {
 
   @Override
   public Info GenerateIR(Composer machine) {
-    String target_name = "%" + Integer.toString(++machine.tmp_time);
+    String target_name = "%reg" + Integer.toString(++machine.tmp_time);
     IRFuncall buildin_func = new IRFuncall();
     buildin_func.target_reg = target_name;
     buildin_func.func_name = "string_" + name;

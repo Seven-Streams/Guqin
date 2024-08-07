@@ -71,7 +71,7 @@ public class DoubleNode extends ExprNode {
   public Info GenerateIR(Composer machine) {
     Info return_value = new Info();
     int tmp = ++machine.tmp_time;
-    String target_reg = "%" + Integer.toString(tmp);
+    String target_reg = "%reg" + Integer.toString(tmp);
     return_value.reg = target_reg;
     if (type.equals("int")) {
       Info info1 = value1.GenerateIR(machine);
@@ -191,7 +191,7 @@ public class DoubleNode extends ExprNode {
       switch (symbol) {
         case ("=="): {
           IRFuncall func = new IRFuncall();
-          String tmp1 = new String("%" + Integer.toString(++machine.tmp_time));
+          String tmp1 = new String("%reg" + Integer.toString(++machine.tmp_time));
           func.target_reg = tmp1;
           func.reg.add(string1.reg);
           func.reg.add(string2.reg);
@@ -208,7 +208,7 @@ public class DoubleNode extends ExprNode {
         }
         case ("!="): {
           IRFuncall func = new IRFuncall();
-          String tmp1 = new String("%" + Integer.toString(++machine.tmp_time));
+          String tmp1 = new String("%reg" + Integer.toString(++machine.tmp_time));
           func.target_reg = tmp1;
           func.reg.add(string1.reg);
           func.reg.add(string2.reg);
@@ -225,7 +225,7 @@ public class DoubleNode extends ExprNode {
         }
         case (">="): {
           IRFuncall func = new IRFuncall();
-          String tmp1 = new String("%" + Integer.toString(++machine.tmp_time));
+          String tmp1 = new String("%reg" + Integer.toString(++machine.tmp_time));
           func.target_reg = tmp1;
           func.reg.add(string1.reg);
           func.reg.add(string2.reg);
@@ -242,7 +242,7 @@ public class DoubleNode extends ExprNode {
         }
         case ("<="): {
           IRFuncall func = new IRFuncall();
-          String tmp1 = new String("%" + Integer.toString(++machine.tmp_time));
+          String tmp1 = new String("%reg" + Integer.toString(++machine.tmp_time));
           func.target_reg = tmp1;
           func.reg.add(string1.reg);
           func.reg.add(string2.reg);
@@ -259,7 +259,7 @@ public class DoubleNode extends ExprNode {
         }
         case (">"): {
           IRFuncall func = new IRFuncall();
-          String tmp1 = new String("%" + Integer.toString(++machine.tmp_time));
+          String tmp1 = new String("%reg" + Integer.toString(++machine.tmp_time));
           func.target_reg = tmp1;
           func.reg.add(string1.reg);
           func.reg.add(string2.reg);
@@ -276,7 +276,7 @@ public class DoubleNode extends ExprNode {
         }
         case ("<"): {
           IRFuncall func = new IRFuncall();
-          String tmp1 = new String("%" + Integer.toString(++machine.tmp_time));
+          String tmp1 = new String("%reg" + Integer.toString(++machine.tmp_time));
           func.target_reg = tmp1;
           func.reg.add(string1.reg);
           func.reg.add(string2.reg);

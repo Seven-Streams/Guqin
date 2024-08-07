@@ -35,7 +35,7 @@ public class ThreeNode extends ExprNode {
   @Override
   public Info GenerateIR(Composer machine) {
     int tmp = ++(machine.tmp_time);
-    String reg_name = "%" + Integer.toString(tmp);
+    String reg_name = "%reg" + Integer.toString(tmp);
     int value_1 = ++machine.label_number;
     int value_2 = ++machine.label_number;
     int end = ++machine.label_number;

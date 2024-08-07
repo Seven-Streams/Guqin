@@ -2,28 +2,28 @@ grammar guqin;
 
 id: ID;
 prog: (classdef | func | global_declarstat)+;
-dimension: '[' expr? ']' | '[]';
-must_dimension: '[' expr ']';
+dimension: LB expr? RB | LB RB;
+must_dimension: LB expr RB;
 typepair: real_type dimensions id;
 dimensions: (dimension)*;
 dimensions_exist: must_dimension+;
 dimensions_choose: must_dimension*;
 dimensions_declar: dimension*;
-array: '{' (expr (',' expr)*)? '}';
-multiarray: array | '{' multiarray (',' multiarray)* '}';
+array: LL (expr (COM expr)*)? RL;
+multiarray:  LL multiarray (COM multiarray)* RL | LL array (COM array)* RL;
 real_type: (INT | BOOL | STRING | id);
-args: (typepair (',' typepair)*)?;
-funcall: id ( '(' (expr (',' expr)*)? ')' | '()');
-func: ((real_type dimensions) | VOID) id (('(' args ')') | '()') (
-		'{' ( stat)* '}'
+args: (typepair (COM typepair)*)?;
+funcall: id ( LP (expr (COM expr)*)? RP | LP RP);
+func: ((real_type dimensions) | VOID) id ((LP args RP) | LP RP) (
+		LL ( stat)* RL
 	);
 newexpr:
-	NEW real_type '[]' multiarray		# array_new
+	NEW real_type LB RB multiarray		# array_new
 	| NEW real_type dimensions_declar	# dim_new
-	| NEW real_type ('()')?				# single_new;
-construct_func: id '()' '{' stat* '}';
+	| NEW real_type (LP RP)?				# single_new;
+construct_func: id LP RP LL stat* RL;
 classdef:
-	CLASS id '{' (local_declarstat | construct_func | func)* '};';
+	CLASS id LL (local_declarstat | construct_func | func)* RL SEG;
 expr:
 	INT_VALUE											# int_lit
 	| NULL												# null
@@ -34,14 +34,14 @@ expr:
 	| ID												# id_single
 	| expr dimensions_exist								# dimen
 	| funcall											# funcallexpr
-	| expr '.' op = (LENGTH | PARSEINT) '()'			# strint
-	| expr '.' ORD '(' expr ')'							# strord
-	| expr '.' SUBSTRING '(' expr ',' expr ')'			# substr
-	| expr ('.' funcall)								# memfun
-	| expr ('.' ID)										# mem
+	| expr DOT op = (LENGTH | PARSEINT) LP RP			# strint
+	| expr DOT ORD LP expr RP							# strord
+	| expr DOT SUBSTRING LP expr COM expr RP			# substr
+	| expr (DOT funcall)								# memfun
+	| expr (DOT ID)										# mem
 	| THIS												# this
 	| newexpr											# new
-	| '(' expr ')'										# par
+	| LP expr RP										# par
 	| expr op = (SAD | SMI)								# aft
 	| op = (SAD | SMI | MINUS | ADD | NOT | BNO) expr	# bef
 	| expr op = (MUL | DIV | MOD) expr					# muldivmod
@@ -55,35 +55,34 @@ expr:
 	| expr MYAND expr									# and
 	| expr OR expr										# or
 	| multiarray										# arrexpr
+	| array #arrexpr
 	| <assoc = right> expr '?' expr ':' expr			# thr;
-assignexpr: <assoc = right>expr (',' expr)* ASS expr;
+assignexpr: <assoc = right>expr (COM expr)* ASS expr;
 global_declarstat:
-	real_type dimensions_declar id ('=' expr)? (
-		',' id ('=' expr)?
-	)* ';';
+	real_type dimensions_declar id (ASS expr)? (
+		COM id (ASS expr)?
+	)* SEG;
 local_declarstat:
-	real_type dimensions_declar id ('=' expr)? (
-		',' id ('=' expr)?
-	)* ';';
-innercontent: '{' (stat)* '}' | (stat);
-loopinnercontent:
-	'{' (stat)* '}'
-	| (stat);
-conditstat: IF '(' expr ')' innercontent (ELSE innercontent)?;
-whilestat: WHILE '(' expr ')' loopinnercontent;
+	real_type dimensions_declar id (ASS expr)? (
+		COM id (ASS expr)?
+	)* SEG;
+innercontent: LL (stat)* RL | (stat);
+loopinnercontent: LL (stat)* RL | (stat);
+conditstat: IF LP expr RP innercontent (ELSE innercontent)?;
+whilestat: WHILE LP expr RP loopinnercontent;
 forstat:
-	FOR '(' (stat | ';') cond ';' (expr | assignexpr)? ')' loopinnercontent;
+	FOR LP (stat | SEG) cond SEG (expr | assignexpr)? RP loopinnercontent;
 cond: (expr)?;
-returnstat: RETURN cond ';';
-contistat: CONTINUE ';';
-breakstat: BREAK ';';
-exprstat: expr ';';
-printstat: (PRINTINT | PRINTLNINT) '(' expr ')' ';'	# pint
-	| (PRINTLN | PRINT) '(' expr ')' ';'			# pstr;
+returnstat: RETURN cond SEG;
+contistat: CONTINUE SEG;
+breakstat: BREAK SEG;
+exprstat: expr SEG;
+printstat: (PRINTINT | PRINTLNINT) LP expr RP SEG	# pint
+	| (PRINTLN | PRINT) LP expr RP SEG				# pstr;
 stat:
 	printstat
 	| exprstat
-	| assignexpr ';'
+	| assignexpr SEG
 	| local_declarstat
 	| conditstat
 	| whilestat
@@ -93,14 +92,15 @@ stat:
 	| returnstat
 	| scooped_stat
 	| empty_stat;
-empty_stat: ';';
-scooped_stat: '{' (stat*?) ('}' | '};') | ('{)' ('}' | '};'));
+empty_stat: SEG;
+scooped_stat: LL (stat*?) (RL | RL SEG);
 format_string:
 	FORMAT_ST
 	| FORMAT_L expr (FORMAT_INNER expr)* FORMAT_R;
 LINE_COMMENT: '//' .*? '\r'? '\n' -> skip;
 BLOCK_COMMENT: '/*' .*? '*/' -> skip;
-STRING_VALUE: '"' ((~["\\]) | '\\"'| '\\\\' | '\\n' |'\\r')* '"';
+STRING_VALUE:
+	'"' ((~["\\]) | '\\"' | '\\\\' | '\\n' | '\\r')* '"';
 VOID: 'void';
 BOOL: 'bool';
 INT: 'int';
@@ -151,6 +151,15 @@ MINUS: '-';
 MUL: '*';
 DIV: '/';
 MOD: '%';
+LP: '(';
+RP: ')';
+LB: '[';
+RB: ']';
+LL: '{';
+RL: '}';
+COM: ',';
+SEG: ';';
+DOT: '.';
 WS: [ \r\n\t]+ -> skip;
 fragment CHAR: ~[$"\r\n] | '{{' | '}}' | '$$';
 FORMAT_L: 'f"' CHAR* '$';

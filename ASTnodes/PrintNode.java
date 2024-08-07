@@ -9,6 +9,7 @@ public class PrintNode extends StatNode {
 
   @Override
   public Mypair check() throws Exception {
+    value.check();
     return new Mypair();
   }
 

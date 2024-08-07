@@ -1,7 +1,6 @@
 package Visitor;
 import ASTnodes.*;
-import basic_grammar.guqinBaseVisitor;
-import basic_grammar.guqinParser;
+import basic_grammar.*;
 
 @SuppressWarnings("CheckReturnValue")
 public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
@@ -688,8 +687,11 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 
 	@Override
 	public ASTNode visitArrexpr(guqinParser.ArrexprContext ctx) {
-		ASTNode res = visit(ctx.multiarray());
-		return res;
+		if(ctx.multiarray() != null) {
+			return visit(ctx.multiarray());
+		} else {
+			return visit(ctx.array());
+		}
 	}
 
 	@Override

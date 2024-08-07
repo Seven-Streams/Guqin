@@ -47,8 +47,8 @@ public class Guqin {
                 System.exit(-1);
             }
             System.out.println("OK");
-            Composer Yuchuan = new Composer(AST);
-            Yuchuan.translate((ProgNode) entry);
+            // Composer Yuchuan = new Composer(AST);
+            // Yuchuan.translate((ProgNode) entry);
             System.exit(0);
         } catch (RecognitionException e) {
             System.out.println(e);
