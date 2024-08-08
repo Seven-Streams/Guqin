@@ -1,15 +1,16 @@
 package ASTnodes;
 
 import java.util.ArrayList;
-
+import Composer.*;
+import IRSentence.IRStore;
 public class AssignNode extends ExprNode {
   public ArrayList<ASTNode> ids = new ArrayList<>();
   public ASTNode values = null;
-  int clock = 0;
   @Override
   public Mypair check() throws Exception {
     Mypair demanded = values.check();
-    clock++;
+    type = new String(demanded.type);
+    dim = demanded.dim;
     Mypair output = null;
     for (ASTNode id : ids) {
       Mypair to_check = id.check();
@@ -36,5 +37,37 @@ public class AssignNode extends ExprNode {
       }
     }
     return output;
+  }
+
+  @Override public Info GenerateIR(Composer machine) {
+    Info value = values.GenerateIR(machine);
+    String llvm_type = null;
+    if(dim != 0) {
+      llvm_type = "ptr";
+    } else {
+      switch (type) {
+        case "int": {
+          llvm_type = "i32";
+          break;
+        }
+        case "bool": {
+          llvm_type = "i1";
+          break;
+        }
+        default: {
+          llvm_type = "ptr";
+          break;
+        }
+      }
+    }
+    for(ASTNode to_assign: ids) {
+      Info be_assigned = to_assign.GetLeftValuePtr(machine);
+      IRStore to_store = new IRStore();
+      to_store.from = new String(value.reg);
+      to_store.name = new String(be_assigned.reg);
+      to_store.type = new String(llvm_type);
+      machine.generated.add(to_store);
+    }
+    return new Info();
   }
 }
