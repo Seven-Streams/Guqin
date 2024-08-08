@@ -9,7 +9,7 @@ public class PrintNode extends StatNode {
 
   @Override
   public Mypair check() throws Exception {
-    value.check();
+    type = value.check().type;
     return new Mypair();
   }
 
@@ -19,7 +19,7 @@ public class PrintNode extends StatNode {
     IRFuncall res = new IRFuncall();
     res.func_type = "void";
     res.reg.add(to_print.reg);
-    if (value.type == "int") {
+    if (type.equals("int")) {
       res.type.add("i32");
       if (change_line) {
         res.func_name = "printIntln";

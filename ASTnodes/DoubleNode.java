@@ -6,6 +6,7 @@ import IRSentence.IRBin;
 import IRSentence.IRFuncall;
 import IRSentence.IRIcmp;
 import IRSentence.IRLabel;
+import IRSentence.IRPhi;
 import IRSentence.IRjmp;
 
 public class DoubleNode extends ExprNode {
@@ -115,12 +116,10 @@ public class DoubleNode extends ExprNode {
         return return_value;
       }
       if (symbol.equals("||")) {
-        int br1 = ++machine.label_number;
         int br2 = ++machine.label_number;
         int let0 = ++machine.label_number;
         int let1 = ++machine.label_number;
         int end = ++machine.label_number;
-        machine.generated.add(new IRLabel(br1));
         Info info1 = value1.GenerateIR(machine);
         Conditionjmp judge0 = new Conditionjmp(let1, br2, info1.reg);
         machine.generated.add(judge0);
@@ -129,34 +128,26 @@ public class DoubleNode extends ExprNode {
         Conditionjmp judge1 = new Conditionjmp(let1, let0, info2.reg);
         machine.generated.add(judge1);
         machine.generated.add(new IRLabel(let1));
-        IRBin res_bin = new IRBin();
-        res_bin.op1 = "1";
-        res_bin.op2 = "0";
-        res_bin.type = "i1";
-        res_bin.symbol = "+";
-        res_bin.target_reg = target_reg;
-        machine.generated.add(res_bin);
         IRjmp jmp_to_end = new IRjmp(end);
         machine.generated.add(jmp_to_end);
         machine.generated.add(new IRLabel(let0));
-        IRBin res_bin0 = new IRBin();
-        res_bin0.op1 = "0";
-        res_bin0.op2 = "0";
-        res_bin0.type = "i1";
-        res_bin0.symbol = "+";
-        res_bin0.target_reg = target_reg;
-        machine.generated.add(res_bin0);
         machine.generated.add(jmp_to_end);
         machine.generated.add(new IRLabel(end));
+        IRPhi phi = new IRPhi();
+        phi.type = "i1";
+        phi.target = new String(return_value.reg);
+        phi.labels.add(let0);
+        phi.values.add("0");
+        phi.labels.add(let1);
+        phi.values.add("1");
+        machine.generated.add(phi);
         return return_value;
       }
       if (symbol.equals("&&")) {
-        int br1 = ++machine.label_number;
         int br2 = ++machine.label_number;
         int let0 = ++machine.label_number;
         int let1 = ++machine.label_number;
         int end = ++machine.label_number;
-        machine.generated.add(new IRLabel(br1));
         Info info1 = value1.GenerateIR(machine);
         Conditionjmp judge0 = new Conditionjmp(br2, let0, info1.reg);
         machine.generated.add(judge0);
@@ -165,25 +156,19 @@ public class DoubleNode extends ExprNode {
         Conditionjmp judge1 = new Conditionjmp(let1, let0, info2.reg);
         machine.generated.add(judge1);
         machine.generated.add(new IRLabel(let1));
-        IRBin res_bin = new IRBin();
-        res_bin.op1 = "1";
-        res_bin.op2 = "0";
-        res_bin.type = "i1";
-        res_bin.symbol = "+";
-        res_bin.target_reg = target_reg;
-        machine.generated.add(res_bin);
         IRjmp jmp_to_end = new IRjmp(end);
         machine.generated.add(jmp_to_end);
         machine.generated.add(new IRLabel(let0));
-        IRBin res_bin0 = new IRBin();
-        res_bin0.op1 = "0";
-        res_bin0.op2 = "0";
-        res_bin0.type = "i1";
-        res_bin0.symbol = "+";
-        res_bin0.target_reg = target_reg;
-        machine.generated.add(res_bin0);
         machine.generated.add(jmp_to_end);
         machine.generated.add(new IRLabel(end));
+        IRPhi phi = new IRPhi();
+        phi.type = "i1";
+        phi.target = new String(return_value.reg);
+        phi.labels.add(let0);
+        phi.values.add("0");
+        phi.labels.add(let1);
+        phi.values.add("1");
+        machine.generated.add(phi);
         return return_value;
       }
     }
@@ -293,7 +278,7 @@ public class DoubleNode extends ExprNode {
           machine.generated.add(res);
           return return_value;
         }
-        case("+"): {
+        case ("+"): {
           IRFuncall func = new IRFuncall();
           func.target_reg = target_reg;
           func.func_name = "string_cat";
@@ -303,7 +288,7 @@ public class DoubleNode extends ExprNode {
           machine.generated.add(func);
           return return_value;
         }
-        default:{
+        default: {
           System.out.println("Unexpected operator in String!");
           break;
         }
@@ -314,7 +299,7 @@ public class DoubleNode extends ExprNode {
     IRIcmp cmp = new IRIcmp();
     cmp.op1 = info1.reg;
     cmp.op2 = info2.reg;
-    if(!cmp.symbol.equals("==")) {
+    if (!cmp.symbol.equals("==")) {
       System.out.println("A surprising symbol!");
     }
     cmp.symbol = "==";
