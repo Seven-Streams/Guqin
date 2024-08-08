@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import Composer.*;
 import IRSentence.IRCode;
+import IRSentence.IRFuncall;
 import IRSentence.IRGlobal;
 import IRSentence.IRLocal;
 import IRSentence.IRStore;
@@ -96,6 +97,14 @@ public class DeclarNode extends StatNode {
           to_store.type = llvm_type;
           machine.generated.add(to_store);
           machine.generated = res_codes;
+        } else {
+          if((!type.equals("int"))&& (!type.equals("bool")) && (!type.equals("string")))  {
+          IRFuncall funcall = new IRFuncall();
+          funcall.func_name = type + "." + type;
+          funcall.type.add("ptr");
+          funcall.reg.add(new String(res.new_name));
+          machine.init.add(funcall);
+          }
         }
       }
     } else {
@@ -122,5 +131,4 @@ public class DeclarNode extends StatNode {
     return new Info();
   }
   //In declarstat, the declare dimensions shouldn't have anything.
-
 }

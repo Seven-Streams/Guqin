@@ -301,7 +301,7 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 		res.type = "string";
 		res.dim = 0;
 		res.value = ctx.getText();
-		res.value = res.value.substring(1, res.value.length() - 1);
+		res.value = new String(res.value.substring(1, res.value.length() - 1));
 		return res;
 	}
 
@@ -451,7 +451,7 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 			LiterNode res = new LiterNode();
 			res.type = "string";
 			res.dim = 0;
-			res.value = ctx.getText().substring(2, ctx.getText().length() - 1);
+			res.value = new String(ctx.getText().substring(2, ctx.getText().length() - 1));
 			return res;
 		}
 		FstringNode res = new FstringNode();
@@ -465,10 +465,11 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 				res_str.type = "string";
 				String f_res_str = ctx.getChild(i).getText();
 				if (f_res_str.charAt(0) == 'f') {
-					res_str.value = f_res_str.substring(2, f_res_str.length() - 1);
+					res_str.value = new String(f_res_str.substring(2, f_res_str.length() - 1));
 					res_str.value = res_str.value.replace("$", "$$");
 				} else {
-					res_str.value = f_res_str.substring(1, f_res_str.length() - 1);
+					res_str.value = new String(f_res_str.substring(1, f_res_str.length() - 1));
+					res_str.value = res_str.value.replace("$", "$$");
 				}
 				res.exprs.add(res_str);
 			}
