@@ -548,7 +548,7 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 				cnt++;
 			}
 			if (ctx.getChild(i) instanceof guqinParser.ExprContext) {
-				res.Initial.put(cnt, visit(ctx.getChild(i)));
+				res.Initial.put(cnt - 1, visit(ctx.getChild(i)));
 			}
 		}
 		return res;

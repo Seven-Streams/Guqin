@@ -41,7 +41,7 @@ public class SingleNode extends ExprNode {
 
   @Override
   public Info GenerateIR(Composer machine) {
-    String output;
+    String output = null;
     Info return_value = new Info();
     if (symbol.equals("!")) {
       output = new String("%reg$" + ++machine.tmp_time);
@@ -51,7 +51,6 @@ public class SingleNode extends ExprNode {
       icmp.op1 = new String(res_bool.reg);
       icmp.op2 = new String("1");
       icmp.type = "i1";
-      return_value.reg = output;
       machine.generated.add(icmp);
     }
     if (symbol.equals("~")) {
@@ -91,6 +90,7 @@ public class SingleNode extends ExprNode {
       st.name = new String(get_addr.reg);
       st.from = add_result;
       st.type = "i32";
+      machine.generated.add(st);
       if (symbol_left) {
         output = new String(add_result);
       } else {
@@ -112,12 +112,14 @@ public class SingleNode extends ExprNode {
       st.name = new String(get_addr.reg);
       st.from = sub_result;
       st.type = "i32";
+      machine.generated.add(st);
       if (symbol_left) {
         output = new String(sub_result);
       } else {
         output = new String(res_int.reg);
       }
     }
+    return_value.reg = output;
     return return_value;
 
   }

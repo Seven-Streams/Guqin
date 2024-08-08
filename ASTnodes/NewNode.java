@@ -138,21 +138,52 @@ public class NewNode extends ExprNode {
     get_ptr.src = new String(beginning);
     get_ptr.now_type = "ptr";
     machine.generated.add(get_ptr);
-    if (x == (dim - 2)) {
-      if (type.equals("int") || type.equals("bool")) {
-        String real_tmp = "%reg$" + Integer.toString(++machine.tmp_time);
-        IRFuncall funcall = new IRFuncall();
-        funcall.func_name = "int_array";
-        funcall.func_type = "ptr";
-        funcall.reg.add(config.get(x + 1));
-        funcall.type.add("i32");
-        funcall.target_reg = new String(real_tmp);
-        machine.generated.add(funcall);
-        IRStore to_store = new IRStore();
-        to_store.from = new String(real_tmp);
-        to_store.name = alloc_tmp;
-        to_store.type = "ptr";
-        machine.generated.add(to_store);
+    if (x == (dim - 1)) {
+      String real_tmp = "%reg$" + Integer.toString(++machine.tmp_time);
+      IRFuncall funcall = new IRFuncall();
+      funcall.func_name = type + "." + type;
+      funcall.func_type = "ptr";
+      funcall.reg.add(config.get(x + 1));
+      funcall.type.add("i32");
+      funcall.target_reg = new String(real_tmp);
+      machine.generated.add(funcall);
+      IRStore to_store = new IRStore();
+      to_store.from = new String(real_tmp);
+      to_store.name = alloc_tmp;
+      to_store.type = "ptr";
+      machine.generated.add(to_store);
+    } else {
+      if (x == (dim - 2)) {
+        if (type.equals("int") || type.equals("bool")) {
+          String real_tmp = "%reg$" + Integer.toString(++machine.tmp_time);
+          IRFuncall funcall = new IRFuncall();
+          funcall.func_name = "int_array";
+          funcall.func_type = "ptr";
+          funcall.reg.add(config.get(x + 1));
+          funcall.type.add("i32");
+          funcall.target_reg = new String(real_tmp);
+          machine.generated.add(funcall);
+          IRStore to_store = new IRStore();
+          to_store.from = new String(real_tmp);
+          to_store.name = alloc_tmp;
+          to_store.type = "ptr";
+          machine.generated.add(to_store);
+        } else {
+          String real_tmp = "%reg$" + Integer.toString(++machine.tmp_time);
+          IRFuncall funcall = new IRFuncall();
+          funcall.func_name = "ptr_array";
+          funcall.func_type = "ptr";
+          funcall.reg.add(config.get(x + 1));
+          funcall.type.add("i32");
+          funcall.target_reg = new String(real_tmp);
+          machine.generated.add(funcall);
+          IRStore to_store = new IRStore();
+          to_store.from = new String(real_tmp);
+          to_store.name = alloc_tmp;
+          to_store.type = "ptr";
+          machine.generated.add(to_store);
+          BuildInner(x + 1, config, machine, real_tmp);
+        }
       } else {
         String real_tmp = "%reg$" + Integer.toString(++machine.tmp_time);
         IRFuncall funcall = new IRFuncall();
@@ -167,24 +198,10 @@ public class NewNode extends ExprNode {
         to_store.name = alloc_tmp;
         to_store.type = "ptr";
         machine.generated.add(to_store);
+        BuildInner(x + 1, config, machine, real_tmp);
       }
-    } else {
-      String real_tmp = "%reg$" + Integer.toString(++machine.tmp_time);
-      IRFuncall funcall = new IRFuncall();
-      funcall.func_name = "ptr_array";
-      funcall.func_type = "ptr";
-      funcall.reg.add(config.get(x + 1));
-      funcall.type.add("i32");
-      funcall.target_reg = new String(real_tmp);
-      machine.generated.add(funcall);
-      IRStore to_store = new IRStore();
-      to_store.from = new String(real_tmp);
-      to_store.name = alloc_tmp;
-      to_store.type = "ptr";
-      machine.generated.add(to_store);
-      BuildInner(x + 1, config, machine, real_tmp);
     }
-    // a[i] = new [...], and calling a recursive..
+    // a[i] = new [...], and calling a recursive.
     IRBin iter = new IRBin();
     String new_value = "%reg$" + Integer.toString(++machine.tmp_time);
     iter.op1 = new String(load_str);
@@ -201,5 +218,9 @@ public class NewNode extends ExprNode {
     machine.generated.add(back_to_cond);
     machine.generated.add(new IRLabel(end));
     return;
+  }
+
+  void BuildClass(ArrayList<String> config, String beginning) {
+
   }
 }

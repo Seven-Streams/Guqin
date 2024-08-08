@@ -55,9 +55,6 @@ public class FuncNode extends ASTNode {
     in_construct = false;
     return new Mypair();
   }
-  // TODO:Generate function code. Attention:Every type SHOULD create a
-  // construction function, and alloc space for them.
-  // When calling a function of a class, please use name "class.function".
 
   @Override
   public Info GenerateIR(Composer machine) {

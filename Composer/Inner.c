@@ -16,7 +16,6 @@ void println(const char *str) {
 
 void print(const char *str) {
     printf("%s", str);
-    printf("\n"); 
   return;
 }
 

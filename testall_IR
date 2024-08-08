@@ -1,2 +1,2 @@
 export PATH="/usr/local/opt/bin:$PATH"
-testcases/codegen/scripts/test_llvm_ir_all.bash ./run testcases/codegen/ Composer/Inner.ll
+testcases/codegen/scripts/test_llvm_ir_all.bash ./run testcases/codegen/ Composer/Inner.c
