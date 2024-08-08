@@ -1,6 +1,5 @@
 package ASTnodes;
 
-
 import java.util.HashMap;
 
 import Composer.*;
@@ -37,15 +36,22 @@ public class IfNode extends StatNode {
     int branch_lb = ++machine.label_number;
     int else_branch_lb = ++machine.label_number;
     int end = ++machine.label_number;
-    Conditionjmp res_jmp = new Conditionjmp(branch_lb, else_branch_lb, judge.reg);
-    machine.generated.add(res_jmp);
+    if (else_branch != null) {
+      Conditionjmp res_jmp = new Conditionjmp(branch_lb, else_branch_lb, judge.reg);
+      machine.generated.add(res_jmp);
+    } else {
+      Conditionjmp res_jmp = new Conditionjmp(branch_lb, end, judge.reg);
+      machine.generated.add(res_jmp);
+    }
     machine.generated.add(new IRLabel(branch_lb));
     branch.GenerateIR(machine);
     IRjmp end_jmp = new IRjmp(end);
     machine.generated.add(end_jmp);
-    machine.generated.add(new IRLabel(else_branch_lb));
-    else_branch.GenerateIR(machine);
-    machine.generated.add(end_jmp);
+    if (else_branch != null) {
+      machine.generated.add(new IRLabel(else_branch_lb));
+      else_branch.GenerateIR(machine);
+      machine.generated.add(end_jmp);
+    }
     machine.generated.add(new IRLabel(end));
     machine.now_name.pop();
     return new Info();

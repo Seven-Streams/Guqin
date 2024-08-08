@@ -8,7 +8,8 @@ public class IRLabel extends IRCode{
   }
   @Override
   public void CodePrint() {
-    System.out.println(label + ":");
+    System.out.println("");
+    System.out.println("b" + label + ":");
     return;
   }
 }

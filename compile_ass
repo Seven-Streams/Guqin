@@ -1,0 +1,3 @@
+cd IR_tmp
+llc -filetype=obj -opaque-pointers -o output.o output.ll
+clang -o output output.o

@@ -1,74 +1,79 @@
-@.str = private unnamed_addr constant [2 x i8] c"\0A\00", align 1, !dbg !0
-@.str.1 = private unnamed_addr constant [3 x i8] c"%d\00", align 1, !dbg !8
-@.str.2 = private unnamed_addr constant [4 x i8] c"%d\0A\00", align 1, !dbg !13
-@.str.3 = private unnamed_addr constant [3 x i8] c"%s\00", align 1, !dbg !18
+@.str = private unnamed_addr constant [3 x i8] c"%s\00", align 1, !dbg !0
+@.str.1 = private unnamed_addr constant [2 x i8] c"\0A\00", align 1, !dbg !8
+@.str.2 = private unnamed_addr constant [3 x i8] c"%d\00", align 1, !dbg !13
+@.str.3 = private unnamed_addr constant [4 x i8] c"%d\0A\00", align 1, !dbg !15
 
-define dso_local void @println(char const*)(ptr noundef %0) #0 !dbg !36 {
-  %2 = alloca ptr, align 4
-  store ptr %0, ptr %2, align 4
-    #dbg_declare(ptr %2, !41, !DIExpression(), !42)
-  %3 = load ptr, ptr %2, align 4, !dbg !43
-  %4 = call noundef i32 @puts(char const*)(ptr noundef %3), !dbg !44
-  %5 = call noundef i32 @puts(char const*)(ptr noundef @.str), !dbg !45
-  ret void, !dbg !46
+define dso_local void @println(char const*)(ptr noundef %str) #0 !dbg !36 {
+entry:
+  %str.addr = alloca ptr, align 4
+  store ptr %str, ptr %str.addr, align 4
+    #dbg_declare(ptr %str.addr, !41, !DIExpression(), !42)
+  %0 = load ptr, ptr %str.addr, align 4, !dbg !43
+  %call = call noundef i32 @puts(char const*)(ptr noundef %0), !dbg !44
+  ret void, !dbg !45
 }
 
 declare dso_local noundef i32 @puts(char const*)(ptr noundef) #1
 
-define dso_local void @print(char const*)(ptr noundef %0) #0 !dbg !47 {
-  %2 = alloca ptr, align 4
-  store ptr %0, ptr %2, align 4
-    #dbg_declare(ptr %2, !48, !DIExpression(), !49)
-  %3 = load ptr, ptr %2, align 4, !dbg !50
-  %4 = call noundef i32 @puts(char const*)(ptr noundef %3), !dbg !51
+define dso_local void @print(char const*)(ptr noundef %str) #0 !dbg !46 {
+entry:
+  %str.addr = alloca ptr, align 4
+  store ptr %str, ptr %str.addr, align 4
+    #dbg_declare(ptr %str.addr, !47, !DIExpression(), !48)
+  %0 = load ptr, ptr %str.addr, align 4, !dbg !49
+  %call = call noundef i32 (ptr, ...) @printf(char const*, ...)(ptr noundef @.str, ptr noundef %0), !dbg !50
+  %call1 = call noundef i32 (ptr, ...) @printf(char const*, ...)(ptr noundef @.str.1), !dbg !51
   ret void, !dbg !52
-}
-
-define dso_local void @printInt(int)(i32 noundef %0) #0 !dbg !53 {
-  %2 = alloca i32, align 4
-  store i32 %0, ptr %2, align 4
-    #dbg_declare(ptr %2, !56, !DIExpression(), !57)
-  %3 = load i32, ptr %2, align 4, !dbg !58
-  %4 = call noundef i32 (ptr, ...) @printf(char const*, ...)(ptr noundef @.str.1, i32 noundef %3), !dbg !59
-  ret void, !dbg !60
 }
 
 declare dso_local noundef i32 @printf(char const*, ...)(ptr noundef, ...) #1
 
-define dso_local void @printIntln(int)(i32 noundef %0) #0 !dbg !61 {
-  %2 = alloca i32, align 4
-  store i32 %0, ptr %2, align 4
-    #dbg_declare(ptr %2, !62, !DIExpression(), !63)
-  %3 = load i32, ptr %2, align 4, !dbg !64
-  %4 = call noundef i32 (ptr, ...) @printf(char const*, ...)(ptr noundef @.str.2, i32 noundef %3), !dbg !65
+define dso_local void @printInt(int)(i32 noundef %x) #0 !dbg !53 {
+entry:
+  %x.addr = alloca i32, align 4
+  store i32 %x, ptr %x.addr, align 4
+    #dbg_declare(ptr %x.addr, !56, !DIExpression(), !57)
+  %0 = load i32, ptr %x.addr, align 4, !dbg !58
+  %call = call noundef i32 (ptr, ...) @printf(char const*, ...)(ptr noundef @.str.2, i32 noundef %0), !dbg !59
+  ret void, !dbg !60
+}
+
+define dso_local void @printIntln(int)(i32 noundef %x) #0 !dbg !61 {
+entry:
+  %x.addr = alloca i32, align 4
+  store i32 %x, ptr %x.addr, align 4
+    #dbg_declare(ptr %x.addr, !62, !DIExpression(), !63)
+  %0 = load i32, ptr %x.addr, align 4, !dbg !64
+  %call = call noundef i32 (ptr, ...) @printf(char const*, ...)(ptr noundef @.str.3, i32 noundef %0), !dbg !65
   ret void, !dbg !66
 }
 
-define dso_local noundef ptr @toString(int)(i32 noundef %0) #0 !dbg !67 {
-  %2 = alloca i32, align 4
-  %3 = alloca ptr, align 4
-  %4 = alloca ptr, align 4
-  store i32 %0, ptr %2, align 4
-    #dbg_declare(ptr %2, !70, !DIExpression(), !71)
-    #dbg_declare(ptr %3, !72, !DIExpression(), !73)
-  %5 = call noundef ptr @malloc(unsigned long)(i32 noundef 15), !dbg !74
-  store ptr %5, ptr %3, align 4, !dbg !73
-  %6 = load ptr, ptr %3, align 4, !dbg !75
-  %7 = load i32, ptr %2, align 4, !dbg !76
-  %8 = call noundef i32 (ptr, ptr, ...) @sprintf(char*, char const*, ...)(ptr noundef %6, ptr noundef @.str.1, i32 noundef %7), !dbg !77
-    #dbg_declare(ptr %4, !78, !DIExpression(), !79)
-  %9 = load ptr, ptr %3, align 4, !dbg !80
-  %10 = call noundef i32 @strlen(char const*)(ptr noundef %9), !dbg !81
-  %11 = add i32 %10, 1, !dbg !82
-  %12 = call noundef ptr @malloc(unsigned long)(i32 noundef %11), !dbg !83
-  store ptr %12, ptr %4, align 4, !dbg !79
-  %13 = load ptr, ptr %4, align 4, !dbg !84
-  %14 = load ptr, ptr %3, align 4, !dbg !85
-  %15 = call noundef ptr @strcpy(char*, char const*)(ptr noundef %13, ptr noundef %14), !dbg !86
-  %16 = load ptr, ptr %3, align 4, !dbg !87
-  call void @free(void*)(ptr noundef %16), !dbg !88
-  %17 = load ptr, ptr %4, align 4, !dbg !89
-  ret ptr %17, !dbg !90
+define dso_local noundef ptr @toString(int)(i32 noundef %x) #0 !dbg !67 {
+entry:
+  %x.addr = alloca i32, align 4
+  %buffer = alloca ptr, align 4
+  %output = alloca ptr, align 4
+  store i32 %x, ptr %x.addr, align 4
+    #dbg_declare(ptr %x.addr, !70, !DIExpression(), !71)
+    #dbg_declare(ptr %buffer, !72, !DIExpression(), !73)
+  %call = call noundef ptr @malloc(unsigned long)(i32 noundef 15), !dbg !74
+  store ptr %call, ptr %buffer, align 4, !dbg !73
+  %0 = load ptr, ptr %buffer, align 4, !dbg !75
+  %1 = load i32, ptr %x.addr, align 4, !dbg !76
+  %call1 = call noundef i32 (ptr, ptr, ...) @sprintf(char*, char const*, ...)(ptr noundef %0, ptr noundef @.str.2, i32 noundef %1), !dbg !77
+    #dbg_declare(ptr %output, !78, !DIExpression(), !79)
+  %2 = load ptr, ptr %buffer, align 4, !dbg !80
+  %call2 = call noundef i32 @strlen(char const*)(ptr noundef %2), !dbg !81
+  %add = add i32 %call2, 1, !dbg !82
+  %call3 = call noundef ptr @malloc(unsigned long)(i32 noundef %add), !dbg !83
+  store ptr %call3, ptr %output, align 4, !dbg !79
+  %3 = load ptr, ptr %output, align 4, !dbg !84
+  %4 = load ptr, ptr %buffer, align 4, !dbg !85
+  %call4 = call noundef ptr @strcpy(char*, char const*)(ptr noundef %3, ptr noundef %4), !dbg !86
+  %5 = load ptr, ptr %buffer, align 4, !dbg !87
+  call void @free(void*)(ptr noundef %5), !dbg !88
+  %6 = load ptr, ptr %output, align 4, !dbg !89
+  ret ptr %6, !dbg !90
 }
 
 declare dso_local noundef ptr @malloc(unsigned long)(i32 noundef) #1
@@ -82,268 +87,284 @@ declare dso_local noundef ptr @strcpy(char*, char const*)(ptr noundef, ptr nound
 declare dso_local void @free(void*)(ptr noundef) #1
 
 define dso_local noundef i32 @getInt()() #0 !dbg !91 {
-  %1 = alloca i32, align 4
-    #dbg_declare(ptr %1, !94, !DIExpression(), !95)
-  %2 = call noundef i32 (ptr, ...) @scanf(char const*, ...)(ptr noundef @.str.1, ptr noundef %1), !dbg !96
-  %3 = load i32, ptr %1, align 4, !dbg !97
-  ret i32 %3, !dbg !98
+entry:
+  %x = alloca i32, align 4
+    #dbg_declare(ptr %x, !94, !DIExpression(), !95)
+  %call = call noundef i32 (ptr, ...) @scanf(char const*, ...)(ptr noundef @.str.2, ptr noundef %x), !dbg !96
+  %0 = load i32, ptr %x, align 4, !dbg !97
+  ret i32 %0, !dbg !98
 }
 
 declare dso_local noundef i32 @scanf(char const*, ...)(ptr noundef, ...) #1
 
 define dso_local noundef ptr @getString()() #0 !dbg !99 {
-  %1 = alloca ptr, align 4
-  %2 = alloca ptr, align 4
-    #dbg_declare(ptr %1, !102, !DIExpression(), !103)
-  %3 = call noundef ptr @malloc(unsigned long)(i32 noundef 4096), !dbg !104
-  store ptr %3, ptr %1, align 4, !dbg !103
-  %4 = load ptr, ptr %1, align 4, !dbg !105
-  %5 = call noundef i32 (ptr, ...) @scanf(char const*, ...)(ptr noundef @.str.3, ptr noundef %4), !dbg !106
-    #dbg_declare(ptr %2, !107, !DIExpression(), !108)
-  %6 = load ptr, ptr %1, align 4, !dbg !109
-  %7 = call noundef i32 @strlen(char const*)(ptr noundef %6), !dbg !110
-  %8 = add i32 %7, 1, !dbg !111
-  %9 = call noundef ptr @malloc(unsigned long)(i32 noundef %8), !dbg !112
-  store ptr %9, ptr %2, align 4, !dbg !108
-  %10 = load ptr, ptr %2, align 4, !dbg !113
-  %11 = load ptr, ptr %1, align 4, !dbg !114
-  %12 = call noundef ptr @strcpy(char*, char const*)(ptr noundef %10, ptr noundef %11), !dbg !115
-  %13 = load ptr, ptr %1, align 4, !dbg !116
-  call void @free(void*)(ptr noundef %13), !dbg !117
-  %14 = load ptr, ptr %2, align 4, !dbg !118
-  ret ptr %14, !dbg !119
+entry:
+  %buffer = alloca ptr, align 4
+  %output = alloca ptr, align 4
+    #dbg_declare(ptr %buffer, !102, !DIExpression(), !103)
+  %call = call noundef ptr @malloc(unsigned long)(i32 noundef 4096), !dbg !104
+  store ptr %call, ptr %buffer, align 4, !dbg !103
+  %0 = load ptr, ptr %buffer, align 4, !dbg !105
+  %call1 = call noundef i32 (ptr, ...) @scanf(char const*, ...)(ptr noundef @.str, ptr noundef %0), !dbg !106
+    #dbg_declare(ptr %output, !107, !DIExpression(), !108)
+  %1 = load ptr, ptr %buffer, align 4, !dbg !109
+  %call2 = call noundef i32 @strlen(char const*)(ptr noundef %1), !dbg !110
+  %add = add i32 %call2, 1, !dbg !111
+  %call3 = call noundef ptr @malloc(unsigned long)(i32 noundef %add), !dbg !112
+  store ptr %call3, ptr %output, align 4, !dbg !108
+  %2 = load ptr, ptr %output, align 4, !dbg !113
+  %3 = load ptr, ptr %buffer, align 4, !dbg !114
+  %call4 = call noundef ptr @strcpy(char*, char const*)(ptr noundef %2, ptr noundef %3), !dbg !115
+  %4 = load ptr, ptr %buffer, align 4, !dbg !116
+  call void @free(void*)(ptr noundef %4), !dbg !117
+  %5 = load ptr, ptr %output, align 4, !dbg !118
+  ret ptr %5, !dbg !119
 }
 
-define dso_local noundef i32 @string_length(char*)(ptr noundef %0) #0 !dbg !120 {
-  %2 = alloca ptr, align 4
-  store ptr %0, ptr %2, align 4
-    #dbg_declare(ptr %2, !123, !DIExpression(), !124)
-  %3 = load ptr, ptr %2, align 4, !dbg !125
-  %4 = call noundef i32 @strlen(char const*)(ptr noundef %3), !dbg !126
-  ret i32 %4, !dbg !127
+define dso_local noundef i32 @string_length(char*)(ptr noundef %str) #0 !dbg !120 {
+entry:
+  %str.addr = alloca ptr, align 4
+  store ptr %str, ptr %str.addr, align 4
+    #dbg_declare(ptr %str.addr, !123, !DIExpression(), !124)
+  %0 = load ptr, ptr %str.addr, align 4, !dbg !125
+  %call = call noundef i32 @strlen(char const*)(ptr noundef %0), !dbg !126
+  ret i32 %call, !dbg !127
 }
 
-define dso_local noundef ptr @string_substring(char*, int, int)(ptr noundef %0, i32 noundef %1, i32 noundef %2) #0 !dbg !128 {
-  %4 = alloca ptr, align 4
-  %5 = alloca i32, align 4
-  %6 = alloca i32, align 4
-  %7 = alloca ptr, align 4
-  %8 = alloca ptr, align 4
-  store ptr %0, ptr %4, align 4
-    #dbg_declare(ptr %4, !131, !DIExpression(), !132)
-  store i32 %1, ptr %5, align 4
-    #dbg_declare(ptr %5, !133, !DIExpression(), !134)
-  store i32 %2, ptr %6, align 4
-    #dbg_declare(ptr %6, !135, !DIExpression(), !136)
-    #dbg_declare(ptr %7, !137, !DIExpression(), !138)
-  %9 = call noundef ptr @malloc(unsigned long)(i32 noundef 5), !dbg !139
-  store ptr %9, ptr %7, align 4, !dbg !138
-  %10 = load ptr, ptr %7, align 4, !dbg !140
-  %11 = load ptr, ptr %4, align 4, !dbg !141
-  %12 = load i32, ptr %5, align 4, !dbg !142
-  %13 = getelementptr inbounds i8, ptr %11, i32 %12, !dbg !143
-  %14 = call noundef ptr @strcpy(char*, char const*)(ptr noundef %10, ptr noundef %13), !dbg !144
-  %15 = load ptr, ptr %7, align 4, !dbg !145
-  %16 = load i32, ptr %6, align 4, !dbg !146
-  %17 = load i32, ptr %5, align 4, !dbg !147
-  %18 = sub nsw i32 %16, %17, !dbg !148
-  %19 = getelementptr inbounds i8, ptr %15, i32 %18, !dbg !149
-  store i8 0, ptr %19, align 1, !dbg !150
-    #dbg_declare(ptr %8, !151, !DIExpression(), !152)
-  %20 = load ptr, ptr %7, align 4, !dbg !153
-  %21 = call noundef i32 @strlen(char const*)(ptr noundef %20), !dbg !154
-  %22 = add i32 %21, 1, !dbg !155
-  %23 = call noundef ptr @malloc(unsigned long)(i32 noundef %22), !dbg !156
-  store ptr %23, ptr %8, align 4, !dbg !152
-  %24 = load ptr, ptr %8, align 4, !dbg !157
-  %25 = load ptr, ptr %7, align 4, !dbg !158
-  %26 = call noundef ptr @strcpy(char*, char const*)(ptr noundef %24, ptr noundef %25), !dbg !159
-  %27 = load ptr, ptr %7, align 4, !dbg !160
-  call void @free(void*)(ptr noundef %27), !dbg !161
-  %28 = load ptr, ptr %8, align 4, !dbg !162
-  ret ptr %28, !dbg !163
+define dso_local noundef ptr @string_substring(char*, int, int)(ptr noundef %str, i32 noundef %left, i32 noundef %right) #0 !dbg !128 {
+entry:
+  %str.addr = alloca ptr, align 4
+  %left.addr = alloca i32, align 4
+  %right.addr = alloca i32, align 4
+  %res = alloca ptr, align 4
+  %output = alloca ptr, align 4
+  store ptr %str, ptr %str.addr, align 4
+    #dbg_declare(ptr %str.addr, !131, !DIExpression(), !132)
+  store i32 %left, ptr %left.addr, align 4
+    #dbg_declare(ptr %left.addr, !133, !DIExpression(), !134)
+  store i32 %right, ptr %right.addr, align 4
+    #dbg_declare(ptr %right.addr, !135, !DIExpression(), !136)
+    #dbg_declare(ptr %res, !137, !DIExpression(), !138)
+  %call = call noundef ptr @malloc(unsigned long)(i32 noundef 5), !dbg !139
+  store ptr %call, ptr %res, align 4, !dbg !138
+  %0 = load ptr, ptr %res, align 4, !dbg !140
+  %1 = load ptr, ptr %str.addr, align 4, !dbg !141
+  %2 = load i32, ptr %left.addr, align 4, !dbg !142
+  %add.ptr = getelementptr inbounds i8, ptr %1, i32 %2, !dbg !143
+  %call1 = call noundef ptr @strcpy(char*, char const*)(ptr noundef %0, ptr noundef %add.ptr), !dbg !144
+  %3 = load ptr, ptr %res, align 4, !dbg !145
+  %4 = load i32, ptr %right.addr, align 4, !dbg !146
+  %5 = load i32, ptr %left.addr, align 4, !dbg !147
+  %sub = sub nsw i32 %4, %5, !dbg !148
+  %add.ptr2 = getelementptr inbounds i8, ptr %3, i32 %sub, !dbg !149
+  store i8 0, ptr %add.ptr2, align 1, !dbg !150
+    #dbg_declare(ptr %output, !151, !DIExpression(), !152)
+  %6 = load ptr, ptr %res, align 4, !dbg !153
+  %call3 = call noundef i32 @strlen(char const*)(ptr noundef %6), !dbg !154
+  %add = add i32 %call3, 1, !dbg !155
+  %call4 = call noundef ptr @malloc(unsigned long)(i32 noundef %add), !dbg !156
+  store ptr %call4, ptr %output, align 4, !dbg !152
+  %7 = load ptr, ptr %output, align 4, !dbg !157
+  %8 = load ptr, ptr %res, align 4, !dbg !158
+  %call5 = call noundef ptr @strcpy(char*, char const*)(ptr noundef %7, ptr noundef %8), !dbg !159
+  %9 = load ptr, ptr %res, align 4, !dbg !160
+  call void @free(void*)(ptr noundef %9), !dbg !161
+  %10 = load ptr, ptr %output, align 4, !dbg !162
+  ret ptr %10, !dbg !163
 }
 
-define dso_local noundef i32 @string_parseInt(char*)(ptr noundef %0) #0 !dbg !164 {
-  %2 = alloca ptr, align 4
-  %3 = alloca i32, align 4
-  %4 = alloca i32, align 4
-  store ptr %0, ptr %2, align 4
-    #dbg_declare(ptr %2, !165, !DIExpression(), !166)
-    #dbg_declare(ptr %3, !167, !DIExpression(), !168)
-  store i32 0, ptr %3, align 4, !dbg !168
-    #dbg_declare(ptr %4, !169, !DIExpression(), !171)
-  store i32 0, ptr %4, align 4, !dbg !171
-  br label %5, !dbg !172
+define dso_local noundef i32 @string_parseInt(char*)(ptr noundef %str) #0 !dbg !164 {
+entry:
+  %str.addr = alloca ptr, align 4
+  %ans = alloca i32, align 4
+  %i = alloca i32, align 4
+  store ptr %str, ptr %str.addr, align 4
+    #dbg_declare(ptr %str.addr, !165, !DIExpression(), !166)
+    #dbg_declare(ptr %ans, !167, !DIExpression(), !168)
+  store i32 0, ptr %ans, align 4, !dbg !168
+    #dbg_declare(ptr %i, !169, !DIExpression(), !171)
+  store i32 0, ptr %i, align 4, !dbg !171
+  br label %for.cond, !dbg !172
 
-5:
-  %6 = load i32, ptr %4, align 4, !dbg !173
-  %7 = load ptr, ptr %2, align 4, !dbg !175
-  %8 = call noundef i32 @strlen(char const*)(ptr noundef %7), !dbg !176
-  %9 = icmp ult i32 %6, %8, !dbg !177
-  br i1 %9, label %10, label %40, !dbg !178
+for.cond:
+  %0 = load i32, ptr %i, align 4, !dbg !173
+  %1 = load ptr, ptr %str.addr, align 4, !dbg !175
+  %call = call noundef i32 @strlen(char const*)(ptr noundef %1), !dbg !176
+  %cmp = icmp ult i32 %0, %call, !dbg !177
+  br i1 %cmp, label %for.body, label %for.end, !dbg !178
 
-10:
-  %11 = load ptr, ptr %2, align 4, !dbg !179
-  %12 = load i32, ptr %4, align 4, !dbg !182
-  %13 = getelementptr inbounds i8, ptr %11, i32 %12, !dbg !183
-  %14 = load i8, ptr %13, align 1, !dbg !184
-  %15 = zext i8 %14 to i32, !dbg !184
-  %16 = icmp sge i32 %15, 48, !dbg !185
-  br i1 %16, label %17, label %35, !dbg !186
+for.body:
+  %2 = load ptr, ptr %str.addr, align 4, !dbg !179
+  %3 = load i32, ptr %i, align 4, !dbg !182
+  %add.ptr = getelementptr inbounds i8, ptr %2, i32 %3, !dbg !183
+  %4 = load i8, ptr %add.ptr, align 1, !dbg !184
+  %conv = zext i8 %4 to i32, !dbg !184
+  %cmp1 = icmp sge i32 %conv, 48, !dbg !185
+  br i1 %cmp1, label %land.lhs.true, label %if.else, !dbg !186
 
-17:
-  %18 = load ptr, ptr %2, align 4, !dbg !187
-  %19 = load i32, ptr %4, align 4, !dbg !188
-  %20 = getelementptr inbounds i8, ptr %18, i32 %19, !dbg !189
-  %21 = load i8, ptr %20, align 1, !dbg !190
-  %22 = zext i8 %21 to i32, !dbg !190
-  %23 = icmp sle i32 %22, 57, !dbg !191
-  br i1 %23, label %24, label %35, !dbg !192
+land.lhs.true:
+  %5 = load ptr, ptr %str.addr, align 4, !dbg !187
+  %6 = load i32, ptr %i, align 4, !dbg !188
+  %add.ptr2 = getelementptr inbounds i8, ptr %5, i32 %6, !dbg !189
+  %7 = load i8, ptr %add.ptr2, align 1, !dbg !190
+  %conv3 = zext i8 %7 to i32, !dbg !190
+  %cmp4 = icmp sle i32 %conv3, 57, !dbg !191
+  br i1 %cmp4, label %if.then, label %if.else, !dbg !192
 
-24:
-  %25 = load i32, ptr %3, align 4, !dbg !193
-  %26 = mul nsw i32 %25, 10, !dbg !193
-  store i32 %26, ptr %3, align 4, !dbg !193
-  %27 = load ptr, ptr %2, align 4, !dbg !195
-  %28 = load i32, ptr %4, align 4, !dbg !196
-  %29 = getelementptr inbounds i8, ptr %27, i32 %28, !dbg !197
-  %30 = load i8, ptr %29, align 1, !dbg !198
-  %31 = zext i8 %30 to i32, !dbg !198
-  %32 = sub nsw i32 %31, 48, !dbg !199
-  %33 = load i32, ptr %3, align 4, !dbg !200
-  %34 = add nsw i32 %33, %32, !dbg !200
-  store i32 %34, ptr %3, align 4, !dbg !200
-  br label %36, !dbg !201
+if.then:
+  %8 = load i32, ptr %ans, align 4, !dbg !193
+  %mul = mul nsw i32 %8, 10, !dbg !193
+  store i32 %mul, ptr %ans, align 4, !dbg !193
+  %9 = load ptr, ptr %str.addr, align 4, !dbg !195
+  %10 = load i32, ptr %i, align 4, !dbg !196
+  %add.ptr5 = getelementptr inbounds i8, ptr %9, i32 %10, !dbg !197
+  %11 = load i8, ptr %add.ptr5, align 1, !dbg !198
+  %conv6 = zext i8 %11 to i32, !dbg !198
+  %sub = sub nsw i32 %conv6, 48, !dbg !199
+  %12 = load i32, ptr %ans, align 4, !dbg !200
+  %add = add nsw i32 %12, %sub, !dbg !200
+  store i32 %add, ptr %ans, align 4, !dbg !200
+  br label %if.end, !dbg !201
 
-35:
-  br label %40, !dbg !202
+if.else:
+  br label %for.end, !dbg !202
 
-36:
-  br label %37, !dbg !204
+if.end:
+  br label %for.inc, !dbg !204
 
-37:
-  %38 = load i32, ptr %4, align 4, !dbg !205
-  %39 = add nsw i32 %38, 1, !dbg !205
-  store i32 %39, ptr %4, align 4, !dbg !205
-  br label %5, !dbg !206
+for.inc:
+  %13 = load i32, ptr %i, align 4, !dbg !205
+  %inc = add nsw i32 %13, 1, !dbg !205
+  store i32 %inc, ptr %i, align 4, !dbg !205
+  br label %for.cond, !dbg !206
 
-40:
-  %41 = load i32, ptr %3, align 4, !dbg !210
-  ret i32 %41, !dbg !211
+for.end:
+  %14 = load i32, ptr %ans, align 4, !dbg !210
+  ret i32 %14, !dbg !211
 }
 
-define dso_local noundef i32 @string_ord(char*, int)(ptr noundef %0, i32 noundef %1) #2 !dbg !212 {
-  %3 = alloca ptr, align 4
-  %4 = alloca i32, align 4
-  store ptr %0, ptr %3, align 4
-    #dbg_declare(ptr %3, !215, !DIExpression(), !216)
-  store i32 %1, ptr %4, align 4
-    #dbg_declare(ptr %4, !217, !DIExpression(), !218)
-  %5 = load ptr, ptr %3, align 4, !dbg !219
-  %6 = load i32, ptr %4, align 4, !dbg !220
-  %7 = getelementptr inbounds i8, ptr %5, i32 %6, !dbg !221
-  %8 = load i8, ptr %7, align 1, !dbg !222
-  %9 = zext i8 %8 to i32, !dbg !222
-  ret i32 %9, !dbg !223
+define dso_local noundef i32 @string_ord(char*, int)(ptr noundef %str, i32 noundef %num) #2 !dbg !212 {
+entry:
+  %str.addr = alloca ptr, align 4
+  %num.addr = alloca i32, align 4
+  store ptr %str, ptr %str.addr, align 4
+    #dbg_declare(ptr %str.addr, !215, !DIExpression(), !216)
+  store i32 %num, ptr %num.addr, align 4
+    #dbg_declare(ptr %num.addr, !217, !DIExpression(), !218)
+  %0 = load ptr, ptr %str.addr, align 4, !dbg !219
+  %1 = load i32, ptr %num.addr, align 4, !dbg !220
+  %add.ptr = getelementptr inbounds i8, ptr %0, i32 %1, !dbg !221
+  %2 = load i8, ptr %add.ptr, align 1, !dbg !222
+  %conv = zext i8 %2 to i32, !dbg !222
+  ret i32 %conv, !dbg !223
 }
 
-define dso_local noundef i32 @string_cmp(char*, char*)(ptr noundef %0, ptr noundef %1) #0 !dbg !224 {
-  %3 = alloca ptr, align 4
-  %4 = alloca ptr, align 4
-  store ptr %0, ptr %3, align 4
-    #dbg_declare(ptr %3, !227, !DIExpression(), !228)
-  store ptr %1, ptr %4, align 4
-    #dbg_declare(ptr %4, !229, !DIExpression(), !230)
-  %5 = load ptr, ptr %3, align 4, !dbg !231
-  %6 = load ptr, ptr %4, align 4, !dbg !232
-  %7 = call noundef i32 @strcmp(char const*, char const*)(ptr noundef %5, ptr noundef %6), !dbg !233
-  ret i32 %7, !dbg !234
+define dso_local noundef i32 @string_cmp(char*, char*)(ptr noundef %str1, ptr noundef %str2) #0 !dbg !224 {
+entry:
+  %str1.addr = alloca ptr, align 4
+  %str2.addr = alloca ptr, align 4
+  store ptr %str1, ptr %str1.addr, align 4
+    #dbg_declare(ptr %str1.addr, !227, !DIExpression(), !228)
+  store ptr %str2, ptr %str2.addr, align 4
+    #dbg_declare(ptr %str2.addr, !229, !DIExpression(), !230)
+  %0 = load ptr, ptr %str1.addr, align 4, !dbg !231
+  %1 = load ptr, ptr %str2.addr, align 4, !dbg !232
+  %call = call noundef i32 @strcmp(char const*, char const*)(ptr noundef %0, ptr noundef %1), !dbg !233
+  ret i32 %call, !dbg !234
 }
 
 declare dso_local noundef i32 @strcmp(char const*, char const*)(ptr noundef, ptr noundef) #1
 
-define dso_local noundef ptr @string_cat(char*, char*)(ptr noundef %0, ptr noundef %1) #0 !dbg !235 {
-  %3 = alloca ptr, align 4
-  %4 = alloca ptr, align 4
-  store ptr %0, ptr %3, align 4
-    #dbg_declare(ptr %3, !238, !DIExpression(), !239)
-  store ptr %1, ptr %4, align 4
-    #dbg_declare(ptr %4, !240, !DIExpression(), !241)
-  %5 = load ptr, ptr %3, align 4, !dbg !242
-  %6 = load ptr, ptr %4, align 4, !dbg !243
-  %7 = call noundef ptr @strcat(char*, char const*)(ptr noundef %5, ptr noundef %6), !dbg !244
-  ret ptr %7, !dbg !245
+define dso_local noundef ptr @string_cat(char*, char*)(ptr noundef %str1, ptr noundef %str2) #0 !dbg !235 {
+entry:
+  %str1.addr = alloca ptr, align 4
+  %str2.addr = alloca ptr, align 4
+  store ptr %str1, ptr %str1.addr, align 4
+    #dbg_declare(ptr %str1.addr, !238, !DIExpression(), !239)
+  store ptr %str2, ptr %str2.addr, align 4
+    #dbg_declare(ptr %str2.addr, !240, !DIExpression(), !241)
+  %0 = load ptr, ptr %str1.addr, align 4, !dbg !242
+  %1 = load ptr, ptr %str2.addr, align 4, !dbg !243
+  %call = call noundef ptr @strcat(char*, char const*)(ptr noundef %0, ptr noundef %1), !dbg !244
+  ret ptr %call, !dbg !245
 }
 
 declare dso_local noundef ptr @strcat(char*, char const*)(ptr noundef, ptr noundef) #1
 
-define dso_local noundef ptr @ptr_array(int)(i32 noundef %0) #0 !dbg !246 {
-  %2 = alloca i32, align 4
-  %3 = alloca ptr, align 4
-  store i32 %0, ptr %2, align 4
-    #dbg_declare(ptr %2, !250, !DIExpression(), !251)
-    #dbg_declare(ptr %3, !252, !DIExpression(), !253)
-  %4 = load i32, ptr %2, align 4, !dbg !254
-  %5 = mul i32 %4, 4, !dbg !255
-  %6 = add i32 %5, 4, !dbg !256
-  %7 = call noundef ptr @malloc(unsigned long)(i32 noundef %6), !dbg !257
-  store ptr %7, ptr %3, align 4, !dbg !253
-  %8 = load i32, ptr %2, align 4, !dbg !258
-  %9 = load ptr, ptr %3, align 4, !dbg !259
-  store i32 %8, ptr %9, align 4, !dbg !260
-  %10 = load ptr, ptr %3, align 4, !dbg !261
-  %11 = getelementptr inbounds i32, ptr %10, i32 1, !dbg !262
-  ret ptr %11, !dbg !263
+define dso_local noundef ptr @ptr_array(int)(i32 noundef %number) #0 !dbg !246 {
+entry:
+  %number.addr = alloca i32, align 4
+  %res = alloca ptr, align 4
+  store i32 %number, ptr %number.addr, align 4
+    #dbg_declare(ptr %number.addr, !250, !DIExpression(), !251)
+    #dbg_declare(ptr %res, !252, !DIExpression(), !253)
+  %0 = load i32, ptr %number.addr, align 4, !dbg !254
+  %mul = mul i32 %0, 4, !dbg !255
+  %add = add i32 %mul, 4, !dbg !256
+  %call = call noundef ptr @malloc(unsigned long)(i32 noundef %add), !dbg !257
+  store ptr %call, ptr %res, align 4, !dbg !253
+  %1 = load i32, ptr %number.addr, align 4, !dbg !258
+  %2 = load ptr, ptr %res, align 4, !dbg !259
+  store i32 %1, ptr %2, align 4, !dbg !260
+  %3 = load ptr, ptr %res, align 4, !dbg !261
+  %add.ptr = getelementptr inbounds i32, ptr %3, i32 1, !dbg !262
+  ret ptr %add.ptr, !dbg !263
 }
 
-define dso_local noundef ptr @int_array(int)(i32 noundef %0) #0 !dbg !264 {
-  %2 = alloca i32, align 4
-  %3 = alloca ptr, align 4
-  store i32 %0, ptr %2, align 4
-    #dbg_declare(ptr %2, !267, !DIExpression(), !268)
-    #dbg_declare(ptr %3, !269, !DIExpression(), !270)
-  %4 = load i32, ptr %2, align 4, !dbg !271
-  %5 = add nsw i32 %4, 1, !dbg !272
-  %6 = mul i32 %5, 4, !dbg !273
-  %7 = call noundef ptr @malloc(unsigned long)(i32 noundef %6), !dbg !274
-  store ptr %7, ptr %3, align 4, !dbg !270
-  %8 = load i32, ptr %2, align 4, !dbg !275
-  %9 = load ptr, ptr %3, align 4, !dbg !276
-  store i32 %8, ptr %9, align 4, !dbg !277
-  %10 = load ptr, ptr %3, align 4, !dbg !278
-  %11 = getelementptr inbounds i32, ptr %10, i32 1, !dbg !279
-  ret ptr %11, !dbg !280
+define dso_local noundef ptr @int_array(int)(i32 noundef %number) #0 !dbg !264 {
+entry:
+  %number.addr = alloca i32, align 4
+  %res = alloca ptr, align 4
+  store i32 %number, ptr %number.addr, align 4
+    #dbg_declare(ptr %number.addr, !267, !DIExpression(), !268)
+    #dbg_declare(ptr %res, !269, !DIExpression(), !270)
+  %0 = load i32, ptr %number.addr, align 4, !dbg !271
+  %add = add nsw i32 %0, 1, !dbg !272
+  %mul = mul i32 %add, 4, !dbg !273
+  %call = call noundef ptr @malloc(unsigned long)(i32 noundef %mul), !dbg !274
+  store ptr %call, ptr %res, align 4, !dbg !270
+  %1 = load i32, ptr %number.addr, align 4, !dbg !275
+  %2 = load ptr, ptr %res, align 4, !dbg !276
+  store i32 %1, ptr %2, align 4, !dbg !277
+  %3 = load ptr, ptr %res, align 4, !dbg !278
+  %add.ptr = getelementptr inbounds i32, ptr %3, i32 1, !dbg !279
+  ret ptr %add.ptr, !dbg !280
 }
 
-define dso_local noundef i32 @array_size(void*)(ptr noundef %0) #2 !dbg !281 {
-  %2 = alloca ptr, align 4
-  store ptr %0, ptr %2, align 4
-    #dbg_declare(ptr %2, !284, !DIExpression(), !285)
-  %3 = load ptr, ptr %2, align 4, !dbg !286
-  %4 = getelementptr inbounds i32, ptr %3, i32 -1, !dbg !287
-  %5 = load i32, ptr %4, align 4, !dbg !288
-  ret i32 %5, !dbg !289
+define dso_local noundef i32 @array_size(void*)(ptr noundef %ptr) #2 !dbg !281 {
+entry:
+  %ptr.addr = alloca ptr, align 4
+  store ptr %ptr, ptr %ptr.addr, align 4
+    #dbg_declare(ptr %ptr.addr, !284, !DIExpression(), !285)
+  %0 = load ptr, ptr %ptr.addr, align 4, !dbg !286
+  %add.ptr = getelementptr inbounds i32, ptr %0, i32 -1, !dbg !287
+  %1 = load i32, ptr %add.ptr, align 4, !dbg !288
+  ret i32 %1, !dbg !289
 }
 
-define dso_local noundef ptr @string_copy(char*)(ptr noundef %0) #0 !dbg !290 {
-  %2 = alloca ptr, align 4
-  %3 = alloca ptr, align 4
-  store ptr %0, ptr %2, align 4
-    #dbg_declare(ptr %2, !293, !DIExpression(), !294)
-    #dbg_declare(ptr %3, !295, !DIExpression(), !296)
-  %4 = load ptr, ptr %2, align 4, !dbg !297
-  %5 = call noundef i32 @strlen(char const*)(ptr noundef %4), !dbg !298
-  %6 = add i32 %5, 1, !dbg !299
-  %7 = mul i32 %6, 1, !dbg !300
-  %8 = call noundef ptr @malloc(unsigned long)(i32 noundef %7), !dbg !301
-  store ptr %8, ptr %3, align 4, !dbg !296
-  %9 = load ptr, ptr %3, align 4, !dbg !302
-  %10 = load ptr, ptr %2, align 4, !dbg !303
-  %11 = call noundef ptr @strcpy(char*, char const*)(ptr noundef %9, ptr noundef %10), !dbg !304
-  %12 = load ptr, ptr %3, align 4, !dbg !305
-  ret ptr %12, !dbg !306
+define dso_local noundef ptr @string_copy(char*)(ptr noundef %str) #0 !dbg !290 {
+entry:
+  %str.addr = alloca ptr, align 4
+  %copy = alloca ptr, align 4
+  store ptr %str, ptr %str.addr, align 4
+    #dbg_declare(ptr %str.addr, !293, !DIExpression(), !294)
+    #dbg_declare(ptr %copy, !295, !DIExpression(), !296)
+  %0 = load ptr, ptr %str.addr, align 4, !dbg !297
+  %call = call noundef i32 @strlen(char const*)(ptr noundef %0), !dbg !298
+  %add = add i32 %call, 1, !dbg !299
+  %mul = mul i32 %add, 1, !dbg !300
+  %call1 = call noundef ptr @malloc(unsigned long)(i32 noundef %mul), !dbg !301
+  store ptr %call1, ptr %copy, align 4, !dbg !296
+  %1 = load ptr, ptr %copy, align 4, !dbg !302
+  %2 = load ptr, ptr %str.addr, align 4, !dbg !303
+  %call2 = call noundef ptr @strcpy(char*, char const*)(ptr noundef %1, ptr noundef %2), !dbg !304
+  %3 = load ptr, ptr %copy, align 4, !dbg !305
+  ret ptr %3, !dbg !306
 }
+
+attributes #0 = { mustprogress noinline optnone "frame-pointer"="all" "no-trapping-math"="true" "stack-protector-buffer-size"="8" "target-cpu"="generic-rv32" "target-features"="+32bit,+a,+c,+d,+f,+m,+relax,+zicsr,+zifencei,+zmmul,-b,-e,-experimental-smmpm,-experimental-smnpm,-experimental-ssnpm,-experimental-sspm,-experimental-ssqosid,-experimental-supm,-experimental-zacas,-experimental-zalasr,-experimental-zicfilp,-experimental-zicfiss,-h,-shcounterenw,-shgatpa,-shtvala,-shvsatpa,-shvstvala,-shvstvecd,-smaia,-smcdeleg,-smcsrind,-smepmp,-smstateen,-ssaia,-ssccfg,-ssccptr,-sscofpmf,-sscounterenw,-sscsrind,-ssstateen,-ssstrict,-sstc,-sstvala,-sstvecd,-ssu64xl,-svade,-svadu,-svbare,-svinval,-svnapot,-svpbmt,-v,-xcvalu,-xcvbi,-xcvbitmanip,-xcvelw,-xcvmac,-xcvmem,-xcvsimd,-xsfcease,-xsfvcp,-xsfvfnrclipxfqf,-xsfvfwmaccqqq,-xsfvqmaccdod,-xsfvqmaccqoq,-xsifivecdiscarddlone,-xsifivecflushdlone,-xtheadba,-xtheadbb,-xtheadbs,-xtheadcmo,-xtheadcondmov,-xtheadfmemidx,-xtheadmac,-xtheadmemidx,-xtheadmempair,-xtheadsync,-xtheadvdot,-xventanacondops,-xwchc,-za128rs,-za64rs,-zaamo,-zabha,-zalrsc,-zama16b,-zawrs,-zba,-zbb,-zbc,-zbkb,-zbkc,-zbkx,-zbs,-zca,-zcb,-zcd,-zce,-zcf,-zcmop,-zcmp,-zcmt,-zdinx,-zfa,-zfbfmin,-zfh,-zfhmin,-zfinx,-zhinx,-zhinxmin,-zic64b,-zicbom,-zicbop,-zicboz,-ziccamoa,-ziccif,-zicclsm,-ziccrse,-zicntr,-zicond,-zihintntl,-zihintpause,-zihpm,-zimop,-zk,-zkn,-zknd,-zkne,-zknh,-zkr,-zks,-zksed,-zksh,-zkt,-ztso,-zvbb,-zvbc,-zve32f,-zve32x,-zve64d,-zve64f,-zve64x,-zvfbfmin,-zvfbfwma,-zvfh,-zvfhmin,-zvkb,-zvkg,-zvkn,-zvknc,-zvkned,-zvkng,-zvknha,-zvknhb,-zvks,-zvksc,-zvksed,-zvksg,-zvksh,-zvkt,-zvl1024b,-zvl128b,-zvl16384b,-zvl2048b,-zvl256b,-zvl32768b,-zvl32b,-zvl4096b,-zvl512b,-zvl64b,-zvl65536b,-zvl8192b" }
+attributes #1 = { "frame-pointer"="all" "no-trapping-math"="true" "stack-protector-buffer-size"="8" "target-cpu"="generic-rv32" "target-features"="+32bit,+a,+c,+d,+f,+m,+relax,+zicsr,+zifencei,+zmmul,-b,-e,-experimental-smmpm,-experimental-smnpm,-experimental-ssnpm,-experimental-sspm,-experimental-ssqosid,-experimental-supm,-experimental-zacas,-experimental-zalasr,-experimental-zicfilp,-experimental-zicfiss,-h,-shcounterenw,-shgatpa,-shtvala,-shvsatpa,-shvstvala,-shvstvecd,-smaia,-smcdeleg,-smcsrind,-smepmp,-smstateen,-ssaia,-ssccfg,-ssccptr,-sscofpmf,-sscounterenw,-sscsrind,-ssstateen,-ssstrict,-sstc,-sstvala,-sstvecd,-ssu64xl,-svade,-svadu,-svbare,-svinval,-svnapot,-svpbmt,-v,-xcvalu,-xcvbi,-xcvbitmanip,-xcvelw,-xcvmac,-xcvmem,-xcvsimd,-xsfcease,-xsfvcp,-xsfvfnrclipxfqf,-xsfvfwmaccqqq,-xsfvqmaccdod,-xsfvqmaccqoq,-xsifivecdiscarddlone,-xsifivecflushdlone,-xtheadba,-xtheadbb,-xtheadbs,-xtheadcmo,-xtheadcondmov,-xtheadfmemidx,-xtheadmac,-xtheadmemidx,-xtheadmempair,-xtheadsync,-xtheadvdot,-xventanacondops,-xwchc,-za128rs,-za64rs,-zaamo,-zabha,-zalrsc,-zama16b,-zawrs,-zba,-zbb,-zbc,-zbkb,-zbkc,-zbkx,-zbs,-zca,-zcb,-zcd,-zce,-zcf,-zcmop,-zcmp,-zcmt,-zdinx,-zfa,-zfbfmin,-zfh,-zfhmin,-zfinx,-zhinx,-zhinxmin,-zic64b,-zicbom,-zicbop,-zicboz,-ziccamoa,-ziccif,-zicclsm,-ziccrse,-zicntr,-zicond,-zihintntl,-zihintpause,-zihpm,-zimop,-zk,-zkn,-zknd,-zkne,-zknh,-zkr,-zks,-zksed,-zksh,-zkt,-ztso,-zvbb,-zvbc,-zve32f,-zve32x,-zve64d,-zve64f,-zve64x,-zvfbfmin,-zvfbfwma,-zvfh,-zvfhmin,-zvkb,-zvkg,-zvkn,-zvknc,-zvkned,-zvkng,-zvknha,-zvknhb,-zvks,-zvksc,-zvksed,-zvksg,-zvksh,-zvkt,-zvl1024b,-zvl128b,-zvl16384b,-zvl2048b,-zvl256b,-zvl32768b,-zvl32b,-zvl4096b,-zvl512b,-zvl64b,-zvl65536b,-zvl8192b" }
+attributes #2 = { mustprogress noinline nounwind optnone "frame-pointer"="all" "no-trapping-math"="true" "stack-protector-buffer-size"="8" "target-cpu"="generic-rv32" "target-features"="+32bit,+a,+c,+d,+f,+m,+relax,+zicsr,+zifencei,+zmmul,-b,-e,-experimental-smmpm,-experimental-smnpm,-experimental-ssnpm,-experimental-sspm,-experimental-ssqosid,-experimental-supm,-experimental-zacas,-experimental-zalasr,-experimental-zicfilp,-experimental-zicfiss,-h,-shcounterenw,-shgatpa,-shtvala,-shvsatpa,-shvstvala,-shvstvecd,-smaia,-smcdeleg,-smcsrind,-smepmp,-smstateen,-ssaia,-ssccfg,-ssccptr,-sscofpmf,-sscounterenw,-sscsrind,-ssstateen,-ssstrict,-sstc,-sstvala,-sstvecd,-ssu64xl,-svade,-svadu,-svbare,-svinval,-svnapot,-svpbmt,-v,-xcvalu,-xcvbi,-xcvbitmanip,-xcvelw,-xcvmac,-xcvmem,-xcvsimd,-xsfcease,-xsfvcp,-xsfvfnrclipxfqf,-xsfvfwmaccqqq,-xsfvqmaccdod,-xsfvqmaccqoq,-xsifivecdiscarddlone,-xsifivecflushdlone,-xtheadba,-xtheadbb,-xtheadbs,-xtheadcmo,-xtheadcondmov,-xtheadfmemidx,-xtheadmac,-xtheadmemidx,-xtheadmempair,-xtheadsync,-xtheadvdot,-xventanacondops,-xwchc,-za128rs,-za64rs,-zaamo,-zabha,-zalrsc,-zama16b,-zawrs,-zba,-zbb,-zbc,-zbkb,-zbkc,-zbkx,-zbs,-zca,-zcb,-zcd,-zce,-zcf,-zcmop,-zcmp,-zcmt,-zdinx,-zfa,-zfbfmin,-zfh,-zfhmin,-zfinx,-zhinx,-zhinxmin,-zic64b,-zicbom,-zicbop,-zicboz,-ziccamoa,-ziccif,-zicclsm,-ziccrse,-zicntr,-zicond,-zihintntl,-zihintpause,-zihpm,-zimop,-zk,-zkn,-zknd,-zkne,-zknh,-zkr,-zks,-zksed,-zksh,-zkt,-ztso,-zvbb,-zvbc,-zve32f,-zve32x,-zve64d,-zve64f,-zve64x,-zvfbfmin,-zvfbfwma,-zvfh,-zvfhmin,-zvkb,-zvkg,-zvkn,-zvknc,-zvkned,-zvkng,-zvknha,-zvknhb,-zvks,-zvksc,-zvksed,-zvksg,-zvksh,-zvkt,-zvl1024b,-zvl128b,-zvl16384b,-zvl2048b,-zvl256b,-zvl32768b,-zvl32b,-zvl4096b,-zvl512b,-zvl64b,-zvl65536b,-zvl8192b" }
 
 attributes #0 = { mustprogress noinline optnone "frame-pointer"="all" "no-trapping-math"="true" "stack-protector-buffer-size"="8" "target-cpu"="generic-rv32" "target-features"="+32bit,+a,+c,+d,+f,+m,+relax,+zicsr,+zifencei,+zmmul,-b,-e,-experimental-smmpm,-experimental-smnpm,-experimental-ssnpm,-experimental-sspm,-experimental-ssqosid,-experimental-supm,-experimental-zacas,-experimental-zalasr,-experimental-zicfilp,-experimental-zicfiss,-h,-shcounterenw,-shgatpa,-shtvala,-shvsatpa,-shvstvala,-shvstvecd,-smaia,-smcdeleg,-smcsrind,-smepmp,-smstateen,-ssaia,-ssccfg,-ssccptr,-sscofpmf,-sscounterenw,-sscsrind,-ssstateen,-ssstrict,-sstc,-sstvala,-sstvecd,-ssu64xl,-svade,-svadu,-svbare,-svinval,-svnapot,-svpbmt,-v,-xcvalu,-xcvbi,-xcvbitmanip,-xcvelw,-xcvmac,-xcvmem,-xcvsimd,-xsfcease,-xsfvcp,-xsfvfnrclipxfqf,-xsfvfwmaccqqq,-xsfvqmaccdod,-xsfvqmaccqoq,-xsifivecdiscarddlone,-xsifivecflushdlone,-xtheadba,-xtheadbb,-xtheadbs,-xtheadcmo,-xtheadcondmov,-xtheadfmemidx,-xtheadmac,-xtheadmemidx,-xtheadmempair,-xtheadsync,-xtheadvdot,-xventanacondops,-xwchc,-za128rs,-za64rs,-zaamo,-zabha,-zalrsc,-zama16b,-zawrs,-zba,-zbb,-zbc,-zbkb,-zbkc,-zbkx,-zbs,-zca,-zcb,-zcd,-zce,-zcf,-zcmop,-zcmp,-zcmt,-zdinx,-zfa,-zfbfmin,-zfh,-zfhmin,-zfinx,-zhinx,-zhinxmin,-zic64b,-zicbom,-zicbop,-zicboz,-ziccamoa,-ziccif,-zicclsm,-ziccrse,-zicntr,-zicond,-zihintntl,-zihintpause,-zihpm,-zimop,-zk,-zkn,-zknd,-zkne,-zknh,-zkr,-zks,-zksed,-zksh,-zkt,-ztso,-zvbb,-zvbc,-zve32f,-zve32x,-zve64d,-zve64f,-zve64x,-zvfbfmin,-zvfbfwma,-zvfh,-zvfhmin,-zvkb,-zvkg,-zvkn,-zvknc,-zvkned,-zvkng,-zvknha,-zvknhb,-zvks,-zvksc,-zvksed,-zvksg,-zvksh,-zvkt,-zvl1024b,-zvl128b,-zvl16384b,-zvl2048b,-zvl256b,-zvl32768b,-zvl32b,-zvl4096b,-zvl512b,-zvl64b,-zvl65536b,-zvl8192b" }
 attributes #1 = { "frame-pointer"="all" "no-trapping-math"="true" "stack-protector-buffer-size"="8" "target-cpu"="generic-rv32" "target-features"="+32bit,+a,+c,+d,+f,+m,+relax,+zicsr,+zifencei,+zmmul,-b,-e,-experimental-smmpm,-experimental-smnpm,-experimental-ssnpm,-experimental-sspm,-experimental-ssqosid,-experimental-supm,-experimental-zacas,-experimental-zalasr,-experimental-zicfilp,-experimental-zicfiss,-h,-shcounterenw,-shgatpa,-shtvala,-shvsatpa,-shvstvala,-shvstvecd,-smaia,-smcdeleg,-smcsrind,-smepmp,-smstateen,-ssaia,-ssccfg,-ssccptr,-sscofpmf,-sscounterenw,-sscsrind,-ssstateen,-ssstrict,-sstc,-sstvala,-sstvecd,-ssu64xl,-svade,-svadu,-svbare,-svinval,-svnapot,-svpbmt,-v,-xcvalu,-xcvbi,-xcvbitmanip,-xcvelw,-xcvmac,-xcvmem,-xcvsimd,-xsfcease,-xsfvcp,-xsfvfnrclipxfqf,-xsfvfwmaccqqq,-xsfvqmaccdod,-xsfvqmaccqoq,-xsifivecdiscarddlone,-xsifivecflushdlone,-xtheadba,-xtheadbb,-xtheadbs,-xtheadcmo,-xtheadcondmov,-xtheadfmemidx,-xtheadmac,-xtheadmemidx,-xtheadmempair,-xtheadsync,-xtheadvdot,-xventanacondops,-xwchc,-za128rs,-za64rs,-zaamo,-zabha,-zalrsc,-zama16b,-zawrs,-zba,-zbb,-zbc,-zbkb,-zbkc,-zbkx,-zbs,-zca,-zcb,-zcd,-zce,-zcf,-zcmop,-zcmp,-zcmt,-zdinx,-zfa,-zfbfmin,-zfh,-zfhmin,-zfinx,-zhinx,-zhinxmin,-zic64b,-zicbom,-zicbop,-zicboz,-ziccamoa,-ziccif,-zicclsm,-ziccrse,-zicntr,-zicond,-zihintntl,-zihintpause,-zihpm,-zimop,-zk,-zkn,-zknd,-zkne,-zknh,-zkr,-zks,-zksed,-zksh,-zkt,-ztso,-zvbb,-zvbc,-zve32f,-zve32x,-zve64d,-zve64f,-zve64x,-zvfbfmin,-zvfbfwma,-zvfh,-zvfhmin,-zvkb,-zvkg,-zvkn,-zvknc,-zvkned,-zvkng,-zvknha,-zvknhb,-zvks,-zvksc,-zvksed,-zvksg,-zvksh,-zvkt,-zvl1024b,-zvl128b,-zvl16384b,-zvl2048b,-zvl256b,-zvl32768b,-zvl32b,-zvl4096b,-zvl512b,-zvl64b,-zvl65536b,-zvl8192b" }

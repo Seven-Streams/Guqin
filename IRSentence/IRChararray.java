@@ -8,7 +8,7 @@ public class IRChararray extends IRCode {
 
   @Override
   public void CodePrint() {
-    System.out.print(reg + " = constant [" + Integer.toString(size) + " * i8] c\"");
+    System.out.print(reg + " = constant [" + Integer.toString(size) + " x i8] c\"");
     for(int i = 0; i < value.length(); i++) {
       if(value.charAt(i) != '\\') {
         System.out.print(value.charAt(i));

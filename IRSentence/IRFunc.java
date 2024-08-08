@@ -9,7 +9,7 @@ public class IRFunc extends IRCode{
   public ArrayList<String> names = new ArrayList<>();
 
   @Override public void CodePrint() {;
-    System.out.print(return_type + " @" + name + "( ");
+    System.out.print("define " + return_type + " @" + name + "( ");
     for(int i = 0; i < (types.size() - 1); i++) {
       System.out.print(types.get(i) + " " + names.get(i) + ", ");
     }

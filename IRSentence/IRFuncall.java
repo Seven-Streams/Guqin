@@ -14,7 +14,7 @@ public class IRFuncall extends IRCode {
     if (target_reg != null) {
       System.out.print(target_reg + " = ");
     }
-    System.out.print("call " + func_type + "@" + func_name + "(");
+    System.out.print("call " + func_type + " @" + func_name + "(");
     for(int i = 0; i < reg.size(); i++) {
       System.out.print(type.get(i) + " " + reg.get(i));
       if(i != (reg.size() - 1)) {

@@ -46,7 +46,6 @@ public class Guqin {
                 System.out.println(e);
                 System.exit(-1);
             }
-            System.out.println("OK");
             Composer Yuchuan = new Composer(AST);
             Yuchuan.translate((ProgNode) entry);
             Yuchuan.LLVMOutput();

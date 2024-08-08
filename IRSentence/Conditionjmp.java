@@ -5,7 +5,7 @@ public class Conditionjmp extends IRCode{
   int label2 = 0;
   String reg = null;
   @Override public void CodePrint() {
-    System.out.println("br i1 " + reg + "," + " label %" + label1 + ", label %" + label2);
+    System.out.println("br i1 " + reg + "," + " label %b" + label1 + ", label %b" + label2);
     return;
   }
   public Conditionjmp(){}

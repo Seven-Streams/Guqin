@@ -3,6 +3,7 @@ requirement.pdf
 /.antlr
 testcases
 tools
+/IR_tmp
 tutorial
 /.vscode
 /lib

@@ -8,7 +8,7 @@ public class IRjmp extends IRCode{
   }
   @Override
   public void CodePrint() {
-    System.out.println("br label %" + label);
+    System.out.println("br label %b" + label);
     return;
   }
 }

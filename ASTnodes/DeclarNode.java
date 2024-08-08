@@ -86,7 +86,24 @@ public class DeclarNode extends StatNode {
         machine.now_name.peek().put(ID.get(i), res);
         IRGlobal to_add = new IRGlobal();
         to_add.name = new String(res.new_name);
-        to_add.type = res.type;
+                if (dim != 0) {
+          to_add.type = "ptr";
+        } else {
+          switch (type) {
+            case "int": {
+              to_add.type = "i32";
+              break;
+            }
+            case "bool": {
+              to_add.type = "i1";
+              break;
+            }
+            default: {
+              to_add.type = "ptr";
+              break;
+            }
+          }
+        }
         machine.generated.add(to_add);
         if (Initial.containsKey(i)) {
           machine.generated = machine.init;

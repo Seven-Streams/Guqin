@@ -40,8 +40,37 @@ public class Composer {
   }
 
   public void LLVMOutput() {
+    System.out.println("declare void @print(ptr %a)\r\n" + //
+            "declare void @printInt(i32 %b)\r\n" + //
+            "declare void @println(ptr %a)\r\n" + //
+            "declare void @printIntln(i32 %b)\r\n" + //
+            "declare ptr @toString(i32 %a)\r\n" + //
+            "declare i32 @getInt()\r\n" + //
+            "declare ptr @getString()\r\n" + //
+            "declare i32 @string_length(ptr %a)\r\n" + //
+            "declare ptr @string_substring(ptr %a, i32 %b)\r\n" + //
+            "declare i32 @string_parseInt(ptr %a)\r\n" + //
+            "declare i32 @string_ord(ptr %a, i32 %b)\r\n" + //
+            "declare i32 @string_cmp(ptr %a, ptr %b)\r\n" + //
+            "declare i32 @string_cat(ptr %a, ptr %b)\r\n" + //
+            "declare ptr @ptr_array(i32 %a)\r\n" + //
+            "declare ptr @int_array(i32 %a)\r\n" + //
+            "declare i32 @array_size(ptr %a)\r\n" + //
+            "declare ptr @string_copy(ptr %a)\r\n" + //
+            "");
+    for(IRCode code : const_str) {
+      code.CodePrint();
+    }
     for (IRCode code : generated) {
       code.CodePrint();
+      if(code instanceof IRFunc) {
+        IRFunc main_check = (IRFunc)code;
+        if(main_check.name.equals("main")) {
+          for(IRCode _init: init) {
+            _init.CodePrint();
+          }
+        }
+      }
     }
     return;
   }
