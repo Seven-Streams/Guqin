@@ -2,6 +2,10 @@ package ASTnodes;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import Composer.*;
+import IRSentence.IRFunc;
+import IRSentence.IRFuncend;
+import IRSentence.TypeNamePair;
 
 public class FuncNode extends ASTNode {
   public String id = null;
@@ -13,6 +17,10 @@ public class FuncNode extends ASTNode {
   @Override
   public Mypair check() throws Exception {
     in_construct = is_construct;
+    if (in_construct) {
+      type = "void";
+      dim = 0;
+    }
     if (in_construct && (!id.equals(this_class))) {
       throw new Exception("Invalid construction function name!");
     }
@@ -50,4 +58,77 @@ public class FuncNode extends ASTNode {
   // TODO:Generate function code. Attention:Every type SHOULD create a
   // construction function, and alloc space for them.
   // When calling a function of a class, please use name "class.function".
+
+  @Override
+  public Info GenerateIR(Composer machine) {
+    IRFunc the_coooool_func = new IRFunc();
+    ArrayList<Mypair> res_args;
+    if (dim != 0) {
+      the_coooool_func.return_type = "ptr";
+    } else {
+      switch (type) {
+        case ("int"): {
+          the_coooool_func.return_type = "i32";
+          break;
+        }
+        case ("bool"): {
+          the_coooool_func.return_type = "i1";
+          break;
+        }
+        case ("void"): {
+          the_coooool_func.return_type = "void";
+          break;
+        }
+        default: {
+          the_coooool_func.return_type = "ptr";
+          break;
+        }
+      }
+    }
+    if (!in_class) {
+      the_coooool_func.name = new String(id);
+      res_args = func_args.get(id);
+    } else {
+      the_coooool_func.name = this_class + "." + id;
+      the_coooool_func.types.add("ptr");
+      the_coooool_func.names.add("%0");
+      res_args = class_func_args.get(this_class).get(id);
+    }
+    for (Mypair arg : res_args) {
+      if (arg.dim != 0) {
+        the_coooool_func.types.add("ptr");
+      } else {
+        switch (arg.type) {
+          case ("int"): {
+            the_coooool_func.types.add("i32");
+            break;
+          }
+          case ("bool"): {
+            the_coooool_func.types.add("i1");
+            break;
+          }
+          default: {
+            the_coooool_func.types.add("ptr");
+            break;
+          }
+        }
+      }
+    }
+    machine.now_name.add(new HashMap<>());
+    for (ASTNode arg : args) {
+      IdNode arg_id = (IdNode) arg;
+      String tmp_string = "%reg$" + Integer.toString(++machine.tmp_time);
+      the_coooool_func.names.add(new String(tmp_string));
+      TypeNamePair to_push = new TypeNamePair();
+      to_push.new_name = tmp_string;
+      to_push.dim = arg_id.dim;
+      to_push.type = new String(arg_id.type);
+      machine.now_name.peek().put(new String(arg_id.id), to_push);
+    }for(ASTNode stat: stats) {
+      stat.GenerateIR(machine);
+    }
+    machine.now_name.pop();
+    machine.generated.add(new IRFuncend());
+    return new Info();
+  }
 }

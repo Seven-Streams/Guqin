@@ -90,7 +90,7 @@ public class FuncallNode extends ExprNode {
     Info return_value = new Info();
     Mypair return_check;
     ArrayList<Mypair> type_check;
-    if (from_type.equals("null")) {
+    if (from_type == null) {
       res.func_name = name;
       return_check = func_return.get(name);
       if (!return_check.type.equals("void")) {
@@ -101,6 +101,8 @@ public class FuncallNode extends ExprNode {
       type_check = func_args.get(name);
     } else {
       res.func_name = from_type + "." + name;
+      res.reg.add("%0");
+      res.type.add("ptr");
       return_check = class_func_return.get(from_type).get(name);
       type_check = class_func_args.get(from_type).get(name);
       if (!return_check.type.equals("void")) {

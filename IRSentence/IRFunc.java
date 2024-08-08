@@ -3,10 +3,10 @@ package IRSentence;
 import java.util.ArrayList;
 
 public class IRFunc extends IRCode{
-  String name = null;
-  String return_type = null;
-  ArrayList<String> types = new ArrayList<>();
-  ArrayList<String> names = new ArrayList<>();
+  public String name = null;
+  public String return_type = null;
+  public ArrayList<String> types = new ArrayList<>();
+  public ArrayList<String> names = new ArrayList<>();
 
   @Override public void CodePrint() {
     System.out.print(types + " " + name + "( ");
