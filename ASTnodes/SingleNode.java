@@ -1,6 +1,10 @@
 package ASTnodes;
 
 import Composer.*;
+import IRSentence.IRBin;
+import IRSentence.IRIcmp;
+import IRSentence.IRStore;
+
 public class SingleNode extends ExprNode {
   public String symbol = null;
   public ASTNode value = null;
@@ -33,5 +37,88 @@ public class SingleNode extends ExprNode {
       throw new Exception("invalid dimension!");
     }
     return new Mypair("int", 0);
+  }
+
+  @Override
+  public Info GenerateIR(Composer machine) {
+    String output;
+    Info return_value = new Info();
+    if (symbol.equals("!")) {
+      output = new String("%reg$" + ++machine.tmp_time);
+      Info res_bool = value.GenerateIR(machine);
+      IRIcmp icmp = new IRIcmp();
+      icmp.symbol = "!=";
+      icmp.op1 = new String(res_bool.reg);
+      icmp.op2 = new String("1");
+      icmp.type = "i1";
+      return_value.reg = output;
+      machine.generated.add(icmp);
+    }
+    if (symbol.equals("~")) {
+      output = new String("%reg$" + ++machine.tmp_time);
+      Info res_int = value.GenerateIR(machine);
+      IRBin bin = new IRBin();
+      bin.symbol = "^";
+      bin.op1 = new String(res_int.reg);
+      bin.op2 = "-1";
+      bin.type = "i32";
+      bin.target_reg = output;
+      machine.generated.add(bin);
+    }
+    if (symbol.equals("-")) {
+      output = new String("%reg$" + ++machine.tmp_time);
+      Info res_int = value.GenerateIR(machine);
+      IRBin bin = new IRBin();
+      bin.symbol = "*";
+      bin.op1 = new String(res_int.reg);
+      bin.op2 = "-1";
+      bin.type = "i32";
+      bin.target_reg = output;
+      machine.generated.add(bin);
+    }
+    if (symbol.equals("++")) {
+      Info res_int = value.GenerateIR(machine);
+      Info get_addr = value.GetLeftValuePtr(machine);
+      String add_result = new String("%reg$" + ++machine.tmp_time);
+      IRBin bin = new IRBin();
+      bin.symbol = "+";
+      bin.op1 = res_int.reg;
+      bin.op2 = "1";
+      bin.type = "i32";
+      bin.target_reg = add_result;
+      machine.generated.add(bin);
+      IRStore st = new IRStore();
+      st.name = new String(get_addr.reg);
+      st.from = add_result;
+      st.type = "i32";
+      if (symbol_left) {
+        output = new String(add_result);
+      } else {
+        output = new String(res_int.reg);
+      }
+    }
+    if (symbol.equals("--")) {
+      Info res_int = value.GenerateIR(machine);
+      Info get_addr = value.GetLeftValuePtr(machine);
+      String sub_result = new String("%reg$" + ++machine.tmp_time);
+      IRBin bin = new IRBin();
+      bin.symbol = "-";
+      bin.op1 = res_int.reg;
+      bin.op2 = "1";
+      bin.type = "i32";
+      bin.target_reg = sub_result;
+      machine.generated.add(bin);
+      IRStore st = new IRStore();
+      st.name = new String(get_addr.reg);
+      st.from = sub_result;
+      st.type = "i32";
+      if (symbol_left) {
+        output = new String(sub_result);
+      } else {
+        output = new String(res_int.reg);
+      }
+    }
+    return return_value;
+
   }
 }

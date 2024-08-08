@@ -4,9 +4,9 @@ public class IRElement extends IRCode{
   public String output = null;
   public String now_type = null;
   public String src = null;
-  public int num = 0;
+  public String num = null;
   @Override public void CodePrint() {
-    System.out.println(output + " = getelementptr " + now_type + " , ptr " + src + " , i32 " + Integer.toString(num));
+    System.out.println(output + " = getelementptr " + now_type + " , ptr " + src + " , i32 " + num);
     return;
   }
 }

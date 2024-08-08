@@ -31,7 +31,7 @@ public class IdNode extends ExprNode {
   @Override
   public Info GenerateIR(Composer machine) {
     IRLoad res = new IRLoad();
-    String target_reg = "%reg" + Integer.toString(++machine.tmp_time);
+    String target_reg = "%reg$" + Integer.toString(++machine.tmp_time);
     for (int i = machine.now_name.size() - 1; i >= 0; i--) {
       if (machine.now_name.get(i) == null) {
         HashMap<String, Integer> class_mem = machine.class_mem_num.get(this_class);
@@ -39,8 +39,8 @@ public class IdNode extends ExprNode {
           Mypair to_check = class_memory.get(this_class).get(id);
           IRElement ele = new IRElement();
           ele.now_type = machine.class_now_name.get(this_class);
-          ele.num = machine.class_mem_num.get(this_class).get(id);
-          ele.output = "%reg" + Integer.toString(++machine.tmp_time);
+          ele.num = Integer.toString(machine.class_mem_num.get(this_class).get(id));
+          ele.output = "%reg$" + Integer.toString(++machine.tmp_time);
           ele.src = "%0";
           machine.generated.add(ele);
           if (to_check.dim != 0) {
@@ -104,8 +104,8 @@ public class IdNode extends ExprNode {
         if (class_mem.containsKey(id)) {
           IRElement ele = new IRElement();
           ele.now_type = machine.class_now_name.get(this_class);
-          ele.num = machine.class_mem_num.get(this_class).get(id);
-          ele.output = "%reg" + Integer.toString(++machine.tmp_time);
+          ele.num = Integer.toString(machine.class_mem_num.get(this_class).get(id));
+          ele.output = "%reg$" + Integer.toString(++machine.tmp_time);
           ele.src = "%0";
           machine.generated.add(ele);
           return_value.reg = ele.output;

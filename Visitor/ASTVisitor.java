@@ -1,4 +1,5 @@
 package Visitor;
+
 import ASTnodes.*;
 import basic_grammar.*;
 
@@ -118,19 +119,6 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 				res.elements.add(visit(ctx.getChild(i)));
 			}
 		}
-		return res;
-	}
-
-	@Override
-	public MultiarrayNode visitMultiarray(guqinParser.MultiarrayContext ctx) {
-		MultiarrayNode res = new MultiarrayNode();
-		for (int i = 0; i < ctx.getChildCount(); i++) {
-			if (ctx.getChild(i) instanceof guqinParser.MultiarrayContext ||
-					ctx.getChild(i) instanceof guqinParser.ArrayContext) {
-				res.elements.add(visit(ctx.getChild(i)));
-			}
-		}
-		res.dim = res.elements.get(0).dim + 1;
 		return res;
 	}
 
@@ -497,7 +485,7 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 			ASTNode.return_func_left.put(func_name, false);
 		}
 		res.type = ctx.real_type().getText();
-		res.value = visit(ctx.multiarray());
+		res.value = visit(ctx.array());
 		return res;
 	}
 
@@ -687,11 +675,7 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 
 	@Override
 	public ASTNode visitArrexpr(guqinParser.ArrexprContext ctx) {
-		if(ctx.multiarray() != null) {
-			return visit(ctx.multiarray());
-		} else {
-			return visit(ctx.array());
-		}
+		return visit(ctx.array());
 	}
 
 	@Override

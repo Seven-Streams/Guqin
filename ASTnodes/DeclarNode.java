@@ -121,4 +121,6 @@ public class DeclarNode extends StatNode {
     }
     return new Info();
   }
+  //In declarstat, the declare dimensions shouldn't have anything.
+
 }

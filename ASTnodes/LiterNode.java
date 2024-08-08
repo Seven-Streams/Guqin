@@ -52,7 +52,7 @@ public class LiterNode extends ExprNode {
       IRFuncall to_call = new IRFuncall();
       to_call.func_name = ("string_copy");
       to_call.func_type = "ptr";
-      to_call.target_reg = new String("%reg" + machine.tmp_time);
+      to_call.target_reg = new String("%reg$" + machine.tmp_time);
       to_call.reg.add(to_add.reg);
       to_call.type.add("ptr");
       machine.generated.add(to_call);
