@@ -8,8 +8,8 @@ public class IRFunc extends IRCode{
   public ArrayList<String> types = new ArrayList<>();
   public ArrayList<String> names = new ArrayList<>();
 
-  @Override public void CodePrint() {
-    System.out.print(types + " " + name + "( ");
+  @Override public void CodePrint() {;
+    System.out.print(return_type + " @" + name + "( ");
     for(int i = 0; i < (types.size() - 1); i++) {
       System.out.print(types.get(i) + " " + names.get(i) + ", ");
     }

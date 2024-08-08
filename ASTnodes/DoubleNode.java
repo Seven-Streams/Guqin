@@ -18,6 +18,7 @@ public class DoubleNode extends ExprNode {
     is_left = false;
     Mypair type1 = value1.check();
     Mypair type2 = value2.check();
+    type = new String(type1.type);
     if ((!type1.type.equals(type2.type)) && (!type1.type.equals("null")) && (!type2.type.equals("null"))) {
       throw new Exception("Different type in two-arg expression.");
     }
@@ -109,6 +110,7 @@ public class DoubleNode extends ExprNode {
         res.symbol = symbol;
         res.type = "i1";
         machine.generated.add(res);
+        res.target_reg = target_reg;
         return_value.reg = target_reg;
         return return_value;
       }

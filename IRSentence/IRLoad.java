@@ -6,7 +6,7 @@ public class IRLoad extends IRCode{
   public String type = null;
   @Override
   public void CodePrint() {
-    System.out.println(des + " = load " + type + ", ptr src");
+    System.out.println(des + " = load " + type + ", ptr " + src);
     return;
   }
 }

@@ -6,7 +6,7 @@ import Composer.*;
 import IRSentence.IRCode;
 import IRSentence.IRFuncall;
 import IRSentence.IRGlobal;
-import IRSentence.IRLocal;
+import IRSentence.IRAlloc;
 import IRSentence.IRStore;
 import IRSentence.TypeNamePair;
 
@@ -98,12 +98,12 @@ public class DeclarNode extends StatNode {
           machine.generated.add(to_store);
           machine.generated = res_codes;
         } else {
-          if((!type.equals("int"))&& (!type.equals("bool")) && (!type.equals("string")))  {
-          IRFuncall funcall = new IRFuncall();
-          funcall.func_name = type + "." + type;
-          funcall.type.add("ptr");
-          funcall.reg.add(new String(res.new_name));
-          machine.init.add(funcall);
+          if ((!type.equals("int")) && (!type.equals("bool")) && (!type.equals("string"))) {
+            IRFuncall funcall = new IRFuncall();
+            funcall.func_name = type + "." + type;
+            funcall.type.add("ptr");
+            funcall.reg.add(new String(res.new_name));
+            machine.init.add(funcall);
           }
         }
       }
@@ -114,9 +114,26 @@ public class DeclarNode extends StatNode {
         res.dim = dim;
         res.new_name = "%" + ID.get(i) + "." + Integer.toString(machine.scope_time);
         machine.now_name.peek().put(ID.get(i), res);
-        IRLocal to_add = new IRLocal();
-        to_add.name = new String(res.new_name);
-        to_add.type = res.type;
+        IRAlloc to_add = new IRAlloc();
+        to_add.des = new String(res.new_name);
+        if (dim != 0) {
+          to_add.type = "ptr";
+        } else {
+          switch (type) {
+            case "int": {
+              to_add.type = "i32";
+              break;
+            }
+            case "bool": {
+              to_add.type = "i1";
+              break;
+            }
+            default: {
+              to_add.type = "ptr";
+              break;
+            }
+          }
+        }
         machine.generated.add(to_add);
         if (Initial.containsKey(i)) {
           Info init_info = Initial.get(i).GenerateIR(machine);
@@ -130,5 +147,5 @@ public class DeclarNode extends StatNode {
     }
     return new Info();
   }
-  //In declarstat, the declare dimensions shouldn't have anything.
+  // In declarstat, the declare dimensions shouldn't have anything.
 }

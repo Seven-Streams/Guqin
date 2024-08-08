@@ -61,6 +61,7 @@ public class FuncNode extends ASTNode {
 
   @Override
   public Info GenerateIR(Composer machine) {
+    in_func = true;
     IRFunc the_coooool_func = new IRFunc();
     ArrayList<Mypair> res_args;
     if (dim != 0) {
@@ -85,6 +86,7 @@ public class FuncNode extends ASTNode {
         }
       }
     }
+    machine.func_type = new String(the_coooool_func.return_type);
     if (!in_class) {
       the_coooool_func.name = new String(id);
       res_args = func_args.get(id);
@@ -124,11 +126,14 @@ public class FuncNode extends ASTNode {
       to_push.dim = arg_id.dim;
       to_push.type = new String(arg_id.type);
       machine.now_name.peek().put(new String(arg_id.id), to_push);
-    }for(ASTNode stat: stats) {
+    }
+    machine.generated.add(the_coooool_func);
+    for (ASTNode stat : stats) {
       stat.GenerateIR(machine);
     }
     machine.now_name.pop();
     machine.generated.add(new IRFuncend());
+    in_func = false;
     return new Info();
   }
 }

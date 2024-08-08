@@ -5,7 +5,7 @@ public class IRStore extends IRCode{
   public String from = null;
   public String type = null;
   @Override public void CodePrint() {
-    System.out.println("store " + type + " " + from + "ptr " + name);
+    System.out.println("store " + type + " " + from + ",ptr " + name);
     return;
   }
 }

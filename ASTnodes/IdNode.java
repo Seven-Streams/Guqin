@@ -32,6 +32,7 @@ public class IdNode extends ExprNode {
   public Info GenerateIR(Composer machine) {
     IRLoad res = new IRLoad();
     String target_reg = "%reg$" + Integer.toString(++machine.tmp_time);
+    res.des = new String(target_reg);
     for (int i = machine.now_name.size() - 1; i >= 0; i--) {
       if (machine.now_name.get(i) == null) {
         HashMap<String, Integer> class_mem = machine.class_mem_num.get(this_class);
