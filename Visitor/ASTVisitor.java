@@ -607,6 +607,9 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 		if (ctx.expr() != null) {
 			res.iterator = visit(ctx.expr());
 		}
+		if(ctx.assignexpr() != null) {
+			res.iterator = visit(ctx.assignexpr());
+		}
 		res.stats = visit(ctx.loopinnercontent());
 		return res;
 	}

@@ -51,6 +51,7 @@ public class SingleNode extends ExprNode {
       icmp.op1 = new String(res_bool.reg);
       icmp.op2 = new String("1");
       icmp.type = "i1";
+      icmp.target_reg = output;
       machine.generated.add(icmp);
     }
     if (symbol.equals("~")) {
