@@ -1,7 +1,6 @@
 package ASTnodes;
 
 import java.util.ArrayList;
-
 import Composer.*;
 import IRSentence.IRFuncall;
 
@@ -21,7 +20,6 @@ public class FuncallNode extends ExprNode {
     }
     if ((from == null) && (from_type == null)) {
       if (!func_return.containsKey(name)) {
-        System.out.println(name);
         throw new Exception("The function doesn't exist.");
       }
       ArrayList<Mypair> res_arg = new ArrayList<>();
@@ -100,8 +98,19 @@ public class FuncallNode extends ExprNode {
       }
       type_check = func_args.get(name);
     } else {
+      Info from_reg = from.GenerateIR(machine);
+      if(name.equals("size")) {
+        res.func_name = "array_size";
+        res.func_type = "i32";
+        res.reg.add(new String(from_reg.reg));
+        res.type.add("ptr");
+        res.target_reg = "%reg$" + Integer.toString(++machine.tmp_time);
+        machine.generated.add(res);
+        return_value.reg = new String(res.target_reg);
+        return return_value;
+      }
       res.func_name = from_type + "." + name;
-      res.reg.add("%0");
+      res.reg.add(new String(from_reg.reg));
       res.type.add("ptr");
       return_check = class_func_return.get(from_type).get(name);
       type_check = class_func_args.get(from_type).get(name);

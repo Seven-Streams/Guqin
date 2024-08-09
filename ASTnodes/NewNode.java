@@ -38,31 +38,33 @@ public class NewNode extends ExprNode {
   @Override
   public Info GenerateIR(Composer machine) {
     Info return_value = new Info();
-    if (value == null) {
+    if ((value == null) && (dims == null)) {
       String output = new String("%reg$" + Integer.toString(++machine.tmp_time));
       return_value.reg = new String(output);
       IRAlloc res_ptr = new IRAlloc();
       res_ptr.des = output;
       res_ptr.type = "ptr";
       machine.generated.add(res_ptr);
-      IRFuncall build = new IRFuncall();
-      build.func_type = "void";
-      build.func_name = type + "." + type;
-      build.reg.add(output);
-      build.type.add("ptr");
-      machine.generated.add(build);
+      if ((!type.equals("int")) && (!type.equals("string")) && (!type.equals("bool"))) {
+        IRFuncall build = new IRFuncall();
+        build.func_type = "void";
+        build.func_name = type + "." + type;
+        build.reg.add(output);
+        build.type.add("ptr");
+        machine.generated.add(build);
+      }
     } else {
-      if (value instanceof ArrayNode) {
+      if (value != null) {
         Info array_info = value.GenerateIR(machine);
         return_value.reg = new String(array_info.reg);
       } else {
         String output = new String("%reg$" + Integer.toString(++machine.tmp_time));
         ArrayList<String> dim_list = new ArrayList<>();
-        DimensionNode dim_ = (DimensionNode) (value);
+        DimensionNode dim_ = (DimensionNode) (dims);
         for (int i = 0; i < dim; i++) {
           if (dim_.dim_expr.containsKey(i)) {
-            Info value_info = dim_.dim_expr.get(i).GenerateIR(machine);
-            dim_list.add(new String(value_info.reg));
+            Info dims_info = dim_.dim_expr.get(i).GenerateIR(machine);
+            dim_list.add(new String(dims_info.reg));
           } else {
             break;
           }
@@ -82,6 +84,7 @@ public class NewNode extends ExprNode {
             alloc_array.type.add("i32");
             alloc_array.target_reg = new String(output);
           }
+          machine.generated.add(alloc_array);
         } else {
           IRFuncall alloc_array = new IRFuncall();
           alloc_array.func_name = "ptr_array";
@@ -89,6 +92,7 @@ public class NewNode extends ExprNode {
           alloc_array.reg.add(dim_list.get(0));
           alloc_array.type.add("i32");
           alloc_array.target_reg = new String(output);
+          machine.generated.add(alloc_array);
           // output points at the beginning of the first layer.
           BuildInner(0, dim_list, machine, output);
         }
@@ -218,9 +222,5 @@ public class NewNode extends ExprNode {
     machine.generated.add(back_to_cond);
     machine.generated.add(new IRLabel(end));
     return;
-  }
-
-  void BuildClass(ArrayList<String> config, String beginning) {
-
   }
 }

@@ -4,7 +4,6 @@ int printf(const char *format, ...);
 int sprintf(char *__restrict s, const char *__restrict format, ...);
 unsigned long strlen(const char *s);
 void *malloc(unsigned long size);
-void *calloc(unsigned long num, unsigned long size);
 char *strcpy(char *dest, const char *src);
 void free(void *ptr);
 char *strcat(char *, const char *);
@@ -103,3 +102,4 @@ char *string_copy(char *str) {
   strcpy(copy, str); 
   return copy;
 }
+

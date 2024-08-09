@@ -75,7 +75,7 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 		for (int i = 0; i < ctx.getChildCount(); i++) {
 			visit(ctx.getChild(i));
 			if (universal_dnode.dim_expr.containsKey(1)) {
-				res.dim_expr.put(i + 1, universal_dnode.dim_expr.get(1));
+				res.dim_expr.put(i, universal_dnode.dim_expr.get(1));
 			}
 		}
 		res.dim = ctx.getChildCount();
@@ -500,6 +500,7 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 		}
 		res.type = ctx.real_type().getText();
 		res.dims = visit(ctx.dimensions_declar());
+		res.dim = universal_dnode.dim;
 		return res;
 	}
 
@@ -529,7 +530,7 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 				res.ID.add(ctx.getChild(i).getText());
 			}
 			if (ctx.getChild(i) instanceof guqinParser.ExprContext) {
-				res.Initial.put(cnt, visit(ctx.getChild(i)));
+				res.Initial.put(cnt - 1, visit(ctx.getChild(i)));
 			}
 		}
 		return res;

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import Composer.*;
 import IRSentence.IRCode;
-import IRSentence.IRFuncall;
 import IRSentence.IRGlobal;
 import IRSentence.IRAlloc;
 import IRSentence.IRStore;
@@ -24,7 +23,7 @@ public class DeclarNode extends StatNode {
       throw new Exception("The class doesn't exist!");
     }
     dim_number.check();
-    int cnt = 1;
+    int cnt = 0;
     for (String id : ID) {
       if (variable_memory.get(variable_memory.size() - 1).containsKey(id)) {
         throw new Exception("The same name of variables");
@@ -114,14 +113,6 @@ public class DeclarNode extends StatNode {
           to_store.type = llvm_type;
           machine.generated.add(to_store);
           machine.generated = res_codes;
-        } else {
-          if ((!type.equals("int")) && (!type.equals("bool")) && (!type.equals("string"))) {
-            IRFuncall funcall = new IRFuncall();
-            funcall.func_name = type + "." + type;
-            funcall.type.add("ptr");
-            funcall.reg.add(new String(res.new_name));
-            machine.init.add(funcall);
-          }
         }
       }
     } else {

@@ -30,7 +30,7 @@ public class LiterNode extends ExprNode {
       return res;
     }
     if (value.equals("this")) {
-      res.reg = "%0";
+      res.reg = "%this";
       return res;
     }
     if (type.equals("bool") || type.equals("int")) {

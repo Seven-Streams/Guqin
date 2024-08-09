@@ -90,7 +90,7 @@ public class FuncNode extends ASTNode {
     } else {
       the_coooool_func.name = this_class + "." + id;
       the_coooool_func.types.add("ptr");
-      the_coooool_func.names.add("%0");
+      the_coooool_func.names.add("%this");
       res_args = class_func_args.get(this_class).get(id);
     }
     for (Mypair arg : res_args) {

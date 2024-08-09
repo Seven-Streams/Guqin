@@ -23,6 +23,7 @@ public class ProgNode extends ASTNode {
     func_return.put("toString", tostr);
     func_return.put("getInt", getint);
     func_return.put("getString", getstr);
+    func_return.put("size", getint);
     func_args.put("getString", new ArrayList<>());
     func_args.put("getInt", new ArrayList<>());
     ArrayList<Mypair> a_int = new ArrayList<Mypair>();

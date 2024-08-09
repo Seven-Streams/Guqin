@@ -75,10 +75,10 @@ public class ClassNode extends ASTNode {
       default_construct.return_type = "void";
       default_construct.name = name + "." + name;
       default_construct.types.add("ptr");
-      default_construct.names.add("%0");
+      default_construct.names.add("%this");
       machine.generated.add(default_construct);
       IRAlloc to_alloc = new IRAlloc();
-      to_alloc.des = "%0";
+      to_alloc.des = "%this";
       to_alloc.type = "%struct." + name;
       machine.generated.add(to_alloc);
       machine.generated.add(new IRFuncend());

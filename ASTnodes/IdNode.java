@@ -42,7 +42,7 @@ public class IdNode extends ExprNode {
           ele.now_type = machine.class_now_name.get(this_class);
           ele.num = Integer.toString(machine.class_mem_num.get(this_class).get(id));
           ele.output = "%reg$" + Integer.toString(++machine.tmp_time);
-          ele.src = "%0";
+          ele.src = "%this";
           machine.generated.add(ele);
           if (to_check.dim != 0) {
             res.type = "ptr";
@@ -107,7 +107,7 @@ public class IdNode extends ExprNode {
           ele.now_type = machine.class_now_name.get(this_class);
           ele.num = Integer.toString(machine.class_mem_num.get(this_class).get(id));
           ele.output = "%reg$" + Integer.toString(++machine.tmp_time);
-          ele.src = "%0";
+          ele.src = "%this";
           machine.generated.add(ele);
           return_value.reg = ele.output;
           break;
