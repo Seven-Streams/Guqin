@@ -301,7 +301,7 @@ public class DoubleNode extends ExprNode {
     IRIcmp cmp = new IRIcmp();
     cmp.op1 = info1.reg;
     cmp.op2 = info2.reg;
-    if (!cmp.symbol.equals("==")) {
+    if (!symbol.equals("==")) {
       System.out.println("A surprising symbol!");
     }
     cmp.symbol = "==";

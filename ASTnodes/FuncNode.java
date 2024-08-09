@@ -61,6 +61,7 @@ public class FuncNode extends ASTNode {
 
   @Override
   public Info GenerateIR(Composer machine) {
+    machine.scope_time++;
     in_func = true;
     IRFunc the_coooool_func = new IRFunc();
     ArrayList<Mypair> res_args;
@@ -149,6 +150,7 @@ public class FuncNode extends ASTNode {
     machine.now_name.pop();
     machine.generated.add(new IRFuncend());
     in_func = false;
+    machine.scope_time++;
     return new Info();
   }
 }

@@ -54,6 +54,7 @@ public class IfNode extends StatNode {
     }
     machine.generated.add(new IRLabel(end));
     machine.now_name.pop();
+    machine.scope_time++;
     return new Info();
   }
 }

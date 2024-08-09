@@ -27,8 +27,8 @@ public class ClassNode extends ASTNode {
     }
     for (ASTNode mem : member) {
       if (mem instanceof FuncNode) {
-        FuncNode check_con = (FuncNode)mem;
-        if(check_con.is_construct) {
+        FuncNode check_con = (FuncNode) mem;
+        if (check_con.is_construct) {
           construction.put(this_class, null);
         }
         mem.check();
@@ -41,6 +41,7 @@ public class ClassNode extends ASTNode {
 
   @Override
   public Info GenerateIR(Composer machine) {
+    machine.scope_time++;
     in_class = true;
     this_class = name;
     IRClass res = new IRClass();
@@ -75,7 +76,7 @@ public class ClassNode extends ASTNode {
     machine.class_mem_num.put(name, res_num);
     machine.now_name.add(null);
     machine.generated.add(res);
-    if(!construction.containsKey(name)) {
+    if (!construction.containsKey(name)) {
       IRFunc default_construct = new IRFunc();
       default_construct.return_type = "void";
       default_construct.name = name + "." + name;
@@ -93,13 +94,14 @@ public class ClassNode extends ASTNode {
       machine.generated.add(to_store);
       machine.generated.add(new IRFuncend());
     }
-    for(ASTNode func: member) {
-      if(func instanceof FuncNode) {
+    for (ASTNode func : member) {
+      if (func instanceof FuncNode) {
         func.GenerateIR(machine);
       }
     }
     machine.now_name.pop();
     in_class = false;
+    machine.scope_time++;
     return new Info();
   }
 }
