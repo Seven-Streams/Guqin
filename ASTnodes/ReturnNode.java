@@ -2,6 +2,7 @@ package ASTnodes;
 
 import Composer.*;
 import IRSentence.IRReturn;
+
 public class ReturnNode extends StatNode {
   public ASTNode value = null;
 
@@ -13,8 +14,8 @@ public class ReturnNode extends StatNode {
     }
     Mypair to_check = value.check();
     if (in_construct) {
-      if(!to_check.type.equals("void")) {
-      throw new Exception("Return shouldn't be in a construct function!");
+      if (!to_check.type.equals("void")) {
+        throw new Exception("Return shouldn't be in a construct function!");
       } else {
         return new Mypair();
       }
@@ -27,11 +28,14 @@ public class ReturnNode extends StatNode {
     }
     return new Mypair();
   }
+
   @Override
   public Info GenerateIR(Composer machine) {
-    Info return_value = value.GenerateIR(machine);
     IRReturn res = new IRReturn();
-    res.reg = new String(return_value.reg);
+    if (!machine.func_type.equals("void")) {
+      Info return_value = value.GenerateIR(machine);
+      res.reg = new String(return_value.reg);
+    }
     res.return_type = new String(machine.func_type);
     machine.generated.add(res);
     return new Info();

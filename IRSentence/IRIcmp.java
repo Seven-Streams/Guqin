@@ -14,7 +14,7 @@ public class IRIcmp extends IRCode{
         break;
       }
       case("!="): {
-        System.out.print("ue ");
+        System.out.print("ne ");
         break;
       }
       case(">="): {

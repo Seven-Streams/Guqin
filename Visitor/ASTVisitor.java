@@ -65,6 +65,7 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 				res.dim_expr.put(i, universal_dnode.dim_expr.get(1));
 			}
 		}
+		universal_dnode = res;
 		res.dim = ctx.getChildCount();
 		return res;
 	}

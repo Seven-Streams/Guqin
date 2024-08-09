@@ -54,10 +54,13 @@ public class ForNode extends StatNode {
     res_label.end = ++machine.label_number;
     Info.loop.add(res_label);
     init.GenerateIR(machine);
-    if (condition != null) {
-      machine.generated.add(new IRjmp(res_label.condition));
-      machine.generated.add(new IRLabel(res_label.condition));
-      Info cond_reg = condition.GenerateIR(machine);
+    machine.generated.add(new IRjmp(res_label.condition));
+    machine.generated.add(new IRLabel(res_label.condition));
+    Info cond_reg = condition.GenerateIR(machine);
+    if (cond_reg.reg == null) {
+      IRjmp jmp = new IRjmp(res_label.body);
+      machine.generated.add(jmp);
+    } else {
       Conditionjmp cond_jmp = new Conditionjmp(res_label.body, res_label.end, cond_reg.reg);
       machine.generated.add(cond_jmp);
     }
