@@ -19,6 +19,10 @@ public class IRBin extends IRCode {
         System.out.print("sub ");
         break;
       }
+      case ("*"): {
+        System.out.print("mul ");
+        break;
+      }
       case ("/"): {
         System.out.print("sdiv ");
         break;
