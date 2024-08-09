@@ -23,6 +23,7 @@ public class Composer {
   public HashMap<String, Integer> now_class = new HashMap<>();
   // It's used to check now_name of the variable.
   public Stack<HashMap<String, TypeNamePair>> now_name = new Stack<>();
+
   public Composer(ASTVisitor _src) {
     from = _src;
   }
@@ -41,32 +42,58 @@ public class Composer {
 
   public void LLVMOutput() {
     System.out.println("declare void @print(ptr %a)\r\n" + //
-            "declare void @printInt(i32 %b)\r\n" + //
-            "declare void @println(ptr %a)\r\n" + //
-            "declare void @printIntln(i32 %b)\r\n" + //
-            "declare ptr @toString(i32 %a)\r\n" + //
-            "declare i32 @getInt()\r\n" + //
-            "declare ptr @getString()\r\n" + //
-            "declare i32 @string_length(ptr %a)\r\n" + //
-            "declare ptr @string_substring(ptr %a, i32 %b)\r\n" + //
-            "declare i32 @string_parseInt(ptr %a)\r\n" + //
-            "declare i32 @string_ord(ptr %a, i32 %b)\r\n" + //
-            "declare i32 @string_cmp(ptr %a, ptr %b)\r\n" + //
-            "declare i32 @string_cat(ptr %a, ptr %b)\r\n" + //
-            "declare ptr @ptr_array(i32 %a)\r\n" + //
-            "declare ptr @int_array(i32 %a)\r\n" + //
-            "declare i32 @array_size(ptr %a)\r\n" + //
-            "declare ptr @string_copy(ptr %a)\r\n" + //
-            "");
-    for(IRCode code : const_str) {
+        "declare void @printInt(i32 %b)\r\n" + //
+        "declare void @println(ptr %a)\r\n" + //
+        "declare void @printIntln(i32 %b)\r\n" + //
+        "declare ptr @toString(i32 %a)\r\n" + //
+        "declare i32 @getInt()\r\n" + //
+        "declare ptr @getString()\r\n" + //
+        "declare i32 @string_length(ptr %a)\r\n" + //
+        "declare ptr @string_substring(ptr %a, i32 %b)\r\n" + //
+        "declare i32 @string_parseInt(ptr %a)\r\n" + //
+        "declare i32 @string_ord(ptr %a, i32 %b)\r\n" + //
+        "declare i32 @string_cmp(ptr %a, ptr %b)\r\n" + //
+        "declare i32 @string_cat(ptr %a, ptr %b)\r\n" + //
+        "declare ptr @ptr_array(i32 %a)\r\n" + //
+        "declare ptr @int_array(i32 %a)\r\n" + //
+        "declare i32 @array_size(ptr %a)\r\n" + //
+        "declare ptr @string_copy(ptr %a)\r\n" + //
+        "");
+    boolean is_label = false;
+    String type = null;
+    for (IRCode code : const_str) {
       code.CodePrint();
     }
     for (IRCode code : generated) {
+      if (is_label) {
+        if (code instanceof IRFuncend) {
+          switch (type) {
+            case ("i32"): {
+              System.out.println("ret i32 0");
+              break;
+            }
+            case ("i1"): {
+              System.out.println("ret i1 true");
+              break;
+            }
+            default: {
+              System.out.println("ret ptr null");
+              break;
+            }
+          }
+        }
+      }
+      if (code instanceof IRLabel) {
+        is_label = true;
+      } else {
+        is_label = false;
+      }
       code.CodePrint();
-      if(code instanceof IRFunc) {
-        IRFunc main_check = (IRFunc)code;
-        if(main_check.name.equals("main")) {
-          for(IRCode _init: init) {
+      if (code instanceof IRFunc) {
+        IRFunc main_check = (IRFunc) code;
+        type = main_check.return_type;
+        if (main_check.name.equals("main")) {
+          for (IRCode _init : init) {
             _init.CodePrint();
           }
         }
