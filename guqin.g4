@@ -4,8 +4,8 @@ id: ID;
 prog: (classdef | func | global_declarstat)+;
 dimension: LB expr? RB | LB RB;
 must_dimension: LB expr RB;
-typepair: real_type dimensions id;
-dimensions: (dimension)*;
+typepair: real_type dimensions_declar id;
+dimensions: (dimension)+;
 dimensions_exist: must_dimension+;
 dimensions_choose: must_dimension*;
 dimensions_declar: dimension*;
@@ -13,12 +13,12 @@ array: LL (expr (COM expr)*)? RL;
 real_type: (INT | BOOL | STRING | id);
 args: (typepair (COM typepair)*)?;
 funcall: id ( LP (expr (COM expr)*)? RP | LP RP);
-func: ((real_type dimensions) | VOID) id ((LP args RP) | LP RP) (
+func: ((real_type dimensions_declar) | VOID) id ((LP args RP) | LP RP) (
 		LL ( stat)* RL
 	);
 newexpr:
 	NEW real_type LB RB array		# array_new
-	| NEW real_type dimensions_declar	# dim_new
+	| NEW real_type dimensions	# dim_new
 	| NEW real_type (LP RP)?				# single_new;
 construct_func: id LP RP LL stat* RL;
 classdef:

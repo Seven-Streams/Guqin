@@ -51,7 +51,7 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 		IdNode res = new IdNode();
 		res.id = ctx.id().getText();
 		res.type = ctx.real_type().getText();
-		ASTNode dims = visit(ctx.dimensions());
+		ASTNode dims = visit(ctx.dimensions_declar());
 		res.dim = dims.dim;
 		return res;
 	}
@@ -140,7 +140,7 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 			res.type = "void";
 		} else {
 			res.type = ctx.real_type().getText();
-			ASTNode check = visit(ctx.dimensions());
+			ASTNode check = visit(ctx.dimensions_declar());
 			res.dim = check.dim;
 		}
 		res.id = ctx.id().getText();
@@ -499,7 +499,7 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 			ASTNode.return_func_left.put(func_name, false);
 		}
 		res.type = ctx.real_type().getText();
-		res.dims = visit(ctx.dimensions_declar());
+		res.dims = visit(ctx.dimensions());
 		res.dim = universal_dnode.dim;
 		return res;
 	}

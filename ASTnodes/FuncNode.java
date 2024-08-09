@@ -7,7 +7,6 @@ import IRSentence.IRAlloc;
 import IRSentence.IRCode;
 import IRSentence.IRFunc;
 import IRSentence.IRFuncend;
-import IRSentence.IRLoad;
 import IRSentence.IRStore;
 import IRSentence.TypeNamePair;
 
@@ -125,26 +124,23 @@ public class FuncNode extends ASTNode {
       the_coooool_func.names.add(new String(tmp_string));
       TypeNamePair to_push = new TypeNamePair();
       String this_type = the_coooool_func.types.get(the_coooool_func.names.size() - 1);
-      to_push.new_name = tmp_string;
-      if (this_type.equals("i32") || this_type.equals("i1")) {
-        IRAlloc to_alloc = new IRAlloc();
-        String alloc_string = "%reg$" + Integer.toString(++machine.tmp_time);
-        to_alloc.type = new String(this_type);
-        to_alloc.des = alloc_string;
-        entry.add(to_alloc);
-        IRStore to_store = new IRStore();
-        to_store.from = tmp_string;
-        to_store.name = alloc_string;
-        to_store.type = this_type;
-        entry.add(to_store);
-        to_push.new_name = new String(alloc_string);
-      }
+      IRAlloc to_alloc = new IRAlloc();
+      String alloc_string = "%reg$" + Integer.toString(++machine.tmp_time);
+      to_alloc.type = new String(this_type);
+      to_alloc.des = alloc_string;
+      entry.add(to_alloc);
+      IRStore to_store = new IRStore();
+      to_store.from = tmp_string;
+      to_store.name = alloc_string;
+      to_store.type = this_type;
+      entry.add(to_store);
+      to_push.new_name = new String(alloc_string);
       to_push.dim = arg_id.dim;
       to_push.type = new String(arg_id.type);
       machine.now_name.peek().put(new String(arg_id.id), to_push);
     }
     machine.generated.add(the_coooool_func);
-    for(IRCode ent: entry) {
+    for (IRCode ent : entry) {
       machine.generated.add(ent);
     }
     for (ASTNode stat : stats) {

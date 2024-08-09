@@ -29,8 +29,10 @@ public class MemNode extends ExprNode {
   public Info GenerateIR(Composer machine) {
     IRElement ele_res = new IRElement();
     String target_reg = new String("%reg$" + Integer.toString(++machine.tmp_time));
-    ele_res.now_type = new String("%struct." + type);
+    ele_res.now_type = new String("%struct." + from_type.type);
     ele_res.output = target_reg;
+    HashMap<String, Integer> num_check = machine.class_mem_num.get(from_type.type);
+       ele_res.num = "0, i32 " + Integer.toString(num_check.get(id)) ;
     Info from_reg = from.GenerateIR(machine);
     ele_res.src = from_reg.reg;
     machine.generated.add(ele_res);
@@ -56,8 +58,9 @@ public class MemNode extends ExprNode {
         }
       }
     }
+    machine.generated.add(load_res);
     Info return_value = new Info();
-    return_value.reg = target_reg;
+    return_value.reg = output_reg;
     return return_value;
   }
 
@@ -65,8 +68,10 @@ public class MemNode extends ExprNode {
   public Info GetLeftValuePtr(Composer machine) {
     IRElement ele_res = new IRElement();
     String target_reg = new String("%reg$" + Integer.toString(++machine.tmp_time));
-    ele_res.now_type = new String("%struct." + type);
+    ele_res.now_type = new String("%struct." + from_type.type);
     ele_res.output = target_reg;
+    HashMap<String, Integer> num_check = machine.class_mem_num.get(from_type.type);
+    ele_res.num = "0, i32 " + Integer.toString(num_check.get(id)) ;
     Info from_reg = from.GenerateIR(machine);
     ele_res.src = from_reg.reg;
     machine.generated.add(ele_res);

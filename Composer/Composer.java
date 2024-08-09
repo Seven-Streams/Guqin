@@ -59,34 +59,30 @@ public class Composer {
         "declare i32 @array_size(ptr %a)\r\n" + //
         "declare ptr @string_copy(ptr %a)\r\n" + //
         "");
-    boolean is_label = false;
     String type = null;
     for (IRCode code : const_str) {
       code.CodePrint();
     }
     for (IRCode code : generated) {
-      if (is_label) {
-        if (code instanceof IRFuncend) {
-          switch (type) {
-            case ("i32"): {
-              System.out.println("ret i32 0");
-              break;
-            }
-            case ("i1"): {
-              System.out.println("ret i1 true");
-              break;
-            }
-            default: {
-              System.out.println("ret ptr null");
-              break;
-            }
+      if (code instanceof IRFuncend) {
+        switch (type) {
+          case ("i32"): {
+            System.out.println("ret i32 0");
+            break;
+          }
+          case ("i1"): {
+            System.out.println("ret i1 true");
+            break;
+          }
+          case ("void"): {
+            System.out.println("ret void");
+            break;
+          }
+          default: {
+            System.out.println("ret ptr null");
+            break;
           }
         }
-      }
-      if (code instanceof IRLabel) {
-        is_label = true;
-      } else {
-        is_label = false;
       }
       code.CodePrint();
       if (code instanceof IRFunc) {

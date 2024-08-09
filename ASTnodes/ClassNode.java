@@ -9,6 +9,7 @@ import IRSentence.IRAlloc;
 import IRSentence.IRClass;
 import IRSentence.IRFunc;
 import IRSentence.IRFuncend;
+import IRSentence.IRStore;
 
 public class ClassNode extends ASTNode {
   public String name = null;
@@ -19,7 +20,6 @@ public class ClassNode extends ASTNode {
   public Mypair check() throws Exception {
     in_class = true;
     this_class = name;
-    construction.put(name, null);
     HashMap<String, Mypair> res = class_memory.get(name);
     variable_memory.add(res);
     for (ASTNode dim : dims) {
@@ -27,6 +27,10 @@ public class ClassNode extends ASTNode {
     }
     for (ASTNode mem : member) {
       if (mem instanceof FuncNode) {
+        FuncNode check_con = (FuncNode)mem;
+        if(check_con.is_construct) {
+          construction.put(this_class, null);
+        }
         mem.check();
       }
     }
@@ -70,6 +74,7 @@ public class ClassNode extends ASTNode {
     machine.class_now_name.put(name, res.name);
     machine.class_mem_num.put(name, res_num);
     machine.now_name.add(null);
+    machine.generated.add(res);
     if(!construction.containsKey(name)) {
       IRFunc default_construct = new IRFunc();
       default_construct.return_type = "void";
@@ -78,9 +83,14 @@ public class ClassNode extends ASTNode {
       default_construct.names.add("%this");
       machine.generated.add(default_construct);
       IRAlloc to_alloc = new IRAlloc();
-      to_alloc.des = "%this";
+      to_alloc.des = "%this1";
       to_alloc.type = "%struct." + name;
       machine.generated.add(to_alloc);
+      IRStore to_store = new IRStore();
+      to_store.from = "%this1";
+      to_store.name = "%this";
+      to_store.type = "ptr";
+      machine.generated.add(to_store);
       machine.generated.add(new IRFuncend());
     }
     for(ASTNode func: member) {
