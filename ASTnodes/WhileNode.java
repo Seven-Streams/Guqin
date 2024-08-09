@@ -35,6 +35,7 @@ public class WhileNode extends StatNode {
     LoopInfo res_label = new LoopInfo();
     res_label.condition = ++machine.label_number;
     res_label.body = ++machine.label_number;
+    res_label.iteration = res_label.body;
     res_label.end = ++machine.label_number;
     Info.loop.add(res_label);
     machine.generated.add(new IRjmp(res_label.condition));
@@ -48,6 +49,7 @@ public class WhileNode extends StatNode {
     machine.generated.add(check_jmp);
     machine.generated.add(new IRLabel(res_label.end));
     machine.now_name.pop();
+    Info.loop.remove(Info.loop.size() - 1);
     return new Info();
   }
 }

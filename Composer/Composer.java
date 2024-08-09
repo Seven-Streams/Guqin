@@ -15,6 +15,8 @@ public class Composer {
   public int str_time = 0;
   public ASTVisitor from = null;
   public String func_type = null;
+  public String func_name = null;
+  public HashMap<String, ArrayList<IRCode>> alloc = new HashMap<>();
   public ArrayList<IRCode> init = new ArrayList<>();
   public ArrayList<IRCode> generated = new ArrayList<>();
   public ArrayList<IRCode> const_str = new ArrayList<>();
@@ -87,6 +89,9 @@ public class Composer {
       code.CodePrint();
       if (code instanceof IRFunc) {
         IRFunc main_check = (IRFunc) code;
+        for (IRCode all : alloc.get(main_check.name)) {
+          all.CodePrint();
+        }
         type = main_check.return_type;
         if (main_check.name.equals("main")) {
           for (IRCode _init : init) {

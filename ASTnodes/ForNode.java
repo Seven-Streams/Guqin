@@ -76,6 +76,7 @@ public class ForNode extends StatNode {
     machine.generated.add(new IRLabel(res_label.end));
     machine.now_name.pop();
     machine.scope_time++;
+    Info.loop.remove(Info.loop.size() - 1);
     return new Info();
   }
 }

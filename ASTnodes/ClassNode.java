@@ -83,10 +83,11 @@ public class ClassNode extends ASTNode {
       default_construct.types.add("ptr");
       default_construct.names.add("%this");
       machine.generated.add(default_construct);
+      machine.alloc.put(default_construct.name, new ArrayList<>());
       IRAlloc to_alloc = new IRAlloc();
       to_alloc.des = "%this1";
       to_alloc.type = "%struct." + name;
-      machine.generated.add(to_alloc);
+      machine.alloc.get(default_construct.name).add(to_alloc);
       IRStore to_store = new IRStore();
       to_store.from = "%this1";
       to_store.name = "%this";

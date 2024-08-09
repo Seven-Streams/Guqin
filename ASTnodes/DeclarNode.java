@@ -142,7 +142,7 @@ public class DeclarNode extends StatNode {
             }
           }
         }
-        machine.generated.add(to_add);
+        machine.alloc.get(machine.func_name).add(to_add);
         if (Initial.containsKey(i)) {
           Info init_info = Initial.get(i).GenerateIR(machine);
           IRStore to_store = new IRStore();

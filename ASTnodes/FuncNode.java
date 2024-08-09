@@ -97,6 +97,8 @@ public class FuncNode extends ASTNode {
       the_coooool_func.names.add("%this");
       res_args = class_func_args.get(this_class).get(id);
     }
+    machine.func_name = new String(the_coooool_func.name);
+    machine.alloc.put(machine.func_name, new ArrayList<>());
     for (Mypair arg : res_args) {
       if (arg.dim != 0) {
         the_coooool_func.types.add("ptr");
