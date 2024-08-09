@@ -14,7 +14,7 @@ void println(const char *str) {
 }
 
 void print(const char *str) {
-    printf("%s", str);
+  printf("%s", str);
   return;
 }
 
@@ -81,7 +81,12 @@ int string_ord(char *str, int num) { return *(str + num); }
 
 int string_cmp(char *str1, char *str2) { return strcmp(str1, str2); }
 
-char *string_cat(char *str1, char *str2) { return strcat(str1, str2); }
+char *string_cat(char *str1, char *str2) {
+  char*buffer = (char*)(malloc(string_length(str1) + string_length(str2) + 1));
+  strcpy(buffer, str1);
+  strcat(buffer, str2);
+  return buffer;
+}
 
 void *ptr_array(int number) {
   int *res = (int *)malloc(number * sizeof(void *) + sizeof(int));
@@ -99,7 +104,6 @@ int array_size(void *ptr) { return *((int *)(ptr)-1); }
 
 char *string_copy(char *str) {
   char *copy = (char *)malloc((strlen(str) + 1) * sizeof(char));
-  strcpy(copy, str); 
+  strcpy(copy, str);
   return copy;
 }
-

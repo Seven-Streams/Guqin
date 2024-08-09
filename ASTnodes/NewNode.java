@@ -116,6 +116,7 @@ public class NewNode extends ExprNode {
     init.type = "i32";
     // i = 0
     machine.generated.add(init);
+    machine.generated.add(new IRjmp(condition));
     machine.generated.add(new IRLabel(condition));
     String load_str = "%reg$" + Integer.toString(++machine.tmp_time);
     IRLoad now_value = new IRLoad();
@@ -129,6 +130,7 @@ public class NewNode extends ExprNode {
     judge.op1 = load_str;
     judge.op2 = new String(config.get(x));
     judge.symbol = "<";
+    judge.type = "i32";
     machine.generated.add(judge);
     Conditionjmp cond = new Conditionjmp(body, end, judge_str);
     // i < x
@@ -137,7 +139,7 @@ public class NewNode extends ExprNode {
     String alloc_tmp = "%reg$" + Integer.toString(++machine.tmp_time);
     IRElement get_ptr = new IRElement();
     get_ptr.output = new String(alloc_tmp);
-    get_ptr.num = new String(res);
+    get_ptr.num = new String(load_str);
     get_ptr.src = new String(beginning);
     get_ptr.now_type = "ptr";
     machine.generated.add(get_ptr);
@@ -209,6 +211,7 @@ public class NewNode extends ExprNode {
     iter.op1 = new String(load_str);
     iter.op2 = "1";
     iter.symbol = "+";
+    iter.type = "i32";
     iter.target_reg = new String(new_value);
     machine.generated.add(iter);
     IRStore update_i = new IRStore();

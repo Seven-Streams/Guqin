@@ -285,6 +285,8 @@ public class DoubleNode extends ExprNode {
           func.func_type = "ptr";
           func.reg.add(string1.reg);
           func.reg.add(string2.reg);
+          func.type.add("ptr");
+          func.type.add("ptr");
           machine.generated.add(func);
           return return_value;
         }
