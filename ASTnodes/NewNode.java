@@ -17,7 +17,6 @@ import IRSentence.IRjmp;
 public class NewNode extends ExprNode {
   public ASTNode value = null;
   public ASTNode dims = null;
-
   @Override
   public Mypair check() throws Exception {
     is_left = true;
@@ -69,9 +68,9 @@ public class NewNode extends ExprNode {
             break;
           }
         }
-        if (dim == 1) {
+        if (dim_list.size() == 1) {
           IRFuncall alloc_array = new IRFuncall();
-          if (type.equals("int") || type.equals("bool")) {
+          if ((type.equals("int") || type.equals("bool")) && (dim == 1)) {
             alloc_array.func_name = "int_array";
             alloc_array.func_type = "ptr";
             alloc_array.reg.add(dim_list.get(0));
@@ -146,10 +145,9 @@ public class NewNode extends ExprNode {
       String real_tmp = "%reg$" + Integer.toString(++machine.tmp_time);
       IRFuncall funcall = new IRFuncall();
       funcall.func_name = type + "." + type;
-      funcall.func_type = "ptr";
-      funcall.reg.add(config.get(x + 1));
-      funcall.type.add("i32");
-      funcall.target_reg = new String(real_tmp);
+      funcall.func_type = "void";
+      funcall.reg.add(new String(real_tmp));
+      funcall.type.add("ptr");
       machine.generated.add(funcall);
       IRStore to_store = new IRStore();
       to_store.from = new String(real_tmp);
