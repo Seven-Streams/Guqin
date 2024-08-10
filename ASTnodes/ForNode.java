@@ -39,7 +39,6 @@ public class ForNode extends StatNode {
 
   @Override
   public Info GenerateIR(Composer machine) {
-    machine.now_name.push(new HashMap<>());
     machine.scope_time++;
     LoopInfo res_label = new LoopInfo();
     res_label.condition = ++machine.label_number;
@@ -64,8 +63,10 @@ public class ForNode extends StatNode {
       Conditionjmp cond_jmp = new Conditionjmp(res_label.body, res_label.end, cond_reg.reg);
       machine.generated.add(cond_jmp);
     }
+    machine.now_name.push(new HashMap<>());
     machine.generated.add(new IRLabel(res_label.body));
     stats.GenerateIR(machine);
+    machine.now_name.pop();
     if (iterator != null) {
       machine.generated.add(new IRjmp(res_label.iteration));
       machine.generated.add(new IRLabel(res_label.iteration));
@@ -74,7 +75,6 @@ public class ForNode extends StatNode {
     IRjmp check_jmp = new IRjmp(res_label.condition);
     machine.generated.add(check_jmp);
     machine.generated.add(new IRLabel(res_label.end));
-    machine.now_name.pop();
     machine.scope_time++;
     Info.loop.remove(Info.loop.size() - 1);
     return new Info();

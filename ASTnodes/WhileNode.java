@@ -30,12 +30,11 @@ public class WhileNode extends StatNode {
 
   @Override
   public Info GenerateIR(Composer machine) {
-    machine.now_name.push(new HashMap<>());
     machine.scope_time++;
     LoopInfo res_label = new LoopInfo();
     res_label.condition = ++machine.label_number;
     res_label.body = ++machine.label_number;
-    res_label.iteration = res_label.body;
+    res_label.iteration = res_label.condition;
     res_label.end = ++machine.label_number;
     Info.loop.add(res_label);
     machine.generated.add(new IRjmp(res_label.condition));
@@ -43,6 +42,7 @@ public class WhileNode extends StatNode {
     Info cond_reg = condition.GenerateIR(machine);
     Conditionjmp cond_jmp = new Conditionjmp(res_label.body, res_label.end, cond_reg.reg);
     machine.generated.add(cond_jmp);
+    machine.now_name.push(new HashMap<>());
     machine.generated.add(new IRLabel(res_label.body));
     stats.GenerateIR(machine);
     IRjmp check_jmp = new IRjmp(res_label.condition);
