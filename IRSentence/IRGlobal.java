@@ -9,7 +9,7 @@ public class IRGlobal extends IRCode{
     if(type.equals("ptr")) {
       System.out.println(name + "= global " + type + " null");
     } else {
-      System.out.println(name + "= global " + type + " 1");
+      System.out.println(name + "= global " + type + " 0");
     }
     return;
   }
