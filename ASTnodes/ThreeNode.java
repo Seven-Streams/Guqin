@@ -2,7 +2,6 @@ package ASTnodes;
 
 import Composer.*;
 import IRSentence.Conditionjmp;
-import IRSentence.IRBin;
 import IRSentence.IRLabel;
 import IRSentence.IRPhi;
 import IRSentence.IRjmp;

@@ -17,6 +17,7 @@ import IRSentence.IRjmp;
 public class NewNode extends ExprNode {
   public ASTNode value = null;
   public ASTNode dims = null;
+
   @Override
   public Mypair check() throws Exception {
     is_left = true;
@@ -42,7 +43,7 @@ public class NewNode extends ExprNode {
       return_value.reg = new String(output);
       IRAlloc res_ptr = new IRAlloc();
       res_ptr.des = output;
-      res_ptr.type = "ptr";
+      res_ptr.type = "%struct." + type;
       machine.generated.add(res_ptr);
       if ((!type.equals("int")) && (!type.equals("string")) && (!type.equals("bool"))) {
         IRFuncall build = new IRFuncall();
@@ -76,14 +77,90 @@ public class NewNode extends ExprNode {
             alloc_array.reg.add(dim_list.get(0));
             alloc_array.type.add("i32");
             alloc_array.target_reg = new String(output);
+            machine.generated.add(alloc_array);
           } else {
             alloc_array.func_name = "ptr_array";
             alloc_array.func_type = "ptr";
             alloc_array.reg.add(dim_list.get(0));
             alloc_array.type.add("i32");
             alloc_array.target_reg = new String(output);
+            machine.generated.add(alloc_array);
+            if ((dim == 1) && (!type.equals("string"))) {
+              int condition = ++machine.label_number;
+              int body = ++machine.label_number;
+              int end = ++machine.label_number;
+              IRAlloc alloc = new IRAlloc();
+              String res = "%reg$" + Integer.toString(++machine.tmp_time);
+              alloc.des = new String(res);
+              alloc.type = "i32";
+              machine.generated.add(alloc);
+              IRStore init = new IRStore();
+              init.from = "0";
+              init.name = new String(res);
+              init.type = "i32";
+              // i = 0
+              machine.generated.add(init);
+              machine.generated.add(new IRjmp(condition));
+              machine.generated.add(new IRLabel(condition));
+              String load_str = "%reg$" + Integer.toString(++machine.tmp_time);
+              IRLoad now_value = new IRLoad();
+              now_value.des = new String(load_str);
+              now_value.src = res;
+              now_value.type = "i32";
+              machine.generated.add(now_value);
+              String judge_str = "%reg$" + Integer.toString(++machine.tmp_time);
+              IRIcmp judge = new IRIcmp();
+              judge.target_reg = new String(judge_str);
+              judge.op1 = load_str;
+              judge.op2 = new String(dim_list.get(0));
+              judge.symbol = "<";
+              judge.type = "i32";
+              machine.generated.add(judge);
+              Conditionjmp cond = new Conditionjmp(body, end, judge_str);
+              // i < x
+              machine.generated.add(cond);
+              machine.generated.add(new IRLabel(body));
+              String alloc_tmp = "%reg$" + Integer.toString(++machine.tmp_time);
+              IRElement get_ptr = new IRElement();
+              get_ptr.output = new String(alloc_tmp);
+              get_ptr.num = new String(load_str);
+              get_ptr.src = new String(output);
+              get_ptr.now_type = "ptr";
+              machine.generated.add(get_ptr);
+              IRAlloc to_alloc = new IRAlloc();
+              String real_tmp = "%reg$" + Integer.toString(++machine.tmp_time);
+              to_alloc.des = real_tmp;
+              to_alloc.type = "%struct." + type;
+              machine.generated.add(to_alloc);
+              IRFuncall funcall = new IRFuncall();
+              funcall.func_name = type + "." + type;
+              funcall.func_type = "void";
+              funcall.reg.add(new String(real_tmp));
+              funcall.type.add("ptr");
+              machine.generated.add(funcall);
+              IRStore to_store = new IRStore();
+              to_store.from = new String(real_tmp);
+              to_store.name = alloc_tmp;
+              to_store.type = "ptr";
+              machine.generated.add(to_store);
+              IRBin iter = new IRBin();
+              String new_value = "%reg$" + Integer.toString(++machine.tmp_time);
+              iter.op1 = new String(load_str);
+              iter.op2 = "1";
+              iter.symbol = "+";
+              iter.type = "i32";
+              iter.target_reg = new String(new_value);
+              machine.generated.add(iter);
+              IRStore update_i = new IRStore();
+              update_i.from = new String(new_value);
+              update_i.name = new String(res);
+              update_i.type = "i32";
+              machine.generated.add(update_i);
+              IRjmp back_to_cond = new IRjmp(condition);
+              machine.generated.add(back_to_cond);
+              machine.generated.add(new IRLabel(end));
+            }
           }
-          machine.generated.add(alloc_array);
         } else {
           IRFuncall alloc_array = new IRFuncall();
           alloc_array.func_name = "ptr_array";
@@ -144,7 +221,11 @@ public class NewNode extends ExprNode {
     get_ptr.now_type = "ptr";
     machine.generated.add(get_ptr);
     if (x == (dim - 1)) {
+      IRAlloc to_alloc = new IRAlloc();
       String real_tmp = "%reg$" + Integer.toString(++machine.tmp_time);
+      to_alloc.des = real_tmp;
+      to_alloc.type = "%struct." + type;
+      machine.generated.add(to_alloc);
       IRFuncall funcall = new IRFuncall();
       funcall.func_name = type + "." + type;
       funcall.func_type = "void";

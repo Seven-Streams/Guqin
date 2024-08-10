@@ -7,6 +7,7 @@ import IRSentence.IRAlloc;
 import IRSentence.IRCode;
 import IRSentence.IRFunc;
 import IRSentence.IRFuncend;
+import IRSentence.IRLoad;
 import IRSentence.IRStore;
 import IRSentence.TypeNamePair;
 
@@ -87,8 +88,7 @@ public class FuncNode extends ASTNode {
         }
       }
     }
-    machine.func_type = new String(the_coooool_func.return_type);
-    if (!in_class) {
+    if ((!in_class) || (is_construct)) {
       the_coooool_func.name = new String(id);
       res_args = func_args.get(id);
     } else {
@@ -97,6 +97,7 @@ public class FuncNode extends ASTNode {
       the_coooool_func.names.add("%this");
       res_args = class_func_args.get(this_class).get(id);
     }
+    machine.func_type = new String(the_coooool_func.return_type);
     machine.func_name = new String(the_coooool_func.name);
     machine.alloc.put(machine.func_name, new ArrayList<>());
     for (Mypair arg : res_args) {

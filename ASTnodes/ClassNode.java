@@ -5,12 +5,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import Composer.*;
-import IRSentence.IRAlloc;
 import IRSentence.IRClass;
 import IRSentence.IRFunc;
 import IRSentence.IRFuncend;
-import IRSentence.IRStore;
-
 public class ClassNode extends ASTNode {
   public String name = null;
   public ArrayList<ASTNode> member = new ArrayList<>();
@@ -84,15 +81,6 @@ public class ClassNode extends ASTNode {
       default_construct.names.add("%this");
       machine.generated.add(default_construct);
       machine.alloc.put(default_construct.name, new ArrayList<>());
-      IRAlloc to_alloc = new IRAlloc();
-      to_alloc.des = "%this1";
-      to_alloc.type = "%struct." + name;
-      machine.alloc.get(default_construct.name).add(to_alloc);
-      IRStore to_store = new IRStore();
-      to_store.from = "%this1";
-      to_store.name = "%this";
-      to_store.type = "ptr";
-      machine.generated.add(to_store);
       machine.generated.add(new IRFuncend());
     }
     for (ASTNode func : member) {

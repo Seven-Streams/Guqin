@@ -6,6 +6,7 @@ tools
 /IR_tmp
 tutorial
 /.vscode
+/REIMU
 /lib
 /basic_grammar
 guqin.interp
