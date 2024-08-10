@@ -108,3 +108,8 @@ char *string_copy(char *str) {
   strcpy(copy, str);
   return copy;
 }
+
+void* MyNew(int num) {
+  void *res = malloc(num);
+  return res;
+}

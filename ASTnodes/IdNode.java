@@ -40,9 +40,10 @@ public class IdNode extends ExprNode {
           Mypair to_check = class_memory.get(this_class).get(id);
           IRElement ele = new IRElement();
           ele.now_type = machine.class_now_name.get(this_class);
-          ele.num = Integer.toString(machine.class_mem_num.get(this_class).get(id));
-          ele.output = "%reg$" + Integer.toString(++machine.tmp_time);
+          ele.num = " 0, i32 " +  Integer.toString(machine.class_mem_num.get(this_class).get(id));
+          ele.output = "%reg$" +  Integer.toString(++machine.tmp_time);
           ele.src = "%this";
+          res.src = new String(ele.output);
           machine.generated.add(ele);
           if (to_check.dim != 0) {
             res.type = "ptr";
@@ -105,7 +106,7 @@ public class IdNode extends ExprNode {
         if (class_mem.containsKey(id)) {
           IRElement ele = new IRElement();
           ele.now_type = machine.class_now_name.get(this_class);
-          ele.num = Integer.toString(machine.class_mem_num.get(this_class).get(id));
+          ele.num = " 0, i32 " + Integer.toString(machine.class_mem_num.get(this_class).get(id));
           ele.output = "%reg$" + Integer.toString(++machine.tmp_time);
           ele.src = "%this";
           machine.generated.add(ele);

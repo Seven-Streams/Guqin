@@ -7,7 +7,6 @@ import IRSentence.IRAlloc;
 import IRSentence.IRCode;
 import IRSentence.IRFunc;
 import IRSentence.IRFuncend;
-import IRSentence.IRLoad;
 import IRSentence.IRStore;
 import IRSentence.TypeNamePair;
 
@@ -88,7 +87,7 @@ public class FuncNode extends ASTNode {
         }
       }
     }
-    if ((!in_class) || (is_construct)) {
+    if (!in_class) {
       the_coooool_func.name = new String(id);
       res_args = func_args.get(id);
     } else {

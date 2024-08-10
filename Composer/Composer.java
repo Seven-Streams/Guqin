@@ -49,6 +49,7 @@ public class Composer {
         "declare void @printIntln(i32 %b)\r\n" + //
         "declare ptr @toString(i32 %a)\r\n" + //
         "declare i32 @getInt()\r\n" + //
+        "declare ptr @MyNew(i32 %a)\r\n" + //
         "declare ptr @getString()\r\n" + //
         "declare i32 @string_length(ptr %a)\r\n" + //
         "declare ptr @string_substring(ptr %a, i32 %b)\r\n" + //

@@ -32,6 +32,8 @@ public class ClassNode extends ASTNode {
       }
     }
     variable_memory.remove(variable_memory.size() - 1);
+    int size = res.size() * 4;
+    size_of_class.put(this_class, size);
     in_class = false;
     return new Mypair();
   }

@@ -41,10 +41,13 @@ public class NewNode extends ExprNode {
     if ((value == null) && (dims == null)) {
       String output = new String("%reg$" + Integer.toString(++machine.tmp_time));
       return_value.reg = new String(output);
-      IRAlloc res_ptr = new IRAlloc();
-      res_ptr.des = output;
-      res_ptr.type = "%struct." + type;
-      machine.generated.add(res_ptr);
+      IRFuncall irfuncall = new IRFuncall();
+      irfuncall.func_name = "MyNew";
+      irfuncall.func_type = "ptr";
+      irfuncall.target_reg = new String(output);
+      irfuncall.reg.add(Integer.toString(size_of_class.get(type)));
+      irfuncall.type.add("i32");
+      machine.generated.add(irfuncall);
       if ((!type.equals("int")) && (!type.equals("string")) && (!type.equals("bool"))) {
         IRFuncall build = new IRFuncall();
         build.func_type = "void";
@@ -127,11 +130,7 @@ public class NewNode extends ExprNode {
               get_ptr.src = new String(output);
               get_ptr.now_type = "ptr";
               machine.generated.add(get_ptr);
-              IRAlloc to_alloc = new IRAlloc();
               String real_tmp = "%reg$" + Integer.toString(++machine.tmp_time);
-              to_alloc.des = real_tmp;
-              to_alloc.type = "%struct." + type;
-              machine.generated.add(to_alloc);
               IRFuncall funcall = new IRFuncall();
               funcall.func_name = type + "." + type;
               funcall.func_type = "void";
@@ -221,11 +220,14 @@ public class NewNode extends ExprNode {
     get_ptr.now_type = "ptr";
     machine.generated.add(get_ptr);
     if (x == (dim - 1)) {
-      IRAlloc to_alloc = new IRAlloc();
       String real_tmp = "%reg$" + Integer.toString(++machine.tmp_time);
-      to_alloc.des = real_tmp;
-      to_alloc.type = "%struct." + type;
-      machine.generated.add(to_alloc);
+      IRFuncall irfuncall = new IRFuncall();
+      irfuncall.func_name = "MyNew";
+      irfuncall.func_type = "ptr";
+      irfuncall.target_reg = new String(real_tmp);
+      irfuncall.reg.add(Integer.toString(size_of_class.get(type)));
+      irfuncall.type.add("i32");
+      machine.generated.add(irfuncall);
       IRFuncall funcall = new IRFuncall();
       funcall.func_name = type + "." + type;
       funcall.func_type = "void";
