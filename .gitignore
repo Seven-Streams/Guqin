@@ -8,16 +8,12 @@ tutorial
 /.vscode
 /REIMU
 /lib
-/basic_grammar
 guqin.interp
 guqin.tokens
-guqinBaseListener.java
 guqinLexer.interp
-guqinLexer.java
 guqinLexer.tokens
 guqinParser$BitContext.class
 guqinListener.java
-guqinParser.java
 /deprecated
 /bin
 /test
@@ -102,8 +98,6 @@ guqinParser$ReturnstatContext.class
 guqinParser$StatContext.class
 guqinParser$TypepairContext.class
 guqinParser$WhilestatContext.class
-guqinBaseVisitor.java
-guqinVisitor.java
 test.txt
 .antlr
 .antlr/guqinLexer.interp
