@@ -9,7 +9,7 @@ public class FuncallNode extends ExprNode {
   public ASTNode from = null;
   public String from_type = null;
   public ArrayList<ASTNode> args = new ArrayList<>();
-
+  public int from_dim = 0;
   @Override
   public Mypair check() throws Exception {
     is_left = false;
@@ -48,6 +48,7 @@ public class FuncallNode extends ExprNode {
       Mypair res = null;
       if (from != null) {
         res = from.check();
+        from_dim = res.dim;
         from_type = new String(res.type);
       } else {
         res = new Mypair(from_type, 0);
@@ -111,7 +112,7 @@ public class FuncallNode extends ExprNode {
         }   
       } else {
         Info from_reg = from.GenerateIR(machine);
-        if (name.equals("size")) {
+        if (name.equals("size") && (from_dim != 0)) {
           res.func_name = "array_size";
           res.func_type = "i32";
           res.reg.add(new String(from_reg.reg));
