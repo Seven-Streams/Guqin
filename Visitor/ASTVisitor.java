@@ -607,7 +607,7 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 		if (ctx.expr() != null) {
 			res.iterator = visit(ctx.expr());
 		}
-		if(ctx.assignexpr() != null) {
+		if (ctx.assignexpr() != null) {
 			res.iterator = visit(ctx.assignexpr());
 		}
 		res.stats = visit(ctx.loopinnercontent());
@@ -729,5 +729,12 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 	@Override
 	public StatNode visitEmpty_stat(guqinParser.Empty_statContext ctx) {
 		return new StatNode();
+	}
+
+	@Override
+	public ASTNode visitThisexpr(guqinParser.ThisexprContext ctx) {
+		ThisExprNode res = new ThisExprNode();
+		res.expr = visit(ctx.expr());
+		return res;
 	}
 }

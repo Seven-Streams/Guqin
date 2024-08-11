@@ -16,10 +16,10 @@ public class IfNode extends StatNode {
   public Mypair check() throws Exception {
     Mypair cond = condition.check();
     if (cond.dim != 0) {
-      throw new Exception("Type Mismatch");
+      throw new Exception("Invalid Type");
     }
     if (!cond.type.equals("bool")) {
-      throw new Exception("Type Mismatch");
+      throw new Exception("Invalid Type");
     }
     branch.check();
     if (else_branch != null) {

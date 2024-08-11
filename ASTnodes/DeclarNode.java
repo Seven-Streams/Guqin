@@ -20,6 +20,9 @@ public class DeclarNode extends StatNode {
   public Mypair check() throws Exception {
     Mypair resMypair = new Mypair(type, dim);
     if (!class_memory.containsKey(type)) {
+      if(type.equals("void")) {
+        throw new Exception("Invalid Type");
+      }
       throw new Exception("Undefined Identifier");
     }
     dim_number.check();
@@ -38,7 +41,7 @@ public class DeclarNode extends StatNode {
             throw new Exception("Type Mismatch");
           }
           if ((resMypair.dim != res.dim) && (!res.type.equals(""))) {
-            throw new Exception("Dimension Out Of Bound");
+            throw new Exception("Type Mismatch");
           }
         } else {
           if (resMypair.dim == 0) {

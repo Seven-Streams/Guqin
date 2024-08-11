@@ -21,10 +21,10 @@ public class ForNode extends StatNode {
     if (condition != null) {
       Mypair res_cond = condition.check();
       if (res_cond.dim != 0) {
-        throw new Exception("Type Mismatch");
+        throw new Exception("Invalid Type");
       }
       if ((!res_cond.type.equals("bool")) && (!res_cond.type.equals("void"))) {
-        throw new Exception("Type Mismatch");
+        throw new Exception("Invalid Type");
       }
     }
     if (iterator != null) {

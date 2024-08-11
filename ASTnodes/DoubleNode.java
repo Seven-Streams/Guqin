@@ -30,37 +30,37 @@ public class DoubleNode extends ExprNode {
     if (symbol.equals("*") || symbol.equals("/") || symbol.equals("%") || symbol.equals("-") || symbol.equals("<<")
         || symbol.equals(">>") || symbol.equals("&") || symbol.equals("^") || symbol.equals("|")) {
       if (!type1.type.equals("int")) {
-        throw new Exception("Type Mismatch");
+        throw new Exception("Invalid Type");
       }
       if (type1.dim != 0) {
-        throw new Exception("Type Mismatch");
+        throw new Exception("Invalid Type");
       }
       return new Mypair("int", 0);
     }
     if (symbol.equals("+")) {
       if (type1.dim != 0) {
-        throw new Exception("Type Mismatch");
+        throw new Exception("Invalid Type");
       }
       if ((!type1.type.equals("int")) && (!type1.type.equals("string"))) {
-        throw new Exception("Type Mismatch");
+        throw new Exception("Invalid Type");
       }
       return new Mypair(type1.type, 0);
     }
     if (symbol.equals("<") || symbol.equals(">") || symbol.equals("<=") || symbol.equals(">=")) {
       if (type1.dim != 0) {
-        throw new Exception("Type Mismatch");
+        throw new Exception("Invalid Type");
       }
       if ((!type1.type.equals("int")) && (!type1.type.equals("string"))) {
-        throw new Exception("Type Mismatch");
+        throw new Exception("Invalid Type");
       }
       return new Mypair("bool", 0);
     }
     if (symbol.equals("&&") || symbol.equals("||")) {
       if (type1.dim != 0) {
-        throw new Exception("Type Mismatch");
+        throw new Exception("Invalid Type");
       }
       if (!type1.type.equals("bool")) {
-        throw new Exception("Type Mismatch");
+        throw new Exception("Invalid Type");
       }
       return new Mypair("bool", 0);
     }

@@ -205,6 +205,13 @@ public interface guqinVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitBan(guqinParser.BanContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code thisexpr}
+	 * labeled alternative in {@link guqinParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitThisexpr(guqinParser.ThisexprContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code mem}
 	 * labeled alternative in {@link guqinParser#expr}.
 	 * @param ctx the parse tree

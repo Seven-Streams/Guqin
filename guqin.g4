@@ -39,6 +39,7 @@ expr:
 	| expr (DOT funcall)								# memfun
 	| expr (DOT ID)										# mem
 	| THIS												# this
+	| expr DOT THIS #thisexpr
 	| newexpr											# new
 	| LP expr RP										# par
 	| expr op = (SAD | SMI)								# aft
