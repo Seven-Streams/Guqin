@@ -21,11 +21,11 @@ public class ForNode extends StatNode {
     if (condition != null) {
       Mypair res_cond = condition.check();
       if (res_cond.dim != 0) {
-        throw new Exception("Invalid dimension in condition of loop.");
+        throw new Exception("Type Mismatch");
       }
       if ((!res_cond.type.equals("bool")) && (!res_cond.type.equals("void"))) {
         System.out.println(res_cond.type);
-        throw new Exception("Invalid type in condition of loop.");
+        throw new Exception("Type Mismatch");
       }
     }
     if (iterator != null) {

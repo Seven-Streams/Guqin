@@ -16,10 +16,10 @@ public class WhileNode extends StatNode {
     in_loop++;
     Mypair to_check = condition.check();
     if (to_check.dim != 0) {
-      throw new Exception("Invalid dimension in condition!");
+      throw new Exception("Type Mismatch");
     }
     if (!to_check.type.equals("bool")) {
-      throw new Exception("Invalid type in condition!");
+      throw new Exception("Type Mismatch");
     }
     variable_memory.add(new HashMap<>());
     stats.check();

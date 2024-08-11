@@ -7,7 +7,7 @@ public class ContinueNode extends StatNode {
   @Override
   public Mypair check() throws Exception {
     if (in_loop == 0) {
-      throw new Exception("Continue sentence should be in a loop!");
+      throw new Exception("Invalid Control Flow");
     }
     return new Mypair();
   }

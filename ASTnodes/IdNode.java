@@ -25,7 +25,7 @@ public class IdNode extends ExprNode {
       Mypair res = new Mypair(func_return.get(id).type, func_return.get(id).dim);
       return res;
     }
-    throw new Exception("Undeclared variable.");
+    throw new Exception("Undefined Identifier");
   }
 
   @Override

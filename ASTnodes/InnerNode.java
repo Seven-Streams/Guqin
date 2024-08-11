@@ -14,51 +14,51 @@ public class InnerNode extends ExprNode {
     if (name.equals("ord")) {
       Mypair to_check = args.get(0).check();
       if (!to_check.type.equals("string")) {
-        throw new Exception("Invalid type in string function.");
+        throw new Exception("Type Mismatch");
       }
       if (to_check.dim != 0) {
-        throw new Exception("Invalid dimension in string function.");
+        throw new Exception("Type Mismatch");
       }
       to_check = args.get(1).check();
       if (!to_check.type.equals("int")) {
-        throw new Exception("Invalid type in string function.");
+        throw new Exception("Type Mismatch");
       }
       if (to_check.dim != 0) {
-        throw new Exception("Invalid dimension in string function.");
+        throw new Exception("Type Mismatch");
       }
       return new Mypair("int", 0);
     }
     if (name.equals("length") || name.equals("parseInt")) {
       Mypair to_check = args.get(0).check();
       if (!to_check.type.equals("string")) {
-        throw new Exception("Invalid type in string function.");
+        throw new Exception("Type Mismatch");
       }
       if (to_check.dim != 0) {
-        throw new Exception("Invalid dimension in string function.");
+        throw new Exception("Type Mismatch");
       }
       return new Mypair("int", 0);
     }
     if (name.equals("substring")) {
       Mypair to_check = args.get(0).check();
       if (!to_check.type.equals("string")) {
-        throw new Exception("Invalid type in string function.");
+        throw new Exception("Type Mismatch");
       }
       if (to_check.dim != 0) {
-        throw new Exception("Invalid dimension in string function.");
+        throw new Exception("Type Mismatch");
       }
       to_check = args.get(1).check();
       if (!to_check.type.equals("int")) {
-        throw new Exception("Invalid type in string function.");
+        throw new Exception("Type Mismatch");
       }
       if (to_check.dim != 0) {
-        throw new Exception("Invalid dimension in string function.");
+        throw new Exception("Type Mismatch");
       }
       to_check = args.get(2).check();
       if (!to_check.type.equals("int")) {
-        throw new Exception("Invalid type in string function.");
+        throw new Exception("Type Mismatch");
       }
       if (to_check.dim != 0) {
-        throw new Exception("Invalid dimension in string function.");
+        throw new Exception("Type Mismatch");
       }
       return new Mypair("string", 0);
     }

@@ -23,7 +23,7 @@ public class ArrayNode extends ASTNode {
           res = check;
         }
       } else {
-        throw new Exception("Invalid type in array.");
+        throw new Exception("Invalid Type");
       }
       if (check.dim != 0) {
         dim = check.dim + 1;

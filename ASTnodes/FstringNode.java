@@ -17,10 +17,10 @@ public class FstringNode extends ExprNode {
       Mypair to_check = expr.check();
       types.add(to_check.type);
       if (to_check.dim != 0) {
-        throw new Exception("Invalid dimension in fstring.");
+        throw new Exception("Type Mismatch");
       }
       if (!to_check.type.equals("bool") && !to_check.type.equals("int") && !to_check.type.equals("string")) {
-        throw new Exception("Invalid type in fstring.");
+        throw new Exception("Type Mismatch");
       }
     }
     return new Mypair(type, 0);

@@ -15,10 +15,10 @@ public class SingleNode extends ExprNode {
     Mypair to_check = value.check();
     if (symbol.equals("!")) {
       if (!to_check.type.equals("bool")) {
-        throw new Exception("The value should be a bool!");
+        throw new Exception("Type Mismatch");
       }
       if (to_check.dim != 0) {
-        throw new Exception("invalid dimension!");
+        throw new Exception("Type Mismatch");
       }
       is_left = false;
       return new Mypair("bool", 0);
@@ -31,10 +31,10 @@ public class SingleNode extends ExprNode {
       is_left = symbol_left;
     }
     if (!to_check.type.equals("int")) {
-      throw new Exception("The value should be a integer!");
+      throw new Exception("Type Mismatch");
     }
     if (to_check.dim != 0) {
-      throw new Exception("invalid dimension!");
+      throw new Exception("Type Mismatch");
     }
     return new Mypair("int", 0);
   }

@@ -22,45 +22,45 @@ public class DoubleNode extends ExprNode {
     dim = (type1.dim == 0)? (type2.dim) : (type1.dim);
     type = new String(type1.type);
     if ((!type1.type.equals(type2.type)) && (!type1.type.equals("null")) && (!type2.type.equals("null"))) {
-      throw new Exception("Different type in two-arg expression.");
+      throw new Exception("Type Mismatch");
     }
     if ((type1.dim != type2.dim) && (!type1.type.equals("null")) && (!type2.type.equals("null"))) {
-      throw new Exception("Different dimension in two-arg expression.");
+      throw new Exception("Type Mismatch");
     }
     if (symbol.equals("*") || symbol.equals("/") || symbol.equals("%") || symbol.equals("-") || symbol.equals("<<")
         || symbol.equals(">>") || symbol.equals("&") || symbol.equals("^") || symbol.equals("|")) {
       if (!type1.type.equals("int")) {
-        throw new Exception("Invalid type in two-arg expression.");
+        throw new Exception("Type Mismatch");
       }
       if (type1.dim != 0) {
-        throw new Exception("Invalid dimension in two-arg expression.");
+        throw new Exception("Type Mismatch");
       }
       return new Mypair("int", 0);
     }
     if (symbol.equals("+")) {
       if (type1.dim != 0) {
-        throw new Exception("Invalid dimension in two-arg expression.");
+        throw new Exception("Type Mismatch");
       }
       if ((!type1.type.equals("int")) && (!type1.type.equals("string"))) {
-        throw new Exception("Invalid type in two-arg expression.");
+        throw new Exception("Type Mismatch");
       }
       return new Mypair(type1.type, 0);
     }
     if (symbol.equals("<") || symbol.equals(">") || symbol.equals("<=") || symbol.equals(">=")) {
       if (type1.dim != 0) {
-        throw new Exception("Invalid dimension in two-arg expression.");
+        throw new Exception("Type Mismatch");
       }
       if ((!type1.type.equals("int")) && (!type1.type.equals("string"))) {
-        throw new Exception("Invalid type in two-arg expression.");
+        throw new Exception("Type Mismatch");
       }
       return new Mypair("bool", 0);
     }
     if (symbol.equals("&&") || symbol.equals("||")) {
       if (type1.dim != 0) {
-        throw new Exception("Invalid dimension in two-arg expression.");
+        throw new Exception("Type Mismatch");
       }
       if (!type1.type.equals("bool")) {
-        throw new Exception("Invalid type in two-arg expression.");
+        throw new Exception("Type Mismatch");
       }
       return new Mypair("bool", 0);
     }

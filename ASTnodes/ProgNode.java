@@ -37,10 +37,10 @@ public class ProgNode extends ASTNode {
         ClassNode res = (ClassNode) tree;
         String class_name = res.name;
         if (class_memory.containsKey(class_name)) {
-          throw new Exception("Re-definition of classes and functions.");
+          throw new Exception("Multiple Definitions");
         }
         if (func_return.containsKey(class_name)) {
-          throw new Exception("Re-definition of classes and functions.");
+          throw new Exception("Multiple Definitions");
         }
         for (ASTNode member : res.member) {
           if (member instanceof DeclarNode) {
@@ -50,7 +50,7 @@ public class ProgNode extends ASTNode {
             Mypair mem_Mypair = new Mypair(type, member_dim);
             for (String id : declar.ID) {
               if (res_members.containsKey(id) || res_func_return.containsKey(id)) {
-                throw new Exception("Re-definition in the class.");
+                throw new Exception("Multiple Definitions");
               }
               res_members.put(id, mem_Mypair);
             }
@@ -66,7 +66,7 @@ public class ProgNode extends ASTNode {
             int res_dim = func.dim;
             Mypair func_Mypair = new Mypair(type, res_dim);
             if (res_func_return.containsKey(func.id) || res_members.containsKey(func.id)) {
-              throw new Exception("Re-definition in the class.");
+              throw new Exception("Multiple Definitions");
             }
             res_func_return.put(func.id, func_Mypair);
             ArrayList<Mypair> res_args = new ArrayList<>();
@@ -84,10 +84,10 @@ public class ProgNode extends ASTNode {
         FuncNode func = (FuncNode) tree;
         String func_name = func.id;
         if (class_memory.containsKey(func_name)) {
-          throw new Exception("Re-definition of classes and functions.");
+          throw new Exception("Multiple Definitions");
         }
         if (func_return.containsKey(func_name)) {
-          throw new Exception("Re-definition of classes and functions.");
+          throw new Exception("Multiple Definitions");
         }
         String type = func.type;
         int res_dim = func.dim;
@@ -108,10 +108,10 @@ public class ProgNode extends ASTNode {
       throw new Exception("The main function shouldn't have args!");
     }
     if (!func_return.get("main").type.equals("int")) {
-      throw new Exception("The main function of return should be a int.");
+      throw new Exception("Type Mismatch");
     }
     if (func_return.get("main").dim != 0) {
-      throw new Exception("The dimension of main function should be 0.");
+      throw new Exception("Type Mismatch");
     }
     for (ASTNode tree : trees) {
       tree.check();

@@ -14,7 +14,7 @@ public class LiterNode extends ExprNode {
     if (type == "this") {
       value = "this";
       if (!in_class) {
-        throw new Exception("\" this \" isn't in a class.");
+        throw new Exception("Invalid Identifier");
       }
       type = this_class;
       return new Mypair(this_class, 0);

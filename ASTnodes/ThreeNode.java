@@ -15,18 +15,18 @@ public class ThreeNode extends ExprNode {
   public Mypair check() throws Exception {
     Mypair res = condition.check();
     if (res.dim != 0) {
-      throw new Exception("Invalid dimension in condition of 3-arg expression.");
+      throw new Exception("Type Mismatch");
     }
     if (!res.type.equals("bool")) {
-      throw new Exception("Invalid type in condition of 3-arg expression.");
+      throw new Exception("Type Mismatch");
     }
     Mypair res1 = value1.check();
     Mypair res2 = value2.check();
     if ((res1.dim != res2.dim) && (!res1.type.equals("null")) && (!res2.type.equals("null"))) {
-      throw new Exception("Different dimension in  3-arg expression.");
+      throw new Exception("Type Mismatch");
     }
     if ((!res1.type.equals(res2.type)) && (!res1.type.equals("null")) && (!res2.type.equals("null"))) {
-      throw new Exception("Different type in 3-arg expression.");
+      throw new Exception("Type Mismatch");
     }
     is_left = false;
     type = new String(res1.type.equals("null") ? res2.type : res1.type);

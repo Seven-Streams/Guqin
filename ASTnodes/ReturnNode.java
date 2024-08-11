@@ -10,21 +10,21 @@ public class ReturnNode extends StatNode {
   public Mypair check() throws Exception {
     has_return = true;
     if (!in_func) {
-      throw new Exception("Return should be in a function!");
+      throw new Exception("Invalid Control Flow");
     }
     Mypair to_check = value.check();
     if (in_construct) {
       if (!to_check.type.equals("void")) {
-        throw new Exception("Return shouldn't be in a construct function!");
+        throw new Exception("Invalid Control Flow");
       } else {
         return new Mypair();
       }
     }
     if ((!to_check.type.equals(return_value.type)) && (!to_check.type.equals("null"))) {
-      throw new Exception("The return value is incorrect!");
+      throw new Exception("Type Mismatch");
     }
     if (to_check.dim != return_value.dim) {
-      throw new Exception("The return dimension is incorrect!");
+      throw new Exception("Type Mismatch");
     }
     return new Mypair();
   }

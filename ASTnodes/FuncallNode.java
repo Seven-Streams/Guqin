@@ -20,7 +20,7 @@ public class FuncallNode extends ExprNode {
     }
     if ((from == null) && (from_type == null)) {
       if (!func_return.containsKey(name)) {
-        throw new Exception("The function doesn't exist.");
+        throw new Exception("Undefined Identifier");
       }
       ArrayList<Mypair> res_arg = new ArrayList<>();
       for (ASTNode arg : args) {
@@ -28,18 +28,18 @@ public class FuncallNode extends ExprNode {
       }
       ArrayList<Mypair> true_arg = func_args.get(name);
       if (true_arg.size() != res_arg.size()) {
-        throw new Exception("The number of args isn't correct.");
+        throw new Exception("Args Mismatch");
       }
       for (int i = 0; i < res_arg.size(); i++) {
         if (true_arg.get(i).dim != res_arg.get(i).dim) {
           if (!res_arg.get(i).type.equals("null")) {
-            throw new Exception("The dimension of args isn't correct.");
+            throw new Exception("Type Mismatch");
           }
         }
         if (!true_arg.get(i).type.equals(res_arg.get(i).type)) {
           if ((!res_arg.get(i).type.equals("null")) | ((true_arg.get(i).dim == 0) && (true_arg.get(i).type.equals("int")
               || true_arg.get(i).type.equals("string") || true_arg.get(i).type.equals("bool")))) {
-            throw new Exception("The type of args isn't correct.");
+            throw new Exception("Type Mismatch");
           }
         }
       }
@@ -57,10 +57,10 @@ public class FuncallNode extends ExprNode {
         if (name.equals("size") && (args.isEmpty())) {
           return new Mypair("int", 0);
         }
-        throw new Exception("The dimension of variable is incorrect.");
+        throw new Exception("Undefined Identifier");
       }
       if ((!class_func_return.containsKey(res.type))) {
-        throw new Exception("The function doesn't exist.");
+        throw new Exception("Undefined Identifier");
       }
       ArrayList<Mypair> res_arg = new ArrayList<>();
       for (ASTNode arg : args) {
@@ -68,14 +68,14 @@ public class FuncallNode extends ExprNode {
       }
       ArrayList<Mypair> true_arg = class_func_args.get(res.type).get(name);
       if (true_arg.size() != res_arg.size()) {
-        throw new Exception("The number of args isn't correct.");
+        throw new Exception("Arg Mismatch");
       }
       for (int i = 0; i < res_arg.size(); i++) {
         if (true_arg.get(i).dim != res_arg.get(i).dim) {
-          throw new Exception("The dimension of args isn't correct.");
+          throw new Exception("Type Mismatch");
         }
         if (!true_arg.get(i).type.equals(res_arg.get(i).type)) {
-          throw new Exception("The type of args isn't correct.");
+          throw new Exception("Type Mismatch");
         }
       }
       Mypair return_value = class_func_return.get(res.type).get(name);

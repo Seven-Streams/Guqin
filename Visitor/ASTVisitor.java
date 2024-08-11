@@ -655,7 +655,7 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 	@Override
 	public ASTNode visitPint(guqinParser.PintContext ctx) {
 		PrintNode res = new PrintNode();
-		res.type = "int";
+		res.is_int = true;
 		if (ctx.PRINTINT() == null) {
 			res.change_line = true;
 		}
@@ -666,7 +666,7 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 	@Override
 	public ASTNode visitPstr(guqinParser.PstrContext ctx) {
 		PrintNode res = new PrintNode();
-		res.type = "string";
+		res.is_int = false;
 		if (ctx.PRINT() == null) {
 			res.change_line = true;
 		}

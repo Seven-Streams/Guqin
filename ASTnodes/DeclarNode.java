@@ -20,30 +20,30 @@ public class DeclarNode extends StatNode {
   public Mypair check() throws Exception {
     Mypair resMypair = new Mypair(type, dim);
     if (!class_memory.containsKey(type)) {
-      throw new Exception("The class doesn't exist!");
+      throw new Exception("Undefined Identifier");
     }
     dim_number.check();
     int cnt = 0;
     for (String id : ID) {
       if (variable_memory.get(variable_memory.size() - 1).containsKey(id)) {
-        throw new Exception("The same name of variables");
+        throw new Exception("Multiple Definitions");
       }
       if (func_return.containsKey(id)) {
-        throw new Exception("The same name of variable and fuc.");
+        throw new Exception("Multiple Definitions");
       }
       if (Initial.containsKey(cnt)) {
         Mypair res = Initial.get(cnt).check();
         if (!res.type.equals("null")) {
           if (!resMypair.type.equals(res.type) && (!res.type.equals(""))) {
-            throw new Exception("Invalid type in initialization.");
+            throw new Exception("Type Mismatch");
           }
           if ((resMypair.dim != res.dim) && (!res.type.equals(""))) {
-            throw new Exception("Invalid dimension in initialization.");
+            throw new Exception("Dimension Out Of Bound");
           }
         } else {
           if (resMypair.dim == 0) {
             if (resMypair.type.equals("string") || resMypair.type.equals("int") || resMypair.type.equals("bool")) {
-              throw new Exception("Inner type can't be assigned with null!");
+              throw new Exception("Type Mismatch");
             }
           }
         }

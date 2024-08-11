@@ -19,7 +19,7 @@ public class With_dimenNode extends ExprNode {
     ex_dim = ex_pair.dim;
     dim = ex_pair.dim - dim_pair.dim;
     if (ex_pair.dim < dim_pair.dim) {
-      throw new Exception("The dimension is out of range!");
+      throw new Exception("Dimension Out Of Bound");
     }
     is_left = ex.is_left;
     return new Mypair(ex_pair.type, ex_pair.dim - dim_pair.dim);

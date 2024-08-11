@@ -6,10 +6,20 @@ import IRSentence.*;
 public class PrintNode extends StatNode {
   public boolean change_line = false;
   public ASTNode value = null;
+  public boolean is_int = false;
 
   @Override
   public Mypair check() throws Exception {
     type = value.check().type;
+    if(is_int) {
+      if(!type.equals("int")) {
+        throw new Exception("Type Mismatch");
+      }
+    } else {
+      if(!type.equals("string")) {
+        throw new Exception("Type Mismatch");
+      }
+    }
     return new Mypair();
   }
 

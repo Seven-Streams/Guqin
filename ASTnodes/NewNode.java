@@ -27,7 +27,7 @@ public class NewNode extends ExprNode {
     if (value != null) {
       Mypair res = value.check();
       if (!res.type.equals(type)) {
-        throw new Exception("Invalid type in new expression!");
+        throw new Exception("Type Mismatch");
       }
       return res;
     }

@@ -23,7 +23,7 @@ public class Guqin {
                 @Override
                 public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line,
                         int charPositionInLine, String msg, RecognitionException e) {
-                    System.err.println("Lexer Error at line " + line + ":" + charPositionInLine + " - " + msg);
+                    System.out.println("Invalid Identifier");
                     System.exit(-1);
                 }
             });
@@ -33,7 +33,7 @@ public class Guqin {
                 @Override
                 public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line,
                         int charPositionInLine, String msg, RecognitionException e) {
-                    System.err.println("Lexer Error at line " + line + ":" + charPositionInLine + " - " + msg);
+                    System.out.println("Invalid Identifier");
                     System.exit(-1);
                 }
             });
@@ -43,7 +43,7 @@ public class Guqin {
             try {
                 entry.check();
             } catch (Exception e) {
-                System.out.println(e);
+                System.out.println("Invalid Identifier");
                 System.exit(-1);
             }
             Composer Yuchuan = new Composer(AST);

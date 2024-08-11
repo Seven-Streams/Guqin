@@ -25,7 +25,7 @@ public class FuncNode extends ASTNode {
       dim = 0;
     }
     if (in_construct && (!id.equals(this_class))) {
-      throw new Exception("Invalid construction function name!");
+      throw new Exception("Invalid Type");
     }
     has_return = false;
     in_func = true;
@@ -40,10 +40,10 @@ public class FuncNode extends ASTNode {
     for (ASTNode arg : args) {
       IdNode res_id = (IdNode) arg;
       if (!class_memory.containsKey(arg.type)) {
-        throw new Exception("The type is invalid!");
+        throw new Exception("Type Mismatch");
       }
       if (variable_memory.get(variable_memory.size() - 1).containsKey(res_id.id)) {
-        throw new Exception("Re defination in function args.");
+        throw new Exception("Multiple Definitions");
       }
       variable_memory.get(variable_memory.size() - 1).put(res_id.id, new Mypair(res_id.type, res_id.dim));
     }
@@ -52,7 +52,7 @@ public class FuncNode extends ASTNode {
     }
     variable_memory.remove(variable_memory.size() - 1);
     if ((!return_value.type.equals("void")) && (!has_return) && (!id.equals("main")) && (!is_construct)) {
-      throw new Exception("Non-void function should have a return value!");
+      throw new Exception("Missing Return Statement");
     }
     in_func = false;
     in_construct = false;
