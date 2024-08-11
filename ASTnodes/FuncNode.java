@@ -37,8 +37,10 @@ public class FuncNode extends ASTNode {
         return_value = func_return.get(id);
       }
     }
-    if(!class_memory.containsKey(return_value.type)) {
-      throw new Exception("Undefined Identifier");
+    if ((!class_memory.containsKey(return_value.type)) && (!is_construct)) {
+      if (!return_value.type.equals("void")) {
+        throw new Exception("Undefined Identifier");
+      }
     }
     for (ASTNode arg : args) {
       IdNode res_id = (IdNode) arg;
