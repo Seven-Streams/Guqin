@@ -20,7 +20,7 @@ public class AssignNode extends ExprNode {
       }
       if (!demanded.type.equals("null")) {
         if (to_check.dim != demanded.dim) {
-          throw new Exception("Dimension Out of Bound");
+          throw new Exception("Type Mismatch");
         }
         if (!to_check.type.equals(demanded.type)) {
           throw new Exception("Type Mismatch");
