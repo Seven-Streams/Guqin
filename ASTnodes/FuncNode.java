@@ -61,6 +61,7 @@ public class FuncNode extends ASTNode {
 
   @Override
   public Info GenerateIR(Composer machine) {
+    System.out.println(id);;
     machine.scope_time++;
     in_func = true;
     IRFunc the_coooool_func = new IRFunc();

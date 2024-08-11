@@ -46,12 +46,8 @@ public class ClassNode extends ASTNode {
     IRClass res = new IRClass();
     res.name = new String("%struct." + name);
     HashMap<String, Mypair> res_map = class_memory.get(name);
-    HashMap<String, Integer> res_num = new HashMap<>();
-    int cnt = 0;
     for (Map.Entry<String, Mypair> entry : res_map.entrySet()) {
-      String key = entry.getKey();
       Mypair value = entry.getValue();
-      res_num.put(key, cnt++);
       if (value.dim != 0) {
         res.types.add("ptr");
       } else {
@@ -72,7 +68,6 @@ public class ClassNode extends ASTNode {
       }
     }
     machine.class_now_name.put(name, res.name);
-    machine.class_mem_num.put(name, res_num);
     machine.now_name.add(null);
     machine.generated.add(res);
     if (!construction.containsKey(name)) {

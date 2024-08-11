@@ -121,6 +121,9 @@ public class ProgNode extends ASTNode {
 
   @Override
   public Info GenerateIR(Composer machine) {
+    size_of_class.put("string", 4);
+    size_of_class.put("int", 4);
+    size_of_class.put("bool", 4);
     IRChararray to_add = new IRChararray();
     to_add.reg = new String("@.true");
     to_add.value = "true";
@@ -130,11 +133,6 @@ public class ProgNode extends ASTNode {
     to_add1.reg = new String("@.false");
     to_add1.value = "false";
     to_add1.size = 6;
-    IRChararray to_add2 = new IRChararray();
-    to_add1.reg = new String("@.null");
-    to_add1.value = "";
-    to_add1.size = 1;
-    machine.const_str.add(to_add2);
     for (ASTNode tree : trees) {
       tree.GenerateIR(machine);
     }

@@ -89,6 +89,7 @@ public class SingleNode extends ExprNode {
       machine.generated.add(bin);
       IRStore st = new IRStore();
       st.name = new String(get_addr.reg);
+      System.out.println("A");
       st.from = add_result;
       st.type = "i32";
       machine.generated.add(st);
@@ -122,6 +123,9 @@ public class SingleNode extends ExprNode {
     }
     return_value.reg = output;
     return return_value;
-
+  }
+  @Override 
+  public Info GetLeftValuePtr(Composer machine) {
+    return value.GetLeftValuePtr(machine);
   }
 }

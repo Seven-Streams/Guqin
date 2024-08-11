@@ -2,6 +2,7 @@ package Composer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Stack;
 
 import ASTnodes.*;
@@ -31,14 +32,24 @@ public class Composer {
   }
 
   public void translate(ProgNode entry) {
+    for (Map.Entry<String, HashMap<String, Mypair>> mems : ASTNode.class_memory.entrySet()) {
+      HashMap<String, Integer> to_add = new HashMap<>();
+      int cnt = 0;
+      if (mems.getKey().equals("string") || mems.getKey().equals("int") || mems.getKey().equals("bool")) {
+        class_mem_num.put(mems.getKey(), to_add);
+        continue;
+      }
+      for (Map.Entry<String, Mypair> mem : mems.getValue().entrySet()) {
+        to_add.put(mem.getKey(), cnt++);
+      }
+      class_mem_num.put(mems.getKey(), to_add);
+    }
     tmp_time = 0;
     label_number = 0;
     generated.clear();
     now_name.clear();
     now_name.push(new HashMap<>());
-    for (ASTNode tree : entry.trees) {
-      tree.GenerateIR(this);
-    }
+    entry.GenerateIR(this);
     return;
   }
 

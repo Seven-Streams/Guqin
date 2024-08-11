@@ -31,6 +31,7 @@ public class ReturnNode extends StatNode {
 
   @Override
   public Info GenerateIR(Composer machine) {
+    System.out.println(value != null);
     IRReturn res = new IRReturn();
     if (!machine.func_type.equals("void")) {
       Info return_value = value.GenerateIR(machine);

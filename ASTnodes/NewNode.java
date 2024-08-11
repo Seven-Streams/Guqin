@@ -184,6 +184,9 @@ public class NewNode extends ExprNode {
   }
 
   void BuildInner(int x, ArrayList<String> config, Composer machine, String beginning) {
+    if((x == (config.size() - 1)) && (x != (dim - 1))) {
+      return;
+    }
     int condition = ++machine.label_number;
     int body = ++machine.label_number;
     int end = ++machine.label_number;
@@ -231,6 +234,7 @@ public class NewNode extends ExprNode {
       irfuncall.func_name = "MyNew";
       irfuncall.func_type = "ptr";
       irfuncall.target_reg = new String(real_tmp);
+      System.out.println(type);
       irfuncall.reg.add(Integer.toString(size_of_class.get(type)));
       irfuncall.type.add("i32");
       machine.generated.add(irfuncall);
