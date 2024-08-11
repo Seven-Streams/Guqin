@@ -234,7 +234,6 @@ public class NewNode extends ExprNode {
       irfuncall.func_name = "MyNew";
       irfuncall.func_type = "ptr";
       irfuncall.target_reg = new String(real_tmp);
-      System.out.println(type);
       irfuncall.reg.add(Integer.toString(size_of_class.get(type)));
       irfuncall.type.add("i32");
       machine.generated.add(irfuncall);

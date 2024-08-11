@@ -24,7 +24,6 @@ public class ForNode extends StatNode {
         throw new Exception("Type Mismatch");
       }
       if ((!res_cond.type.equals("bool")) && (!res_cond.type.equals("void"))) {
-        System.out.println(res_cond.type);
         throw new Exception("Type Mismatch");
       }
     }

@@ -8,7 +8,6 @@ public class StatsNode extends ASTNode{
   public ArrayList<ASTNode> stats = new ArrayList<>();
   @Override public Mypair check() throws Exception {
     variable_memory.add(new HashMap<>());
-    System.out.println();
     for(ASTNode stat: stats) {
       stat.check();
     }
