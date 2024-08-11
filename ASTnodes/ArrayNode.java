@@ -15,6 +15,7 @@ public class ArrayNode extends ASTNode {
       return new Mypair();
     }
     Mypair res = elements.get(0).check();
+    type = new String(res.type);
     for (ASTNode element : elements) {
       Mypair check = element.check();
       if (res.type.equals(check.type) || res.type.equals("") || check.type.equals("")) {
