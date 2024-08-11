@@ -17,42 +17,37 @@ public class Guqin {
         InputStream is = args.length > 0 ? new FileInputStream(args[0]) : System.in;
 
         CharStream input = CharStreams.fromStream(is);
-        try {
-            guqinLexer lexer = new guqinLexer(input);
-            lexer.addErrorListener(new BaseErrorListener() {
-                @Override
-                public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line,
-                        int charPositionInLine, String msg, RecognitionException e) {
-                    System.out.println("Invalid Identifier");
-                    System.exit(-1);
-                }
-            });
-            CommonTokenStream tokens = new CommonTokenStream(lexer);
-            guqinParser parser = new guqinParser(tokens);
-            parser.addErrorListener(new BaseErrorListener() {
-                @Override
-                public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line,
-                        int charPositionInLine, String msg, RecognitionException e) {
-                    System.out.println("Invalid Identifier");
-                    System.exit(-1);
-                }
-            });
-            ParseTree tree = parser.prog();
-            ASTVisitor AST = new ASTVisitor();
-            ASTNode entry = AST.visit(tree);
-            try {
-                entry.check();
-            } catch (Exception e) {
+        guqinLexer lexer = new guqinLexer(input);
+        lexer.addErrorListener(new BaseErrorListener() {
+            @Override
+            public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line,
+                    int charPositionInLine, String msg, RecognitionException e) {
                 System.out.println("Invalid Identifier");
                 System.exit(-1);
             }
-            Composer Yuchuan = new Composer(AST);
-            Yuchuan.translate((ProgNode) entry);
-            Yuchuan.LLVMOutput();
-            System.exit(0);
-        } catch (RecognitionException e) {
-            System.out.println(e);
+        });
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        guqinParser parser = new guqinParser(tokens);
+        parser.addErrorListener(new BaseErrorListener() {
+            @Override
+            public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line,
+                    int charPositionInLine, String msg, RecognitionException e) {
+                System.out.println("Invalid Identifier");
+                System.exit(-1);
+            }
+        });
+        ParseTree tree = parser.prog();
+        ASTVisitor AST = new ASTVisitor();
+        ASTNode entry = AST.visit(tree);
+        try {
+            entry.check();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
             System.exit(-1);
         }
+        Composer Yuchuan = new Composer(AST);
+        Yuchuan.translate((ProgNode) entry);
+        Yuchuan.LLVMOutput();
+        System.exit(0);
     }
 }
