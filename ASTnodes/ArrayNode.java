@@ -92,7 +92,7 @@ public class ArrayNode extends ASTNode {
         }
       }
       ele_get.src = new String(to_store);
-      ele_get.num = Integer.toString(cnt++);
+      ele_get.num1 = Integer.toString(cnt++);
       ele_get.output = new String(store_tmp);
       machine.generated.add(ele_get);
       ele_store.from = new String(init_value);

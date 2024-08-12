@@ -32,7 +32,7 @@ public class MemNode extends ExprNode {
     ele_res.now_type = new String("%struct." + from_type.type);
     ele_res.output = target_reg;
     HashMap<String, Integer> num_check = machine.class_mem_num.get(from_type.type);
-       ele_res.num = "0, i32 " + Integer.toString(num_check.get(id)) ;
+       ele_res.num2 = Integer.toString(num_check.get(id)) ;
     Info from_reg = from.GenerateIR(machine);
     ele_res.src = from_reg.reg;
     machine.generated.add(ele_res);
@@ -71,7 +71,7 @@ public class MemNode extends ExprNode {
     ele_res.now_type = new String("%struct." + from_type.type);
     ele_res.output = target_reg;
     HashMap<String, Integer> num_check = machine.class_mem_num.get(from_type.type);
-    ele_res.num = "0, i32 " + Integer.toString(num_check.get(id)) ;
+    ele_res.num2 = Integer.toString(num_check.get(id)) ;
     Info from_reg = from.GenerateIR(machine);
     ele_res.src = from_reg.reg;
     machine.generated.add(ele_res);

@@ -43,7 +43,7 @@ public class With_dimenNode extends ExprNode {
       String tmp = new String("%reg$" + Integer.toString(++machine.tmp_time));
       IRElement ele = new IRElement();
       ele.now_type = "ptr";
-      ele.num = dim_list.get(i);
+      ele.num1 = dim_list.get(i);
       ele.src = new String(last);
       ele.output = tmp;
       machine.generated.add(ele);
@@ -76,7 +76,7 @@ public class With_dimenNode extends ExprNode {
     } else {
       ele.now_type = "ptr";
     }
-    ele.num = dim_list.get(dim_list.size() - 1);
+    ele.num1 = dim_list.get(dim_list.size() - 1);
     ele.src = new String(last);
     ele.output = tmp;
     machine.generated.add(ele);
@@ -128,7 +128,7 @@ public class With_dimenNode extends ExprNode {
       String tmp = new String("%reg$" + Integer.toString(++machine.tmp_time));
       IRElement ele = new IRElement();
       ele.now_type = "ptr";
-      ele.num = dim_list.get(i);
+      ele.num1 = dim_list.get(i);
       ele.src = new String(last);
       ele.output = tmp;
       machine.generated.add(ele);
@@ -162,7 +162,7 @@ public class With_dimenNode extends ExprNode {
     } else {
       ele.now_type = "ptr";
     }
-    ele.num = dim_list.get(dim_list.size() - 1);
+    ele.num1 = dim_list.get(dim_list.size() - 1);
     ele.src = new String(last);
     ele.output = tmp;
     machine.generated.add(ele);

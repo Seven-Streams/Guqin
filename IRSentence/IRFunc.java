@@ -8,7 +8,7 @@ public class IRFunc extends IRCode{
   public ArrayList<String> types = new ArrayList<>();
   public ArrayList<String> names = new ArrayList<>();
 
-  @Override public void CodePrint() {;
+  @Override public void CodePrint() {
     System.out.print("define " + return_type + " @" + name + "( ");
     for(int i = 0; i < (types.size() - 1); i++) {
       System.out.print(types.get(i) + " " + names.get(i) + ", ");
@@ -18,5 +18,10 @@ public class IRFunc extends IRCode{
     }
     System.out.println(") {");
     return;
+  }
+
+  @Override public void Codegen() throws Exception{
+    func_num++;
+    //TODO:
   }
 }

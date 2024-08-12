@@ -9,4 +9,10 @@ public class IRLoad extends IRCode{
     System.out.println(des + " = load " + type + ", ptr " + src);
     return;
   }
+
+  @Override
+  public void Codegen() {
+    relative_addr.put(des, relative_addr.get(src));
+    return;
+  }
 }

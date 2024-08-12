@@ -12,7 +12,7 @@ compile:
 
 .PHONY: test
 test:
-	cd bin && java -cp ../ulib/antlr-4.13.1-complete.jar:. Guqin
+	@cd bin && java -cp ../ulib/antlr-4.13.1-complete.jar:. Guqin
 
 .PHONY: visit
 visit:

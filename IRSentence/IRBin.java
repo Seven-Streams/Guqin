@@ -64,10 +64,10 @@ public class IRBin extends IRCode {
     if (is_global.get(op1) || is_global.get(op2)) {
       throw new Exception("Unexpected.");
     }
-    int addr1 = relative_addr.get(op1);
-    int addr2 = relative_addr.get(op2);
-    System.out.println("sw a0, " + Integer.toString(addr1) + "(s0)");
-    System.out.println("sw a1, " + Integer.toString(addr2) + "(s0)");
+    String addr1 = relative_addr.get(op1);
+    String addr2 = relative_addr.get(op2);
+    System.out.println("lw a0, " + addr1);
+    System.out.println("lw a1, " + addr2);
     switch (symbol) {
       case ("+"): {
         System.out.println("add a2, a0, a1");
@@ -113,5 +113,11 @@ public class IRBin extends IRCode {
         throw new Exception("Unexpected Symbol.");
       }
     }
+    if(!relative_addr.containsKey(target_reg)) {
+      now_s0 += 4;
+      relative_addr.put(target_reg, Integer.toString(now_s0) + "(s0)");
+    }
+    String addr_t = relative_addr.get(target_reg);
+    System.out.println("sw a2, " + addr_t);
   }
 }

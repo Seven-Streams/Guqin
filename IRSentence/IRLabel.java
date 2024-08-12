@@ -12,4 +12,9 @@ public class IRLabel extends IRCode{
     System.out.println("b" + label + ":");
     return;
   }
+
+  @Override
+  public void Codegen() {
+    CodePrint();
+  }
 }

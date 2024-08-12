@@ -126,7 +126,7 @@ public class NewNode extends ExprNode {
               String alloc_tmp = "%reg$" + Integer.toString(++machine.tmp_time);
               IRElement get_ptr = new IRElement();
               get_ptr.output = new String(alloc_tmp);
-              get_ptr.num = new String(load_str);
+              get_ptr.num1 = new String(load_str);
               get_ptr.src = new String(output);
               get_ptr.now_type = "ptr";
               machine.generated.add(get_ptr);
@@ -224,7 +224,7 @@ public class NewNode extends ExprNode {
     String alloc_tmp = "%reg$" + Integer.toString(++machine.tmp_time);
     IRElement get_ptr = new IRElement();
     get_ptr.output = new String(alloc_tmp);
-    get_ptr.num = new String(load_str);
+    get_ptr.num1 = new String(load_str);
     get_ptr.src = new String(beginning);
     get_ptr.now_type = "ptr";
     machine.generated.add(get_ptr);

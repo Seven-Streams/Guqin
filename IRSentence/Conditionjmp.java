@@ -19,7 +19,7 @@ public class Conditionjmp extends IRCode{
     if(is_global.get(reg)) {
       throw new Exception("I don't thinl I will use this.");
     } else {
-      int addr = relative_addr.get(reg);
+      String addr = relative_addr.get(reg);
       System.out.println("sw, a0, " + addr + "(s0)");
       System.out.println("beq a0, 0, b" + Integer.toString(label2));
       System.out.println("j b" + Integer.toString(label1));
