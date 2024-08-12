@@ -104,3 +104,6 @@ test.txt
 .antlr/guqinLexer.java
 .antlr/guqinLexer.tokens
 antlr-runtime-4.13.1.jar
+/prj
+/ulib
+/user
