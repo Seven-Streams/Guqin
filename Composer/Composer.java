@@ -24,6 +24,7 @@ public class Composer {
   public HashMap<String, String> class_now_name = new HashMap<>();
   public HashMap<String, HashMap<String, Integer>> class_mem_num = new HashMap<>();
   public HashMap<String, Integer> now_class = new HashMap<>();
+  public HashMap<Integer, Boolean> flag = new HashMap<>();
   // It's used to check now_name of the variable.
   public Stack<HashMap<String, TypeNamePair>> now_name = new Stack<>();
 
@@ -54,24 +55,24 @@ public class Composer {
   }
 
   public void LLVMOutput() {
-    System.out.println("declare void @print(ptr %a)\r\n" + //
-        "declare void @printInt(i32 %b)\r\n" + //
-        "declare void @println(ptr %a)\r\n" + //
-        "declare void @printIntln(i32 %b)\r\n" + //
-        "declare ptr @toString(i32 %a)\r\n" + //
-        "declare i32 @getInt()\r\n" + //
-        "declare ptr @MyNew(i32 %a)\r\n" + //
-        "declare ptr @getString()\r\n" + //
-        "declare i32 @string_length(ptr %a)\r\n" + //
-        "declare ptr @string_substring(ptr %a, i32 %b)\r\n" + //
-        "declare i32 @string_parseInt(ptr %a)\r\n" + //
-        "declare i32 @string_ord(ptr %a, i32 %b)\r\n" + //
-        "declare i32 @string_cmp(ptr %a, ptr %b)\r\n" + //
-        "declare i32 @string_cat(ptr %a, ptr %b)\r\n" + //
-        "declare ptr @ptr_array(i32 %a)\r\n" + //
-        "declare ptr @int_array(i32 %a)\r\n" + //
-        "declare i32 @array_size(ptr %a)\r\n" + //
-        "declare ptr @string_copy(ptr %a)\r\n" + //
+    System.out.println("declare void @print(ptr %a)\r\n" +
+        "declare void @printInt(i32 %b)\r\n" +
+        "declare void @println(ptr %a)\r\n" +
+        "declare void @printIntln(i32 %b)\r\n" +
+        "declare ptr @toString(i32 %a)\r\n" +
+        "declare i32 @getInt()\r\n" +
+        "declare ptr @MyNew(i32 %a)\r\n" +
+        "declare ptr @getString()\r\n" +
+        "declare i32 @string_length(ptr %a)\r\n" +
+        "declare ptr @string_substring(ptr %a, i32 %b)\r\n" +
+        "declare i32 @string_parseInt(ptr %a)\r\n" +
+        "declare i32 @string_ord(ptr %a, i32 %b)\r\n" +
+        "declare i32 @string_cmp(ptr %a, ptr %b)\r\n" +
+        "declare i32 @string_cat(ptr %a, ptr %b)\r\n" +
+        "declare ptr @ptr_array(i32 %a)\r\n" +
+        "declare ptr @int_array(i32 %a)\r\n" +
+        "declare i32 @array_size(ptr %a)\r\n" +
+        "declare ptr @string_copy(ptr %a)\r\n" +
         "");
     String type = null;
     for (IRCode code : const_str) {
@@ -108,6 +109,82 @@ public class Composer {
         if (main_check.name.equals("main")) {
           for (IRCode _init : init) {
             _init.CodePrint();
+          }
+        }
+      }
+    }
+    return;
+  }
+
+  public void Codegen() throws Exception {
+    int init_num = 0;
+    init_num += 2;
+    for (IRCode IR : init) {
+      if (IR instanceof IRFuncall) {
+        IRFuncall to_check = (IRFuncall) IR;
+        if (to_check.reg.size() > 8) {
+          init_num += to_check.reg.size() - 8;
+        }
+      }
+    }
+    int last_size = 2;
+    IRFunc last_func = null;
+    for (IRCode IR : generated) {
+      if (IR instanceof IRPhi) {
+        IRPhi phi = (IRPhi) (IR);
+        flag.put(phi.labels.get(0), true);
+        flag.put(phi.labels.get(1), false);
+      }
+      if (IR instanceof IRFunc) {
+        if (last_func != null) {
+          if (last_func.name.equals("main")) {
+            last_size += init_num;
+          }
+          last_func.size = last_size;
+          last_size = 2;
+        }
+        last_func = (IRFunc) (IR);
+      } else {
+        if (IR instanceof IRClass) {
+          continue;
+        } else {
+          if (IR instanceof IRFuncall) {
+            IRFuncall to_check = (IRFuncall) IR;
+            if (to_check.reg.size() > 8) {
+              last_size += to_check.reg.size() - 8;
+            }
+          } else {
+            last_size++;
+          }
+        }
+      }
+    }
+    last_func.size = last_size;
+    if (last_func.name.equals("main")) {
+      last_size += init_num;
+    }
+    for(IRCode phi_check: generated) {
+      if(phi_check instanceof IRLabel) {
+        IRLabel to_check = (IRLabel)phi_check;
+        if(flag.containsKey(to_check.label)) {
+          if(flag.get(to_check.label)) {
+            to_check.cond = 1;
+          } else {
+            to_check.cond = 0;
+          }
+        }
+      }
+    }
+    for (IRCode chars : const_str) {
+      chars.Codegen();
+    }
+    for (IRCode code : generated) {
+      code.Codegen();
+      if (code instanceof IRFunc) {
+        IRFunc to_check = (IRFunc) (code);
+        if (to_check.name.equals("main")) {
+          for (IRCode ini : init) {
+            ini.Codegen();
           }
         }
       }

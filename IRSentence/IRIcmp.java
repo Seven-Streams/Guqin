@@ -63,7 +63,7 @@ public class IRIcmp extends IRCode {
       System.out.println("lui a1, " + (ins_2 >> 12));
       System.out.println("addi a1, " + (ins_2 & 0x00000fff));
     } catch (NumberFormatException e) {
-      addr1 = relative_addr.get(op2);
+      addr2 = relative_addr.get(op2);
       System.out.println("lw a1, " + addr2);
     }
     switch (symbol) {
