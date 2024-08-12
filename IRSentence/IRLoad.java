@@ -26,7 +26,7 @@ public class IRLoad extends IRCode {
       now_s0 += 4;
       relative_addr.put(des, Integer.toString(-now_s0) + "(s0)");
     }
-    System.out.println("sw a0 " + relative_addr.get(des));
+    System.out.println("sw a0, " + relative_addr.get(des));
     return;
   }
 }

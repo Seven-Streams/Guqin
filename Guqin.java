@@ -14,7 +14,7 @@ import java.io.FileInputStream;
 public class Guqin {
 
     public static void main(String[] args) throws Exception {
-        InputStream is = args.length > 0 ? new FileInputStream(args[0]) : System.in;
+        InputStream is = System.in;
 
         CharStream input = CharStreams.fromStream(is);
         guqinLexer lexer = new guqinLexer(input);
@@ -45,9 +45,15 @@ public class Guqin {
             System.out.println(e.getMessage());
             System.exit(-1);
         }
+        if (args.length > 0) {
+            if (args[0].equals("sema")) {
+                System.exit(0);
+            }
+        }
         Composer Yuchuan = new Composer(AST);
         Yuchuan.translate((ProgNode) entry);
-        Yuchuan.LLVMOutput();
+                // Yuchuan.LLVMOutput();
+                // System.exit(0);
         Yuchuan.Codegen();
         System.exit(0);
     }

@@ -35,7 +35,11 @@ public class IRPhi extends IRCode {
     String addr2 = null;
     try {
       int ins_1 = Integer.parseInt(values.get(0));
+      if((ins_1 >> 12) != 0) {
       System.out.println("lui a0, " + (ins_1 >> 12));
+      } else {
+      System.out.println("andi a0, 0");        
+      }
       System.out.println("addi a0, " + (ins_1 & 0x00000fff));
     } catch (NumberFormatException e) {
       addr1 = relative_addr.get(values.get(0));
@@ -47,8 +51,12 @@ public class IRPhi extends IRCode {
     System.out.println("phi" + (phi_cnt - 1) + ":");
     try {
       int ins_2 = Integer.parseInt(values.get(1));
+      if((ins_2 >> 12) != 0) {
       System.out.println("lui a0, " + (ins_2 >> 12));
-      System.out.println("addi a0, " + (ins_2 & 0x00000fff));
+      } else {
+        System.out.println("andi a0, a0, 0");
+      }
+      System.out.println("addi a0, a0, " + (ins_2 & 0x00000fff));
     } catch (NumberFormatException e) {
       addr2 = relative_addr.get(values.get(1));
       System.out.println("lw a0, " + addr2);

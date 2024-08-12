@@ -31,8 +31,12 @@ public class IRFuncall extends IRCode {
       for (int i = 0; i < reg.size(); i++) {
         try {
           int num = Integer.parseInt(reg.get(i));
-          System.out.println("lui a" + i + ", " + (num >> 12));
-          System.out.println("addi a" + i + ", " + (num & 0x00000fff));
+          if ((num >> 12) != 0) {
+            System.out.println("lui a" + i + ", " + (num >> 12));
+          } else {
+            System.out.println("andi a" + i + ", 0");
+          }
+          System.out.println("addi a" + i + ", a" + i + ", " + (num & 0x00000fff));
         } catch (NumberFormatException e) {
           String addr1 = relative_addr.get(reg.get(i));
           System.out.println("lw a" + i + ", " + addr1);
@@ -43,19 +47,27 @@ public class IRFuncall extends IRCode {
       for (int i = 8; i < reg.size(); i++) {
         try {
           int num = Integer.parseInt(reg.get(i));
-          System.out.println("lui a1" + ", " + (num >> 12));
-          System.out.println("addi a1" + ", " + (num & 0x00000fff));
+          if ((num >> 12) != 0) {
+            System.out.println("lui a1" + ", " + (num >> 12));
+          } else {
+            System.out.println("andi a1, a1, 0");
+          }
+          System.out.println("addi a1, a1, " + (num & 0x00000fff));
         } catch (NumberFormatException e) {
           String addr1 = relative_addr.get(reg.get(i));
           System.out.println("lw a1" + ", " + addr1);
         }
-        System.out.println("sw a1 " + ((i - 8) * 4) + "(a0)");
+        System.out.println("sw a1, " + ((i - 8) * 4) + "(a0)");
       }
       for (int i = 0; i < 8; i++) {
         try {
           int num = Integer.parseInt(reg.get(i));
+          if((num >> 12) != 0) {
           System.out.println("lui a" + i + ", " + (num >> 12));
-          System.out.println("addi a" + i + ", " + (num & 0x00000fff));
+          } else {
+            System.out.println("andi a" + i + ", a" + i + ", 0");
+          }
+          System.out.println("addi a" + i + ", a" + i + ", " + (num & 0x00000fff));
         } catch (NumberFormatException e) {
           String addr1 = relative_addr.get(reg.get(i));
           System.out.println("lw a" + i + ", " + addr1);
@@ -63,13 +75,13 @@ public class IRFuncall extends IRCode {
       }
     }
     System.out.println("call " + func_name);
-    if(target_reg != null) {
-      if(!relative_addr.containsKey(target_reg)) {
+    if (target_reg != null) {
+      if (!relative_addr.containsKey(target_reg)) {
         is_global.put(target_reg, false);
         now_s0 += 4;
         relative_addr.put(target_reg, Integer.toString(-now_s0) + "(s0)");
       }
-      System.out.println("sw a0 " + relative_addr.get(target_reg));
+      System.out.println("sw a0, " + relative_addr.get(target_reg));
     }
     return;
   }

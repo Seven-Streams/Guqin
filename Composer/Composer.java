@@ -163,11 +163,11 @@ public class Composer {
     if (last_func.name.equals("main")) {
       last_size += init_num;
     }
-    for(IRCode phi_check: generated) {
-      if(phi_check instanceof IRLabel) {
-        IRLabel to_check = (IRLabel)phi_check;
-        if(flag.containsKey(to_check.label)) {
-          if(flag.get(to_check.label)) {
+    for (IRCode phi_check : generated) {
+      if (phi_check instanceof IRLabel) {
+        IRLabel to_check = (IRLabel) phi_check;
+        if (flag.containsKey(to_check.label)) {
+          if (flag.get(to_check.label)) {
             to_check.cond = 1;
           } else {
             to_check.cond = 0;
@@ -175,9 +175,13 @@ public class Composer {
         }
       }
     }
+    System.out.println(".data");
     for (IRCode chars : const_str) {
       chars.Codegen();
     }
+    System.out.println("");
+    System.out.println(".text");
+    System.out.println(".globl main");
     for (IRCode code : generated) {
       code.Codegen();
       if (code instanceof IRFunc) {

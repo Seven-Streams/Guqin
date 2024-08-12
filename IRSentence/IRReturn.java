@@ -18,7 +18,7 @@ public class IRReturn extends IRCode {
   public void Codegen() {
     if (reg != null) {
       String return_value = relative_addr.get(reg);
-      System.out.println("sw a0 " + return_value);
+      System.out.println("sw a0, " + return_value);
     }
     System.out.println("j .return" + func_num);
     return;

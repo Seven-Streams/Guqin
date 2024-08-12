@@ -36,7 +36,7 @@ public class IRFunc extends IRCode {
     System.out.println("addi sp, sp, -" + size);
     System.out.println("sw ra, " + (size - 4) + "(sp)");
     System.out.println("sw s0, " + (size - 8) + "(sp)");
-    System.out.println("addi, s0, sp, " + size);
+    System.out.println("addi s0, sp, " + size);
     if (names.size() < 8) {
       for (int i = 0; i < names.size(); i++) {
         is_global.put(names.get(i), false);
