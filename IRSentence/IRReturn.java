@@ -17,8 +17,19 @@ public class IRReturn extends IRCode {
   @Override
   public void Codegen() {
     if (reg != null) {
-      String return_value = relative_addr.get(reg);
-      System.out.println("lw a0, " + return_value);
+      String return_value = null;
+      try {
+        int test = Integer.parseInt(reg);
+        if ((test >> 12) != 0) {
+          System.out.println("lui a0, " + (test >> 12));
+        } else {
+          System.out.println("andi a0, a0, 0");
+        }
+        System.out.println("addi a0, a0, " + (test & 0x00000fff));
+      } catch (NumberFormatException e) {
+        return_value = relative_addr.get(reg);
+        System.out.println("lw a0, " + return_value);
+      }
     }
     System.out.println("j .return" + func_num);
     return;

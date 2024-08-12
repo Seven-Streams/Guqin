@@ -27,7 +27,7 @@ public class IRStore extends IRCode {
     }
     if (is_global.containsKey(name)) {
       if (is_global.get(name)) {
-        System.out.println("lui a0, " + "%ho(" + name.substring(1) + ")");
+        System.out.println("lui a0, " + "%hi(" + name.substring(1) + ")");
         System.out.println("addi a0, a0, %lo(" + name.substring(1) + ")");
         System.out.println("sw a1, 0(a0)");
       } else {

@@ -34,12 +34,18 @@ public class IRFuncall extends IRCode {
           if ((num >> 12) != 0) {
             System.out.println("lui a" + i + ", " + (num >> 12));
           } else {
-            System.out.println("andi a" + i + ", 0");
+            System.out.println("andi a" + i + ", a" + i + ", 0");
           }
           System.out.println("addi a" + i + ", a" + i + ", " + (num & 0x00000fff));
         } catch (NumberFormatException e) {
-          String addr1 = relative_addr.get(reg.get(i));
-          System.out.println("lw a" + i + ", " + addr1);
+          if (!is_global.get(reg.get(i))) {
+            String addr1 = relative_addr.get(reg.get(i));
+            System.out.println("lw a" + i + ", " + addr1);
+          } else {
+            System.out.println("lui a" + i + ", %hi(" + reg.get(i).substring(1) + ")");
+            System.out.println("addi a" + i + ", a" + i + ", " + "%lo(" + reg.get(i).substring(1) + ")");
+            System.out.println("lw a" + i + ", 0(a" + i + ")");
+          }
         }
       }
     } else {
@@ -54,16 +60,22 @@ public class IRFuncall extends IRCode {
           }
           System.out.println("addi a1, a1, " + (num & 0x00000fff));
         } catch (NumberFormatException e) {
-          String addr1 = relative_addr.get(reg.get(i));
-          System.out.println("lw a1" + ", " + addr1);
+          if (!is_global.get(reg.get(i))) {
+            String addr1 = relative_addr.get(reg.get(i));
+            System.out.println("lw a" + i + ", " + addr1);
+          } else {
+            System.out.println("lui a" + i + ", %hi(" + reg.get(i).substring(1) + ")");
+            System.out.println("addi a" + i + ", a" + i + ", " + "%lo(" + reg.get(i).substring(1) + ")");
+            System.out.println("lw a" + i + ", 0(a" + i + ")");
+          }
         }
         System.out.println("sw a1, " + ((i - 8) * 4) + "(a0)");
       }
       for (int i = 0; i < 8; i++) {
         try {
           int num = Integer.parseInt(reg.get(i));
-          if((num >> 12) != 0) {
-          System.out.println("lui a" + i + ", " + (num >> 12));
+          if ((num >> 12) != 0) {
+            System.out.println("lui a" + i + ", " + (num >> 12));
           } else {
             System.out.println("andi a" + i + ", a" + i + ", 0");
           }

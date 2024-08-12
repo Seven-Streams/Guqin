@@ -20,8 +20,8 @@ public class Conditionjmp extends IRCode{
       throw new Exception("I don't thinl I will use this.");
     } else {
       String addr = relative_addr.get(reg);
-      System.out.println("sw a0, " + addr + "(s0)");
-      System.out.println("beq a0, 0, b" + Integer.toString(label2));
+      System.out.println("lw a0, " + addr);
+      System.out.println("beqz a0, b" + Integer.toString(label2));
       System.out.println("j b" + Integer.toString(label1));
       return;
     }

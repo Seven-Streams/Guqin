@@ -14,7 +14,7 @@ public class IRLoad extends IRCode {
   @Override
   public void Codegen() {
     if (is_global.get(src)) {
-      System.out.println("lui a0, " + "%ho(" + src.substring(1) + ")");
+      System.out.println("lui a0, " + "%hi(" + src.substring(1) + ")");
       System.out.println("addi a0, a0, %lo(" + src.substring(1) + ")");
       System.out.println("lw a0, 0(a0)");
     } else {
