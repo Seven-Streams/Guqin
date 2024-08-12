@@ -12,8 +12,8 @@ public class IRFuncend extends IRCode {
   public void Codegen() {
     System.out.println("");
     System.out.println(".return" + func_num + ":");
-    System.out.println("lw ra, " + (sp_length - 4) + "(s0)");
-    System.out.println("lw s0, " + (sp_length - 8) + "(s0)");
+    System.out.println("lw ra, " + (sp_length - 4) + "(sp)");
+    System.out.println("lw s0, " + (sp_length - 8) + "(sp)");
     System.out.println("addi sp, sp, " + sp_length);
     System.out.println("ret");
     return;

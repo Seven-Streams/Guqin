@@ -23,7 +23,7 @@ public class IRStore extends IRCode {
       System.out.println("addi a1, a1, " + (num & 0x00000fff));
     } catch (NumberFormatException e) {
       String addr_from = relative_addr.get(from);
-      System.out.println("lw a0, " + addr_from);
+      System.out.println("lw a1, " + addr_from);
     }
     if (is_global.containsKey(name)) {
       if (is_global.get(name)) {

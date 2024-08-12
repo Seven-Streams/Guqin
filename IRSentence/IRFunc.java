@@ -31,7 +31,7 @@ public class IRFunc extends IRCode {
     size += 12;
     size /= 16;
     size *= 16;
-    now_s0 = 0;
+    now_s0 = 8;
     sp_length = size;
     System.out.println("addi sp, sp, -" + size);
     System.out.println("sw ra, " + (size - 4) + "(sp)");
