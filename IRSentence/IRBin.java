@@ -64,10 +64,24 @@ public class IRBin extends IRCode {
     if (is_global.get(op1) || is_global.get(op2)) {
       throw new Exception("Unexpected.");
     }
-    String addr1 = relative_addr.get(op1);
-    String addr2 = relative_addr.get(op2);
-    System.out.println("lw a0, " + addr1);
-    System.out.println("lw a1, " + addr2);
+    String addr1 = null;
+    String addr2 = null;
+    try {
+      int ins_1 = Integer.parseInt(op1);
+      System.out.println("lui a0, " + (ins_1 >> 12));
+      System.out.println("addi a0, " + (ins_1 & 0x00000fff));
+    } catch (NumberFormatException e) {
+      addr1 = relative_addr.get(op1);
+      System.out.println("lw a0, " + addr1);
+    }
+    try {
+      int ins_2 = Integer.parseInt(op2);
+      System.out.println("lui a1, " + (ins_2 >> 12));
+      System.out.println("addi a1, " + (ins_2 & 0x00000fff));
+    } catch (NumberFormatException e) {
+      addr1 = relative_addr.get(op2);
+      System.out.println("lw a1, " + addr2);
+    }
     switch (symbol) {
       case ("+"): {
         System.out.println("add a2, a0, a1");
@@ -113,9 +127,10 @@ public class IRBin extends IRCode {
         throw new Exception("Unexpected Symbol.");
       }
     }
-    if(!relative_addr.containsKey(target_reg)) {
+    if (!relative_addr.containsKey(target_reg)) {
+      is_global.put(target_reg, false);
       now_s0 += 4;
-      relative_addr.put(target_reg, Integer.toString(now_s0) + "(s0)");
+      relative_addr.put(target_reg, Integer.toString(-now_s0) + "(s0)");
     }
     String addr_t = relative_addr.get(target_reg);
     System.out.println("sw a2, " + addr_t);

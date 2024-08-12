@@ -13,4 +13,12 @@ public class IRGlobal extends IRCode{
     }
     return;
   }
+
+  @Override
+  public void Codegen() {
+    is_global.put(name, true);
+    System.out.println(name.substring(1) + ":");
+    System.out.println(".word 0");
+    return;
+  }
 }

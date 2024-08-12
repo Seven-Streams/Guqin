@@ -47,6 +47,7 @@ public class IRElement extends IRCode {
       }
     }
     if(!relative_addr.containsKey(output)) {
+      is_global.put(output, false);
       now_s0 += 4;
       relative_addr.put(output, Integer.toString(now_s0) + "(s0)");
     }

@@ -16,7 +16,7 @@ public class IRAlloc extends IRCode {
     now_s0 += 4;
     String res = Integer.toString(now_s0) + "(s0)";
     relative_addr.put(des, res);
-    System.out.println("sw a0, " + res);
+    System.out.println("sw a0, -" + res);
     return;
   }
 }
