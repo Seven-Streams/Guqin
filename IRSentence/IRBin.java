@@ -61,9 +61,6 @@ public class IRBin extends IRCode {
 
   @Override
   public void Codegen() throws Exception {
-    if (is_global.get(op1) || is_global.get(op2)) {
-      throw new Exception("Unexpected.");
-    }
     String addr1 = null;
     String addr2 = null;
     try {
@@ -134,5 +131,6 @@ public class IRBin extends IRCode {
     }
     String addr_t = relative_addr.get(target_reg);
     System.out.println("sw a2, " + addr_t);
+    return;
   }
 }

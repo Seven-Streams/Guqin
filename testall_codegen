@@ -1,0 +1,2 @@
+export PATH="/usr/local/opt/bin:$PATH"
+testcases/codegen/scripts/test_asm_all.bash 'make test' testcases/codegen/ Composer/builtin.s tmp

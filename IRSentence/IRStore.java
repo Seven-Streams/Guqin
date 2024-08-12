@@ -13,15 +13,29 @@ public class IRStore extends IRCode {
 
   @Override
   public void Codegen() {
-    String addr_t = relative_addr.get(from);
-    System.out.println("lw a1, " + addr_t);
-    if (is_global.get(name)) {
-      System.out.println("lui a0, " + "%ho(" + name.substring(1) + ")");
-      System.out.println("addi a0, a0, %lo(" + name.substring(1) + ")");
-      System.out.println("sw a1, 0(a0)");
+    try {
+      int num = Integer.parseInt(from);
+      System.out.println("lui a1, " + (num >> 12));
+      System.out.println("addi a1, " + (num & 0x00000fff));
+    } catch (NumberFormatException e) {
+      String addr_from = relative_addr.get(from);
+      System.out.println("lw a0, " + addr_from);
+    }
+    if (is_global.containsKey(name)) {
+      if (is_global.get(name)) {
+        System.out.println("lui a0, " + "%ho(" + name.substring(1) + ")");
+        System.out.println("addi a0, a0, %lo(" + name.substring(1) + ")");
+        System.out.println("sw a1, 0(a0)");
+      } else {
+        String addr_des = relative_addr.get(name);
+        System.out.println("sw a1, " + addr_des);
+      }
     } else {
-      String addr_des = relative_addr.get(name);
-      System.out.println("sw a1, " + addr_des);
+      is_global.put(name, false);
+      now_s0 += 4;
+      relative_addr.put(name, Integer.toString(-now_s0) + "(s0)");
+      String addr_t = relative_addr.get(name);
+      System.out.println("sw a1, " + addr_t);
     }
     return;
   }

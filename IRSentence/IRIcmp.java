@@ -45,9 +45,6 @@ public class IRIcmp extends IRCode {
 
   @Override
   public void Codegen() throws Exception {
-    if (is_global.get(op1) || is_global.get(op2)) {
-      throw new Exception("Unexpected.");
-    }
     String addr1 = null;
     String addr2 = null;
     try {

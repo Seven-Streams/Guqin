@@ -25,9 +25,11 @@ public class IRFunc extends IRCode {
   @Override
   public void Codegen() throws Exception {
     func_num++;
+    System.out.println("");
     System.out.println(name + ":");
-    size += 3;
-    size /= 4;
+    size *= 4;
+    size += 12;
+    size /= 16;
     size *= 16;
     now_s0 = 0;
     sp_length = size;

@@ -44,7 +44,7 @@ public class IRPhi extends IRCode {
     System.out.println("sw a0, " + place);
     System.out.println("J phi" + (++phi_cnt));
     System.out.println("");
-    System.out.println("phi" + (phi_cnt - 1));
+    System.out.println("phi" + (phi_cnt - 1) + ":");
     try {
       int ins_2 = Integer.parseInt(values.get(1));
       System.out.println("lui a0, " + (ins_2 >> 12));
@@ -56,7 +56,7 @@ public class IRPhi extends IRCode {
     System.out.println("sw a0, " + place);
     System.out.println("J phi" + (phi_cnt));
     System.out.println("");
-    System.out.println("phi" + phi_cnt);
+    System.out.println("phi" + phi_cnt + ":");
     return;
   }
 }

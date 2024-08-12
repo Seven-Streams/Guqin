@@ -106,4 +106,5 @@ test.txt
 antlr-runtime-4.13.1.jar
 /prj
 /ulib
+/tmp
 /user
