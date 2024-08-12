@@ -105,7 +105,7 @@ public class IRBin extends IRCode {
         break;
       }
       case ("<<"): {
-        System.out.println("sll, a2, a0, a1");
+        System.out.println("sll a2, a0, a1");
         break;
       }
       case (">>"): {

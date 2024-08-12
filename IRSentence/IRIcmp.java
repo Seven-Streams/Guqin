@@ -97,7 +97,7 @@ public class IRIcmp extends IRCode {
       }
       case ("<="): {
         System.out.println("slt a2, a1, a0");
-        System.out.println("xori, a3, a2, 1");
+        System.out.println("xori a3, a2, 1");
         break;
       }
       default: {

@@ -34,7 +34,15 @@ public class IRChararray extends IRCode {
   public void Codegen() {
     is_global.put(reg, true);
     System.out.println(reg.substring(1) + ":");//This part is to avoid "@".
-    System.out.println(".asciz \"" + value + "\"");
+    System.out.print(".asciz \"" + value);
+    int add = (value.length() + 1) % 4;
+    if(add == 0) {
+    add = 4;
+    }
+    for(int i = 0 ;i < (4 - add); i++) {
+      System.out.print("\\0");
+    }
+    System.out.println("\"");
     return;
   }
 }

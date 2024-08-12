@@ -176,13 +176,22 @@ public class Composer {
       }
     }
     System.out.println(".data");
+    System.out.println(".balign 4");
     for (IRCode chars : const_str) {
       chars.Codegen();
+    }
+    for (IRCode global: generated) {
+      if(global instanceof IRGlobal) {
+        global.Codegen();
+      }
     }
     System.out.println("");
     System.out.println(".text");
     System.out.println(".globl main");
     for (IRCode code : generated) {
+      if(code instanceof IRGlobal) {
+        continue;
+      }
       code.Codegen();
       if (code instanceof IRFunc) {
         IRFunc to_check = (IRFunc) (code);
