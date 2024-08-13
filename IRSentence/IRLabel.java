@@ -20,9 +20,10 @@ public class IRLabel extends IRCode {
 
   @Override
   public void Codegen() {
+    System.out.println("");
+    System.out.println("b" + label + ":");
     if (cond != null) {
       System.out.println("li a7, " + cond);
     }
-    CodePrint();
   }
 }
