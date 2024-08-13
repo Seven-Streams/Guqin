@@ -52,8 +52,8 @@ public class Guqin {
         }
         Composer Yuchuan = new Composer(AST);
         Yuchuan.translate((ProgNode) entry);
-                // Yuchuan.LLVMOutput();
-                // System.exit(0);
+        // Yuchuan.LLVMOutput();
+        // System.exit(0);
         Yuchuan.Codegen();
         System.exit(0);
     }

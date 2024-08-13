@@ -10,6 +10,7 @@ public class IRFuncend extends IRCode {
 
   @Override
   public void Codegen() {
+    System.out.println("j .return" + func_num);
     System.out.println("");
     System.out.println(".return" + func_num + ":");
     System.out.println("lw ra, " + (sp_length - 4) + "(sp)");

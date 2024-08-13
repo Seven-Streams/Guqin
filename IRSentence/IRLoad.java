@@ -20,6 +20,7 @@ public class IRLoad extends IRCode {
     } else {
       String addr_t = relative_addr.get(src);
       System.out.println("lw a0, " + addr_t);
+      System.out.println("lw a0, 0(a0)");
     }
     if (!relative_addr.containsKey(des)) {
       is_global.put(des, false);

@@ -32,14 +32,9 @@ public class IRStore extends IRCode {
         System.out.println("sw a1, 0(a0)");
       } else {
         String addr_des = relative_addr.get(name);
-        System.out.println("sw a1, " + addr_des);
+        System.out.println("lw a0, " + addr_des);
+        System.out.println("sw a1, 0(a0)");
       }
-    } else {
-      is_global.put(name, false);
-      now_s0 += 4;
-      relative_addr.put(name, Integer.toString(-now_s0) + "(s0)");
-      String addr_t = relative_addr.get(name);
-      System.out.println("sw a1, " + addr_t);
     }
     return;
   }

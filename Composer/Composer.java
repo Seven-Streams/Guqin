@@ -140,6 +140,7 @@ public class Composer {
           if (last_func.name.equals("main")) {
             last_size += init_num;
           }
+          last_size += alloc.get(last_func.name).size() * 2;
           last_func.size = last_size;
           last_size = 2;
         }
@@ -159,10 +160,11 @@ public class Composer {
         }
       }
     }
-    last_func.size = last_size;
+    last_size += alloc.get(last_func.name).size() * 2;
     if (last_func.name.equals("main")) {
       last_size += init_num;
     }
+    last_func.size = last_size;
     for (IRCode phi_check : generated) {
       if (phi_check instanceof IRLabel) {
         IRLabel to_check = (IRLabel) phi_check;
@@ -180,25 +182,28 @@ public class Composer {
     for (IRCode chars : const_str) {
       chars.Codegen();
     }
-    for (IRCode global: generated) {
-      if(global instanceof IRGlobal) {
+    for (IRCode global : generated) {
+      if (global instanceof IRGlobal) {
         global.Codegen();
       }
     }
     System.out.println("");
     System.out.println(".text");
     System.out.println(".globl main");
-    for (IRCode code : generated) {
-      if(code instanceof IRGlobal) {
+    for (int i = 0; i < generated.size(); i++) {
+      if (generated.get(i) instanceof IRGlobal) {
         continue;
       }
-      code.Codegen();
-      if (code instanceof IRFunc) {
-        IRFunc to_check = (IRFunc) (code);
+      generated.get(i).Codegen();
+      if (generated.get(i) instanceof IRFunc) {
+        IRFunc to_check = (IRFunc) (generated.get(i));
         if (to_check.name.equals("main")) {
           for (IRCode ini : init) {
             ini.Codegen();
           }
+        }
+        for (IRCode space : alloc.get(to_check.name)) {
+          space.Codegen();
         }
       }
     }

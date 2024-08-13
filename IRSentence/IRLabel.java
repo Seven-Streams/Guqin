@@ -15,14 +15,14 @@ public class IRLabel extends IRCode {
   public void CodePrint() {
     System.out.println("");
     System.out.println("b" + label + ":");
-    if (cond != null) {
-      System.out.println("li a7, " + cond);
-    }
     return;
   }
 
   @Override
   public void Codegen() {
+    if (cond != null) {
+      System.out.println("li a7, " + cond);
+    }
     CodePrint();
   }
 }
