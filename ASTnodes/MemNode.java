@@ -9,13 +9,12 @@ public class MemNode extends ExprNode {
   public ExprNode from = null;
   public String id = null;
   public Mypair from_type = null;
-
   @Override
   public Mypair check() throws Exception {
     Mypair to_check = from.check();
     is_left = true;
     if (to_check.dim != 0) {
-      throw new Exception("Type Mismatch");
+      throw new Exception("Type Mismatch MEM");
     }
     HashMap<String, Mypair> resed = class_memory.get(to_check.type);
     Mypair res = new Mypair(resed.get(id).type, resed.get(id).dim);

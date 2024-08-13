@@ -23,7 +23,7 @@ public class ReturnNode extends StatNode {
     if ((!to_check.type.equals(return_value.type)) && (!to_check.type.equals("null"))) {
       throw new Exception("Type Mismatch");
     }
-    if (to_check.dim != return_value.dim) {
+    if ((to_check.dim != return_value.dim) && (!to_check.type.equals("null"))) {
       throw new Exception("Type Mismatch");
     }
     return new Mypair();

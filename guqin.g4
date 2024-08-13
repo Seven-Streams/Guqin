@@ -13,13 +13,14 @@ array: LL (expr (COM expr)*)? RL;
 real_type: (INT | BOOL | STRING | id);
 args: (typepair (COM typepair)*)?;
 funcall: id ( LP (expr (COM expr)*)? RP | LP RP);
-func: ((real_type dimensions_declar) | VOID) id ((LP args RP) | LP RP) (
-		LL ( stat)* RL
-	);
+func: ((real_type dimensions_declar) | VOID) id (
+		(LP args RP)
+		| LP RP
+	) (LL ( stat)* RL);
 newexpr:
-	NEW real_type LB RB array		# array_new
+	NEW real_type LB RB array	# array_new
 	| NEW real_type dimensions	# dim_new
-	| NEW real_type (LP RP)?				# single_new;
+	| NEW real_type (LP RP)?	# single_new;
 construct_func: id LP RP LL stat* RL;
 classdef:
 	CLASS id LL (local_declarstat | construct_func | func)* RL SEG;
@@ -33,13 +34,10 @@ expr:
 	| ID												# id_single
 	| expr dimensions_exist								# dimen
 	| funcall											# funcallexpr
-	| expr DOT op = (LENGTH | PARSEINT) LP RP			# strint
-	| expr DOT ORD LP expr RP							# strord
-	| expr DOT SUBSTRING LP expr COM expr RP			# substr
 	| expr (DOT funcall)								# memfun
 	| expr (DOT ID)										# mem
 	| THIS												# this
-	| expr DOT THIS #thisexpr
+	| expr DOT THIS										# thisexpr
 	| newexpr											# new
 	| LP expr RP										# par
 	| expr op = (SAD | SMI)								# aft
@@ -54,7 +52,7 @@ expr:
 	| expr BOR expr										# bor
 	| expr MYAND expr									# and
 	| expr OR expr										# or
-	| array #arrexpr
+	| array												# arrexpr
 	| <assoc = right> expr '?' expr ':' expr			# thr;
 assignexpr: <assoc = right>expr (COM expr)* ASS expr;
 global_declarstat:
@@ -76,8 +74,8 @@ returnstat: RETURN cond SEG;
 contistat: CONTINUE SEG;
 breakstat: BREAK SEG;
 exprstat: expr SEG;
-printstat: (PRINTINT | PRINTLNINT) LP expr RP SEG	# pint
-	| (PRINTLN | PRINT) LP expr RP SEG				# pstr;
+printstat: ('printInt' | 'printlnInt') LP expr RP SEG	# pint
+	| ('println' | 'print') LP expr RP SEG				# pstr;
 stat:
 	printstat
 	| exprstat
@@ -117,14 +115,6 @@ WHILE: 'while';
 BREAK: 'break';
 CONTINUE: 'continue';
 RETURN: 'return';
-PRINT: 'print';
-PRINTLN: 'println';
-PRINTLNINT: 'printlnInt';
-PRINTINT: 'printInt';
-LENGTH: 'length';
-SUBSTRING: 'substring';
-PARSEINT: 'parseInt';
-ORD: 'ord';
 INT_VALUE: [0-9]+;
 ID: [a-zA-Z][a-zA-Z0-9_]*;
 MYAND: '&&';

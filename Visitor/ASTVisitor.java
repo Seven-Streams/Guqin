@@ -2,7 +2,7 @@ package Visitor;
 
 import ASTnodes.*;
 import basic_grammar.*;
-
+import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 @SuppressWarnings("CheckReturnValue")
 public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 	DimensionNode universal_dnode = new DimensionNode();
@@ -243,14 +243,6 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 		return res;
 	}
 
-	@Override
-	public InnerNode visitStrord(guqinParser.StrordContext ctx) {
-		InnerNode res = new InnerNode();
-		res.name = "ord";
-		res.args.add(visit(ctx.expr(0)));
-		res.args.add(visit(ctx.expr(1)));
-		return res;
-	}
 
 	@Override
 	public DoubleNode visitShift(guqinParser.ShiftContext ctx) {
@@ -261,13 +253,6 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 		return res;
 	}
 
-	@Override
-	public InnerNode visitStrint(guqinParser.StrintContext ctx) {
-		InnerNode res = new InnerNode();
-		res.name = ctx.op.getText();
-		res.args.add(visit(ctx.expr()));
-		return res;
-	}
 
 	@Override
 	public ASTNode visitBan(guqinParser.BanContext ctx) {
@@ -361,15 +346,6 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 		return res;
 	}
 
-	@Override
-	public ASTNode visitSubstr(guqinParser.SubstrContext ctx) {
-		InnerNode res = new InnerNode();
-		res.name = "substring";
-		res.args.add(visit(ctx.expr(0)));
-		res.args.add(visit(ctx.expr(1)));
-		res.args.add(visit(ctx.expr(2)));
-		return res;
-	}
 
 	@Override
 	public SingleNode visitAft(guqinParser.AftContext ctx) {
@@ -656,7 +632,7 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 	public ASTNode visitPint(guqinParser.PintContext ctx) {
 		PrintNode res = new PrintNode();
 		res.is_int = true;
-		if (ctx.PRINTINT() == null) {
+		if (ctx.getText().substring(0, 7).equals("println")) {
 			res.change_line = true;
 		}
 		res.value = visit(ctx.expr());
@@ -667,7 +643,7 @@ public class ASTVisitor extends guqinBaseVisitor<ASTNode> {
 	public ASTNode visitPstr(guqinParser.PstrContext ctx) {
 		PrintNode res = new PrintNode();
 		res.is_int = false;
-		if (ctx.PRINT() == null) {
+		if (ctx.getText().substring(0, 7).equals("println")) {
 			res.change_line = true;
 		}
 		res.value = visit(ctx.expr());

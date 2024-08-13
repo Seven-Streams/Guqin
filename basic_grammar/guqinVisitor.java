@@ -163,13 +163,6 @@ public interface guqinVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitBor(guqinParser.BorContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code strord}
-	 * labeled alternative in {@link guqinParser#expr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitStrord(guqinParser.StrordContext ctx);
-	/**
 	 * Visit a parse tree produced by the {@code funcallexpr}
 	 * labeled alternative in {@link guqinParser#expr}.
 	 * @param ctx the parse tree
@@ -190,13 +183,6 @@ public interface guqinVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitMemfun(guqinParser.MemfunContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code strint}
-	 * labeled alternative in {@link guqinParser#expr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitStrint(guqinParser.StrintContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code ban}
 	 * labeled alternative in {@link guqinParser#expr}.
@@ -295,13 +281,6 @@ public interface guqinVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitArrexpr(guqinParser.ArrexprContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code substr}
-	 * labeled alternative in {@link guqinParser#expr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitSubstr(guqinParser.SubstrContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code aft}
 	 * labeled alternative in {@link guqinParser#expr}.

@@ -9,7 +9,9 @@ public class FuncallNode extends ExprNode {
   public ASTNode from = null;
   public String from_type = null;
   public ArrayList<ASTNode> args = new ArrayList<>();
+  public boolean is_inner = false;
   public int from_dim = 0;
+
   @Override
   public Mypair check() throws Exception {
     is_left = false;
@@ -33,13 +35,13 @@ public class FuncallNode extends ExprNode {
       for (int i = 0; i < res_arg.size(); i++) {
         if (true_arg.get(i).dim != res_arg.get(i).dim) {
           if (!res_arg.get(i).type.equals("null")) {
-            throw new Exception("Type Mismatch");
+            throw new Exception("Type Mismatch F");
           }
         }
         if (!true_arg.get(i).type.equals(res_arg.get(i).type)) {
           if ((!res_arg.get(i).type.equals("null")) | ((true_arg.get(i).dim == 0) && (true_arg.get(i).type.equals("int")
               || true_arg.get(i).type.equals("string") || true_arg.get(i).type.equals("bool")))) {
-            throw new Exception("Type Mismatch");
+            throw new Exception("Type Mismatch F");
           }
         }
       }
@@ -59,6 +61,9 @@ public class FuncallNode extends ExprNode {
         }
         throw new Exception("Undefined Identifier");
       }
+      if (from_type.equals("string")) {
+        is_inner = true;
+      }
       if ((!class_func_return.containsKey(res.type))) {
         throw new Exception("Undefined Identifier");
       }
@@ -72,10 +77,10 @@ public class FuncallNode extends ExprNode {
       }
       for (int i = 0; i < res_arg.size(); i++) {
         if (true_arg.get(i).dim != res_arg.get(i).dim) {
-          throw new Exception("Type Mismatch");
+          throw new Exception("Type Mismatch F");
         }
         if (!true_arg.get(i).type.equals(res_arg.get(i).type)) {
-          throw new Exception("Type Mismatch");
+          throw new Exception("Type Mismatch F");
         }
       }
       Mypair return_value = class_func_return.get(res.type).get(name);
@@ -85,6 +90,50 @@ public class FuncallNode extends ExprNode {
 
   @Override
   public Info GenerateIR(Composer machine) {
+    if (is_inner) {
+      String target_name = "%reg$" + Integer.toString(++machine.tmp_time);
+      IRFuncall buildin_func = new IRFuncall();
+      buildin_func.target_reg = target_name;
+      buildin_func.func_name = "string_" + name;
+      Info str = from.GenerateIR(machine);
+      buildin_func.reg.add(str.reg);
+      for (ASTNode arg : args) {
+        Info res = arg.GenerateIR(machine);
+        buildin_func.reg.add(res.reg);
+      }
+      switch (name) {
+        case ("ord"): {
+          buildin_func.func_type = "i32";
+          buildin_func.type.add("ptr");
+          buildin_func.type.add("i32");
+          break;
+        }
+        case ("length"): {
+          buildin_func.func_type = "i32";
+          buildin_func.type.add("ptr");
+          break;
+        }
+        case ("parseInt"): {
+          buildin_func.func_type = "i32";
+          buildin_func.type.add("ptr");
+          break;
+        }
+        case ("substring"): {
+          buildin_func.func_type = "ptr";
+          buildin_func.type.add("ptr");
+          buildin_func.type.add("i32");
+          buildin_func.type.add("i32");
+          break;
+        }
+        default:
+          System.out.println("ERROR IN BUILD-IN FUNCTION!");
+          break;
+      }
+      machine.generated.add(buildin_func);
+      Info return_value = new Info();
+      return_value.reg = target_name;
+      return return_value;
+    }
     IRFuncall res = new IRFuncall();
     Info return_value = new Info();
     Mypair return_check;
@@ -109,7 +158,7 @@ public class FuncallNode extends ExprNode {
           String res_target = "%reg$" + Integer.toString(++machine.tmp_time);
           res.target_reg = res_target;
           return_value.reg = res_target;
-        }   
+        }
       } else {
         Info from_reg = from.GenerateIR(machine);
         if (name.equals("size") && (from_dim != 0)) {
