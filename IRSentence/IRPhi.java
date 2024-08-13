@@ -38,15 +38,15 @@ public class IRPhi extends IRCode {
       if((ins_1 >> 12) != 0) {
       System.out.println("lui a0, " + (ins_1 >> 12));
       } else {
-      System.out.println("andi a0, 0");        
+      System.out.println("andi a0, a0, 0");        
       }
-      System.out.println("addi a0, " + (ins_1 & 0x00000fff));
+      System.out.println("addi a0, a0, " + (ins_1 & 0x00000fff));
     } catch (NumberFormatException e) {
       addr1 = relative_addr.get(values.get(0));
       System.out.println("lw a0, " + addr1);
     }
     System.out.println("sw a0, " + place);
-    System.out.println("J phi" + (++phi_cnt));
+    System.out.println("j phi" + (++phi_cnt));
     System.out.println("");
     System.out.println("phi" + (phi_cnt - 1) + ":");
     try {
@@ -62,7 +62,7 @@ public class IRPhi extends IRCode {
       System.out.println("lw a0, " + addr2);
     }
     System.out.println("sw a0, " + place);
-    System.out.println("J phi" + (phi_cnt));
+    System.out.println("j phi" + (phi_cnt));
     System.out.println("");
     System.out.println("phi" + phi_cnt + ":");
     return;
