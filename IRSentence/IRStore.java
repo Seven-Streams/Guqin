@@ -54,10 +54,26 @@ public class IRStore extends IRCode {
     try {
       Integer.parseInt(name);
     } catch (NumberFormatException e) {
-      if (use.containsKey(name)) {
-        use.put(name, use.get(name) + 1);
+      if (name.length() <= 4) {
+        if (def.containsKey(name)) {
+          def.put(name, def.get(name) + 1);
+        } else {
+          def.put(name, 1);
+        }
       } else {
-        use.put(name, 1);
+        if (name.substring(0, 4).equals("%reg")) {
+          if (use.containsKey(name)) {
+            use.put(name, use.get(name) + 1);
+          } else {
+            use.put(name, 1);
+          }
+        } else {
+          if (def.containsKey(name)) {
+            def.put(name, def.get(name) + 1);
+          } else {
+            def.put(name, 1);
+          }
+        }
       }
     }
     try {
