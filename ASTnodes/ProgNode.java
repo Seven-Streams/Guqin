@@ -133,6 +133,7 @@ public class ProgNode extends ASTNode {
     to_add1.reg = new String("@.false");
     to_add1.value = "false";
     to_add1.size = 6;
+    machine.const_str.add(to_add1);
     for (ASTNode tree : trees) {
       tree.GenerateIR(machine);
     }
