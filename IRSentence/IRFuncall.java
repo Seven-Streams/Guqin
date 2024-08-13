@@ -1,6 +1,7 @@
 package IRSentence;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class IRFuncall extends IRCode {
   public String target_reg = null;
@@ -96,5 +97,23 @@ public class IRFuncall extends IRCode {
       System.out.println("sw a0, " + relative_addr.get(target_reg));
     }
     return;
+  }
+
+  @Override
+  public void CheckTime(HashMap<String, Integer> use, HashMap<String, Integer> def) {
+    for(String arg: reg) {
+      if(use.containsKey(arg)) {
+        use.put(arg, use.get(arg) + 1);
+      }
+    }
+    if(def.containsKey(target_reg)) {
+      def.put(target_reg, def.get(target_reg) + 1);
+    }
+    return;
+  }
+
+  @Override
+  public boolean EmptyStore(HashMap<String, Boolean> deprecated) {
+    return deprecated.containsKey(target_reg);
   }
 }

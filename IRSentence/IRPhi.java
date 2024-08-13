@@ -1,6 +1,7 @@
 package IRSentence;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class IRPhi extends IRCode {
   public static int phi_cnt = 0;
@@ -76,5 +77,23 @@ public class IRPhi extends IRCode {
     System.out.println("");
     System.out.println("phi" + phi_cnt + ":");
     return;
+  }
+
+  @Override
+  public void CheckTime(HashMap<String, Integer> use, HashMap<String, Integer> def) {
+    for(String value : values) {
+      if(use.containsKey(value)) {
+        use.put(value, use.get(value) + 1);
+      }
+    }
+    if(def.containsKey(target)) {
+      def.put(target, def.get(target) + 1);
+    }
+    return;
+  }
+
+  @Override
+  public boolean EmptyStore(HashMap<String, Boolean> deprecated) {
+    return deprecated.containsKey(target);
   }
 }

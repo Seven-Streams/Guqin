@@ -1,5 +1,7 @@
 package IRSentence;
 
+import java.util.HashMap;
+
 public class IRReturn extends IRCode {
   public String reg = null;
   public String return_type = null;
@@ -40,6 +42,14 @@ public class IRReturn extends IRCode {
       }
     }
     System.out.println("j .return" + func_num);
+    return;
+  }
+
+  @Override
+  public void CheckTime(HashMap<String, Integer> use, HashMap<String, Integer> def) {
+    if(def.containsKey(reg)) {
+      def.put(reg, def.get(reg) + 1);
+    }
     return;
   }
 }

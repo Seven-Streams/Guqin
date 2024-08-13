@@ -1,5 +1,7 @@
 package IRSentence;
 
+import java.util.HashMap;
+
 public class IRStore extends IRCode {
   public String name = null;
   public String from = null;
@@ -45,5 +47,20 @@ public class IRStore extends IRCode {
       }
     }
     return;
+  }
+  @Override
+  public void CheckTime(HashMap<String, Integer> use, HashMap<String, Integer> def) {
+    if(def.containsKey(name)) {
+      def.put(name, def.get(name) + 1);
+    }
+    if(use.containsKey(from)) {
+      use.put(from, use.get(from) + 1);
+    }
+    return;
+  }
+  
+  @Override
+  public boolean EmptyStore(HashMap<String, Boolean> deprecated) {
+    return deprecated.containsKey(name);
   }
 }

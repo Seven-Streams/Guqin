@@ -1,5 +1,7 @@
 package IRSentence;
 
+import java.util.HashMap;
+
 public class IRLoad extends IRCode {
   public String des = null;
   public String src = null;
@@ -28,6 +30,17 @@ public class IRLoad extends IRCode {
       relative_addr.put(des, Integer.toString(-now_s0) + "(s0)");
     }
     System.out.println("sw a0, " + relative_addr.get(des));
+    return;
+  }
+
+  @Override
+  public void CheckTime(HashMap<String, Integer> use, HashMap<String, Integer> def) {
+    if(use.containsKey(src)) {
+      use.put(src, use.get(src) + 1);
+    }
+    if(def.containsKey(des)) {
+      def.put(des, def.get(des) + 1);
+    }
     return;
   }
 }

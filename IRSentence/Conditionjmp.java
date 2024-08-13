@@ -1,5 +1,7 @@
 package IRSentence;
 
+import java.util.HashMap;
+
 public class Conditionjmp extends IRCode{
   int label1 = 0;
   int label2 = 0;
@@ -26,4 +28,11 @@ public class Conditionjmp extends IRCode{
       return;
     }
   }
+
+  @Override public void CheckTime(HashMap<String, Integer> use, HashMap<String, Integer> def) {
+    if(use.containsKey(reg)) {
+      use.put(reg, use.get(reg) + 1);
+    }
+  }
+  
 }

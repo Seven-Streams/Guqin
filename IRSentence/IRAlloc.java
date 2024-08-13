@@ -1,5 +1,7 @@
 package IRSentence;
 
+import java.util.HashMap;
+
 public class IRAlloc extends IRCode {
   public String des = null;
   public String type = null;
@@ -20,5 +22,10 @@ public class IRAlloc extends IRCode {
     System.out.println("addi a0, s0, -" + now_s0);
     System.out.println("sw a0, " + res);
     return;
+  }
+
+  @Override
+  public boolean EmptyStore(HashMap<String, Boolean> deprecated) {
+   return deprecated.containsKey(des);
   }
 }

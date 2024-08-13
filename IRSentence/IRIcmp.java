@@ -1,5 +1,7 @@
 package IRSentence;
 
+import java.util.HashMap;
+
 public class IRIcmp extends IRCode {
   public String target_reg = null;
   public String op1 = null;
@@ -128,5 +130,24 @@ public class IRIcmp extends IRCode {
     String addr_t = relative_addr.get(target_reg);
     System.out.println("sw a3, " + addr_t);
     return;
+  }
+
+  @Override
+  public void CheckTime(HashMap<String, Integer> use, HashMap<String, Integer> def) {
+    if (use.containsKey(op1)) {
+      use.put(op1, use.get(op1) + 1);
+    }
+    if (use.containsKey(op2)) {
+      use.put(op2, use.get(op2) + 1);
+    }
+    if (def.containsKey(target_reg)) {
+      def.put(target_reg, def.get(target_reg) + 1);
+    }
+    return;
+  }
+
+  @Override
+  public boolean EmptyStore(HashMap<String, Boolean> deprecated) {
+    return deprecated.containsKey(target_reg);
   }
 }
