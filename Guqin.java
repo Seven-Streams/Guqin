@@ -6,7 +6,7 @@ import Composer.Composer;
 import Visitor.ASTVisitor;
 import basic_grammar.guqinLexer;
 import basic_grammar.guqinParser;
-
+import Optimization.*;
 import org.antlr.v4.runtime.*;
 import java.io.InputStream;
 import java.io.FileInputStream;
@@ -52,8 +52,10 @@ public class Guqin {
         }
         Composer Yuchuan = new Composer(AST);
         Yuchuan.translate((ProgNode) entry);
+        Mem2Reg test = new Mem2Reg(Yuchuan);
+        test.Mem2RegEmpty();
         Yuchuan.LLVMOutput();
-        // System.exit(0);
+        System.exit(0);
         // Yuchuan.Codegen();
         System.exit(0);
     }

@@ -101,19 +101,27 @@ public class IRFuncall extends IRCode {
 
   @Override
   public void CheckTime(HashMap<String, Integer> use, HashMap<String, Integer> def) {
-    for(String arg: reg) {
-      if(use.containsKey(arg)) {
-        use.put(arg, use.get(arg) + 1);
+    for (String arg : reg) {
+      try {
+        Integer.parseInt(arg);
+      } catch (NumberFormatException e) {
+        if (use.containsKey(arg)) {
+          use.put(arg, use.get(arg) + 1);
+        } else {
+          use.put(arg, 1);
+        }
       }
     }
-    if(def.containsKey(target_reg)) {
-      def.put(target_reg, def.get(target_reg) + 1);
+    try {
+      Integer.parseInt(target_reg);
+    } catch (NumberFormatException e) {
+      if (def.containsKey(target_reg)) {
+        def.put(target_reg, def.get(target_reg) + 1);
+      } else {
+        def.put(target_reg, 1);
+      }
     }
     return;
   }
 
-  @Override
-  public boolean EmptyStore(HashMap<String, Boolean> deprecated) {
-    return deprecated.containsKey(target_reg);
-  }
 }

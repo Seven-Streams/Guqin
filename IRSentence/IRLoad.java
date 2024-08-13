@@ -35,12 +35,29 @@ public class IRLoad extends IRCode {
 
   @Override
   public void CheckTime(HashMap<String, Integer> use, HashMap<String, Integer> def) {
-    if(use.containsKey(src)) {
-      use.put(src, use.get(src) + 1);
+    try {
+      Integer.parseInt(src);
+    } catch (NumberFormatException e) {
+      if (use.containsKey(src)) {
+        use.put(src, use.get(src) + 1);
+      } else {
+        use.put(src, 1);
+      }
     }
-    if(def.containsKey(des)) {
-      def.put(des, def.get(des) + 1);
+    try {
+      Integer.parseInt(des);
+    } catch (NumberFormatException e) {
+      if (def.containsKey(des)) {
+        def.put(des, def.get(des) + 1);
+      } else {
+        def.put(des, 1);
+      }
     }
     return;
+  }
+
+  @Override
+  public boolean EmptyStore(HashMap<String, Integer> use) {
+    return !use.containsKey(des);
   }
 }

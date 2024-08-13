@@ -66,20 +66,47 @@ public class IRElement extends IRCode {
 
   @Override
   public void CheckTime(HashMap<String, Integer> use, HashMap<String, Integer> def) {
-    if(use.containsKey(num1)) {
-      use.put(num1, use.get(num1) + 1);
+    try {
+      Integer.parseInt(num1);
+    } catch (NumberFormatException e) {
+      if (use.containsKey(num1)) {
+        use.put(num1, use.get(num1) + 1);
+      } else {
+        use.put(num1, 1);
+      }
     }
-    if(use.containsKey(num2)) {
-      use.put(num2, use.get(num2) + 1);
+    try {
+      Integer.parseInt(num2);
+    } catch (NumberFormatException e) {
+      if (use.containsKey(num2)) {
+        use.put(num2, use.get(num2) + 1);
+      } else {
+        use.put(num2, 1);
+      }
     }
-    if(def.containsKey(output)) {
-      def.put(output, def.get(output) + 1);
+    try {
+      Integer.parseInt(src);
+    }catch(NumberFormatException e) {
+      if(use.containsKey(src)) {
+        use.put(src, use.get(src) + 1);
+      } else {
+        use.put(src, 1);
+      }
+    }
+    try {
+      Integer.parseInt(output);
+    } catch (NumberFormatException e) {
+      if (def.containsKey(output)) {
+        def.put(output, def.get(output) + 1);
+      } else {
+        def.put(output, 1);
+      }
     }
     return;
   }
 
   @Override
-  public boolean EmptyStore(HashMap<String, Boolean> deprecated) {
-    return deprecated.containsKey(output);
+  public boolean EmptyStore(HashMap<String, Integer> use) {
+    return !use.containsKey(output);
   }
 }

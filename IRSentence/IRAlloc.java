@@ -25,7 +25,16 @@ public class IRAlloc extends IRCode {
   }
 
   @Override
-  public boolean EmptyStore(HashMap<String, Boolean> deprecated) {
-   return deprecated.containsKey(des);
+  public boolean EmptyStore(HashMap<String, Integer> use) {
+   return !use.containsKey(des);
+  }
+
+  @Override
+  public void CheckTime(HashMap<String, Integer> use, HashMap<String, Integer> def) {
+    if(def.containsKey(des)) {
+      def.put(des, def.get(des) + 1);
+    } else {
+      def.put(des, 1);
+    }
   }
 }

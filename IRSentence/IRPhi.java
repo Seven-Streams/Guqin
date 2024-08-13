@@ -81,19 +81,31 @@ public class IRPhi extends IRCode {
 
   @Override
   public void CheckTime(HashMap<String, Integer> use, HashMap<String, Integer> def) {
-    for(String value : values) {
-      if(use.containsKey(value)) {
-        use.put(value, use.get(value) + 1);
+    for (String value : values) {
+      try {
+        Integer.parseInt(value);
+      } catch (NumberFormatException e) {
+        if (use.containsKey(value)) {
+          use.put(value, use.get(value) + 1);
+        } else {
+          use.put(value, 1);
+        }
       }
     }
-    if(def.containsKey(target)) {
-      def.put(target, def.get(target) + 1);
+    try {
+      Integer.parseInt(target);
+    } catch (NumberFormatException e) {
+      if (def.containsKey(target)) {
+        def.put(target, def.get(target) + 1);
+      } else {
+        def.put(target, 1);
+      }
     }
     return;
   }
 
   @Override
-  public boolean EmptyStore(HashMap<String, Boolean> deprecated) {
-    return deprecated.containsKey(target);
+  public boolean EmptyStore(HashMap<String, Integer> use) {
+    return !use.containsKey(target);
   }
 }

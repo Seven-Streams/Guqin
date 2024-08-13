@@ -48,19 +48,32 @@ public class IRStore extends IRCode {
     }
     return;
   }
+
   @Override
   public void CheckTime(HashMap<String, Integer> use, HashMap<String, Integer> def) {
-    if(def.containsKey(name)) {
-      def.put(name, def.get(name) + 1);
+    try {
+      Integer.parseInt(name);
+    } catch (NumberFormatException e) {
+      if (use.containsKey(name)) {
+        use.put(name, use.get(name) + 1);
+      } else {
+        use.put(name, 1);
+      }
     }
-    if(use.containsKey(from)) {
-      use.put(from, use.get(from) + 1);
+    try {
+      Integer.parseInt(from);
+    } catch (NumberFormatException e) {
+      if (use.containsKey(from)) {
+        use.put(from, use.get(from) + 1);
+      } else {
+        use.put(from, 1);
+      }
     }
     return;
   }
-  
+
   @Override
-  public boolean EmptyStore(HashMap<String, Boolean> deprecated) {
-    return deprecated.containsKey(name);
+  public boolean EmptyStore(HashMap<String, Integer> use) {
+    return !use.containsKey(name);
   }
 }

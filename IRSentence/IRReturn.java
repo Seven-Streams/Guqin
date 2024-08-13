@@ -34,8 +34,8 @@ public class IRReturn extends IRCode {
           System.out.println("lw a0, " + return_value);
         }
       } else {
-        if(reg.equals("true")) {
-        System.out.println("li a0, 1");
+        if (reg.equals("true")) {
+          System.out.println("li a0, 1");
         } else {
           System.out.println("li a0, 0");
         }
@@ -47,8 +47,14 @@ public class IRReturn extends IRCode {
 
   @Override
   public void CheckTime(HashMap<String, Integer> use, HashMap<String, Integer> def) {
-    if(def.containsKey(reg)) {
-      def.put(reg, def.get(reg) + 1);
+    try {
+      Integer.parseInt(reg);
+    } catch (NumberFormatException e) {
+      if (use.containsKey(reg)) {
+        use.put(reg, use.get(reg) + 1);
+      } else {
+        use.put(reg, 1);
+      }
     }
     return;
   }

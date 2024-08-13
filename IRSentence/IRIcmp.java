@@ -134,20 +134,38 @@ public class IRIcmp extends IRCode {
 
   @Override
   public void CheckTime(HashMap<String, Integer> use, HashMap<String, Integer> def) {
-    if (use.containsKey(op1)) {
-      use.put(op1, use.get(op1) + 1);
+    try {
+      Integer.parseInt(op1);
+    } catch (NumberFormatException e) {
+      if (use.containsKey(op1)) {
+        use.put(op1, use.get(op1) + 1);
+      } else {
+        use.put(op1, 1);
+      }
     }
-    if (use.containsKey(op2)) {
-      use.put(op2, use.get(op2) + 1);
+    try {
+      Integer.parseInt(op2);
+    } catch (NumberFormatException e) {
+      if (use.containsKey(op2)) {
+        use.put(op2, use.get(op2) + 1);
+      } else {
+        use.put(op2, 1);
+      }
     }
-    if (def.containsKey(target_reg)) {
-      def.put(target_reg, def.get(target_reg) + 1);
+    try {
+      Integer.parseInt(target_reg);
+    } catch (NumberFormatException e) {
+      if (def.containsKey(target_reg)) {
+        def.put(target_reg, def.get(target_reg) + 1);
+      } else {
+        def.put(target_reg, 1);
+      }
     }
     return;
   }
 
   @Override
-  public boolean EmptyStore(HashMap<String, Boolean> deprecated) {
-    return deprecated.containsKey(target_reg);
+  public boolean EmptyStore(HashMap<String, Integer> use) {
+    return !use.containsKey(target_reg);
   }
 }
