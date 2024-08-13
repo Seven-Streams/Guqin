@@ -13,17 +13,25 @@ public class IRStore extends IRCode {
 
   @Override
   public void Codegen() {
-    try {
-      int num = Integer.parseInt(from);
-      if((num >> 12) != 0) {
-      System.out.println("lui a1, " + (num >> 12));
-      } else {
-        System.out.println("andi a1, a1, 0");
+    if (!(from.equals("true") || from.equals("false") || from.equals("null"))) {
+      try {
+        int num = Integer.parseInt(from);
+        if ((num >> 12) != 0) {
+          System.out.println("lui a1, " + (num >> 12));
+        } else {
+          System.out.println("andi a1, a1, 0");
+        }
+        System.out.println("addi a1, a1, " + (num & 0x00000fff));
+      } catch (NumberFormatException e) {
+        String addr_from = relative_addr.get(from);
+        System.out.println("lw a1, " + addr_from);
       }
-      System.out.println("addi a1, a1, " + (num & 0x00000fff));
-    } catch (NumberFormatException e) {
-      String addr_from = relative_addr.get(from);
-      System.out.println("lw a1, " + addr_from);
+    } else {
+      if (from.equals("true")) {
+        System.out.println("li a1, 1");
+      } else {
+        System.out.println("li a1, 0");
+      }
     }
     if (is_global.containsKey(name)) {
       if (is_global.get(name)) {

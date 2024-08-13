@@ -47,29 +47,45 @@ public class IRIcmp extends IRCode {
   public void Codegen() throws Exception {
     String addr1 = null;
     String addr2 = null;
-    try {
-      int ins_1 = Integer.parseInt(op1);
-      if((ins_1 >> 12) != 0) {
-      System.out.println("lui a0, " + (ins_1 >> 12));
+    if (op1.equals("true") || op1.equals("false") || op1.equals("null")) {
+      if (op1.equals("true")) {
+        System.out.println("li a0, 1 ");
       } else {
-        System.out.println("andi a0, a0, 0");
+        System.out.println("li, a0, 0");
       }
-      System.out.println("addi a0, a0, " + (ins_1 & 0x00000fff));
-    } catch (NumberFormatException e) {
-      addr1 = relative_addr.get(op1);
-      System.out.println("lw a0, " + addr1);
+    } else {
+      try {
+        int ins_1 = Integer.parseInt(op1);
+        if ((ins_1 >> 12) != 0) {
+          System.out.println("lui a0, " + (ins_1 >> 12));
+        } else {
+          System.out.println("andi a0, a0, 0");
+        }
+        System.out.println("addi a0, a0, " + (ins_1 & 0x00000fff));
+      } catch (NumberFormatException e) {
+        addr1 = relative_addr.get(op1);
+        System.out.println("lw a0, " + addr1);
+      }
     }
-    try {
-      int ins_2 = Integer.parseInt(op2);
-      if((ins_2 >> 12) != 0) {
-      System.out.println("lui a1, " + (ins_2 >> 12));
+    if (op2.equals("true") || op2.equals("false") || op2.equals("null")) {
+      if (op2.equals("true")) {
+        System.out.println("li a1, 1 ");
       } else {
-        System.out.println("andi a1, a1, 0");
+        System.out.println("li, a1, 0");
       }
-      System.out.println("addi a1, a1, " + (ins_2 & 0x00000fff));
-    } catch (NumberFormatException e) {
-      addr2 = relative_addr.get(op2);
-      System.out.println("lw a1, " + addr2);
+    } else {
+      try {
+        int ins_2 = Integer.parseInt(op2);
+        if ((ins_2 >> 12) != 0) {
+          System.out.println("lui a1, " + (ins_2 >> 12));
+        } else {
+          System.out.println("andi a1, a1, 0");
+        }
+        System.out.println("addi a1, a1, " + (ins_2 & 0x00000fff));
+      } catch (NumberFormatException e) {
+        addr2 = relative_addr.get(op2);
+        System.out.println("lw a1, " + addr2);
+      }
     }
     switch (symbol) {
       case ("=="): {

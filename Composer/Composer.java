@@ -153,6 +153,8 @@ public class Composer {
             IRFuncall to_check = (IRFuncall) IR;
             if (to_check.reg.size() > 8) {
               last_size += to_check.reg.size() - 8;
+            } else {
+              last_size++;
             }
           } else {
             last_size++;
@@ -178,7 +180,6 @@ public class Composer {
       }
     }
     System.out.println(".data");
-    System.out.println(".balign 4");
     for (IRCode chars : const_str) {
       chars.Codegen();
     }
