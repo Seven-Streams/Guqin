@@ -1,6 +1,9 @@
 package IRSentence;
 
 import java.util.HashMap;
+import java.util.Stack;
+
+import Optimization.NameLabelPair;
 
 public class IRStore extends IRCode {
   public String name = null;
@@ -128,6 +131,21 @@ public class IRStore extends IRCode {
     }
     if (single.containsKey(name)) {
       single.put(name, from);
+    }
+    return;
+  }
+
+  @Override
+  public void UpdateNames(HashMap<String, Stack<NameLabelPair>> variable_stack, HashMap<String, String> reg_value,
+      int now_block) {
+    if (variable_stack.containsKey(from)) {
+      from = new String(variable_stack.get(from).peek().name);
+    }
+    if (reg_value.containsKey(from)) {
+      from = new String(reg_value.get(from));
+    }
+    if (variable_stack.containsKey(name)) {
+      variable_stack.get(name).push(new NameLabelPair(from, now_block));
     }
     return;
   }

@@ -1,6 +1,9 @@
 package IRSentence;
 
 import java.util.HashMap;
+import java.util.Stack;
+
+import Optimization.NameLabelPair;
 
 public class IRReturn extends IRCode {
   public String reg = null;
@@ -71,6 +74,18 @@ public class IRReturn extends IRCode {
   public void UpdateSingleBlock(HashMap<String, String> single) {
     while (single.containsKey(reg)) {
       reg = new String(single.get(reg));
+    }
+    return;
+  }
+
+  @Override
+  public void UpdateNames(HashMap<String, Stack<NameLabelPair>> variable_stack, HashMap<String, String> reg_value,
+      int now_block) {
+    if (variable_stack.containsKey(reg)) {
+      reg = new String(variable_stack.get(reg).peek().name);
+    }
+    if (reg_value.containsKey(reg)) {
+      reg = new String(reg_value.get(reg));
     }
     return;
   }

@@ -54,9 +54,9 @@ public class Guqin {
         Yuchuan.translate((ProgNode) entry);
         Mem2Reg test = new Mem2Reg(Yuchuan);
         test.Optim();
-        Yuchuan.LLVMOutput();
-        System.exit(0);
-        // Yuchuan.Codegen();
+        // Yuchuan.LLVMOutput();
+        // System.exit(0);
+        Yuchuan.Codegen();
         System.exit(0);
     }
 }

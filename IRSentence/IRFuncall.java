@@ -2,6 +2,9 @@ package IRSentence;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Stack;
+
+import Optimization.NameLabelPair;
 
 public class IRFuncall extends IRCode {
   public String target_reg = null;
@@ -146,6 +149,20 @@ public class IRFuncall extends IRCode {
     }
     while (single.containsKey(target_reg)) {
       target_reg = new String(single.get(target_reg));
+    }
+    return;
+  }
+
+  @Override
+  public void UpdateNames(HashMap<String, Stack<NameLabelPair>> variable_stack, HashMap<String, String> reg_value,
+      int now_block) {
+    for (int i = 0; i < reg.size(); i++) {
+      if (variable_stack.containsKey(reg.get(i))) {
+        reg.set(i, new String(variable_stack.get(reg.get(i)).peek().name));
+      }
+      if (reg_value.containsKey(reg.get(i))) {
+        reg.set(i, new String(reg_value.get(reg.get(i))));
+      }
     }
     return;
   }

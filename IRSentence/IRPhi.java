@@ -2,6 +2,9 @@ package IRSentence;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Stack;
+
+import Optimization.NameLabelPair;
 
 public class IRPhi extends IRCode {
   public static int phi_cnt = 0;
@@ -111,27 +114,41 @@ public class IRPhi extends IRCode {
 
   @Override
   public void UpdateAssignOnce(HashMap<String, String> replace, HashMap<String, Boolean> deprecated) {
-    if(replace.containsKey(target)) {
+    if (replace.containsKey(target)) {
       target = new String(replace.get(target));
     }
-    for(int i = 0; i < values.size(); i++) {
-      while(replace.containsKey(values.get(i))) {
+    for (int i = 0; i < values.size(); i++) {
+      while (replace.containsKey(values.get(i))) {
         values.set(i, new String(values.get(i)));
       }
     }
     return;
   }
 
- @Override
- public void UpdateSingleBlock(HashMap<String, String> single) {
-    if(single.containsKey(target)) {
+  @Override
+  public void UpdateSingleBlock(HashMap<String, String> single) {
+    if (single.containsKey(target)) {
       target = new String(single.get(target));
     }
-    for(int i = 0; i < values.size(); i++) {
-      while(single.containsKey(values.get(i))) {
-        values.set(i, new String(values.get(i)));
+    for (int i = 0; i < values.size(); i++) {
+      while (single.containsKey(values.get(i))) {
+        values.set(i, new String(single.get(values.get(i))));
       }
     }
     return;
- } 
+  }
+
+
+  @Override
+  public void UpdateNames(HashMap<String, Stack<NameLabelPair>> variable_stack, HashMap<String, String> reg_value, int now_block) {
+    for (int i = 0; i < values.size(); i++) {
+      if (variable_stack.containsKey(values.get(i))) {
+        values.set(i, new String(variable_stack.get(values.get(i)).peek().name));
+      }
+      if(reg_value.containsKey(values.get(i))) {
+        values.set(i, new String(reg_value.get(values.get(i))));
+      }
+    }
+    return;
+  }
 }

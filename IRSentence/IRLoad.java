@@ -1,6 +1,9 @@
 package IRSentence;
 
 import java.util.HashMap;
+import java.util.Stack;
+
+import Optimization.NameLabelPair;
 
 public class IRLoad extends IRCode {
   public String des = null;
@@ -88,6 +91,19 @@ public class IRLoad extends IRCode {
     }
     if (flag) {
       single.put(des, src);
+    }
+    return;
+  }
+
+  @Override
+  public void UpdateNames(HashMap<String, Stack<NameLabelPair>> variable_stack, HashMap<String, String> reg_value,
+      int now_block) {
+    if (variable_stack.containsKey(src)) {
+      reg_value.put(des, variable_stack.get(src).peek().name);
+      return;
+    }
+    if (reg_value.containsKey(src)) {
+      src = new String(reg_value.get(src));
     }
     return;
   }

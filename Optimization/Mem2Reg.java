@@ -5,13 +5,14 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
-
+import java.util.Stack;
 import IRSentence.*;
 import Composer.*;
 
 public class Mem2Reg {
   Composer object = null;
   int func_cnt = 0;
+  int phi_time = 0;
   HashMap<Integer, HashMap<String, Boolean>> reserved_variable = new HashMap<>();
   public HashMap<Integer, HashMap<Integer, Boolean>> graph = new HashMap<>();
   public HashMap<Integer, HashMap<Integer, Boolean>> pre = new HashMap<>();
@@ -19,6 +20,8 @@ public class Mem2Reg {
   public HashMap<Integer, Integer> Idom = new HashMap<>();
   public HashMap<Integer, ArrayList<Integer>> frontier = new HashMap<>();
   public HashMap<Integer, ArrayList<Integer>> Idom_up_down = new HashMap<>();
+  public HashMap<String, Stack<NameLabelPair>> new_name = new HashMap<>();
+  public HashMap<String, String> alloc_type = new HashMap<>();
 
   public Mem2Reg(Composer _object) {
     object = _object;
@@ -404,9 +407,128 @@ public class Mem2Reg {
       reserved_variable.get(res.label).put(new String(res.name), null);
       for (int value : frontier.get(res.label)) {
         NameLabelPair new_pair = new NameLabelPair(res.name, value);
-        if(value != new_pair.label) {
-        to_add.add(new_pair);
+        if (value != new_pair.label) {
+          to_add.add(new_pair);
         }
+      }
+    }
+    return;
+  }
+
+  void RemoveAlloca() {
+    HashMap<String, String> reg_value = new HashMap<>();
+    for (ArrayList<IRCode> allocs : object.alloc.values()) {
+      for (IRCode alloc_raw : allocs) {
+        IRAlloc alloc = (IRAlloc) alloc_raw;
+        alloc_type.put(alloc.des, alloc.type);
+        new_name.put(new String(alloc.des), new Stack<>());
+      }
+    }
+    for (int i = -1; i >= func_cnt; i--) {
+      RenamePhi(i, reg_value);
+    }
+    return;
+  }
+
+  HashMap<String, String> value = new HashMap<>();
+
+  void RenamePhi(int index, HashMap<String, String> reg_values) {
+    int phi_func = 0;
+    for (int i = 0; i < object.generated.size(); i++) {
+      if (object.generated.get(i) instanceof IRFunc) {
+        if (--phi_func == index) {
+          for (int j = i; j < object.generated.size(); j++) {
+            if (object.generated.get(j) instanceof IRFuncend || object.generated.get(j) instanceof IRLabel) {
+              break;
+            }
+            object.generated.get(j).UpdateNames(new_name, reg_values, index);
+          }
+          HashMap<Integer, Boolean> next = graph.get(index);
+          for (int nxt : next.keySet()) {
+            ArrayList<IRPhi> phis = object.reserved_phi.get(nxt);
+            for (String to_update : reserved_variable.get(nxt).keySet()) {
+              boolean flag = false;
+              for (IRPhi phi : phis) {
+                if (phi.target.equals(to_update)) {
+                  phi.values.add(new String(new_name.get(to_update).peek().name));
+                  phi.labels.add(index);
+                  flag = true;
+                  break;
+                }
+              }
+              if (!flag) {
+                IRPhi to_add = new IRPhi();
+                to_add.type = alloc_type.get(to_update);
+                to_add.target = new String(to_update);
+                to_add.values.add(new String(new_name.get(to_update).peek().name));
+                to_add.labels.add(index);
+              }
+            }
+          }
+          for (int dom : Idom_up_down.get(index)) {
+            RenamePhi(dom, reg_values);
+          }
+          RenameClear(index);
+          return;
+        }
+      }
+      if (object.generated.get(i) instanceof IRLabel) {
+        IRLabel _label = (IRLabel) (object.generated.get(i));
+        if (_label.label == index) {
+          for (int j = i; j < object.generated.size(); j++) {
+            ArrayList<IRPhi> to_update_phies = object.reserved_phi.get(index);
+            HashMap<String, Boolean> to_update = reserved_variable.get(index);
+            for (String phi_object : to_update.keySet()) {
+              String update_name = "%phi$" + ++phi_time;
+              new_name.get(phi_object).push(new NameLabelPair(update_name, index));
+              for (IRPhi to_update_phi : to_update_phies) {
+                if (to_update_phi.target.equals(phi_object)) {
+                  to_update_phi.target = new String(update_name);
+                  break;
+                }
+              }
+            }
+            if (object.generated.get(j) instanceof IRFuncend || object.generated.get(j) instanceof IRLabel) {
+              break;
+            }
+            object.generated.get(j).UpdateNames(new_name, reg_values, index);
+          }
+          HashMap<Integer, Boolean> next = graph.get(index);
+          for (int nxt : next.keySet()) {
+            ArrayList<IRPhi> phis = object.reserved_phi.get(nxt);
+            for (String to_update : reserved_variable.get(nxt).keySet()) {
+              boolean flag = false;
+              for (IRPhi phi : phis) {
+                if (phi.target.equals(to_update)) {
+                  phi.values.add(new String(new_name.get(to_update).peek().name));
+                  phi.labels.add(index);
+                  flag = true;
+                  break;
+                }
+              }
+              if (!flag) {
+                IRPhi to_add = new IRPhi();
+                to_add.type = alloc_type.get(to_update);
+                to_add.target = new String(to_update);
+                to_add.values.add(new String(new_name.get(to_update).peek().name));
+                to_add.labels.add(index);
+              }
+            }
+          }
+          for (int dom : Idom_up_down.get(index)) {
+            RenamePhi(dom, reg_values);
+          }
+          RenameClear(index);
+          return;
+        }
+      }
+    }
+  }
+
+  void RenameClear(int index) {
+    for (Stack<NameLabelPair> check : new_name.values()) {
+      while ((!check.empty()) && (check.peek().label == index)) {
+        check.pop();
       }
     }
     return;

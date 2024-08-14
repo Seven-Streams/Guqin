@@ -1,7 +1,8 @@
 package IRSentence;
 
 import java.util.HashMap;
-import java.util.ArrayList;
+import java.util.Stack;
+import Optimization.NameLabelPair;
 
 public class IRCode {
   public void CodePrint(){}
@@ -14,6 +15,7 @@ public class IRCode {
   public int CheckBlock(HashMap<String, HashMap<Integer, Boolean>> times, int now_block) {return now_block;}
   public boolean SingleBlockRemove(HashMap<String, String> single){return false;}
   public void UpdateSingleBlock(HashMap<String, String> single){}
+  public void UpdateNames(HashMap<String, Stack<NameLabelPair>> variable_stack, HashMap<String, String> reg_value, int now_block){}
   public static int now_s0 = 0;
   public static int func_num = 0;
   public static int sp_length = 0;
