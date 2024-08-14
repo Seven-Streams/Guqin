@@ -78,8 +78,9 @@ public class Composer {
     for (IRCode code : const_str) {
       code.CodePrint();
     }
+    boolean last_return = false;
     for (IRCode code : generated) {
-      if (code instanceof IRFuncend) {
+      if ((code instanceof IRFuncend) && !last_return) {
         switch (type) {
           case ("i32"): {
             System.out.println("ret i32 0");
@@ -98,6 +99,11 @@ public class Composer {
             break;
           }
         }
+      }
+      if(code instanceof IRReturn) {
+        last_return = true;
+      } else {
+        last_return = false;
       }
       code.CodePrint();
       if (code instanceof IRFunc) {

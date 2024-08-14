@@ -3,9 +3,9 @@ package IRSentence;
 import java.util.HashMap;
 
 public class Conditionjmp extends IRCode {
-  int label1 = 0;
-  int label2 = 0;
-  String reg = null;
+  public int label1 = 0;
+  public int label2 = 0;
+  public String reg = null;
 
   @Override
   public void CodePrint() {
