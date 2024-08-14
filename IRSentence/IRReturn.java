@@ -61,8 +61,16 @@ public class IRReturn extends IRCode {
 
   @Override
   public void UpdateAssignOnce(HashMap<String, String> replace, HashMap<String, Boolean> deprecated) {
-    while(replace.containsKey(reg)) {
+    while (replace.containsKey(reg)) {
       reg = new String(replace.get(reg));
+    }
+    return;
+  }
+
+  @Override
+  public void UpdateSingleBlock(HashMap<String, String> single) {
+    while (single.containsKey(reg)) {
+      reg = new String(single.get(reg));
     }
     return;
   }

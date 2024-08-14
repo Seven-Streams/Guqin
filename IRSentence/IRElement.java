@@ -86,8 +86,8 @@ public class IRElement extends IRCode {
     }
     try {
       Integer.parseInt(src);
-    }catch(NumberFormatException e) {
-      if(use.containsKey(src)) {
+    } catch (NumberFormatException e) {
+      if (use.containsKey(src)) {
         use.put(src, use.get(src) + 1);
       } else {
         use.put(src, 1);
@@ -112,17 +112,35 @@ public class IRElement extends IRCode {
 
   @Override
   public void UpdateAssignOnce(HashMap<String, String> replace, HashMap<String, Boolean> deprecated) {
-    while(replace.containsKey(num1)) {
+    while (replace.containsKey(num1)) {
       num1 = new String(replace.get(num1));
     }
-    while(replace.containsKey(num2)) {
+    while (replace.containsKey(num2)) {
       num2 = new String(replace.get(num2));
     }
-    while(replace.containsKey(src)) {
+    while (replace.containsKey(src)) {
       src = new String(replace.get(src));
     }
-    while(replace.containsKey(output)) {
+    while (replace.containsKey(output)) {
       output = new String(replace.get(output));
     }
+    return;
+  }
+
+  @Override
+  public void UpdateSingleBlock(HashMap<String, String> single) {
+    while (single.containsKey(num1)) {
+      num1 = new String(single.get(num1));
+    }
+    while (single.containsKey(num2)) {
+      num2 = new String(single.get(num2));
+    }
+    while (single.containsKey(src)) {
+      src = new String(single.get(src));
+    }
+    while (single.containsKey(output)) {
+      output = new String(single.get(output));
+    }
+    return;
   }
 }

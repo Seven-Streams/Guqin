@@ -94,22 +94,41 @@ public class IRStore extends IRCode {
   }
 
   @Override
-  public void UpdateAssignOnce(HashMap<String, String> replace, HashMap<String, Boolean>deprecated) {
-    if(deprecated.containsKey(name)) {
+  public void UpdateAssignOnce(HashMap<String, String> replace, HashMap<String, Boolean> deprecated) {
+    if (deprecated.containsKey(name)) {
       replace.put(name, from);
     }
-    while(replace.containsKey(from)) {
+    while (replace.containsKey(from)) {
       from = new String(replace.get(from));
     }
     return;
   }
 
   @Override
-  public boolean AssignOnceRemove(HashMap<String, Boolean> deprecated) {
-    if(deprecated.containsKey(name)) {
+  public boolean AssignOnceRemove(HashMap<String, ?> deprecated) {
+    if (deprecated.containsKey(name)) {
       return true;
     } else {
       return false;
     }
+  }
+
+  @Override
+  public int CheckBlock(HashMap<String, HashMap<Integer, Boolean>> times, int now_block) {
+    if (times.containsKey(name)) {
+      times.get(name).put(now_block, null);
+    }
+    return now_block;
+  }
+
+  @Override
+  public void UpdateSingleBlock(HashMap<String, String> single) {
+    while (single.containsKey(from)) {
+      from = new String(single.get(from));
+    }
+    if (single.containsKey(name)) {
+      single.put(name, from);
+    }
+    return;
   }
 }

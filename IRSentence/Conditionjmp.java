@@ -56,4 +56,12 @@ public class Conditionjmp extends IRCode {
     }
     return;
   }
+
+  @Override
+  public void UpdateSingleBlock(HashMap<String, String> single) {
+    while(single.containsKey(reg)) {
+      reg = new String(single.get(reg));
+    }
+    return;
+  }
 }

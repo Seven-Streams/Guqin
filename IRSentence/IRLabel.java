@@ -1,5 +1,7 @@
 package IRSentence;
 
+import java.util.HashMap;
+
 public class IRLabel extends IRCode {
   public int label = 0;
   public Integer cond = null;
@@ -25,5 +27,10 @@ public class IRLabel extends IRCode {
     if (cond != null) {
       System.out.println("li a7, " + cond);
     }
+  }
+
+  @Override
+  public int CheckBlock(HashMap<String, HashMap<Integer, Boolean>> times, int now_block) {
+    return label;
   }
 }

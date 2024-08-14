@@ -63,7 +63,7 @@ public class IRLoad extends IRCode {
 
   @Override
   public void UpdateAssignOnce(HashMap<String, String> replace, HashMap<String, Boolean> deprecated) {
-    if(replace.containsKey(src)) {
+    if (replace.containsKey(src)) {
       deprecated.put(des, null);
       replace.put(des, replace.get(src));
     }
@@ -71,11 +71,24 @@ public class IRLoad extends IRCode {
   }
 
   @Override
-  public boolean AssignOnceRemove(HashMap<String, Boolean> deprecated) {
-    if(deprecated.containsKey(des) || deprecated.containsKey(src)) {
+  public boolean AssignOnceRemove(HashMap<String, ?> deprecated) {
+    if (deprecated.containsKey(des) || deprecated.containsKey(src)) {
       return true;
     } else {
       return false;
     }
+  }
+
+  @Override
+  public void UpdateSingleBlock(HashMap<String, String> single) {
+    boolean flag = false;
+    while (single.containsKey(src)) {
+      flag = true;
+      src = new String(single.get(src));
+    }
+    if (flag) {
+      single.put(des, src);
+    }
+    return;
   }
 }

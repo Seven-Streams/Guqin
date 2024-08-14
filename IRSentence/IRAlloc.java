@@ -42,4 +42,9 @@ public class IRAlloc extends IRCode {
   public boolean AssignOnce(HashMap<String, Integer> def) {
     return (def.get(des) == 1);
   }
+
+  @Override
+  public boolean SingleBlockRemove(HashMap<String, String> single) {
+    return single.containsKey(des);
+  }
 }

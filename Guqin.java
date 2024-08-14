@@ -53,8 +53,7 @@ public class Guqin {
         Composer Yuchuan = new Composer(AST);
         Yuchuan.translate((ProgNode) entry);
         Mem2Reg test = new Mem2Reg(Yuchuan);
-        test.Mem2RegEmpty();
-        test.Mem2RegAssignOnce();
+        test.Optim();
         Yuchuan.LLVMOutput();
         System.exit(0);
         // Yuchuan.Codegen();

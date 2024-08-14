@@ -121,4 +121,17 @@ public class IRPhi extends IRCode {
     }
     return;
   }
+
+ @Override
+ public void UpdateSingleBlock(HashMap<String, String> single) {
+    if(single.containsKey(target)) {
+      target = new String(single.get(target));
+    }
+    for(int i = 0; i < values.size(); i++) {
+      while(single.containsKey(values.get(i))) {
+        values.set(i, new String(values.get(i)));
+      }
+    }
+    return;
+ } 
 }

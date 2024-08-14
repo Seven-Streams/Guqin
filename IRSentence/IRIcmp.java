@@ -182,4 +182,18 @@ public class IRIcmp extends IRCode {
     }
     return;
   }
+
+  @Override
+  public void UpdateSingleBlock(HashMap<String, String> single) {
+    while (single.containsKey(op1)) {
+      op1 = new String(single.get(op1));
+    }
+    while (single.containsKey(op2)) {
+      op2 = new String(single.get(op2));
+    }
+    while (single.containsKey(target_reg)) {
+      target_reg = new String(single.get(target_reg));
+    }
+    return;
+  }
 }
