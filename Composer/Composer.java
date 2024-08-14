@@ -25,6 +25,7 @@ public class Composer {
   public HashMap<String, HashMap<String, Integer>> class_mem_num = new HashMap<>();
   public HashMap<String, Integer> now_class = new HashMap<>();
   public HashMap<Integer, Boolean> flag = new HashMap<>();
+  public HashMap<Integer, ArrayList<IRPhi>> reserved_phi = new HashMap<>();
   // It's used to check now_name of the variable.
   public Stack<HashMap<String, TypeNamePair>> now_name = new Stack<>();
 

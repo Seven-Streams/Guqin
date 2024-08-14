@@ -1,6 +1,7 @@
 package IRSentence;
 
 import java.util.HashMap;
+import java.util.ArrayList;
 
 public class IRCode {
   public void CodePrint(){}

@@ -12,6 +12,7 @@ import Composer.*;
 public class Mem2Reg {
   Composer object = null;
   int func_cnt = 0;
+  HashMap<Integer, HashMap<String, Boolean>> reserved_variable = new HashMap<>();
   public HashMap<Integer, HashMap<Integer, Boolean>> graph = new HashMap<>();
   public HashMap<Integer, HashMap<Integer, Boolean>> pre = new HashMap<>();
   public HashMap<Integer, HashMap<Integer, Boolean>> dominate = new HashMap<>();
@@ -32,6 +33,7 @@ public class Mem2Reg {
     BuildDominate();
     BuildIdom();
     BuildFrontier();
+    ReservePhi();
   }
 
   void Mem2RegEmpty() {
@@ -353,7 +355,7 @@ public class Mem2Reg {
       }
       for (int ndom : dominate.get(node).keySet()) {
         if (res.containsKey(ndom)) {
-          if(ndom == node) {
+          if (ndom == node) {
             continue;
           }
           res.remove(ndom);
@@ -373,6 +375,39 @@ public class Mem2Reg {
         System.out.print(value + " ");
       }
       System.out.println();
+    }
+    return;
+  }
+
+  void ReservePhi() {
+    int now_func = 0;
+    int now = 0;
+    for (int node : graph.keySet()) {
+      reserved_variable.put(node, new HashMap<>());
+    }
+    Queue<NameLabelPair> to_add = new LinkedList<>();
+    for (IRCode code : object.generated) {
+      if (code instanceof IRFunc) {
+        now = --now_func;
+      }
+      if (code instanceof IRLabel) {
+        now = ((IRLabel) code).label;
+      }
+      if (code instanceof IRStore) {
+        String target = new String(((IRStore) code).name);
+        NameLabelPair new_pair = new NameLabelPair(target, now);
+        to_add.add(new_pair);
+      }
+    }
+    while (!to_add.isEmpty()) {
+      NameLabelPair res = to_add.poll();
+      reserved_variable.get(res.label).put(new String(res.name), null);
+      for (int value : frontier.get(res.label)) {
+        NameLabelPair new_pair = new NameLabelPair(res.name, value);
+        if(value != new_pair.label) {
+        to_add.add(new_pair);
+        }
+      }
     }
     return;
   }
