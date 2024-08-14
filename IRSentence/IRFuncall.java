@@ -124,4 +124,16 @@ public class IRFuncall extends IRCode {
     return;
   }
 
+  @Override
+  public void UpdateAssignOnce(HashMap<String, String> replace, HashMap<String, Boolean> deprecated) {
+    for(int i = 0 ;i < reg.size() ;i++ ) {
+      while(replace.containsKey(reg.get(i))) {
+        reg.set(i, new String(replace.get(reg.get(i))));
+      }
+    }
+    while (replace.containsKey(target_reg)) {
+      target_reg = new String(replace.get(target_reg));
+    }
+    return;
+  }
 }

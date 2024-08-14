@@ -61,7 +61,7 @@ public class IRStore extends IRCode {
           def.put(name, 1);
         }
       } else {
-        if (name.substring(0, 4).equals("%reg")) {
+        if (name.contains("$")) {
           if (use.containsKey(name)) {
             use.put(name, use.get(name) + 1);
           } else {
@@ -91,5 +91,25 @@ public class IRStore extends IRCode {
   @Override
   public boolean EmptyStore(HashMap<String, Integer> use) {
     return !use.containsKey(name);
+  }
+
+  @Override
+  public void UpdateAssignOnce(HashMap<String, String> replace, HashMap<String, Boolean>deprecated) {
+    if(deprecated.containsKey(name)) {
+      replace.put(name, from);
+    }
+    while(replace.containsKey(from)) {
+      from = new String(replace.get(from));
+    }
+    return;
+  }
+
+  @Override
+  public boolean AssignOnceRemove(HashMap<String, Boolean> deprecated) {
+    if(deprecated.containsKey(name)) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }

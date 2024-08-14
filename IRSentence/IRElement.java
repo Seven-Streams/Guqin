@@ -109,4 +109,20 @@ public class IRElement extends IRCode {
   public boolean EmptyStore(HashMap<String, Integer> use) {
     return !use.containsKey(output);
   }
+
+  @Override
+  public void UpdateAssignOnce(HashMap<String, String> replace, HashMap<String, Boolean> deprecated) {
+    while(replace.containsKey(num1)) {
+      num1 = new String(replace.get(num1));
+    }
+    while(replace.containsKey(num2)) {
+      num2 = new String(replace.get(num2));
+    }
+    while(replace.containsKey(src)) {
+      src = new String(replace.get(src));
+    }
+    while(replace.containsKey(output)) {
+      output = new String(replace.get(output));
+    }
+  }
 }

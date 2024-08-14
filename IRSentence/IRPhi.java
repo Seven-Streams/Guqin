@@ -108,4 +108,17 @@ public class IRPhi extends IRCode {
   public boolean EmptyStore(HashMap<String, Integer> use) {
     return !use.containsKey(target);
   }
+
+  @Override
+  public void UpdateAssignOnce(HashMap<String, String> replace, HashMap<String, Boolean> deprecated) {
+    if(replace.containsKey(target)) {
+      target = new String(replace.get(target));
+    }
+    for(int i = 0; i < values.size(); i++) {
+      while(replace.containsKey(values.get(i))) {
+        values.set(i, new String(values.get(i)));
+      }
+    }
+    return;
+  }
 }

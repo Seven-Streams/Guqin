@@ -55,9 +55,49 @@ public class Mem2Reg {
         remove = true;
         object.generated.remove(0);
       }
-      if(!remove) {
+      if (!remove) {
         break;
       }
+    }
+    return;
+  }
+
+  public void Mem2RegAssignOnce() {
+    HashMap<String, Integer> use = new HashMap<>();
+    HashMap<String, Integer> def = new HashMap<>();
+    for (IRCode generate : object.generated) {
+      generate.CheckTime(use, def);
+    }
+    HashMap<String, String> replace = new HashMap<>();
+    HashMap<String, Boolean> deprecated = new HashMap<>();
+    for (ArrayList<IRCode> allocs : object.alloc.values()) {
+      boolean flag = false;
+      for (int i = allocs.size() - 1; i >= 0; i--) {
+        if (flag) {
+          allocs.remove(i + 1);
+        }
+        flag = allocs.get(i).AssignOnce(def);
+        IRAlloc alloc = (IRAlloc) allocs.get(i);
+        if (flag) {
+          deprecated.put(new String(alloc.des), null);
+        }
+      }
+      if (flag) {
+        allocs.remove(0);
+      }
+    }
+    for (IRCode generate : object.generated) {
+      generate.UpdateAssignOnce(replace, deprecated);
+    }
+    boolean flag = false;
+    for (int i = object.generated.size() - 1; i >= 0; i--) {
+      if (flag) {
+        object.generated.remove(i + 1);
+      }
+      flag = object.generated.get(i).AssignOnceRemove(deprecated);
+    }
+    if (flag) {
+      object.generated.remove(0);
     }
     return;
   }

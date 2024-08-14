@@ -180,4 +180,18 @@ public class IRBin extends IRCode {
   public boolean EmptyStore(HashMap<String, Integer> use) {
     return !use.containsKey(target_reg);
   }
+
+  @Override
+  public void UpdateAssignOnce(HashMap<String, String> replace, HashMap<String, Boolean> deprecated) {
+    while (replace.containsKey(op1)) {
+      op1 = new String(replace.get(op1));
+    }
+    while (replace.containsKey(op2)) {
+      op2 = new String(replace.get(op2));
+    }
+    while (replace.containsKey(target_reg)) {
+      target_reg = new String(replace.get(target_reg));
+    }
+    return;
+  }
 }

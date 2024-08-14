@@ -48,4 +48,12 @@ public class Conditionjmp extends IRCode {
     }
     return;
   }
+
+  @Override
+  public void UpdateAssignOnce(HashMap<String, String> replace, HashMap<String, Boolean> deprecated) {
+    while(replace.containsKey(reg)) {
+      reg = new String(replace.get(reg));
+    }
+    return;
+  }
 }

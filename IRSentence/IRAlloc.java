@@ -37,4 +37,9 @@ public class IRAlloc extends IRCode {
       def.put(des, 1);
     }
   }
+
+  @Override 
+  public boolean AssignOnce(HashMap<String, Integer> def) {
+    return (def.get(des) == 1);
+  }
 }

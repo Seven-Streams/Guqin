@@ -60,4 +60,22 @@ public class IRLoad extends IRCode {
   public boolean EmptyStore(HashMap<String, Integer> use) {
     return !use.containsKey(des);
   }
+
+  @Override
+  public void UpdateAssignOnce(HashMap<String, String> replace, HashMap<String, Boolean> deprecated) {
+    if(replace.containsKey(src)) {
+      deprecated.put(des, null);
+      replace.put(des, replace.get(src));
+    }
+    return;
+  }
+
+  @Override
+  public boolean AssignOnceRemove(HashMap<String, Boolean> deprecated) {
+    if(deprecated.containsKey(des) || deprecated.containsKey(src)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
