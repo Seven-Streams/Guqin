@@ -10,10 +10,14 @@ import IRSentence.*;
 import Composer.*;
 
 public class Mem2Reg {
-  public Composer object = null;
+  Composer object = null;
+  int func_cnt = 0;
   public HashMap<Integer, HashMap<Integer, Boolean>> graph = new HashMap<>();
   public HashMap<Integer, HashMap<Integer, Boolean>> pre = new HashMap<>();
-  public HashMap<Integer, HashMap<Integer, Boolean>> domainate = new HashMap<>();
+  public HashMap<Integer, HashMap<Integer, Boolean>> dominate = new HashMap<>();
+  public HashMap<Integer, Integer> Idom = new HashMap<>();
+  public HashMap<Integer, ArrayList<Integer>> frontier = new HashMap<>();
+  public HashMap<Integer, ArrayList<Integer>> Idom_up_down = new HashMap<>();
 
   public Mem2Reg(Composer _object) {
     object = _object;
@@ -26,9 +30,9 @@ public class Mem2Reg {
     Mem2RegAssignOneBlock();
     BuildGraph();
     BuildDominate();
+    BuildIdom();
+    BuildFrontier();
   }
-
-  int func_cnt = 0;
 
   void Mem2RegEmpty() {
     while (true) {
@@ -249,12 +253,12 @@ public class Mem2Reg {
       for (int value : to_init) {
         init_domain.put(value, null);
       }
-      domainate.put(key, init_domain);
+      dominate.put(key, init_domain);
     }
     for (int i = -1; i >= func_cnt; i--) {
       boolean update = true;
-      domainate.get(i).clear();
-      domainate.get(i).put(i, null);
+      dominate.get(i).clear();
+      dominate.get(i).put(i, null);
       while (update) {
         update = false;
         Queue<Integer> to_visit = new LinkedList<>();
@@ -264,17 +268,17 @@ public class Mem2Reg {
         while (!to_visit.isEmpty()) {
           int now = to_visit.poll();
           HashMap<Integer, Boolean> from = pre.get(now);
-          HashMap<Integer, Boolean> op = domainate.get(now);
+          HashMap<Integer, Boolean> op = dominate.get(now);
           int last = op.size();
           op.clear();
           ArrayList<Integer> from_point = new ArrayList<>();
           for (int value : from.keySet()) {
             from_point.add(value);
           }
-          for (int to_test : domainate.get(from_point.get(0)).keySet()) {
+          for (int to_test : dominate.get(from_point.get(0)).keySet()) {
             boolean flag = true;
             for (int j = 1; j < from_point.size(); j++) {
-              if (!domainate.get(from_point.get(j)).containsKey(to_test)) {
+              if (!dominate.get(from_point.get(j)).containsKey(to_test)) {
                 flag = false;
                 break;
               }
@@ -297,11 +301,79 @@ public class Mem2Reg {
   }
 
   void PrintDominate() {
-    for (Map.Entry<Integer, HashMap<Integer, Boolean>> value : domainate.entrySet()) {
+    for (Map.Entry<Integer, HashMap<Integer, Boolean>> value : dominate.entrySet()) {
       System.out.println(value.getKey() + ":");
       for (Map.Entry<Integer, Boolean> values : value.getValue().entrySet()) {
-        System.out.println(values.getKey());
+        System.out.print(values.getKey() + " ");
+      }
+      System.out.println();
+    }
+  }
+
+  void BuildIdom() {
+    for (Map.Entry<Integer, HashMap<Integer, Boolean>> entry : dominate.entrySet()) {
+      int size = entry.getValue().size();
+      for (int value : entry.getValue().keySet()) {
+        if ((dominate.get(value).size() + 1) == size) {
+          Idom.put(entry.getKey(), value);
+          if (!Idom_up_down.containsKey(value)) {
+            Idom_up_down.put(value, new ArrayList<>());
+          }
+          Idom_up_down.get(value).add(entry.getKey());
+          break;
+        }
       }
     }
+    return;
+  }
+
+  void PrintIdom() {
+    for (Map.Entry<Integer, ArrayList<Integer>> entry : Idom_up_down.entrySet()) {
+      System.out.print(entry.getKey() + ":");
+      for (int value : entry.getValue()) {
+        System.out.print(value + " ");
+      }
+      System.out.println();
+    }
+    return;
+  }
+
+  void BuildFrontier() {
+    for (int node : graph.keySet()) {
+      frontier.put(node, new ArrayList<>());
+    }
+    for (int node : graph.keySet()) {
+      HashMap<Integer, Boolean> res = new HashMap<>();
+      if (pre.containsKey(node)) {
+        for (int preds : pre.get(node).keySet()) {
+          for (int doms : dominate.get(preds).keySet()) {
+            res.put(doms, null);
+          }
+        }
+      }
+      for (int ndom : dominate.get(node).keySet()) {
+        if (res.containsKey(ndom)) {
+          if(ndom == node) {
+            continue;
+          }
+          res.remove(ndom);
+        }
+      }
+      for (int value : res.keySet()) {
+        frontier.get(value).add(node);
+      }
+    }
+    return;
+  }
+
+  void PrintFrontier() {
+    for (Map.Entry<Integer, ArrayList<Integer>> entry : frontier.entrySet()) {
+      System.out.print(entry.getKey() + ": ");
+      for (int value : entry.getValue()) {
+        System.out.print(value + " ");
+      }
+      System.out.println();
+    }
+    return;
   }
 }
