@@ -223,4 +223,23 @@ public class IRBin extends IRCode {
       op2 = new String(reg_value.get(op2));
     }
   }
+
+  @Override
+  public void UseDefCheck(HashMap<String, Boolean> def, HashMap<String, Boolean> use) {
+    try {
+      Integer.parseInt(op1);
+    } catch (NumberFormatException e) {
+      if (!def.containsKey(op1)) {
+        use.put(op1, null);
+      }
+    }
+    try {
+      Integer.parseInt(op2);
+    } catch (NumberFormatException e) {
+      if (!def.containsKey(op2)) {
+        use.put(op2, null);
+      }
+    }
+    def.put(target_reg, null);
+  }
 }

@@ -149,18 +149,41 @@ public class IRElement extends IRCode {
   }
 
   @Override
-  public void UpdateNames(HashMap<String, Stack<NameLabelPair>> variable_stack, HashMap<String, String> reg_value, int now_block) {
-    if(reg_value.containsKey(num1)) {
+  public void UpdateNames(HashMap<String, Stack<NameLabelPair>> variable_stack, HashMap<String, String> reg_value,
+      int now_block) {
+    if (reg_value.containsKey(num1)) {
       num1 = new String(reg_value.get(num1));
     }
-    if(reg_value.containsKey(num2)) {
+    if (reg_value.containsKey(num2)) {
       num2 = new String(reg_value.get(num2));
     }
-    if(variable_stack.containsKey(src)) {
+    if (variable_stack.containsKey(src)) {
       src = new String(variable_stack.get(src).peek().name);
     }
-    if(reg_value.containsKey(src)) {
+    if (reg_value.containsKey(src)) {
       src = new String(reg_value.get(src));
     }
+  }
+
+  @Override
+  public void UseDefCheck(HashMap<String, Boolean> def, HashMap<String, Boolean> use) {
+    if (!def.containsKey(src)) {
+      use.put(src, null);
+    }
+    try {
+      Integer.parseInt(num1);
+    } catch (NumberFormatException e) {
+      if (!def.containsKey(num1)) {
+        use.put(num1, null);
+      }
+    }
+    try {
+      Integer.parseInt(num2);
+    } catch (NumberFormatException e) {
+      if (!def.containsKey(num2)) {
+        use.put(num2, null);
+      }
+    }
+    def.put(output, null);
   }
 }

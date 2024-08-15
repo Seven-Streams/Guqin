@@ -80,4 +80,16 @@ public class Conditionjmp extends IRCode {
     }
     return;
   }
+
+  @Override
+  public void UseDefCheck(HashMap<String, Boolean> def, HashMap<String, Boolean> use) {
+    try {
+      Integer.parseInt(reg);
+    } catch (NumberFormatException e) {
+      if (!def.containsKey(reg)) {
+        use.put(reg, null);
+      }
+    }
+    return;
+  }
 }

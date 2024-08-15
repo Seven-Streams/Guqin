@@ -167,4 +167,18 @@ public class IRFuncall extends IRCode {
     }
     return;
   }
+
+  @Override
+  public void UseDefCheck(HashMap<String, Boolean> def, HashMap<String, Boolean> use) {
+    for (String res : reg) {
+      try {
+        Integer.parseInt(res);
+      } catch (NumberFormatException e) {
+        if(!def.containsKey(res)) {
+          use.put(res, null);
+        }
+      }
+    }
+    return;
+  }
 }

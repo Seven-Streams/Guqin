@@ -113,4 +113,13 @@ public class IRLoad extends IRCode {
   public boolean ToRemove(HashMap<String, Stack<NameLabelPair>> variable_stack) {
     return variable_stack.containsKey(src);
   }
+
+  @Override
+  public void UseDefCheck(HashMap<String, Boolean> def, HashMap<String, Boolean> use) {
+    if(!def.containsKey(src)) {
+      use.put(src, null);
+    }
+    def.put(des, null);
+    return;
+  }
 }

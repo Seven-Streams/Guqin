@@ -159,4 +159,13 @@ public class IRStore extends IRCode {
   public boolean ToRemove(HashMap<String, Stack<NameLabelPair>> variable_stack) {
     return variable_stack.containsKey(name);
   }
+
+  @Override
+  public void UseDefCheck(HashMap<String, Boolean> def, HashMap<String, Boolean> use) {
+    if(!def.containsKey(from)) {
+      use.put(from, null);
+    }
+    def.put(name, null);
+    return;
+  }
 }

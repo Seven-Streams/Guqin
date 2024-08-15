@@ -18,6 +18,8 @@ public class IRCode {
   public void UpdateSingleBlock(HashMap<String, String> single){}
   public boolean ToRemove(HashMap<String, Stack<NameLabelPair>> variable_stack){return false;}
   public void UpdateNames(HashMap<String, Stack<NameLabelPair>> variable_stack, HashMap<String, String> reg_value, int now_block){}
+  public void LiveCheck(HashMap<Integer, HashMap<String, Boolean>> liveness, int now){}
+  public void UseDefCheck(HashMap<String, Boolean> def, HashMap<String, Boolean> use) {}
   public static int now_s0 = 0;
   public static int func_num = 0;
   public static int sp_length = 0;
