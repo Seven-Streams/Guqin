@@ -56,6 +56,7 @@ public class Composer {
   }
 
   public void LLVMOutput() {
+    int func_cnt = 0;
     System.out.println("declare void @print(ptr %a)\r\n" +
         "declare void @printInt(i32 %b)\r\n" +
         "declare void @println(ptr %a)\r\n" +
@@ -101,13 +102,19 @@ public class Composer {
           }
         }
       }
-      if(code instanceof IRReturn) {
+      if (code instanceof IRReturn) {
         last_return = true;
       } else {
         last_return = false;
       }
       code.CodePrint();
       if (code instanceof IRFunc) {
+        System.out.println("b" + --func_cnt + ":");
+        if (reserved_phi.containsKey(func_cnt)) {
+          for (IRPhi phi : reserved_phi.get(func_cnt)) {
+            phi.CodePrint();
+          }
+        }
         IRFunc main_check = (IRFunc) code;
         for (IRCode all : alloc.get(main_check.name)) {
           all.CodePrint();
@@ -116,6 +123,14 @@ public class Composer {
         if (main_check.name.equals("main")) {
           for (IRCode _init : init) {
             _init.CodePrint();
+          }
+        }
+      }
+      if (code instanceof IRLabel) {
+        IRLabel label = (IRLabel) code;
+        if (reserved_phi.containsKey(label.label)) {
+          for (IRPhi phi : reserved_phi.get(label.label)) {
+            phi.CodePrint();
           }
         }
       }
@@ -206,8 +221,8 @@ public class Composer {
       if (generated.get(i) instanceof IRFunc) {
         IRFunc to_check = (IRFunc) (generated.get(i));
         if (to_check.name.equals("main")) {
-          for(IRCode chars: const_str) {
-            IRChararray to_init = (IRChararray)chars;
+          for (IRCode chars : const_str) {
+            IRChararray to_init = (IRChararray) chars;
             to_init.Init();
           }
           for (IRCode ini : init) {

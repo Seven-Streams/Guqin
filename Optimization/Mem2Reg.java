@@ -28,6 +28,7 @@ public class Mem2Reg {
   }
 
   public void Optim() {
+    Insert();
     RemoveNaiveUntouchable();
     Mem2RegEmpty();
     Mem2RegAssignOnce();
@@ -37,6 +38,36 @@ public class Mem2Reg {
     BuildIdom();
     BuildFrontier();
     ReservePhi();
+    RemoveAlloca();
+    // PrintFrontier();
+    // PrintReserve();
+  }
+
+  void Insert() {
+    for (int i = 0; i < object.generated.size(); i++) {
+      if (object.generated.get(i) instanceof IRFunc) {
+        IRFunc main_check = (IRFunc) object.generated.get(i);
+        if (main_check.name.equals("main")) {
+          object.generated.addAll(i + 1, object.init);
+          object.init.clear();
+        }
+      }
+    }
+  }
+
+  void CheckCode() {
+    for (IRCode code : object.init) {
+      if (code instanceof IRLabel) {
+        IRLabel label = (IRLabel) code;
+        System.out.println(label.label);
+      }
+    }
+    for (IRCode code : object.generated) {
+      if (code instanceof IRLabel) {
+        IRLabel label = (IRLabel) code;
+        System.out.println(label.label);
+      }
+    }
   }
 
   void Mem2RegEmpty() {
@@ -45,14 +76,14 @@ public class Mem2Reg {
       HashMap<String, Integer> def = new HashMap<>();
       for (ArrayList<IRCode> alloc_func : object.alloc.values()) {
         for (IRCode alloc_single : alloc_func) {
-          alloc_single.CheckTime(use, def);
+          alloc_single.CheckTime(use, def, object);
         }
       }
       for (IRCode code : object.generated) {
-        code.CheckTime(use, def);
+        code.CheckTime(use, def, object);
       }
       for (IRCode code : object.init) {
-        code.CheckTime(use, def);
+        code.CheckTime(use, def, object);
       }
       boolean remove = false;
       for (ArrayList<IRCode> alloc_func : object.alloc.values()) {
@@ -92,7 +123,7 @@ public class Mem2Reg {
     HashMap<String, Integer> use = new HashMap<>();
     HashMap<String, Integer> def = new HashMap<>();
     for (IRCode generate : object.generated) {
-      generate.CheckTime(use, def);
+      generate.CheckTime(use, def, object);
     }
     HashMap<String, String> replace = new HashMap<>();
     HashMap<String, Boolean> deprecated = new HashMap<>();
@@ -232,10 +263,11 @@ public class Mem2Reg {
 
   void PrintGraph() {
     for (Map.Entry<Integer, HashMap<Integer, Boolean>> value : graph.entrySet()) {
-      System.out.println(value.getKey() + ":");
+      System.out.print(value.getKey() + ":");
       for (Map.Entry<Integer, Boolean> values : value.getValue().entrySet()) {
-        System.out.println(values.getKey());
+        System.out.print(values.getKey() + " ");
       }
+      System.out.println();
     }
   }
 
@@ -387,6 +419,7 @@ public class Mem2Reg {
     int now = 0;
     for (int node : graph.keySet()) {
       reserved_variable.put(node, new HashMap<>());
+      object.reserved_phi.put(node, new ArrayList<>());
     }
     Queue<NameLabelPair> to_add = new LinkedList<>();
     for (IRCode code : object.generated) {
@@ -398,14 +431,17 @@ public class Mem2Reg {
       }
       if (code instanceof IRStore) {
         String target = new String(((IRStore) code).name);
-        NameLabelPair new_pair = new NameLabelPair(target, now);
-        to_add.add(new_pair);
+        IRStore store_ins = (IRStore)code;
+        if (store_ins.be_alloc) {
+          NameLabelPair new_pair = new NameLabelPair(target, now);
+          to_add.add(new_pair);
+        }
       }
     }
     while (!to_add.isEmpty()) {
       NameLabelPair res = to_add.poll();
-      reserved_variable.get(res.label).put(new String(res.name), null);
       for (int value : frontier.get(res.label)) {
+        reserved_variable.get(value).put(new String(res.name), null);
         NameLabelPair new_pair = new NameLabelPair(res.name, value);
         if (value != new_pair.label) {
           to_add.add(new_pair);
@@ -427,6 +463,19 @@ public class Mem2Reg {
     for (int i = -1; i >= func_cnt; i--) {
       RenamePhi(i, reg_value);
     }
+    for (ArrayList<IRCode> allocs : object.alloc.values()) {
+      allocs.clear();
+    }
+    boolean to_remove = false;
+    for (int i = object.generated.size() - 1; i >= 0; i--) {
+      if (to_remove) {
+        object.generated.remove(i + 1);
+      }
+      to_remove = object.generated.get(i).ToRemove(new_name);
+    }
+    if (to_remove) {
+      object.generated.remove(0);
+    }
     return;
   }
 
@@ -437,7 +486,7 @@ public class Mem2Reg {
     for (int i = 0; i < object.generated.size(); i++) {
       if (object.generated.get(i) instanceof IRFunc) {
         if (--phi_func == index) {
-          for (int j = i; j < object.generated.size(); j++) {
+          for (int j = i + 1; j < object.generated.size(); j++) {
             if (object.generated.get(j) instanceof IRFuncend || object.generated.get(j) instanceof IRLabel) {
               break;
             }
@@ -449,8 +498,25 @@ public class Mem2Reg {
             for (String to_update : reserved_variable.get(nxt).keySet()) {
               boolean flag = false;
               for (IRPhi phi : phis) {
-                if (phi.target.equals(to_update)) {
-                  phi.values.add(new String(new_name.get(to_update).peek().name));
+                if (phi.ori_name.equals(to_update)) {
+                  if (!new_name.get(to_update).empty()) {
+                    phi.values.add(new String(new_name.get(to_update).peek().name));
+                  } else {
+                    switch (phi.type) {
+                      case "i32": {
+                        phi.values.add("0");
+                        break;
+                      }
+                      case "i1": {
+                        phi.values.add("false");
+                        break;
+                      }
+                      default: {
+                        phi.values.add("null");
+                        break;
+                      }
+                    }
+                  }
                   phi.labels.add(index);
                   flag = true;
                   break;
@@ -459,14 +525,34 @@ public class Mem2Reg {
               if (!flag) {
                 IRPhi to_add = new IRPhi();
                 to_add.type = alloc_type.get(to_update);
-                to_add.target = new String(to_update);
-                to_add.values.add(new String(new_name.get(to_update).peek().name));
+                to_add.ori_name = new String(to_update);
+                if (!new_name.get(to_update).empty()) {
+                  to_add.values.add(new String(new_name.get(to_update).peek().name));
+                } else {
+                  switch (to_add.type) {
+                    case "i32": {
+                      to_add.values.add("0");
+                      break;
+                    }
+                    case "i1": {
+                      to_add.values.add("false");
+                      break;
+                    }
+                    default: {
+                      to_add.values.add("null");
+                      break;
+                    }
+                  }
+                }
                 to_add.labels.add(index);
+                phis.add(to_add);
               }
             }
           }
-          for (int dom : Idom_up_down.get(index)) {
-            RenamePhi(dom, reg_values);
+          if (Idom_up_down.containsKey(index)) {
+            for (int dom : Idom_up_down.get(index)) {
+              RenamePhi(dom, reg_values);
+            }
           }
           RenameClear(index);
           return;
@@ -475,19 +561,19 @@ public class Mem2Reg {
       if (object.generated.get(i) instanceof IRLabel) {
         IRLabel _label = (IRLabel) (object.generated.get(i));
         if (_label.label == index) {
-          for (int j = i; j < object.generated.size(); j++) {
-            ArrayList<IRPhi> to_update_phies = object.reserved_phi.get(index);
-            HashMap<String, Boolean> to_update = reserved_variable.get(index);
-            for (String phi_object : to_update.keySet()) {
-              String update_name = "%phi$" + ++phi_time;
-              new_name.get(phi_object).push(new NameLabelPair(update_name, index));
-              for (IRPhi to_update_phi : to_update_phies) {
-                if (to_update_phi.target.equals(phi_object)) {
-                  to_update_phi.target = new String(update_name);
-                  break;
-                }
+          ArrayList<IRPhi> to_update_phies = object.reserved_phi.get(index);
+          HashMap<String, Boolean> to_update = reserved_variable.get(index);
+          for (String phi_object : to_update.keySet()) {
+            String update_name = "%phi$" + ++phi_time;
+            new_name.get(phi_object).push(new NameLabelPair(update_name, index));
+            for (IRPhi to_update_phi : to_update_phies) {
+              if (to_update_phi.ori_name.equals(phi_object)) {
+                to_update_phi.target = new String(update_name);
+                break;
               }
             }
+          }
+          for (int j = i + 1; j < object.generated.size(); j++) {
             if (object.generated.get(j) instanceof IRFuncend || object.generated.get(j) instanceof IRLabel) {
               break;
             }
@@ -496,11 +582,28 @@ public class Mem2Reg {
           HashMap<Integer, Boolean> next = graph.get(index);
           for (int nxt : next.keySet()) {
             ArrayList<IRPhi> phis = object.reserved_phi.get(nxt);
-            for (String to_update : reserved_variable.get(nxt).keySet()) {
+            for (String to_update_string : reserved_variable.get(nxt).keySet()) {
               boolean flag = false;
               for (IRPhi phi : phis) {
-                if (phi.target.equals(to_update)) {
-                  phi.values.add(new String(new_name.get(to_update).peek().name));
+                if (phi.ori_name.equals(to_update_string)) {
+                  if (!new_name.get(to_update_string).empty()) {
+                    phi.values.add(new String(new_name.get(to_update_string).peek().name));
+                  } else {
+                    switch (phi.type) {
+                      case "i32": {
+                        phi.values.add("0");
+                        break;
+                      }
+                      case "i1": {
+                        phi.values.add("false");
+                        break;
+                      }
+                      default: {
+                        phi.values.add("null");
+                        break;
+                      }
+                    }
+                  }
                   phi.labels.add(index);
                   flag = true;
                   break;
@@ -508,15 +611,35 @@ public class Mem2Reg {
               }
               if (!flag) {
                 IRPhi to_add = new IRPhi();
-                to_add.type = alloc_type.get(to_update);
-                to_add.target = new String(to_update);
-                to_add.values.add(new String(new_name.get(to_update).peek().name));
+                to_add.type = alloc_type.get(to_update_string);
+                to_add.ori_name = new String(to_update_string);
+                if (!new_name.get(to_update_string).empty()) {
+                  to_add.values.add(new String(new_name.get(to_update_string).peek().name));
+                } else {
+                  switch (to_add.type) {
+                    case "i32": {
+                      to_add.values.add("0");
+                      break;
+                    }
+                    case "i1": {
+                      to_add.values.add("false");
+                      break;
+                    }
+                    default: {
+                      to_add.values.add("null");
+                      break;
+                    }
+                  }
+                }
                 to_add.labels.add(index);
+                phis.add(to_add);
               }
             }
           }
-          for (int dom : Idom_up_down.get(index)) {
-            RenamePhi(dom, reg_values);
+          if (Idom_up_down.containsKey(index)) {
+            for (int dom : Idom_up_down.get(index)) {
+              RenamePhi(dom, reg_values);
+            }
           }
           RenameClear(index);
           return;
@@ -532,5 +655,15 @@ public class Mem2Reg {
       }
     }
     return;
+  }
+
+  void PrintReserve() {
+    for (Map.Entry<Integer, HashMap<String, Boolean>> entry : reserved_variable.entrySet()) {
+      System.out.print(entry.getKey() + ":");
+      for (String value : entry.getValue().keySet()) {
+        System.out.print(value + " ");
+      }
+      System.out.println();
+    }
   }
 }

@@ -126,6 +126,7 @@ public class FuncNode extends ASTNode {
     }
     machine.now_name.add(new HashMap<>());
     ArrayList<IRCode> entry = new ArrayList<>();
+    ArrayList<IRCode> allocs = new ArrayList<>();
     for (ASTNode arg : args) {
       IdNode arg_id = (IdNode) arg;
       String tmp_string = "%reg$" + Integer.toString(++machine.tmp_time);
@@ -136,7 +137,7 @@ public class FuncNode extends ASTNode {
       String alloc_string = "%reg$" + Integer.toString(++machine.tmp_time);
       to_alloc.type = new String(this_type);
       to_alloc.des = alloc_string;
-      entry.add(to_alloc);
+      allocs.add(to_alloc);
       IRStore to_store = new IRStore();
       to_store.from = tmp_string;
       to_store.name = alloc_string;
@@ -151,6 +152,7 @@ public class FuncNode extends ASTNode {
     for (IRCode ent : entry) {
       machine.generated.add(ent);
     }
+    machine.alloc.put(new String(the_coooool_func.name), allocs);
     for (ASTNode stat : stats) {
       stat.GenerateIR(machine);
     }

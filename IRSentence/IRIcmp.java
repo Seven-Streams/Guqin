@@ -3,6 +3,7 @@ package IRSentence;
 import java.util.HashMap;
 import java.util.Stack;
 
+import Composer.Composer;
 import Optimization.NameLabelPair;
 
 public class IRIcmp extends IRCode {
@@ -136,7 +137,7 @@ public class IRIcmp extends IRCode {
   }
 
   @Override
-  public void CheckTime(HashMap<String, Integer> use, HashMap<String, Integer> def) {
+  public void CheckTime(HashMap<String, Integer> use, HashMap<String, Integer> def, Composer machine) {
     try {
       Integer.parseInt(op1);
     } catch (NumberFormatException e) {

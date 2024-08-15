@@ -3,6 +3,7 @@ package IRSentence;
 import java.util.HashMap;
 import java.util.Stack;
 
+import Composer.Composer;
 import Optimization.NameLabelPair;
 
 public class IRLoad extends IRCode {
@@ -37,7 +38,7 @@ public class IRLoad extends IRCode {
   }
 
   @Override
-  public void CheckTime(HashMap<String, Integer> use, HashMap<String, Integer> def) {
+  public void CheckTime(HashMap<String, Integer> use, HashMap<String, Integer> def, Composer machine) {
     try {
       Integer.parseInt(src);
     } catch (NumberFormatException e) {
@@ -106,5 +107,10 @@ public class IRLoad extends IRCode {
       src = new String(reg_value.get(src));
     }
     return;
+  }
+
+  @Override
+  public boolean ToRemove(HashMap<String, Stack<NameLabelPair>> variable_stack) {
+    return variable_stack.containsKey(src);
   }
 }

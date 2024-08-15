@@ -3,6 +3,7 @@ package IRSentence;
 import java.util.HashMap;
 import java.util.Stack;
 
+import Composer.Composer;
 import Optimization.NameLabelPair;
 
 public class Conditionjmp extends IRCode {
@@ -39,7 +40,7 @@ public class Conditionjmp extends IRCode {
   }
 
   @Override
-  public void CheckTime(HashMap<String, Integer> use, HashMap<String, Integer> def) {
+  public void CheckTime(HashMap<String, Integer> use, HashMap<String, Integer> def, Composer machine) {
     try {
       Integer.parseInt(reg);
     } catch (NumberFormatException e) {

@@ -3,6 +3,7 @@ package IRSentence;
 import java.util.HashMap;
 import java.util.Stack;
 
+import Composer.Composer;
 import Optimization.NameLabelPair;
 
 public class IRElement extends IRCode {
@@ -68,7 +69,7 @@ public class IRElement extends IRCode {
   }
 
   @Override
-  public void CheckTime(HashMap<String, Integer> use, HashMap<String, Integer> def) {
+  public void CheckTime(HashMap<String, Integer> use, HashMap<String, Integer> def, Composer machine) {
     try {
       Integer.parseInt(num1);
     } catch (NumberFormatException e) {

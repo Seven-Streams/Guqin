@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Stack;
 
+import Composer.Composer;
 import Optimization.NameLabelPair;
 
 public class IRPhi extends IRCode {
   public static int phi_cnt = 0;
   public String type = null;
   public String target = null;
+  public String ori_name = null;
   public ArrayList<Integer> labels = new ArrayList<>();
   public ArrayList<String> values = new ArrayList<>();
 
@@ -83,7 +85,7 @@ public class IRPhi extends IRCode {
   }
 
   @Override
-  public void CheckTime(HashMap<String, Integer> use, HashMap<String, Integer> def) {
+  public void CheckTime(HashMap<String, Integer> use, HashMap<String, Integer> def, Composer machine) {
     for (String value : values) {
       try {
         Integer.parseInt(value);

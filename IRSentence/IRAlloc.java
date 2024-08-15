@@ -2,6 +2,8 @@ package IRSentence;
 
 import java.util.HashMap;
 
+import Composer.Composer;
+
 public class IRAlloc extends IRCode {
   public String des = null;
   public String type = null;
@@ -30,7 +32,7 @@ public class IRAlloc extends IRCode {
   }
 
   @Override
-  public void CheckTime(HashMap<String, Integer> use, HashMap<String, Integer> def) {
+  public void CheckTime(HashMap<String, Integer> use, HashMap<String, Integer> def, Composer machine) {
     if(def.containsKey(des)) {
       def.put(des, def.get(des) + 1);
     } else {

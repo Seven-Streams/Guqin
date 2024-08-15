@@ -1,7 +1,6 @@
 package IRSentence;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class IRFunc extends IRCode {
   public String name = null;
@@ -61,20 +60,6 @@ public class IRFunc extends IRCode {
       for (int i = 8; i < names.size(); i++) {
         is_global.put(names.get(i), false);
         relative_addr.put(names.get(i), ((i - 8) * 4) + "(s0)");
-      }
-    }
-    return;
-  }
-
-  @Override
-  public void CheckTime(HashMap<String, Integer> use, HashMap<String, Integer> def) {
-    for (String name : names) {
-      try {
-        Integer.parseInt(name);
-      } catch (NumberFormatException e) {
-        if (def.containsKey(name)) {
-          def.put(name, 1);
-        }
       }
     }
     return;

@@ -2,14 +2,15 @@ package IRSentence;
 
 import java.util.HashMap;
 import java.util.Stack;
-
+import java.util.ArrayList;
+import Composer.Composer;
 import Optimization.NameLabelPair;
 
 public class IRStore extends IRCode {
   public String name = null;
   public String from = null;
   public String type = null;
-
+  public boolean be_alloc = false;
   @Override
   public void CodePrint() {
     System.out.println("store " + type + " " + from + ",ptr " + name);
@@ -53,18 +54,22 @@ public class IRStore extends IRCode {
   }
 
   @Override
-  public void CheckTime(HashMap<String, Integer> use, HashMap<String, Integer> def) {
+  public void CheckTime(HashMap<String, Integer> use, HashMap<String, Integer> def, Composer machine) {
     try {
       Integer.parseInt(name);
     } catch (NumberFormatException e) {
-      if (name.length() <= 4) {
-        if (def.containsKey(name)) {
-          def.put(name, def.get(name) + 1);
-        } else {
-          def.put(name, 1);
+        boolean is_alloc = false;
+        for(ArrayList<IRCode> allocs: machine.alloc.values()) {
+          for(IRCode alloc_raw: allocs) {
+            IRAlloc trans_alloc = (IRAlloc)alloc_raw;
+            if(trans_alloc.des.equals(name)) {
+              is_alloc = true;
+              break;
+            }
+          }
         }
-      } else {
-        if (name.contains("$")) {
+        be_alloc = is_alloc;
+        if (!is_alloc) {
           if (use.containsKey(name)) {
             use.put(name, use.get(name) + 1);
           } else {
@@ -77,7 +82,7 @@ public class IRStore extends IRCode {
             def.put(name, 1);
           }
         }
-      }
+      
     }
     try {
       Integer.parseInt(from);
@@ -148,5 +153,10 @@ public class IRStore extends IRCode {
       variable_stack.get(name).push(new NameLabelPair(from, now_block));
     }
     return;
+  }
+
+  @Override
+  public boolean ToRemove(HashMap<String, Stack<NameLabelPair>> variable_stack) {
+    return variable_stack.containsKey(name);
   }
 }
