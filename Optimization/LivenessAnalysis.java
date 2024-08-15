@@ -1,6 +1,10 @@
 package Optimization;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Queue;
+
 import IRSentence.*;
 import Composer.*;
 
@@ -11,6 +15,8 @@ public class LivenessAnalysis {
   public HashMap<Integer, HashMap<String, Boolean>> liveness = new HashMap<>();
   public HashMap<Integer, HashMap<String, Boolean>> use = new HashMap<>();
   public HashMap<Integer, HashMap<String, Boolean>> def = new HashMap<>();
+  public HashMap<Integer, HashMap<String, Boolean>> in = new HashMap<>();
+  public HashMap<Integer, HashMap<String, Boolean>> out = new HashMap<>();
 
   public LivenessAnalysis(Composer _machine) {
     machine = _machine;
@@ -97,11 +103,72 @@ public class LivenessAnalysis {
         res_use = new HashMap<>();
         now = move.num;
       }
-      if(code instanceof IRFuncend) {
+      if (code instanceof IRFuncend) {
         use.put(now, res_use);
         def.put(now, res_def);
       }
       code.UseDefCheck(res_def, res_use);
+    }
+    return;
+  }
+
+  void InOutCheck() {
+    ArrayList<Integer> start = new ArrayList<>();
+    for (int node : graph.keySet()) {
+      if (graph.get(node).isEmpty()) {
+        start.add(node);
+      }
+    }
+    Queue<Integer> check_list = new LinkedList<>();
+    for (int end : start) {
+      check_list.add(end);
+    }
+    while (!check_list.isEmpty()) {
+      boolean flag = false;
+      int to_check = check_list.poll();
+      HashMap<String, Boolean> res = new HashMap<>();
+      for (String out_v : out.get(to_check).keySet()) {
+        res.put(out_v, null);
+      }
+      for (String def_v : def.get(to_check).keySet()) {
+        res.remove(def_v);
+      }
+      if (!in.containsKey(to_check)) {
+        in.put(to_check, new HashMap<>());
+      }
+      HashMap<String, Boolean> to_operate = in.get(to_check);
+      for (String use_v : use.get(to_check).keySet()) {
+        if (!to_operate.containsKey(use_v)) {
+          to_operate.put(use_v, null);
+          flag = true;
+        }
+      }
+      for (String res_v : res.keySet()) {
+        if (!to_operate.containsKey(res_v)) {
+          to_operate.put(res_v, null);
+          flag = true;
+        }
+      }
+      if (flag) {
+        if (pre.containsKey(to_check)) {
+          for (int pre_v : pre.get(to_check).keySet()) {
+            if (!out.containsKey(pre_v)) {
+              out.put(pre_v, new HashMap<>());
+            }
+            boolean flag_2 = false;
+            HashMap<String, Boolean> out_check = out.get(pre_v);
+            for (String value : to_operate.keySet()) {
+              if(!out_check.containsKey(value)) {
+                out_check.put(value, null);
+                flag_2 = true;
+              }
+            }
+            if(flag_2) {
+              check_list.add(pre_v);
+            }
+          }
+        }
+      }
     }
     return;
   }

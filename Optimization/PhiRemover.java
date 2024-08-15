@@ -6,7 +6,7 @@ import Composer.*;
 import IRSentence.*;
 
 public class PhiRemover {
-  HashMap<FromToPair, ArrayList<PresudeMove>> moves = new HashMap<>();
+  HashMap<FromToPair, ArrayList<PseudoMove>> moves = new HashMap<>();
   Composer machine = null;
 
   public PhiRemover(Composer _machine) {
@@ -28,7 +28,7 @@ public class PhiRemover {
         IRPhi phi = (IRPhi) code;
         for (int i = 0; i < phi.labels.size(); i++) {
           FromToPair ftpair = new FromToPair(phi.labels.get(i), now);
-          PresudeMove move = new PresudeMove(phi.values.get(i), phi.target);
+          PseudoMove move = new PseudoMove(phi.values.get(i), phi.target);
           if (!moves.containsKey(ftpair)) {
             moves.put(ftpair, new ArrayList<>());
           }
@@ -65,7 +65,7 @@ public class PhiRemover {
             MoveBlock new_block = new MoveBlock();
             new_block.num = ++machine.label_number;
             new_block.to = ftpair.to;
-            for (PresudeMove op : moves.get(ftpair)) {
+            for (PseudoMove op : moves.get(ftpair)) {
               new_block.moves.add(op);
             }
             jmp.label = new_block.num;
@@ -79,7 +79,7 @@ public class PhiRemover {
             MoveBlock new_block = new MoveBlock();
             new_block.num = ++machine.label_number;
             new_block.to = ftpair.to;
-            for (PresudeMove op : moves.get(ftpair)) {
+            for (PseudoMove op : moves.get(ftpair)) {
               new_block.moves.add(op);
             }
             condtion_jmp.label1 = new_block.num;
@@ -90,7 +90,7 @@ public class PhiRemover {
             MoveBlock new_block = new MoveBlock();
             new_block.num = ++machine.label_number;
             new_block.to = ftpair2.to;
-            for (PresudeMove op : moves.get(ftpair2)) {
+            for (PseudoMove op : moves.get(ftpair2)) {
               new_block.moves.add(op);
             }
             condtion_jmp.label2 = new_block.num;
