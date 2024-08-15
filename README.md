@@ -14,7 +14,7 @@ Guqin is a kind of Chinese traditional musical instrument. For example, the famo
   - [x] Translate AST to LLVM IR
   - [x] Trsnslate IR to RISCV assemble language
 - [ ] Optimization
-  - [ ] Mem2Reg(I'm working HERE.)
+  - [x] Mem2Reg(I'm working HERE.)
   - [ ] Register Allocation
   - [ ] to be continued...
 

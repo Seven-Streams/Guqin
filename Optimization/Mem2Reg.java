@@ -40,9 +40,26 @@ public class Mem2Reg {
     BuildFrontier();
     ReservePhi();
     RemoveAlloca();
-    // PrintDominate();
-    // PrintFrontier();
-    // PrintReserve();
+    PhiReOrder();
+  }
+
+  void PhiReOrder() {
+    int func = 0;
+    for (int i = 0; i < object.generated.size(); i++) {
+      if (object.generated.get(i) instanceof IRFunc) {
+        for (IRPhi code : object.reserved_phi.get(--func)) {
+          object.generated.add(i + 1, code);
+        }
+        object.reserved_phi.get(func).clear();
+      }
+      if (object.generated.get(i) instanceof IRLabel) {
+        IRLabel label = (IRLabel) (object.generated.get(i));
+        for (IRPhi code : object.reserved_phi.get(label.label)) {
+          object.generated.add(i + 1, code);
+        }
+        object.reserved_phi.get(label.label).clear();
+      }
+    }
   }
 
   void Insert() {
