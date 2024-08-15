@@ -22,6 +22,7 @@ public class Mem2Reg {
   public HashMap<Integer, ArrayList<Integer>> Idom_up_down = new HashMap<>();
   public HashMap<String, Stack<NameLabelPair>> new_name = new HashMap<>();
   public HashMap<String, String> alloc_type = new HashMap<>();
+  public HashMap<Integer, Boolean> visit = new HashMap<>();
 
   public Mem2Reg(Composer _object) {
     object = _object;
@@ -39,6 +40,7 @@ public class Mem2Reg {
     BuildFrontier();
     ReservePhi();
     RemoveAlloca();
+    // PrintDominate();
     // PrintFrontier();
     // PrintReserve();
   }
@@ -431,7 +433,7 @@ public class Mem2Reg {
       }
       if (code instanceof IRStore) {
         String target = new String(((IRStore) code).name);
-        IRStore store_ins = (IRStore)code;
+        IRStore store_ins = (IRStore) code;
         if (store_ins.be_alloc) {
           NameLabelPair new_pair = new NameLabelPair(target, now);
           to_add.add(new_pair);
@@ -443,7 +445,7 @@ public class Mem2Reg {
       for (int value : frontier.get(res.label)) {
         reserved_variable.get(value).put(new String(res.name), null);
         NameLabelPair new_pair = new NameLabelPair(res.name, value);
-        if (value != new_pair.label) {
+        if (res.label != new_pair.label) {
           to_add.add(new_pair);
         }
       }
@@ -482,6 +484,7 @@ public class Mem2Reg {
   HashMap<String, String> value = new HashMap<>();
 
   void RenamePhi(int index, HashMap<String, String> reg_values) {
+    visit.put(index, null);
     int phi_func = 0;
     for (int i = 0; i < object.generated.size(); i++) {
       if (object.generated.get(i) instanceof IRFunc) {
@@ -549,9 +552,11 @@ public class Mem2Reg {
               }
             }
           }
-          if (Idom_up_down.containsKey(index)) {
-            for (int dom : Idom_up_down.get(index)) {
-              RenamePhi(dom, reg_values);
+          if (graph.containsKey(index)) {
+            for (int dom : graph.get(index).keySet()) {
+              if (!visit.containsKey(dom)) {
+                RenamePhi(dom, reg_values);
+              }
             }
           }
           RenameClear(index);
@@ -636,9 +641,11 @@ public class Mem2Reg {
               }
             }
           }
-          if (Idom_up_down.containsKey(index)) {
-            for (int dom : Idom_up_down.get(index)) {
-              RenamePhi(dom, reg_values);
+          if (graph.containsKey(index)) {
+            for (int dom : graph.get(index).keySet()) {
+              if (!visit.containsKey(dom)) {
+                RenamePhi(dom, reg_values);
+              }
             }
           }
           RenameClear(index);
