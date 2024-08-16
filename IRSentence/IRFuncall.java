@@ -174,8 +174,29 @@ public class IRFuncall extends IRCode {
       try {
         Integer.parseInt(res);
       } catch (NumberFormatException e) {
-        if(!def.containsKey(res)) {
-          use.put(res, null);
+        if (CheckLit(res)) {
+          if (!def.containsKey(res)) {
+            use.put(res, null);
+          }
+        }
+      }
+    }
+    return;
+  }
+
+  @Override
+  public void PreColor(HashMap<String, Integer> precolor) {
+    int cnt = 10;
+    for (String res : reg) {
+      try {
+        Integer.parseInt(res);
+      } catch (NumberFormatException e) {
+        if (CheckLit(res)) {
+          if (cnt <= 17) {
+            precolor.put(res, cnt++);
+          } else {
+            precolor.put(res, -1);
+          }
         }
       }
     }

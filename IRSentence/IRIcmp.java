@@ -141,28 +141,34 @@ public class IRIcmp extends IRCode {
     try {
       Integer.parseInt(op1);
     } catch (NumberFormatException e) {
-      if (use.containsKey(op1)) {
-        use.put(op1, use.get(op1) + 1);
-      } else {
-        use.put(op1, 1);
+      if (CheckLit(op1)) {
+        if (use.containsKey(op1)) {
+          use.put(op1, use.get(op1) + 1);
+        } else {
+          use.put(op1, 1);
+        }
       }
     }
     try {
       Integer.parseInt(op2);
     } catch (NumberFormatException e) {
-      if (use.containsKey(op2)) {
-        use.put(op2, use.get(op2) + 1);
-      } else {
-        use.put(op2, 1);
+      if (CheckLit(op2)) {
+        if (use.containsKey(op2)) {
+          use.put(op2, use.get(op2) + 1);
+        } else {
+          use.put(op2, 1);
+        }
       }
     }
     try {
       Integer.parseInt(target_reg);
     } catch (NumberFormatException e) {
-      if (def.containsKey(target_reg)) {
-        def.put(target_reg, def.get(target_reg) + 1);
-      } else {
-        def.put(target_reg, 1);
+      if (CheckLit(target_reg)) {
+        if (def.containsKey(target_reg)) {
+          def.put(target_reg, def.get(target_reg) + 1);
+        } else {
+          def.put(target_reg, 1);
+        }
       }
     }
     return;
@@ -217,14 +223,14 @@ public class IRIcmp extends IRCode {
     try {
       Integer.parseInt(op1);
     } catch (NumberFormatException e) {
-      if (!def.containsKey(op1)) {
+      if ((!def.containsKey(op1)) && CheckLit(op1)) {
         use.put(op1, null);
       }
     }
     try {
       Integer.parseInt(op2);
     } catch (NumberFormatException e) {
-      if (!def.containsKey(op2)) {
+      if ((!def.containsKey(op2)) && CheckLit(op2)) {
         use.put(op2, null);
       }
     }

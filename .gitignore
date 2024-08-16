@@ -7,6 +7,7 @@ tools
 tutorial
 /.vscode
 /REIMU
+/deprecated
 /lib
 guqin.interp
 guqin.tokens

@@ -1,5 +1,4 @@
 package IRSentence;
-
 import java.util.HashMap;
 import java.util.Stack;
 import Composer.*;
@@ -23,6 +22,10 @@ public class IRCode {
   public static int now_s0 = 0;
   public static int func_num = 0;
   public static int sp_length = 0;
+  public int sentence_number = 0;
   public static HashMap<String, Boolean> is_global = new HashMap<>();
   public static HashMap<String, String> relative_addr = new HashMap<>();
+  public boolean CheckLit(String to_check) {
+    return(!((to_check.equals("true")) || to_check.equals("false") || to_check.equals("null")));
+  }
 }

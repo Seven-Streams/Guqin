@@ -54,10 +54,12 @@ public class IRReturn extends IRCode {
     try {
       Integer.parseInt(reg);
     } catch (NumberFormatException e) {
-      if (use.containsKey(reg)) {
-        use.put(reg, use.get(reg) + 1);
-      } else {
-        use.put(reg, 1);
+      if (CheckLit(reg)) {
+        if (use.containsKey(reg)) {
+          use.put(reg, use.get(reg) + 1);
+        } else {
+          use.put(reg, 1);
+        }
       }
     }
     return;
@@ -93,10 +95,10 @@ public class IRReturn extends IRCode {
 
   @Override
   public void UseDefCheck(HashMap<String, Boolean> def, HashMap<String, Boolean> use) {
-    try{
+    try {
       Integer.parseInt(reg);
-    }catch(NumberFormatException e) {
-      if(!def.containsKey(reg)) {
+    } catch (NumberFormatException e) {
+      if ((!def.containsKey(reg)) && (CheckLit(reg))) {
         use.put(reg, null);
       }
     }
