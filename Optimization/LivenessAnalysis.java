@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
-
+import java.util.Stack;
 import IRSentence.*;
 import Composer.*;
 
@@ -17,6 +17,7 @@ public class LivenessAnalysis {
   public HashMap<Integer, HashMap<String, Boolean>> def = new HashMap<>();
   public HashMap<Integer, HashMap<String, Boolean>> in = new HashMap<>();
   public HashMap<Integer, HashMap<String, Boolean>> out = new HashMap<>();
+  public HashMap<String, HashMap<String, Boolean>> conflict_graph = new HashMap<>();
 
   public LivenessAnalysis(Composer _machine) {
     machine = _machine;
@@ -158,13 +159,134 @@ public class LivenessAnalysis {
             boolean flag_2 = false;
             HashMap<String, Boolean> out_check = out.get(pre_v);
             for (String value : to_operate.keySet()) {
-              if(!out_check.containsKey(value)) {
+              if (!out_check.containsKey(value)) {
                 out_check.put(value, null);
                 flag_2 = true;
               }
             }
-            if(flag_2) {
+            if (flag_2) {
               check_list.add(pre_v);
+            }
+          }
+        }
+      }
+    }
+    return;
+  }
+
+  void BuildConflictGraph() {
+    int func_cnt = 0;
+    for (int i = 0; i < machine.generated.size(); i++) {
+      if (machine.generated.get(i) instanceof IRFunc) {
+        --func_cnt;
+        Stack<IRCode> to_operate = new Stack<>();
+        for (int j = i; j < machine.generated.size(); j++) {
+          if (machine.generated.get(j) instanceof IRFunc || machine.generated.get(j) instanceof IRLabel
+              || machine.generated.get(j) instanceof MoveBlock) {
+            break;
+          } else {
+            to_operate.add(machine.generated.get(j));
+            i++;
+          }
+        }
+        HashMap<String, Boolean> now_out = new HashMap<>();
+        for (String out_v : out.get(func_cnt).keySet()) {
+          now_out.put(out_v, null);
+        }
+        HashMap<String, Boolean> def_res = new HashMap<>();
+        HashMap<String, Boolean> use_res = new HashMap<>();
+        while (!to_operate.empty()) {
+          IRCode op = to_operate.pop();
+          def_res.clear();
+          use_res.clear();
+          op.UseDefCheck(def_res, use_res);
+          for(String now_def:def_res.keySet()) {
+            now_out.remove(now_def);
+            if(!conflict_graph.containsKey(now_def)) {
+              conflict_graph.put(now_def, new HashMap<>());
+            }
+            for(String out_v:now_out.keySet()) {
+              if(out_v.equals(now_def)) {
+                continue;
+              }
+              if(!conflict_graph.containsKey(out_v)) {
+                conflict_graph.put(out_v, new HashMap<>());
+              }
+              if(!conflict_graph.get(out_v).containsKey(now_def)) {
+                conflict_graph.get(out_v).put(now_def, false);
+                conflict_graph.get(now_def).put(out_v, false);
+              }
+            }
+          }
+          for(String now_use:use_res.keySet()) {
+            now_out.remove(now_use);
+          }
+        }
+      }
+      if (machine.generated.get(i) instanceof IRLabel) {
+        int now = ((IRLabel)(machine.generated.get(i))).label;
+        Stack<IRCode> to_operate = new Stack<>();
+        for (int j = i; j < machine.generated.size(); j++) {
+          if (machine.generated.get(j) instanceof IRFunc || machine.generated.get(j) instanceof IRLabel
+              || machine.generated.get(j) instanceof MoveBlock) {
+            break;
+          } else {
+            to_operate.add(machine.generated.get(j));
+            i++;
+          }
+        }
+        HashMap<String, Boolean> now_out = new HashMap<>();
+        for (String out_v : out.get(now).keySet()) {
+          now_out.put(out_v, null);
+        }
+        HashMap<String, Boolean> def_res = new HashMap<>();
+        HashMap<String, Boolean> use_res = new HashMap<>();
+        while (!to_operate.empty()) {
+          IRCode op = to_operate.pop();
+          def_res.clear();
+          use_res.clear();
+          op.UseDefCheck(def_res, use_res);
+          for(String now_def:def_res.keySet()) {
+            now_out.remove(now_def);
+            if(!conflict_graph.containsKey(now_def)) {
+              conflict_graph.put(now_def, new HashMap<>());
+            }
+            for(String out_v:now_out.keySet()) {
+              if(out_v.equals(now_def)) {
+                continue;
+              }
+              if(!conflict_graph.containsKey(out_v)) {
+                conflict_graph.put(out_v, new HashMap<>());
+              }
+              if(!conflict_graph.get(out_v).containsKey(now_def)) {
+                conflict_graph.get(out_v).put(now_def, false);
+                conflict_graph.get(now_def).put(out_v, false);
+              }
+            }
+          }
+          for(String now_use:use_res.keySet()) {
+            now_out.remove(now_use);
+          }
+        }
+      }
+      if (machine.generated.get(i) instanceof MoveBlock) {
+        MoveBlock move = (MoveBlock) machine.generated.get(i);
+        for (PseudoMove move_op : move.moves) {
+          if (!conflict_graph.containsKey(move_op.des)) {
+            conflict_graph.put(move_op.des, new HashMap<>());
+          }
+          for (String out_v : out.get(move.num).keySet()) {
+            if (!conflict_graph.containsKey(out_v)) {
+              conflict_graph.put(out_v, new HashMap<>());
+            }
+            if (!out_v.equals(move_op.des)) {
+              if (out_v.equals(move_op.src)) {
+                conflict_graph.get(out_v).put(move_op.des, true);
+                conflict_graph.get(move_op.des).put(out_v, true);
+              } else { // Move related
+                conflict_graph.get(out_v).put(move_op.des, false);
+                conflict_graph.get(move_op.des).put(out_v, false);
+              }
             }
           }
         }
