@@ -1,26 +1,33 @@
 package Optimization;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.Map;
+import java.util.PriorityQueue;
+
 import IRSentence.*;
 import Composer.*;
 
 public class LivenessAnalysis {
   Composer machine = null;
-  int sentence_number = 0;
+  int number = 0;
   int func_cnt = 0;
   public HashMap<Integer, HashMap<Integer, Boolean>> graph = new HashMap<>();
   public HashMap<Integer, HashMap<Integer, Boolean>> pre = new HashMap<>();
   public HashMap<Integer, HashMap<String, Boolean>> liveness = new HashMap<>();
-  public HashMap<Integer, HashMap<String, Boolean>> use = new HashMap<>();
-  public HashMap<Integer, HashMap<String, Boolean>> def = new HashMap<>();
-  public HashMap<Integer, HashMap<String, Boolean>> in = new HashMap<>();
-  public HashMap<Integer, HashMap<String, Boolean>> out = new HashMap<>();
+  public HashMap<String, Integer> start = new HashMap<>();
+  public HashMap<String, Integer> end = new HashMap<>();
+  public HashMap<Integer, Boolean> visit = new HashMap<>();
   public HashMap<Integer, Integer> block_entries = new HashMap<>();
+  public PriorityQueue<Interval> intervals = new PriorityQueue<>(new Interval().new IntervalComparator());
   public LivenessAnalysis(Composer _machine) {
     machine = _machine;
+  }
+
+  public void Allocator() {
+    BuildGraph();
+    NumberIns();
+    GetIntervals();
+    SortingIntervals();
   }
 
   void BuildGraph() {
@@ -79,107 +86,64 @@ public class LivenessAnalysis {
     return;
   }
 
-  void UseDefCheck() {
-    use.clear();
-    def.clear();
-    int func = 0;
-    int now = 0;
-    HashMap<String, Boolean> res_def = null;
-    HashMap<String, Boolean> res_use = null;
-    for (IRCode code : machine.generated) {
-      if (code instanceof IRLabel) {
-        IRLabel label = (IRLabel) code;
-        res_def = new HashMap<>();
-        res_use = new HashMap<>();
-        now = label.label;
+  void NumberIns() {
+    for (int i = -1; i >= func_cnt; i--) {
+      NumberBlocks(i);
+    }
+  }
+
+  void NumberBlocks(int index) {
+    int begin = block_entries.get(index);
+    visit.put(index, null);
+    machine.generated.get(begin).sentence_number = ++number;
+    for (int i = begin + 1; i < machine.generated.size(); i++) {
+      if (machine.generated.get(i) instanceof IRLabel || machine.generated.get(i) instanceof IRFunc
+          || machine.generated.get(i) instanceof MoveBlock) {
+        break;
+      } else {
+        machine.generated.get(i).sentence_number = ++number;
       }
-      if (code instanceof IRFunc) {
-        if (res_def != null) {
-          use.put(now, res_use);
-          def.put(now, res_def);
-        }
-        res_def = new HashMap<>();
-        res_use = new HashMap<>();
-        now = --func;
+    }
+    for (int nxt : graph.get(index).keySet()) {
+      if (!visit.containsKey(nxt)) {
+        NumberBlocks(nxt);
       }
-      if (code instanceof MoveBlock) {
-        MoveBlock move = (MoveBlock) code;
-        use.put(now, res_use);
-        def.put(now, res_def);
-        res_def = new HashMap<>();
-        res_use = new HashMap<>();
-        now = move.num;
-      }
-      if (code instanceof IRFuncend) {
-        use.put(now, res_use);
-        def.put(now, res_def);
-      }
-      code.UseDefCheck(res_def, res_use);
     }
     return;
   }
 
-  void InOutCheck() {
-    in.clear();
-    out.clear();
-    ArrayList<Integer> start = new ArrayList<>();
-    for (int node : graph.keySet()) {
-      if (graph.get(node).isEmpty()) {
-        start.add(node);
-      }
-    }
-    Queue<Integer> check_list = new LinkedList<>();
-    for (int end : start) {
-      check_list.add(end);
-    }
-    while (!check_list.isEmpty()) {
-      boolean flag = false;
-      int to_check = check_list.poll();
-      HashMap<String, Boolean> res = new HashMap<>();
-      for (String out_v : out.get(to_check).keySet()) {
-        res.put(out_v, null);
-      }
-      for (String def_v : def.get(to_check).keySet()) {
-        res.remove(def_v);
-      }
-      if (!in.containsKey(to_check)) {
-        in.put(to_check, new HashMap<>());
-      }
-      HashMap<String, Boolean> to_operate = in.get(to_check);
-      for (String use_v : use.get(to_check).keySet()) {
-        if (!to_operate.containsKey(use_v)) {
-          to_operate.put(use_v, null);
-          flag = true;
+  void GetIntervals() {
+    HashMap<String, Boolean> use = new HashMap<>();
+    HashMap<String, Boolean> def = new HashMap<>();
+    for (IRCode code : machine.generated) {
+      code.UseDefCheck(def, use);
+      for (String def_v : def.keySet()) {
+        if (!start.containsKey(def_v)) {
+          start.put(def_v, code.sentence_number);
+        } else {
+          if (start.get(def_v) > code.sentence_number) {
+            start.put(def_v, code.sentence_number);
+          }
         }
       }
-      for (String res_v : res.keySet()) {
-        if (!to_operate.containsKey(res_v)) {
-          to_operate.put(res_v, null);
-          flag = true;
-        }
-      }
-      if (flag) {
-        if (pre.containsKey(to_check)) {
-          for (int pre_v : pre.get(to_check).keySet()) {
-            if (!out.containsKey(pre_v)) {
-              out.put(pre_v, new HashMap<>());
-            }
-            boolean flag_2 = false;
-            HashMap<String, Boolean> out_check = out.get(pre_v);
-            for (String value : to_operate.keySet()) {
-              if (!out_check.containsKey(value)) {
-                out_check.put(value, null);
-                flag_2 = true;
-              }
-            }
-            if (flag_2) {
-              check_list.add(pre_v);
-            }
+      for (String use_v : use.keySet()) {
+        if (!end.containsKey(use_v)) {
+          end.put(use_v, code.sentence_number);
+        } else {
+          if (start.get(use_v) < code.sentence_number) {
+            start.put(use_v, code.sentence_number);
           }
         }
       }
     }
     return;
   }
-
+  
+  void SortingIntervals() {
+    for(Map.Entry<String, Integer> entry: start.entrySet()) {
+      Interval new_interval = new Interval(entry.getValue(), end.get(entry.getKey()), entry.getKey());
+      intervals.add(new_interval);
+    }
+    return;
+  }
 }

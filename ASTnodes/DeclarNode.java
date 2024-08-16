@@ -106,7 +106,7 @@ public class DeclarNode extends StatNode {
             }
           }
         }
-        machine.generated.add(to_add);
+        machine.global.add(to_add);
         if (Initial.containsKey(i)) {
           machine.generated = machine.init;
           Info init_info = Initial.get(i).GenerateIR(machine);
