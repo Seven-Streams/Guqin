@@ -121,7 +121,7 @@ public class IRReturn extends IRCode {
         } catch (NumberFormatException e) {
           int num = registers.get(reg);
           if(num >= 0) {
-            System.out.println("mv " + register_name.get(num) + ", " + "a0");
+            System.out.println("mv " + "a0, " + register_name.get(num));
           } else {
             System.out.println("lw a0, " + (num * 4) + "(s0)");
           }

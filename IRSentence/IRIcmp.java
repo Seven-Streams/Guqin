@@ -236,4 +236,101 @@ public class IRIcmp extends IRCode {
     }
     def.put(target_reg, null);
   }
+
+  @Override
+  public void CodegenWithOptim(HashMap<String, Integer> registers, HashMap<Integer, String> register_name)
+      throws Exception {
+    String addr1 = "t0";
+    String addr2 = "t1";
+    if (op1.equals("true") || op1.equals("false") || op1.equals("null")) {
+      if (op1.equals("true")) {
+        System.out.println("li t0, 1");
+      } else {
+        System.out.println("li, t0, 0");
+      }
+    } else {
+      try {
+        int ins_1 = Integer.parseInt(op1);
+        if ((ins_1 >> 12) != 0) {
+          System.out.println("lui t0, " + (ins_1 >> 12));
+          System.out.println("addi t0, t0, " + (ins_1 & 0x00000fff));
+        } else {
+          System.out.println("li t0, " + ins_1);
+        }
+      } catch (NumberFormatException e) {
+        int reg_1 = registers.get(op1);
+        if (reg_1 >= 0) {
+          addr1 = register_name.get(reg_1);
+        } else {
+          System.out.println("lw t0, " + (reg_1 * 4) + "(s0)");
+        }
+      }
+    }
+    if (op2.equals("true") || op2.equals("false") || op2.equals("null")) {
+      if (op2.equals("true")) {
+        System.out.println("li t1, 1 ");
+      } else {
+        System.out.println("li, t1, 0");
+      }
+    } else {
+      try {
+        int ins_2 = Integer.parseInt(op2);
+        if ((ins_2 >> 12) != 0) {
+          System.out.println("lui t1, " + (ins_2 >> 12));
+          System.out.println("addi t1, t1, " + (ins_2 & 0x00000fff));
+        } else {
+          System.out.println("li t1, " + ins_2);
+        }
+      } catch (NumberFormatException e) {
+        int reg_2 = registers.get(op2);
+        if (reg_2 >= 0) {
+          addr1 = register_name.get(reg_2);
+        } else {
+          System.out.println("lw t1, " + (reg_2 * 4) + "(s0)");
+        }
+      }
+    }
+    String target_str = "t0";
+    int target_value = registers.get(target_reg);
+    if (target_value >= 0) {
+      target_str = register_name.get(target_value);
+    }
+    switch (symbol) {
+      case ("=="): {
+        System.out.println("sub t0, " + addr1 + ", " + addr2);
+        System.out.println("seqz " + target_str + ", t0");
+        break;
+      }
+      case ("!="): {
+        System.out.println("sub t0, " + addr1 + ", " + addr2);
+        System.out.println("snez " + target_str + ", t0");
+        break;
+      }
+      case (">"): {
+        System.out.println("slt " + target_str + ", " + addr2 + ", " + addr1);
+        break;
+      }
+      case ("<"): {
+        System.out.println("slt " + target_str + ", " + addr1 + ", " + addr2);
+        break;
+      }
+      case (">="): {
+        System.out.println("slt t0, " + addr1 + ", " + addr2);
+        System.out.println("xori " + target_str + ", t0, 1");
+        break;
+      }
+      case ("<="): {
+        System.out.println("slt t0, " + addr2 + ", " + addr1);
+        System.out.println("xori " + target_str + ", t0, 1");
+        break;
+      }
+      default: {
+        throw new Exception("Unexpected Symbol.");
+      }
+    }
+    if(target_value < 0) {
+      System.out.println("sw t0, " + (target_value * 4) + "(s0)");
+    }
+    return;
+  }
 }

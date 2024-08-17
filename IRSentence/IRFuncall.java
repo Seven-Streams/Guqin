@@ -184,4 +184,82 @@ public class IRFuncall extends IRCode {
     return;
   }
 
+  @Override
+  public void CodegenWithOptim(HashMap<String, Integer> registers, HashMap<Integer, String> register_name)
+      throws Exception {
+    if (reg.size() > 8) {
+      for (int i = 8; i < reg.size(); i++) {
+        String str = "t0";
+        try {
+          int num = Integer.parseInt(reg.get(i));
+          if ((num >> 12) != 0) {
+            System.out.println("lui t0" + ", " + (num >> 12));
+            System.out.println("addi t0, t0, " + (num & 0x00000fff));
+          } else {
+            System.out.println("li t0, " + num);
+          }
+        } catch (NumberFormatException e) {
+          if (!is_global.containsKey(reg.get(i))) {
+            int value = registers.get(reg.get(i));
+            if (value >= 0) {
+              str = register_name.get(value);
+            } else {
+              System.out.println("lw t0, " + (4 * value) + "(s0)");
+            }
+          } else {
+            System.out.println("lui t0, %hi(" + reg.get(i).substring(1) + ")");
+            System.out.println("addi t0, t0, " + "%lo(" + reg.get(i).substring(1) + ")");
+          }
+        }
+        System.out.println("sw " + str + ", " + ((i - 8) * 4) + "(sp)");
+      }
+    }
+    int extra = Integer.max(0, reg.size() - 8);
+    for (int i = 0; i < 8; i++) {
+      System.out.println("sw a" + i + "," + ((i + extra) * 4) + "(sp)");
+    }
+    for (int i = 2; i <= 6; i++) {
+      System.out.println("sw t" + i + ", " + ((i + extra + 6) * 4) + "(sp)");
+    }
+    int total = Integer.min(8, reg.size());
+    for (int i = 0; i < total; i++) {
+      try {
+        int num = Integer.parseInt(reg.get(i));
+        if ((num >> 12) != 0) {
+          System.out.println("lui a" + i + ", " + (num >> 12));
+          System.out.println("addi a" + i + ", a" + i + ", " + (num & 0x00000fff));
+        } else {
+          System.out.println("li a" + i + ", " + num);
+        }
+      } catch (NumberFormatException e) {
+        if (!is_global.containsKey(reg.get(i))) {
+          int value = registers.get(reg.get(i));
+          if (value >= 0) {
+            System.out.println("mv a" + i + ", " + register_name.get(value));
+          } else {
+            System.out.println("lw a" + i + ", " + (4 * value) + "(s0)");
+          }
+        } else {
+          System.out.println("lui a" + i + ", %hi(" + reg.get(i).substring(1) + ")");
+          System.out.println("addi a" + i + ", a" + i + ", %lo(" + reg.get(i).substring(1) + ")");
+        }
+      }
+    }
+    System.out.println("call " + func_name);
+    if (target_reg != null) {
+      int value = registers.get(target_reg);
+      if(value >= 0) {
+        System.out.println("mv " + register_name.get(value) + ", a0");
+      } else {
+        System.out.println("sw a0, " + (value * 4) + "(s0)");
+      }
+    }
+    for (int i = 0; i < 8; i++) {
+      System.out.println("lw a" + i + "," + ((i + extra) * 4) + "(sp)");
+    }
+    for (int i = 2; i <= 6; i++) {
+      System.out.println("lw t" + i + ", " + ((i + extra + 6) * 4) + "(sp)");
+    }
+    return;
+  }
 }

@@ -68,8 +68,60 @@ public class IRFunc extends IRCode {
 
   @Override
   public void UseDefCheck(HashMap<String, Boolean> def, HashMap<String, Boolean> use) {
-    for(String name : names) {
+    for (String name : names) {
       def.put(name, null);
+    }
+    return;
+  }
+
+  @Override
+  public void CodegenWithOptim(HashMap<String, Integer> registers, HashMap<Integer, String> register_name)
+      throws Exception {
+    func_num++;
+    System.out.println("");
+    System.out.println(name + ":");
+    size *= 4;
+    size += 12;
+    size /= 16;
+    size *= 16;
+    now_s0 = 8;
+    sp_length = size;
+    if ((size >> 12) == 0) {
+      System.out.println("addi sp, sp, -" + size);
+    } else {
+      System.out.println("lui a0, " + (size >> 12));
+      System.out.println("addi a0, a0, " + (size & 0x00000fff));
+      System.out.println("sub sp, sp, a0");
+    }
+    System.out.println("sw ra, " + (size - 4) + "(sp)");
+    for (int i = 0; i <= 11; i++) {
+      System.out.println("sw s" + i + ", " + (size - 8 - 4 * i) + "(sp)");
+    }
+    System.out.println("addi s0, sp, " + size);
+    if (names.size() < 8) {
+      for (int i = 0; i < names.size(); i++) {
+        int value = registers.get(names.get(i));
+        if (value >= 0) {
+          System.out.println("mv " + register_name.get(value) + ", " + "a" + i);
+        }
+        System.out.println("sw a" + i + " , " + (value * 4) + "(s0)");
+      }
+    } else {
+      for (int i = 0; i < 8; i++) {
+        int value = registers.get(names.get(i));
+        if (value >= 0) {
+          System.out.println("mv " + register_name.get(value) + ", " + "a" + i);
+        }
+        System.out.println("sw a" + i + " , " + (value * 4) + "(s0)");
+      }
+      for (int i = 8; i < names.size(); i++) {
+        System.out.println("lw t0, " + ((i - 8) * 4) + "(s0)");
+        int value = registers.get(names.get(i));
+        if (value >= 0) {
+          System.out.println("mv " + register_name.get(value) + ", t0");
+        }
+        System.out.println("sw t0, " + (value * 4) + "(s0)");
+      }
     }
     return;
   }

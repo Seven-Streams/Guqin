@@ -178,7 +178,7 @@ public class LivenessAnalysis {
     for (int i = 0; i < degree; i++) {
       free.put(i, null);
     }
-    int stack_num = 0;
+    int stack_num = -13;
     PriorityQueue<Interval> to_alloc = intervals.get(func_num);
     registers.put(func_num, new HashMap<>());
     while (!to_alloc.isEmpty()) {
@@ -218,13 +218,13 @@ public class LivenessAnalysis {
       if (code instanceof IRFuncall) {
         IRFuncall res = (IRFuncall) code;
         if (res.reg.size() > 8) {
-          func_res = res.reg.size();
+          func_res = res.reg.size() + 5;
         } else {
-          func_res = 8;
+          func_res = 13;
         }
       }
       if (code instanceof IRFuncend) {
-        check.size = func_res + 5 + stack_variables.get(now_func);
+        check.size = func_res + stack_variables.get(now_func);
       }
     }
     return;

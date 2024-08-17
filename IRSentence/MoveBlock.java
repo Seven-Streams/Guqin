@@ -44,7 +44,7 @@ public class MoveBlock extends IRCode {
       if (value_des >= 0) {
         str_des = register_name.get(value_des);
       }
-      System.out.println("mv " + str_src + ", " + str_des);
+      System.out.println("mv " + str_des + ", " + str_src);
       if(value_des < 0) {
         System.out.println("sw t1, " + (value_des * 4) + "(s0)");
       }
