@@ -392,7 +392,6 @@ public class LivenessAnalysis {
         }
         HashMap<String, Boolean> use_res = new HashMap<>();
         HashMap<String, Boolean> def_res = new HashMap<>();
-        interval_check.put(cnt, new HashMap<>());
         for (int j = end; j >= i; j--) {
           int now_num = machine.generated.get(j).sentence_number;
           if (total_out == null) {
@@ -431,6 +430,18 @@ public class LivenessAnalysis {
               }
             }
           }
+          for (String def_v : def_res.keySet()) {
+            if (!interval_check.get(cnt).containsKey(def_v)) {
+              interval_check.get(cnt).put(def_v, new Interval(now_num, now_num, def_v));
+            } else {
+              if (interval_check.get(cnt).get(def_v).start > now_num) {
+                interval_check.get(cnt).get(def_v).start = now_num;
+              }
+              if (interval_check.get(cnt).get(def_v).end < now_num) {
+                interval_check.get(cnt).get(def_v).end = now_num;
+              }
+            }
+          }
         }
       }
       if (code instanceof IRLabel) {
@@ -440,7 +451,7 @@ public class LivenessAnalysis {
         if (total_out == null) {
           total_out = new HashMap<>();
         }
-        for (int j = i; j < machine.generated.size(); j++) {
+        for (int j = i + 1; j < machine.generated.size(); j++) {
           if (machine.generated.get(j) instanceof IRLabel) {
             end = j - 1;
             break;
@@ -456,7 +467,6 @@ public class LivenessAnalysis {
         }
         HashMap<String, Boolean> use_res = new HashMap<>();
         HashMap<String, Boolean> def_res = new HashMap<>();
-        interval_check.put(cnt, new HashMap<>());
         for (int j = end; j >= i; j--) {
           int now_num = machine.generated.get(j).sentence_number;
           for (String out_v : total_out.keySet()) {
@@ -492,6 +502,18 @@ public class LivenessAnalysis {
               }
             }
           }
+          for (String def_v : def_res.keySet()) {
+            if (!interval_check.get(cnt).containsKey(def_v)) {
+              interval_check.get(cnt).put(def_v, new Interval(now_num, now_num, def_v));
+            } else {
+              if (interval_check.get(cnt).get(def_v).start > now_num) {
+                interval_check.get(cnt).get(def_v).start = now_num;
+              }
+              if (interval_check.get(cnt).get(def_v).end < now_num) {
+                interval_check.get(cnt).get(def_v).end = now_num;
+              }
+            }
+          }
         }
       }
       if (code instanceof MoveBlock) {
@@ -517,6 +539,18 @@ public class LivenessAnalysis {
         }
         def_res.clear();
         use_res.clear();
+        for (String out_v : total_out.keySet()) {
+          if (!interval_check.get(cnt).containsKey(out_v)) {
+            interval_check.get(cnt).put(out_v, new Interval(now_num, now_num, out_v));
+          } else {
+            if (interval_check.get(cnt).get(out_v).start > now_num) {
+              interval_check.get(cnt).get(out_v).start = now_num;
+            }
+            if (interval_check.get(cnt).get(out_v).end < now_num) {
+              interval_check.get(cnt).get(out_v).end = now_num;
+            }
+          }
+        }
         block.UseDefCheck(def_res, use_res);
         for (String def_v : def_res.keySet()) {
           total_out.remove(def_v);
@@ -533,6 +567,18 @@ public class LivenessAnalysis {
             }
             if (interval_check.get(cnt).get(out_v).end < now_num) {
               interval_check.get(cnt).get(out_v).end = now_num;
+            }
+          }
+        }
+        for (String def_v : def_res.keySet()) {
+          if (!interval_check.get(cnt).containsKey(def_v)) {
+            interval_check.get(cnt).put(def_v, new Interval(now_num, now_num, def_v));
+          } else {
+            if (interval_check.get(cnt).get(def_v).start > now_num) {
+              interval_check.get(cnt).get(def_v).start = now_num;
+            }
+            if (interval_check.get(cnt).get(def_v).end < now_num) {
+              interval_check.get(cnt).get(def_v).end = now_num;
             }
           }
         }
