@@ -6,7 +6,7 @@ import Composer.*;
 import IRSentence.*;
 
 public class PhiRemover {
-  HashMap<Integer,HashMap<Integer, ArrayList<PseudoMove>>> moves = new HashMap<>();
+  HashMap<Integer, HashMap<Integer, ArrayList<PseudoMove>>> moves = new HashMap<>();
   Composer machine = null;
 
   public PhiRemover(Composer _machine) {
@@ -38,7 +38,7 @@ public class PhiRemover {
           if (!moves.containsKey(ftpair.from)) {
             moves.put(ftpair.from, new HashMap<>());
           }
-          if(!moves.get(ftpair.from).containsKey(ftpair.to)) {
+          if (!moves.get(ftpair.from).containsKey(ftpair.to)) {
             moves.get(ftpair.from).put(ftpair.to, new ArrayList<>());
           }
           moves.get(ftpair.from).get(ftpair.to).add(move);
@@ -63,58 +63,76 @@ public class PhiRemover {
     int last_label = 0;
     for (int i = 0; i < machine.generated.size(); i++) {
       IRCode code = machine.generated.get(i);
-        if (code instanceof IRFunc) {
-          now = --func;
+      if (code instanceof IRFunc) {
+        now = --func;
+      }
+      if (code instanceof IRLabel) {
+        IRLabel label = (IRLabel) code;
+        last_label = i;
+        now = label.label;
+      }
+      if (code instanceof IRFuncend) {
+        for (MoveBlock move : move_buffer) {
+          machine.generated.add(last_label, move);
         }
-        if (code instanceof IRLabel) {
-          IRLabel label = (IRLabel) code;
-          last_label = i;
-          now = label.label;
+        move_buffer.clear();
+      }
+      if (code instanceof IRjmp) {
+        IRjmp jmp = (IRjmp) code;
+        FromToPair ftpair = new FromToPair(now, jmp.label);
+        if (moves.containsKey(ftpair.from) && moves.get(ftpair.from).containsKey(ftpair.to)) {
+          MoveBlock new_block = new MoveBlock();
+          new_block.num = ++machine.label_number;
+          new_block.to = ftpair.to;
+          ArrayList<PseudoMove> op2 = new ArrayList<>();
+          for (PseudoMove op : moves.get(ftpair.from).get(ftpair.to)) {
+            String res = "%reg" + Integer.toString(++machine.tmp_time);
+            new_block.moves.add(new PseudoMove(op.src, res));
+            op2.add(new PseudoMove(res, op.des));
+          }
+          for (PseudoMove op_v : op2) {
+            new_block.moves.add(op_v);
+          }
+          jmp.label = new_block.num;
+          move_buffer.add(new_block);
         }
-        if (code instanceof IRFuncend) {
-          for (MoveBlock move : move_buffer) {
-            machine.generated.add(last_label, move);
+      }
+      if (code instanceof Conditionjmp) {
+        Conditionjmp condtion_jmp = (Conditionjmp) code;
+        FromToPair ftpair = new FromToPair(now, condtion_jmp.label1);
+        if (moves.containsKey(ftpair.from) && moves.get(ftpair.from).containsKey(ftpair.to)) {
+          MoveBlock new_block = new MoveBlock();
+          new_block.num = ++machine.label_number;
+          new_block.to = ftpair.to;
+          ArrayList<PseudoMove> op2 = new ArrayList<>();
+          for (PseudoMove op : moves.get(ftpair.from).get(ftpair.to)) {
+            String res = "%reg" + Integer.toString(++machine.tmp_time);
+            new_block.moves.add(new PseudoMove(op.src, res));
+            op2.add(new PseudoMove(res, op.des));
           }
-          move_buffer.clear();
+          for (PseudoMove op_v : op2) {
+            new_block.moves.add(op_v);
+          }
+          condtion_jmp.label1 = new_block.num;
+          move_buffer.add(new_block);
         }
-        if (code instanceof IRjmp) {
-          IRjmp jmp = (IRjmp) code;
-          FromToPair ftpair = new FromToPair(now, jmp.label);
-          if (moves.containsKey(ftpair.from) && moves.get(ftpair.from).containsKey(ftpair.to)) {
-            MoveBlock new_block = new MoveBlock();
-            new_block.num = ++machine.label_number;
-            new_block.to = ftpair.to;
-            for (PseudoMove op : moves.get(ftpair.from).get(ftpair.to)) {
-              new_block.moves.add(op);
-            }
-            jmp.label = new_block.num;
-            move_buffer.add(new_block);
+        FromToPair ftpair2 = new FromToPair(now, condtion_jmp.label2);
+        if (moves.containsKey(ftpair2.from) && moves.get(ftpair2.from).containsKey(ftpair2.to)) {
+          MoveBlock new_block = new MoveBlock();
+          new_block.num = ++machine.label_number;
+          new_block.to = ftpair2.to;
+          ArrayList<PseudoMove> op2 = new ArrayList<>();
+          for (PseudoMove op : moves.get(ftpair2.from).get(ftpair2.to)) {
+            String res = "%reg" + Integer.toString(++machine.tmp_time);
+            new_block.moves.add(new PseudoMove(op.src, res));
+            op2.add(new PseudoMove(res, op.des));
           }
+          for (PseudoMove op_v : op2) {
+            new_block.moves.add(op_v);
+          }
+          condtion_jmp.label2 = new_block.num;
+          move_buffer.add(new_block);
         }
-        if (code instanceof Conditionjmp) {
-          Conditionjmp condtion_jmp = (Conditionjmp) code;
-          FromToPair ftpair = new FromToPair(now, condtion_jmp.label1);
-          if (moves.containsKey(ftpair.from) && moves.get(ftpair.from).containsKey(ftpair.to)) {
-            MoveBlock new_block = new MoveBlock();
-            new_block.num = ++machine.label_number;
-            new_block.to = ftpair.to;
-            for (PseudoMove op : moves.get(ftpair.from).get(ftpair.to)) {
-              new_block.moves.add(op);
-            }
-            condtion_jmp.label1 = new_block.num;
-            move_buffer.add(new_block);
-          }
-          FromToPair ftpair2 = new FromToPair(now, condtion_jmp.label2);
-          if (moves.containsKey(ftpair2.from) && moves.get(ftpair2.from).containsKey(ftpair2.to)) {
-            MoveBlock new_block = new MoveBlock();
-            new_block.num = ++machine.label_number;
-            new_block.to = ftpair2.to;
-            for (PseudoMove op : moves.get(ftpair2.from).get(ftpair2.to)) {
-              new_block.moves.add(op);
-            }
-            condtion_jmp.label2 = new_block.num;
-            move_buffer.add(new_block);
-          }
       }
     }
     return;

@@ -285,7 +285,11 @@ public class IRBin extends IRCode {
           break;
         }
         case ("/"): {
-          result = value1 / value2;
+          if (value2 == 0) {
+            result = -1;
+          } else {
+            result = value1 / value2;
+          }
           break;
         }
         case ("<<"): {
@@ -319,7 +323,8 @@ public class IRBin extends IRCode {
       if (target >= 0) {
         if ((result >> 12) != 0) {
           System.out.println("lui " + register_name.get(target) + ", " + (result >> 12));
-          System.out.println("addi " + register_name.get(target) + ", " + (result & 0x00000fff));
+          System.out.println(
+              "addi " + register_name.get(target) + ", " + register_name.get(target) + ", " + (result & 0x00000fff));
         } else {
           System.out.println("li " + register_name.get(target) + ", " + result);
         }
@@ -364,14 +369,14 @@ public class IRBin extends IRCode {
         reg_2 = "t1";
       }
     }
-    if(reg_1 == null) {
+    if (reg_1 == null) {
       reg_1 = register_name.get(value1);
     }
-    if(reg_2 == null) {
+    if (reg_2 == null) {
       reg_2 = register_name.get(value2);
     }
     String target_name = null;
-    if(target < 0) {
+    if (target < 0) {
       target_name = "t0";
     } else {
       target_name = register_name.get(target);
@@ -421,7 +426,7 @@ public class IRBin extends IRCode {
         throw new Exception("Unexpected Symbol.");
       }
     }
-    if(target < 0) {
+    if (target < 0) {
       System.out.println("sw t0, " + (target * 4) + "(s0)");
     }
     return;

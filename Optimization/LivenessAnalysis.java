@@ -1,8 +1,11 @@
 package Optimization;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.PriorityQueue;
+import java.util.Queue;
 
 import IRSentence.*;
 import Composer.*;
@@ -20,7 +23,12 @@ public class LivenessAnalysis {
   public HashMap<Integer, PriorityQueue<Interval>> intervals = new HashMap<>();
   public HashMap<Integer, HashMap<String, Integer>> registers = new HashMap<>();
   public HashMap<Integer, Integer> stack_variables = new HashMap<>();
+  public HashMap<Integer, HashMap<String, Boolean>> use = new HashMap<>();
+  public HashMap<Integer, HashMap<String, Boolean>> def = new HashMap<>();
+  public HashMap<Integer, HashMap<String, Boolean>> in = new HashMap<>();
+  public HashMap<Integer, HashMap<String, Boolean>> out = new HashMap<>();
   public HashMap<Integer, String> register_names = new HashMap<>();
+  public HashMap<Integer, Interval> func_length = new HashMap<>();
 
   public LivenessAnalysis(Composer _machine) {
     machine = _machine;
@@ -29,7 +37,9 @@ public class LivenessAnalysis {
   public void Allocator(int degree) {
     BuildGraph();
     NumberIns();
-    GetIntervals();
+    UseDefCheck();
+    InOutCheck();
+    GetSentenceInOut();
     SortingIntervals();
     AllocateAll(degree);
     CalculateStack();
@@ -78,10 +88,13 @@ public class LivenessAnalysis {
     graph.clear();
     int now = 0;
     HashMap<Integer, Boolean> nxt = null;
+    Interval to_put = null;
     for (int i = 0; i < machine.generated.size(); i++) {
       IRCode code = machine.generated.get(i);
       if (code instanceof IRFunc) {
+        to_put = new Interval();
         now = --func_cnt;
+        to_put.start = now;
         block_entries.put(now, i);
         nxt = new HashMap<>();
       }
@@ -158,41 +171,109 @@ public class LivenessAnalysis {
     return;
   }
 
-  void GetIntervals() {
-    HashMap<String, Boolean> use = new HashMap<>();
-    HashMap<String, Boolean> def = new HashMap<>();
-    int now_func = 0;
+  void UseDefCheck() {
+    use.clear();
+    def.clear();
+    int func = 0;
+    int now = 0;
+    HashMap<String, Boolean> res_def = null;
+    HashMap<String, Boolean> res_use = null;
     for (IRCode code : machine.generated) {
-      use.clear();
-      def.clear();
-      code.UseDefCheck(def, use);
-      if (code instanceof IRFunc) {
-        now_func--;
-        interval_check.put(now_func, new HashMap<>());
+      if (code instanceof IRLabel) {
+        if (res_def != null) {
+          use.put(now, res_use);
+          def.put(now, res_def);
+        }
+        IRLabel label = (IRLabel) code;
+        res_def = new HashMap<>();
+        res_use = new HashMap<>();
+        now = label.label;
       }
-      for (String def_v : def.keySet()) {
-        if (!interval_check.get(now_func).containsKey(def_v)) {
-          interval_check.get(now_func).put(def_v, new Interval(code.sentence_number, code.sentence_number, def_v));
-        } else {
-          Interval to_check = interval_check.get(now_func).get(def_v);
-          if (to_check.start > code.sentence_number) {
-            to_check.start = code.sentence_number;
-          }
-          if (to_check.end < code.sentence_number) {
-            to_check.end = code.sentence_number;
-          }
+      if (code instanceof IRFunc) {
+        if (res_def != null) {
+          use.put(now, res_use);
+          def.put(now, res_def);
+        }
+        res_def = new HashMap<>();
+        res_use = new HashMap<>();
+        now = --func;
+      }
+      if (code instanceof MoveBlock) {
+        MoveBlock move = (MoveBlock) code;
+        use.put(now, res_use);
+        def.put(now, res_def);
+        res_def = new HashMap<>();
+        res_use = new HashMap<>();
+        now = move.num;
+      }
+      if (code instanceof IRFuncend) {
+        use.put(now, res_use);
+        def.put(now, res_def);
+      }
+      code.UseDefCheck(res_def, res_use);
+    }
+    return;
+  }
+
+  void InOutCheck() {
+    in.clear();
+    out.clear();
+    ArrayList<Integer> start = new ArrayList<>();
+    for (int node : graph.keySet()) {
+      if (graph.get(node).isEmpty()) {
+        start.add(node);
+      }
+    }
+    Queue<Integer> check_list = new LinkedList<>();
+    for (int end : start) {
+      check_list.add(end);
+    }
+    while (!check_list.isEmpty()) {
+      boolean flag = false;
+      int to_check = check_list.poll();
+      HashMap<String, Boolean> res = new HashMap<>();
+      for (String use_v : use.get(to_check).keySet()) {
+        res.put(use_v, null);
+      }
+      for (String def_v : def.get(to_check).keySet()) {
+        res.remove(def_v);
+      }
+      if (!in.containsKey(to_check)) {
+        in.put(to_check, new HashMap<>());
+      }
+      if (!out.containsKey(to_check)) {
+        out.put(to_check, new HashMap<>());
+      }
+      HashMap<String, Boolean> to_operate = in.get(to_check);
+      for (String use_v : use.get(to_check).keySet()) {
+        if (!to_operate.containsKey(use_v)) {
+          to_operate.put(use_v, null);
+          flag = true;
         }
       }
-      for (String use_v : use.keySet()) {
-        if (!interval_check.get(now_func).containsKey(use_v)) {
-          interval_check.get(now_func).put(use_v, new Interval(code.sentence_number, code.sentence_number, use_v));
-        } else {
-          Interval to_check = interval_check.get(now_func).get(use_v);
-          if (to_check.start > code.sentence_number) {
-            to_check.start = code.sentence_number;
-          }
-          if (to_check.end < code.sentence_number) {
-            to_check.end = code.sentence_number;
+      for (String res_v : res.keySet()) {
+        if (!to_operate.containsKey(res_v)) {
+          to_operate.put(res_v, null);
+          flag = true;
+        }
+      }
+      if (flag) {
+        if (pre.containsKey(to_check)) {
+          for (int pre_v : pre.get(to_check).keySet()) {
+            if (!out.containsKey(pre_v)) {
+              out.put(pre_v, new HashMap<>());
+            }
+            boolean flag_2 = false;
+            HashMap<String, Boolean> out_check = out.get(pre_v);
+            for (String value : to_operate.keySet()) {
+              if (!out_check.containsKey(value)) {
+                out_check.put(value, null);
+                flag_2 = true;
+              }
+            }
+            if (flag_2) {
+              check_list.add(pre_v);
+            }
           }
         }
       }
@@ -283,6 +364,179 @@ public class LivenessAnalysis {
     }
     for (int i = 7; i >= 0; i--) {
       register_names.put(cnt++, "a" + Integer.toString(i));
+    }
+    return;
+  }
+
+  void GetSentenceInOut() {
+    int cnt = 0;
+    for (int i = 0; i < machine.generated.size(); i++) {
+      IRCode code = machine.generated.get(i);
+      if (code instanceof IRFunc) {
+        interval_check.put(--cnt, new HashMap<>());
+        int end = 0;
+        HashMap<String, Boolean> total_out = out.get(cnt);
+        for (int j = i; j < machine.generated.size(); j++) {
+          if (machine.generated.get(j) instanceof IRLabel) {
+            end = j - 1;
+            break;
+          }
+          if (machine.generated.get(j) instanceof IRFuncend) {
+            end = j - 1;
+            break;
+          }
+          if (machine.generated.get(j) instanceof MoveBlock) {
+            end = j - 1;
+            break;
+          }
+        }
+        HashMap<String, Boolean> use_res = new HashMap<>();
+        HashMap<String, Boolean> def_res = new HashMap<>();
+        interval_check.put(cnt, new HashMap<>());
+        for (int j = end; j >= i; j--) {
+          int now_num = machine.generated.get(j).sentence_number;
+          if (total_out == null) {
+            total_out = new HashMap<>();
+          }
+          for (String out_v : total_out.keySet()) {
+            if (!interval_check.get(cnt).containsKey(out_v)) {
+              interval_check.get(cnt).put(out_v, new Interval(now_num, now_num, out_v));
+            } else {
+              if (interval_check.get(cnt).get(out_v).start > now_num) {
+                interval_check.get(cnt).get(out_v).start = now_num;
+              }
+              if (interval_check.get(cnt).get(out_v).end < now_num) {
+                interval_check.get(cnt).get(out_v).end = now_num;
+              }
+            }
+          }
+          def_res.clear();
+          use_res.clear();
+          machine.generated.get(j).UseDefCheck(def_res, use_res);
+          for (String def_v : def_res.keySet()) {
+            total_out.remove(def_v);
+          }
+          for (String use_v : use_res.keySet()) {
+            total_out.put(use_v, null);
+          }
+          for (String out_v : total_out.keySet()) {
+            if (!interval_check.get(cnt).containsKey(out_v)) {
+              interval_check.get(cnt).put(out_v, new Interval(now_num, now_num, out_v));
+            } else {
+              if (interval_check.get(cnt).get(out_v).start > now_num) {
+                interval_check.get(cnt).get(out_v).start = now_num;
+              }
+              if (interval_check.get(cnt).get(out_v).end < now_num) {
+                interval_check.get(cnt).get(out_v).end = now_num;
+              }
+            }
+          }
+        }
+      }
+      if (code instanceof IRLabel) {
+        IRLabel label = (IRLabel) (code);
+        int end = 0;
+        HashMap<String, Boolean> total_out = out.get(label.label);
+        if (total_out == null) {
+          total_out = new HashMap<>();
+        }
+        for (int j = i; j < machine.generated.size(); j++) {
+          if (machine.generated.get(j) instanceof IRLabel) {
+            end = j - 1;
+            break;
+          }
+          if (machine.generated.get(j) instanceof IRFuncend) {
+            end = j - 1;
+            break;
+          }
+          if (machine.generated.get(j) instanceof MoveBlock) {
+            end = j - 1;
+            break;
+          }
+        }
+        HashMap<String, Boolean> use_res = new HashMap<>();
+        HashMap<String, Boolean> def_res = new HashMap<>();
+        interval_check.put(cnt, new HashMap<>());
+        for (int j = end; j >= i; j--) {
+          int now_num = machine.generated.get(j).sentence_number;
+          for (String out_v : total_out.keySet()) {
+            if (!interval_check.get(cnt).containsKey(out_v)) {
+              interval_check.get(cnt).put(out_v, new Interval(now_num, now_num, out_v));
+            } else {
+              if (interval_check.get(cnt).get(out_v).start > now_num) {
+                interval_check.get(cnt).get(out_v).start = now_num;
+              }
+              if (interval_check.get(cnt).get(out_v).end < now_num) {
+                interval_check.get(cnt).get(out_v).end = now_num;
+              }
+            }
+          }
+          def_res.clear();
+          use_res.clear();
+          machine.generated.get(j).UseDefCheck(def_res, use_res);
+          for (String def_v : def_res.keySet()) {
+            total_out.remove(def_v);
+          }
+          for (String use_v : use_res.keySet()) {
+            total_out.put(use_v, null);
+          }
+          for (String out_v : total_out.keySet()) {
+            if (!interval_check.get(cnt).containsKey(out_v)) {
+              interval_check.get(cnt).put(out_v, new Interval(now_num, now_num, out_v));
+            } else {
+              if (interval_check.get(cnt).get(out_v).start > now_num) {
+                interval_check.get(cnt).get(out_v).start = now_num;
+              }
+              if (interval_check.get(cnt).get(out_v).end < now_num) {
+                interval_check.get(cnt).get(out_v).end = now_num;
+              }
+            }
+          }
+        }
+      }
+      if (code instanceof MoveBlock) {
+        MoveBlock block = (MoveBlock) code;
+        HashMap<String, Boolean> use_res = new HashMap<>();
+        HashMap<String, Boolean> def_res = new HashMap<>();
+        HashMap<String, Boolean> total_out = out.get(block.num);
+        int now_num = block.sentence_number;
+        if (total_out == null) {
+          total_out = new HashMap<>();
+        }
+        for (String out_v : total_out.keySet()) {
+          if (!interval_check.get(cnt).containsKey(out_v)) {
+            interval_check.get(cnt).put(out_v, new Interval(now_num, now_num, out_v));
+          } else {
+            if (interval_check.get(cnt).get(out_v).start > now_num) {
+              interval_check.get(cnt).get(out_v).start = now_num;
+            }
+            if (interval_check.get(cnt).get(out_v).end < now_num) {
+              interval_check.get(cnt).get(out_v).end = now_num;
+            }
+          }
+        }
+        def_res.clear();
+        use_res.clear();
+        block.UseDefCheck(def_res, use_res);
+        for (String def_v : def_res.keySet()) {
+          total_out.remove(def_v);
+        }
+        for (String use_v : use_res.keySet()) {
+          total_out.put(use_v, null);
+        }
+        for (String out_v : total_out.keySet()) {
+          if (!interval_check.get(cnt).containsKey(out_v)) {
+            interval_check.get(cnt).put(out_v, new Interval(now_num, now_num, out_v));
+          } else {
+            if (interval_check.get(cnt).get(out_v).start > now_num) {
+              interval_check.get(cnt).get(out_v).start = now_num;
+            }
+            if (interval_check.get(cnt).get(out_v).end < now_num) {
+              interval_check.get(cnt).get(out_v).end = now_num;
+            }
+          }
+        }
+      }
     }
     return;
   }
