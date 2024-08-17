@@ -28,4 +28,6 @@ public class IRCode {
   public boolean CheckLit(String to_check) {
     return(!((to_check.equals("true")) || to_check.equals("false") || to_check.equals("null")));
   }
+
+  public void CodegenWithOptim(HashMap<String, Integer> registers, HashMap<Integer, String> register_name) throws Exception{} 
 }

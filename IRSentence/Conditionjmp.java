@@ -28,8 +28,8 @@ public class Conditionjmp extends IRCode {
 
   @Override
   public void Codegen() throws Exception {
-    if (is_global.get(reg)) {
-      throw new Exception("I don't thinl I will use this.");
+    if (is_global.containsKey(reg) && is_global.get(reg)) {
+      throw new Exception("I don't think I will use this.");
     } else {
       String addr = relative_addr.get(reg);
       System.out.println("lw a0, " + addr);
@@ -90,6 +90,19 @@ public class Conditionjmp extends IRCode {
         use.put(reg, null);
       }
     }
+    return;
+  }
+
+  @Override
+  public void CodegenWithOptim(HashMap<String, Integer> registers, HashMap<Integer, String> register_name) {
+    int value = registers.get(reg);
+    if(value >= 0) {
+      System.out.println("beqz " + register_name.get(value) + ", b" + label2);
+    } else {
+      System.out.println("lw t0, " + (value * 4) + "(s0)");
+      System.out.println("beqz t0, b" + label2);
+    }
+    System.out.println("j b" + label1);
     return;
   }
 }

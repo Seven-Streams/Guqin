@@ -1,6 +1,7 @@
 package IRSentence;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class IRFunc extends IRCode {
   public String name = null;
@@ -61,6 +62,14 @@ public class IRFunc extends IRCode {
         is_global.put(names.get(i), false);
         relative_addr.put(names.get(i), ((i - 8) * 4) + "(s0)");
       }
+    }
+    return;
+  }
+
+  @Override
+  public void UseDefCheck(HashMap<String, Boolean> def, HashMap<String, Boolean> use) {
+    for(String name : names) {
+      def.put(name, null);
     }
     return;
   }

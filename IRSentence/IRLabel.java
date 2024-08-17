@@ -33,4 +33,12 @@ public class IRLabel extends IRCode {
   public int CheckBlock(HashMap<String, HashMap<Integer, Boolean>> times, int now_block) {
     return label;
   }
+
+  @Override
+  public void CodegenWithOptim(HashMap<String, Integer> registers, HashMap<Integer, String> register_name)
+      throws Exception {
+    System.out.println("");
+    System.out.println("b" + label + ":");
+    return;
+  }
 }

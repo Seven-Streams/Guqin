@@ -1,5 +1,6 @@
 package IRSentence;
 
+import java.util.HashMap;
 
 public class IRGlobal extends IRCode{
   public String name = null;
@@ -20,5 +21,11 @@ public class IRGlobal extends IRCode{
     System.out.println(name.substring(1) + ":");
     System.out.println(".word 0");
     return;
+  }
+
+  @Override
+  public void CodegenWithOptim(HashMap<String, Integer> registers, HashMap<Integer, String> register_name)
+      throws Exception {
+    Codegen();
   }
 }

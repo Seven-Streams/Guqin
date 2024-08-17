@@ -11,6 +11,7 @@ public class IRStore extends IRCode {
   public String from = null;
   public String type = null;
   public boolean be_alloc = false;
+
   @Override
   public void CodePrint() {
     System.out.println("store " + type + " " + from + ",ptr " + name);
@@ -58,31 +59,31 @@ public class IRStore extends IRCode {
     try {
       Integer.parseInt(name);
     } catch (NumberFormatException e) {
-        boolean is_alloc = false;
-        for(ArrayList<IRCode> allocs: machine.alloc.values()) {
-          for(IRCode alloc_raw: allocs) {
-            IRAlloc trans_alloc = (IRAlloc)alloc_raw;
-            if(trans_alloc.des.equals(name)) {
-              is_alloc = true;
-              break;
-            }
+      boolean is_alloc = false;
+      for (ArrayList<IRCode> allocs : machine.alloc.values()) {
+        for (IRCode alloc_raw : allocs) {
+          IRAlloc trans_alloc = (IRAlloc) alloc_raw;
+          if (trans_alloc.des.equals(name)) {
+            is_alloc = true;
+            break;
           }
         }
-        be_alloc = is_alloc;
-        if (!is_alloc) {
-          if (use.containsKey(name)) {
-            use.put(name, use.get(name) + 1);
-          } else {
-            use.put(name, 1);
-          }
+      }
+      be_alloc = is_alloc;
+      if (!is_alloc) {
+        if (use.containsKey(name)) {
+          use.put(name, use.get(name) + 1);
         } else {
-          if (def.containsKey(name)) {
-            def.put(name, def.get(name) + 1);
-          } else {
-            def.put(name, 1);
-          }
+          use.put(name, 1);
         }
-      
+      } else {
+        if (def.containsKey(name)) {
+          def.put(name, def.get(name) + 1);
+        } else {
+          def.put(name, 1);
+        }
+      }
+
     }
     try {
       Integer.parseInt(from);
@@ -162,10 +163,51 @@ public class IRStore extends IRCode {
 
   @Override
   public void UseDefCheck(HashMap<String, Boolean> def, HashMap<String, Boolean> use) {
-    if(!def.containsKey(from)) {
+    if (!def.containsKey(from)) {
       use.put(from, null);
     }
     def.put(name, null);
+    return;
+  }
+
+  @Override
+  public void CodegenWithOptim(HashMap<String, Integer> registers, HashMap<Integer, String> register_name)
+      throws Exception {
+    String src_reg = "t0";
+    if (!(from.equals("true") || from.equals("false") || from.equals("null"))) {
+      try {
+        int num = Integer.parseInt(from);
+        if ((num >> 12) != 0) {
+          System.out.println("lui t0, " + (num >> 12));
+          System.out.println("addi t0, t0, " + (num & 0x00000fff));
+        } else {
+          System.out.println("li t0, " + num);
+        }
+      } catch (NumberFormatException e) {
+        if (registers.get(from) >= 0) {
+          src_reg = register_name.get(registers.get(from));
+        } else {
+          System.out.println("lw t0, " + (registers.get(from) * 4) + "(s0)");
+        }
+      }
+    } else {
+      if (from.equals("true")) {
+        System.out.println("li t0, 1");
+      } else {
+        System.out.println("li t0, 0");
+      }
+    }
+    if (is_global.containsKey(name)) {
+      System.out.println("lui t1, " + "%hi(" + name.substring(1) + ")");
+      System.out.println("addi t1, t1, %lo(" + name.substring(1) + ")");
+      System.out.println("sw " + src_reg +  ", 0(t1)");
+    } else {
+      if (registers.get(name) >= 0) {
+        System.out.println("sw" + src_reg + ", 0(" + register_name.get(registers.get(name)) + ")");
+      } else {
+        System.out.println("sw" + src_reg + ", " + (4 * registers.get(name)) + "(s0)");
+      }
+    }
     return;
   }
 }

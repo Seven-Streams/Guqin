@@ -49,4 +49,9 @@ public class IRAlloc extends IRCode {
   public boolean SingleBlockRemove(HashMap<String, String> single) {
     return single.containsKey(des);
   }
+
+  @Override
+  public void CodegenWithOptim(HashMap<String, Integer> registers, HashMap<Integer, String> register_name) {
+    System.out.println("There shouldn't be allocs!");
+  }
 }

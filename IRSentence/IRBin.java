@@ -248,4 +248,182 @@ public class IRBin extends IRCode {
     }
     def.put(target_reg, null);
   }
+
+  @Override
+  public void CodegenWithOptim(HashMap<String, Integer> registers, HashMap<Integer, String> register_name)
+      throws Exception {
+    int target = registers.get(target_reg);
+    boolean is_int1 = false;
+    int value1;
+    try {
+      value1 = Integer.parseInt(op1);
+      is_int1 = true;
+    } catch (NumberFormatException e) {
+      value1 = registers.get(op1);
+    }
+    boolean is_int2 = false;
+    int value2;
+    try {
+      value2 = Integer.parseInt(op2);
+      is_int2 = true;
+    } catch (NumberFormatException e) {
+      value2 = registers.get(op2);
+    }
+    if (is_int1 && is_int2) {
+      int result = 0;
+      switch (symbol) {
+        case ("+"): {
+          result = value1 + value2;
+          break;
+        }
+        case ("-"): {
+          result = value1 - value2;
+          break;
+        }
+        case ("*"): {
+          result = value1 * value2;
+          break;
+        }
+        case ("/"): {
+          result = value1 / value2;
+          break;
+        }
+        case ("<<"): {
+          result = value1 << value2;
+          break;
+        }
+        case (">>"): {
+          result = value1 >> value2;
+          break;
+        }
+        case ("%"): {
+          result = value1 % value2;
+          break;
+        }
+        case ("&"): {
+          result = value1 & value2;
+          break;
+        }
+        case ("|"): {
+          result = value1 | value2;
+          break;
+        }
+        case ("^"): {
+          result = value1 ^ value2;
+          break;
+        }
+        default: {
+          throw new Exception("Unexpected Symbol.");
+        }
+      }
+      if (target >= 0) {
+        if ((result >> 12) != 0) {
+          System.out.println("lui " + register_name.get(target) + ", " + (result >> 12));
+          System.out.println("addi " + register_name.get(target) + ", " + (result & 0x00000fff));
+        } else {
+          System.out.println("li " + register_name.get(target) + ", " + result);
+        }
+      } else {
+        if ((result >> 12) != 0) {
+          System.out.println("lui t0, " + (result >> 12));
+          System.out.println("addi t0, " + (result & 0x00000fff));
+        } else {
+          System.out.println("li t0, " + result);
+        }
+        System.out.println("sw t0, " + target * 4 + "(s0)");
+      }
+      return;
+    }
+    String reg_1 = null;
+    String reg_2 = null;
+    if (is_int1) {
+      if ((value1 >> 12) != 0) {
+        System.out.println("lui t0, " + (value1 >> 12));
+        System.out.println("addi t0, " + (value1 & 0x00000fff));
+      } else {
+        System.out.println("li t0, " + value1);
+      }
+      reg_1 = "t0";
+    } else {
+      if (value1 < 0) {
+        System.out.println("lw t0, " + value1 * 4 + "(s0)");
+        reg_1 = "t0";
+      }
+    }
+    if (is_int2) {
+      if ((value2 >> 12) != 0) {
+        System.out.println("lui t1, " + (value2 >> 12));
+        System.out.println("addi t1, " + (value2 & 0x00000fff));
+      } else {
+        System.out.println("li t1, " + value2);
+      }
+      reg_2 = "t1";
+    } else {
+      if (value2 < 0) {
+        System.out.println("lw t1, " + value2 * 4 + "(s0)");
+        reg_2 = "t1";
+      }
+    }
+    if(reg_1 == null) {
+      reg_1 = register_name.get(value1);
+    }
+    if(reg_2 == null) {
+      reg_2 = register_name.get(value2);
+    }
+    String target_name = null;
+    if(target < 0) {
+      target_name = "t0";
+    } else {
+      target_name = register_name.get(target);
+    }
+    switch (symbol) {
+      case ("+"): {
+        System.out.println("add " + target_name + ", " + reg_1 + ", " + reg_2);
+        break;
+      }
+      case ("-"): {
+        System.out.println("sub " + target_name + ", " + reg_1 + ", " + reg_2);
+        break;
+      }
+      case ("*"): {
+        System.out.println("mul " + target_name + ", " + reg_1 + ", " + reg_2);
+        break;
+      }
+      case ("/"): {
+        System.out.println("div " + target_name + ", " + reg_1 + ", " + reg_2);
+        break;
+      }
+      case ("<<"): {
+        System.out.println("sll " + target_name + ", " + reg_1 + ", " + reg_2);
+        break;
+      }
+      case (">>"): {
+        System.out.println("srl " + target_name + ", " + reg_1 + ", " + reg_2);
+        break;
+      }
+      case ("%"): {
+        System.out.println("rem " + target_name + ", " + reg_1 + ", " + reg_2);
+        break;
+      }
+      case ("&"): {
+        System.out.println("and " + target_name + ", " + reg_1 + ", " + reg_2);
+        break;
+      }
+      case ("|"): {
+        System.out.println("or " + target_name + ", " + reg_1 + ", " + reg_2);
+        break;
+      }
+      case ("^"): {
+        System.out.println("xor " + target_name + ", " + reg_1 + ", " + reg_2);
+        break;
+      }
+      default: {
+        throw new Exception("Unexpected Symbol.");
+      }
+    }
+    if(target < 0) {
+      System.out.println("lw t0, " + (target * 4) + "(s0)");
+    }
+    return;
+  }
 }

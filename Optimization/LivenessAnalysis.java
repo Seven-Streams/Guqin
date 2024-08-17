@@ -19,7 +19,8 @@ public class LivenessAnalysis {
   public HashMap<Integer, Integer> block_entries = new HashMap<>();
   public HashMap<Integer, PriorityQueue<Interval>> intervals = new HashMap<>();
   public HashMap<Integer, HashMap<String, Integer>> registers = new HashMap<>();
-
+  public HashMap<Integer, Integer> stack_variables = new HashMap<>();
+  public HashMap<Integer, String> register_names = new HashMap<>();
   public LivenessAnalysis(Composer _machine) {
     machine = _machine;
   }
@@ -30,6 +31,8 @@ public class LivenessAnalysis {
     GetIntervals();
     SortingIntervals();
     AllocateAll(degree);
+    CalculateStack();
+    RegisterName();
   }
 
   void BuildGraph() {
@@ -198,6 +201,45 @@ public class LivenessAnalysis {
       if (spilled) {
         registers.get(func_num).put(now_alloc.name, --stack_num);
       }
+    }
+    stack_variables.put(func_num, -stack_num);
+    return;
+  }
+
+  void CalculateStack() {
+    IRFunc check = null;
+    int func_res = 0;
+    int now_func = 0;
+    for (IRCode code : machine.generated) {
+      if (code instanceof IRFunc) {
+        now_func--;
+        check = (IRFunc) code;
+      }
+      if (code instanceof IRFuncall) {
+        IRFuncall res = (IRFuncall) code;
+        if (res.reg.size() > 8) {
+          func_res = res.reg.size();
+        } else {
+          func_res = 8;
+        }
+      }
+      if (code instanceof IRFuncend) {
+        check.size = func_res + 5 + stack_variables.get(now_func);
+      }
+    }
+    return;
+  }
+
+  void RegisterName() {
+    int cnt = 0;
+    for(int i = 1; i <= 11; i++) {
+      register_names.put(cnt++, "s" + Integer.toString(i));
+    }
+    for(int i = 2; i <= 6; i++) {
+      register_names.put(cnt++, "t" + Integer.toString(i));
+    }
+    for(int i = 7; i >= 0; i--) {
+      register_names.put(cnt++, "a" + Integer.toString(i));
     }
     return;
   }

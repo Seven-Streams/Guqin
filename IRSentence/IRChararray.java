@@ -1,5 +1,7 @@
 package IRSentence;
 
+import java.util.HashMap;
+
 public class IRChararray extends IRCode {
   public String value = null;
   public String reg = null;
@@ -55,5 +57,11 @@ public class IRChararray extends IRCode {
     System.out.println("addi a1, a1, " + "%lo(" + reg.substring(1) + ")");
     System.out.println("sw a0, 0(a1)");
     return;
+  }
+
+  @Override
+  public void CodegenWithOptim(HashMap<String, Integer> registers, HashMap<Integer, String> register_name)
+      throws Exception {
+    Codegen();
   }
 }
