@@ -14,20 +14,22 @@ public class LivenessAnalysis {
   public HashMap<Integer, HashMap<Integer, Boolean>> graph = new HashMap<>();
   public HashMap<Integer, HashMap<Integer, Boolean>> pre = new HashMap<>();
   public HashMap<Integer, HashMap<String, Boolean>> liveness = new HashMap<>();
-  public HashMap<String, Integer> start = new HashMap<>();
-  public HashMap<String, Integer> end = new HashMap<>();
+  public HashMap<Integer, HashMap<String, Interval>> interval_check = new HashMap<>();
   public HashMap<Integer, Boolean> visit = new HashMap<>();
   public HashMap<Integer, Integer> block_entries = new HashMap<>();
-  public PriorityQueue<Interval> intervals = new PriorityQueue<>(new Interval().new IntervalComparator());
+  public HashMap<Integer, PriorityQueue<Interval>> intervals = new HashMap<>();
+  public HashMap<Integer, HashMap<String, Integer>> registers = new HashMap<>();
+
   public LivenessAnalysis(Composer _machine) {
     machine = _machine;
   }
 
-  public void Allocator() {
+  public void Allocator(int degree) {
     BuildGraph();
     NumberIns();
     GetIntervals();
     SortingIntervals();
+    AllocateAll(degree);
   }
 
   void BuildGraph() {
@@ -115,34 +117,87 @@ public class LivenessAnalysis {
   void GetIntervals() {
     HashMap<String, Boolean> use = new HashMap<>();
     HashMap<String, Boolean> def = new HashMap<>();
+    int now_func = 0;
     for (IRCode code : machine.generated) {
       code.UseDefCheck(def, use);
+      if (code instanceof IRFunc) {
+        now_func--;
+        interval_check.put(now_func, new HashMap<>());
+      }
       for (String def_v : def.keySet()) {
-        if (!start.containsKey(def_v)) {
-          start.put(def_v, code.sentence_number);
+        if (!interval_check.get(now_func).containsKey(def_v)) {
+          interval_check.get(now_func).put(def_v, new Interval(code.sentence_number, code.sentence_number, def_v));
         } else {
-          if (start.get(def_v) > code.sentence_number) {
-            start.put(def_v, code.sentence_number);
+          Interval to_check = interval_check.get(now_func).get(def_v);
+          if (to_check.start > code.sentence_number) {
+            to_check.start = code.sentence_number;
+          }
+          if (to_check.end < code.sentence_number) {
+            to_check.end = code.sentence_number;
           }
         }
       }
       for (String use_v : use.keySet()) {
-        if (!end.containsKey(use_v)) {
-          end.put(use_v, code.sentence_number);
+        if (!interval_check.get(now_func).containsKey(use_v)) {
+          interval_check.get(now_func).put(use_v, new Interval(code.sentence_number, code.sentence_number, use_v));
         } else {
-          if (start.get(use_v) < code.sentence_number) {
-            start.put(use_v, code.sentence_number);
+          Interval to_check = interval_check.get(now_func).get(use_v);
+          if (to_check.start > code.sentence_number) {
+            to_check.start = code.sentence_number;
+          }
+          if (to_check.end < code.sentence_number) {
+            to_check.end = code.sentence_number;
           }
         }
       }
     }
     return;
   }
-  
+
   void SortingIntervals() {
-    for(Map.Entry<String, Integer> entry: start.entrySet()) {
-      Interval new_interval = new Interval(entry.getValue(), end.get(entry.getKey()), entry.getKey());
-      intervals.add(new_interval);
+    for (Map.Entry<Integer, HashMap<String, Interval>> entry : interval_check.entrySet()) {
+      intervals.put(entry.getKey(), new PriorityQueue<>(new Interval().new IntervalComparator()));
+      for (Interval to_add : entry.getValue().values()) {
+        intervals.get(entry.getKey()).add(to_add);
+      }
+    }
+    return;
+  }
+
+  void AllocateAll(int degree) {
+    for (int i = -1; i >= func_cnt; i--) {
+      RegisterAllocate(i, degree);
+    }
+  }
+
+  void RegisterAllocate(int func_num, int degree) {
+    HashMap<Integer, Interval> free = new HashMap<>();
+    for (int i = 0; i < degree; i++) {
+      free.put(i, null);
+    }
+    int stack_num = 0;
+    PriorityQueue<Interval> to_alloc = intervals.get(func_num);
+    registers.put(func_num, new HashMap<>());
+    while (!to_alloc.isEmpty()) {
+      Interval now_alloc = to_alloc.poll();
+      boolean spilled = true;
+      for (int i = 0; i < degree; i++) {
+        if (free.get(i) == null) {
+          free.put(i, now_alloc);
+          registers.get(func_num).put(now_alloc.name, i);
+          spilled = false;
+          break;
+        }
+        if (free.get(i).end < now_alloc.start) {
+          free.put(i, now_alloc);
+          registers.get(func_num).put(now_alloc.name, i);
+          spilled = false;
+          break;
+        }
+      }
+      if (spilled) {
+        registers.get(func_num).put(now_alloc.name, --stack_num);
+      }
     }
     return;
   }
