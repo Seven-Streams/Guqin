@@ -95,11 +95,13 @@ public class IRReturn extends IRCode {
 
   @Override
   public void UseDefCheck(HashMap<String, Boolean> def, HashMap<String, Boolean> use) {
-    try {
-      Integer.parseInt(reg);
-    } catch (NumberFormatException e) {
-      if ((!def.containsKey(reg)) && (CheckLit(reg))) {
-        use.put(reg, null);
+    if (reg != null) {
+      try {
+        Integer.parseInt(reg);
+      } catch (NumberFormatException e) {
+        if ((!def.containsKey(reg)) && (CheckLit(reg))) {
+          use.put(reg, null);
+        }
       }
     }
     return;
@@ -116,11 +118,11 @@ public class IRReturn extends IRCode {
             System.out.println("lui a0, " + (test >> 12));
             System.out.println("addi a0, a0, " + (test & 0x00000fff));
           } else {
-            System.out.println("li, a0, " + test);
+            System.out.println("li a0, " + test);
           }
         } catch (NumberFormatException e) {
           int num = registers.get(reg);
-          if(num >= 0) {
+          if (num >= 0) {
             System.out.println("mv " + "a0, " + register_name.get(num));
           } else {
             System.out.println("lw a0, " + (num * 4) + "(s0)");

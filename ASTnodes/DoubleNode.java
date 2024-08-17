@@ -19,7 +19,7 @@ public class DoubleNode extends ExprNode {
     is_left = false;
     Mypair type1 = value1.check();
     Mypair type2 = value2.check();
-    dim = (type1.dim == 0)? (type2.dim) : (type1.dim);
+    dim = (type1.dim == 0) ? (type2.dim) : (type1.dim);
     type = new String(type1.type);
     if ((!type1.type.equals(type2.type)) && (!type1.type.equals("null")) && (!type2.type.equals("null"))) {
       throw new Exception("Type Mismatch");
@@ -131,10 +131,11 @@ public class DoubleNode extends ExprNode {
           Conditionjmp judge1 = new Conditionjmp(let1, let0, info2.reg);
           machine.generated.add(judge1);
           machine.generated.add(new IRLabel(let1));
-          IRjmp jmp_to_end = new IRjmp(end);
-          machine.generated.add(jmp_to_end);
+          IRjmp jmp_to_end1 = new IRjmp(end);
+          IRjmp jmp_to_end2 = new IRjmp(end);
+          machine.generated.add(jmp_to_end1);
           machine.generated.add(new IRLabel(let0));
-          machine.generated.add(jmp_to_end);
+          machine.generated.add(jmp_to_end2);
           machine.generated.add(new IRLabel(end));
           IRPhi phi = new IRPhi();
           phi.type = "i1";
@@ -159,10 +160,11 @@ public class DoubleNode extends ExprNode {
           Conditionjmp judge1 = new Conditionjmp(let1, let0, info2.reg);
           machine.generated.add(judge1);
           machine.generated.add(new IRLabel(let1));
-          IRjmp jmp_to_end = new IRjmp(end);
-          machine.generated.add(jmp_to_end);
+          IRjmp jmp_to_end1 = new IRjmp(end);
+          IRjmp jmp_to_end2 = new IRjmp(end);
+          machine.generated.add(jmp_to_end1);
           machine.generated.add(new IRLabel(let0));
-          machine.generated.add(jmp_to_end);
+          machine.generated.add(jmp_to_end2);
           machine.generated.add(new IRLabel(end));
           IRPhi phi = new IRPhi();
           phi.type = "i1";

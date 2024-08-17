@@ -12,6 +12,7 @@ public class IRFuncend extends IRCode {
 
   @Override
   public void Codegen() {
+    System.out.println("li a0, 0");
     System.out.println("j .return" + func_num);
     System.out.println("");
     System.out.println(".return" + func_num + ":");
@@ -31,6 +32,7 @@ public class IRFuncend extends IRCode {
   @Override
   public void CodegenWithOptim(HashMap<String, Integer> registers, HashMap<Integer, String> register_name)
       throws Exception {
+    System.out.println("li a0, 0");
     System.out.println("j .return" + func_num);
     System.out.println("");
     System.out.println(".return" + func_num + ":");

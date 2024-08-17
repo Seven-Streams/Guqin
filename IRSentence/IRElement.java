@@ -59,6 +59,7 @@ public class IRElement extends IRCode {
       }
     }
     if (!relative_addr.containsKey(output)) {
+      is_global.put(output, false);
       now_s0 += 4;
       relative_addr.put(output, Integer.toString(-now_s0) + "(s0)");
     }
@@ -169,18 +170,22 @@ public class IRElement extends IRCode {
     if (!def.containsKey(src)) {
       use.put(src, null);
     }
-    try {
-      Integer.parseInt(num1);
-    } catch (NumberFormatException e) {
-      if (!def.containsKey(num1)) {
-        use.put(num1, null);
+    if (num1 != null) {
+      try {
+        Integer.parseInt(num1);
+      } catch (NumberFormatException e) {
+        if (!def.containsKey(num1)) {
+          use.put(num1, null);
+        }
       }
     }
-    try {
-      Integer.parseInt(num2);
-    } catch (NumberFormatException e) {
-      if (!def.containsKey(num2)) {
-        use.put(num2, null);
+    if (num2 != null) {
+      try {
+        Integer.parseInt(num2);
+      } catch (NumberFormatException e) {
+        if (!def.containsKey(num2)) {
+          use.put(num2, null);
+        }
       }
     }
     def.put(output, null);
@@ -209,12 +214,13 @@ public class IRElement extends IRCode {
       } catch (NumberFormatException e) {
         int value_i = registers.get(num2);
         if (value_i >= 0) {
-          String from_str = register_name.get(value_i);
-          System.out.println("slli t1, " + from_str + "2");
+          String num_str = register_name.get(value_i);
+          System.out.println("slli t1, " + num_str + ", 2");
         } else {
           System.out.println("lw t1, " + (value_i * 4) + "(s0)");
           System.out.println("slli t1, t1, 2");
         }
+        System.out.println("add t1, t1, " + src_str);
       }
     } else {
       try {
@@ -227,24 +233,22 @@ public class IRElement extends IRCode {
           System.out.println("add t1, " + src_str + ", t1");
         }
       } catch (NumberFormatException e) {
-        int value_i = registers.get(num2);
+        int value_i = registers.get(num1);
         if (value_i >= 0) {
           String from_str = register_name.get(value_i);
-          System.out.println("slli t1, " + from_str + "2");
+          System.out.println("slli t1, " + from_str + ", 2");
         } else {
           System.out.println("lw t1, " + (value_i * 4) + "(s0)");
           System.out.println("slli t1, t1, 2");
         }
+        System.out.println("add t1, t1, " + src_str);
       }
     }
     int target_value = registers.get(output);
-    String target_str = "t0";
-    if(target_value >= 0) {
-      target_str = register_name.get(target_value);
-    }
-    System.out.println("add " + target_str + ", t1, " + src_str);
-    if(target_value < 0) {
-      System.out.println("sw t0, " + (target_value * 4) + "(s0)");
+    if (target_value < 0) {
+      System.out.println("sw t1, " + (target_value * 4) + "(s0)");
+    } else {
+      System.out.println("mv " + register_name.get(target_value) + ", t1");
     }
     return;
   }

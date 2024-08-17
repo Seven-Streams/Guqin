@@ -126,25 +126,26 @@ public class IRLoad extends IRCode {
   @Override
   public void CodegenWithOptim(HashMap<String, Integer> registers, HashMap<Integer, String> register_name)
       throws Exception {
-        String addr = "t0";
+    String addr = "t0";
     if (is_global.containsKey(src)) {
       System.out.println("lui t0, " + "%hi(" + src.substring(1) + ")");
       System.out.println("addi t0, t0, %lo(" + src.substring(1) + ")");
     } else {
       int place = registers.get(src);
-      if(place >= 0) {
+      if (place >= 0) {
         addr = register_name.get(place);
       } else {
         System.out.println("lw t0, " + (place * 4) + "(s0)");
       }
     }
+    System.out.println("lw t0, 0(" + addr + ")");
     int target_value = registers.get(des);
     if(target_value >= 0) {
-      System.out.println("lw " + addr + ", " + register_name.get(target_value));
+      System.out.println("mv " + register_name.get(target_value) + ", t0");
     } else {
-      System.out.println("lw " + addr + ", t0");
-      System.out.println("sw t0, " + (target_value * 4) + "(s0)");     
+      System.out.println("sw t0, " + (target_value * 4) + "(s0)");
     }
+    
     return;
   }
 }

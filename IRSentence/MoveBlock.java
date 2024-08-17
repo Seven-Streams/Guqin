@@ -14,16 +14,16 @@ public class MoveBlock extends IRCode {
   @Override
   public void UseDefCheck(HashMap<String, Boolean> def, HashMap<String, Boolean> use) {
     for (PseudoMove move : moves) {
-      def.put(move.des, null);
-      use.put(move.src, null);
-    }
-    for (IRLoad load : loads) {
-      def.put(load.des, null);
-      use.put(load.src, null);
-    }
-    for (IRStore store : stores) {
-      def.put(store.name, null);
-      def.put(store.from, null);
+      try {
+        Integer.parseInt(move.des);
+      } catch (NumberFormatException e) {
+        def.put(move.des, null);
+      }
+      try {
+        Integer.parseInt(move.src);
+      } catch (NumberFormatException e) {
+        use.put(move.src, null);
+      }
     }
     return;
   }
@@ -31,24 +31,44 @@ public class MoveBlock extends IRCode {
   @Override
   public void CodegenWithOptim(HashMap<String, Integer> registers, HashMap<Integer, String> register_name)
       throws Exception {
+    System.out.println("b" + num + ":");
     for (PseudoMove move : moves) {
-      int value_src = registers.get(move.src);
-      int value_des = registers.get(move.des);
-      String str_src = "t0";
-      String str_des = "t1";
-      if (value_src >= 0) {
-        str_src = register_name.get(value_src);
-      } else {
-        System.out.println("lw t0, " + (value_src * 4) + "(s0)");
-      }
-      if (value_des >= 0) {
-        str_des = register_name.get(value_des);
-      }
-      System.out.println("mv " + str_des + ", " + str_src);
-      if(value_des < 0) {
-        System.out.println("sw t1, " + (value_des * 4) + "(s0)");
+      try {
+        int value = Integer.parseInt(move.src);
+        if ((value >> 12) != 0) {
+          System.out.println("lui t0, " + (value >> 12));
+          System.out.println("addi t0, t0, " + (value & 0x00000fff));
+        } else {
+          System.out.println("li t0, " + value);
+        }
+        int value_des = registers.get(move.des);
+        String str_des = "t1";
+        if (value_des >= 0) {
+          str_des = register_name.get(value_des);
+          System.out.println("mv " + str_des + ", t0");
+        } else {
+          System.out.println("sw t0, " + (value_des * 4) + "(s0)");
+        }
+      } catch (NumberFormatException e) {
+        int value_src = registers.get(move.src);
+        int value_des = registers.get(move.des);
+        String str_src = "t0";
+        String str_des = "t1";
+        if (value_src >= 0) {
+          str_src = register_name.get(value_src);
+        } else {
+          System.out.println("lw t0, " + (value_src * 4) + "(s0)");
+        }
+        if (value_des >= 0) {
+          str_des = register_name.get(value_des);
+        }
+        System.out.println("mv " + str_des + ", " + str_src);
+        if (value_des < 0) {
+          System.out.println("sw t1, " + (value_des * 4) + "(s0)");
+        }
       }
     }
+    System.out.println("j b" + to);
     return;
   }
 }

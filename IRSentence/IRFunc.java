@@ -103,16 +103,18 @@ public class IRFunc extends IRCode {
         int value = registers.get(names.get(i));
         if (value >= 0) {
           System.out.println("mv " + register_name.get(value) + ", " + "a" + i);
+        } else {
+          System.out.println("sw a" + i + " , " + (value * 4) + "(s0)");
         }
-        System.out.println("sw a" + i + " , " + (value * 4) + "(s0)");
       }
     } else {
       for (int i = 0; i < 8; i++) {
         int value = registers.get(names.get(i));
         if (value >= 0) {
           System.out.println("mv " + register_name.get(value) + ", " + "a" + i);
+        } else {
+          System.out.println("sw a" + i + " , " + (value * 4) + "(s0)");
         }
-        System.out.println("sw a" + i + " , " + (value * 4) + "(s0)");
       }
       for (int i = 8; i < names.size(); i++) {
         System.out.println("lw t0, " + ((i - 8) * 4) + "(s0)");

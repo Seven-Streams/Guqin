@@ -326,7 +326,7 @@ public class IRBin extends IRCode {
       } else {
         if ((result >> 12) != 0) {
           System.out.println("lui t0, " + (result >> 12));
-          System.out.println("addi t0, " + (result & 0x00000fff));
+          System.out.println("addi t0, t0" + (result & 0x00000fff));
         } else {
           System.out.println("li t0, " + result);
         }
@@ -339,21 +339,21 @@ public class IRBin extends IRCode {
     if (is_int1) {
       if ((value1 >> 12) != 0) {
         System.out.println("lui t0, " + (value1 >> 12));
-        System.out.println("addi t0, " + (value1 & 0x00000fff));
+        System.out.println("addi t0, t0, " + (value1 & 0x00000fff));
       } else {
         System.out.println("li t0, " + value1);
       }
       reg_1 = "t0";
     } else {
       if (value1 < 0) {
-        System.out.println("lw t0, " + value1 * 4 + "(s0)");
+        System.out.println("lw t0, " + (value1 * 4) + "(s0)");
         reg_1 = "t0";
       }
     }
     if (is_int2) {
       if ((value2 >> 12) != 0) {
         System.out.println("lui t1, " + (value2 >> 12));
-        System.out.println("addi t1, " + (value2 & 0x00000fff));
+        System.out.println("addi t1, t1, " + (value2 & 0x00000fff));
       } else {
         System.out.println("li t1, " + value2);
       }
@@ -422,7 +422,7 @@ public class IRBin extends IRCode {
       }
     }
     if(target < 0) {
-      System.out.println("lw t0, " + (target * 4) + "(s0)");
+      System.out.println("sw t0, " + (target * 4) + "(s0)");
     }
     return;
   }

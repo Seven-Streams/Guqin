@@ -21,6 +21,7 @@ public class LivenessAnalysis {
   public HashMap<Integer, HashMap<String, Integer>> registers = new HashMap<>();
   public HashMap<Integer, Integer> stack_variables = new HashMap<>();
   public HashMap<Integer, String> register_names = new HashMap<>();
+
   public LivenessAnalysis(Composer _machine) {
     machine = _machine;
   }
@@ -33,6 +34,44 @@ public class LivenessAnalysis {
     AllocateAll(degree);
     CalculateStack();
     RegisterName();
+  }
+
+  void PrintName() {
+    for (Map.Entry<Integer, String> pair : register_names.entrySet()) {
+      System.out.println(pair.getKey() + " " + pair.getValue());
+    }
+  }
+
+  public void Codegen() throws Exception {
+    int cnt = 0;
+    System.out.println(".data");
+    for (IRCode code : machine.const_str) {
+      code.CodegenWithOptim(null, register_names);
+    }
+    for (IRCode code : machine.global) {
+      code.CodegenWithOptim(null, register_names);
+    }
+    System.out.println("");
+    System.out.println(".text");
+    System.out.println(".globl main");
+    for (IRCode code : machine.generated) {
+      boolean to_init = false;
+      if (code instanceof IRFunc) {
+        cnt--;
+        IRFunc to_check = (IRFunc) code;
+        if (to_check.name.equals("main")) {
+          to_init = true;
+        }
+      }
+      code.CodegenWithOptim(registers.get(cnt), register_names);
+      if (to_init) {
+        for (IRCode chars : machine.const_str) {
+          IRChararray init = (IRChararray) chars;
+          init.Init();
+        }
+      }
+    }
+    return;
   }
 
   void BuildGraph() {
@@ -78,7 +117,9 @@ public class LivenessAnalysis {
         pre.get(jmp.label2).put(now, null);
       }
       if (code instanceof MoveBlock) {
+        graph.put(now, nxt);
         MoveBlock move = (MoveBlock) code;
+        nxt = new HashMap<>();
         nxt.put(move.to, null);
         if (!pre.containsKey(move.to)) {
           pre.put(move.to, new HashMap<>());
@@ -122,6 +163,8 @@ public class LivenessAnalysis {
     HashMap<String, Boolean> def = new HashMap<>();
     int now_func = 0;
     for (IRCode code : machine.generated) {
+      use.clear();
+      def.clear();
       code.UseDefCheck(def, use);
       if (code instanceof IRFunc) {
         now_func--;
@@ -232,13 +275,13 @@ public class LivenessAnalysis {
 
   void RegisterName() {
     int cnt = 0;
-    for(int i = 1; i <= 11; i++) {
+    for (int i = 1; i <= 11; i++) {
       register_names.put(cnt++, "s" + Integer.toString(i));
     }
-    for(int i = 2; i <= 6; i++) {
+    for (int i = 2; i <= 6; i++) {
       register_names.put(cnt++, "t" + Integer.toString(i));
     }
-    for(int i = 7; i >= 0; i--) {
+    for (int i = 7; i >= 0; i--) {
       register_names.put(cnt++, "a" + Integer.toString(i));
     }
     return;

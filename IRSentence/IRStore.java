@@ -200,12 +200,13 @@ public class IRStore extends IRCode {
     if (is_global.containsKey(name)) {
       System.out.println("lui t1, " + "%hi(" + name.substring(1) + ")");
       System.out.println("addi t1, t1, %lo(" + name.substring(1) + ")");
-      System.out.println("sw " + src_reg +  ", 0(t1)");
+      System.out.println("sw " + src_reg + ", 0(t1)");
     } else {
       if (registers.get(name) >= 0) {
-        System.out.println("sw" + src_reg + ", 0(" + register_name.get(registers.get(name)) + ")");
+        System.out.println("sw " + src_reg + ", 0(" + register_name.get(registers.get(name)) + ")");
       } else {
-        System.out.println("sw" + src_reg + ", " + (4 * registers.get(name)) + "(s0)");
+        System.out.println("lw t1, " + (4 * registers.get(name)) + "(s0)");
+        System.out.println("sw " + src_reg + ", 0(t1)" );
       }
     }
     return;

@@ -268,7 +268,7 @@ public class IRIcmp extends IRCode {
     }
     if (op2.equals("true") || op2.equals("false") || op2.equals("null")) {
       if (op2.equals("true")) {
-        System.out.println("li t1, 1 ");
+        System.out.println("li t1, 1");
       } else {
         System.out.println("li, t1, 0");
       }
@@ -284,7 +284,7 @@ public class IRIcmp extends IRCode {
       } catch (NumberFormatException e) {
         int reg_2 = registers.get(op2);
         if (reg_2 >= 0) {
-          addr1 = register_name.get(reg_2);
+          addr2 = register_name.get(reg_2);
         } else {
           System.out.println("lw t1, " + (reg_2 * 4) + "(s0)");
         }

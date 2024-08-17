@@ -181,6 +181,11 @@ public class IRFuncall extends IRCode {
         }
       }
     }
+    if (target_reg != null) {
+      if (!def.containsKey(target_reg)) {
+        use.put(target_reg, null);
+      }
+    }
     return;
   }
 
@@ -209,6 +214,7 @@ public class IRFuncall extends IRCode {
           } else {
             System.out.println("lui t0, %hi(" + reg.get(i).substring(1) + ")");
             System.out.println("addi t0, t0, " + "%lo(" + reg.get(i).substring(1) + ")");
+            System.out.println("lw t0, 0(t0)");
           }
         }
         System.out.println("sw " + str + ", " + ((i - 8) * 4) + "(sp)");
@@ -216,7 +222,7 @@ public class IRFuncall extends IRCode {
     }
     int extra = Integer.max(0, reg.size() - 8);
     for (int i = 0; i < 8; i++) {
-      System.out.println("sw a" + i + "," + ((i + extra) * 4) + "(sp)");
+      System.out.println("sw a" + i + ", " + ((i + extra) * 4) + "(sp)");
     }
     for (int i = 2; i <= 6; i++) {
       System.out.println("sw t" + i + ", " + ((i + extra + 6) * 4) + "(sp)");
@@ -242,13 +248,14 @@ public class IRFuncall extends IRCode {
         } else {
           System.out.println("lui a" + i + ", %hi(" + reg.get(i).substring(1) + ")");
           System.out.println("addi a" + i + ", a" + i + ", %lo(" + reg.get(i).substring(1) + ")");
+          System.out.println("lw a" + i + ", 0(a" + i + ")");
         }
       }
     }
     System.out.println("call " + func_name);
     if (target_reg != null) {
       int value = registers.get(target_reg);
-      if(value >= 0) {
+      if (value >= 0) {
         System.out.println("mv " + register_name.get(value) + ", a0");
       } else {
         System.out.println("sw a0, " + (value * 4) + "(s0)");
