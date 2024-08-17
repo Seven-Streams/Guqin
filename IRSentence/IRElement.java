@@ -185,4 +185,67 @@ public class IRElement extends IRCode {
     }
     def.put(output, null);
   }
+
+  @Override
+  public void CodegenWithOptim(HashMap<String, Integer> registers, HashMap<Integer, String> register_name)
+      throws Exception {
+    int src_value = registers.get(src);
+    String src_str = "t0";
+    if (src_value >= 0) {
+      src_str = register_name.get(src_value);
+    } else {
+      System.out.println("lw t0, " + (4 * src_value) + "(s0)");
+    }
+    if (num2 != null) {
+      try {
+        int num_i = Integer.parseInt(num2);
+        if ((num_i >> 10) == 0) {
+          System.out.println("addi t1, " + src_str + ", " + Integer.toString(num_i * 4));
+        } else {
+          System.out.println("lui t1, " + (num_i >> 10));
+          System.out.println("addi t1, t1, " + ((num_i << 2) & 0x00000fff));
+          System.out.println("add t1, " + src_str + ", t1");
+        }
+      } catch (NumberFormatException e) {
+        int value_i = registers.get(num2);
+        if (value_i >= 0) {
+          String from_str = register_name.get(value_i);
+          System.out.println("slli t1, " + from_str + "2");
+        } else {
+          System.out.println("lw t1, " + (value_i * 4) + "(s0)");
+          System.out.println("slli t1, t1, 2");
+        }
+      }
+    } else {
+      try {
+        int num_i = Integer.parseInt(num1);
+        if ((num_i >> 10) == 0) {
+          System.out.println("addi t1, " + src_str + ", " + Integer.toString(num_i * 4));
+        } else {
+          System.out.println("lui t1, " + (num_i >> 10));
+          System.out.println("addi t1, t1, " + ((num_i << 2) & 0x00000fff));
+          System.out.println("add t1, " + src_str + ", t1");
+        }
+      } catch (NumberFormatException e) {
+        int value_i = registers.get(num2);
+        if (value_i >= 0) {
+          String from_str = register_name.get(value_i);
+          System.out.println("slli t1, " + from_str + "2");
+        } else {
+          System.out.println("lw t1, " + (value_i * 4) + "(s0)");
+          System.out.println("slli t1, t1, 2");
+        }
+      }
+    }
+    int target_value = registers.get(output);
+    String target_str = "t0";
+    if(target_value >= 0) {
+      target_str = register_name.get(target_value);
+    }
+    System.out.println("add " + target_str + ", t1, " + src_str);
+    if(target_value < 0) {
+      System.out.println("sw t0, " + (target_value * 4) + "(s0)");
+    }
+    return;
+  }
 }

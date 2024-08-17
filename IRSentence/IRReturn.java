@@ -104,4 +104,37 @@ public class IRReturn extends IRCode {
     }
     return;
   }
+
+  @Override
+  public void CodegenWithOptim(HashMap<String, Integer> registers, HashMap<Integer, String> register_name)
+      throws Exception {
+    if (reg != null) {
+      if (!(reg.equals("true") || reg.equals("false") || reg.equals("null"))) {
+        try {
+          int test = Integer.parseInt(reg);
+          if ((test >> 12) != 0) {
+            System.out.println("lui a0, " + (test >> 12));
+            System.out.println("addi a0, a0, " + (test & 0x00000fff));
+          } else {
+            System.out.println("li, a0, " + test);
+          }
+        } catch (NumberFormatException e) {
+          int num = registers.get(reg);
+          if(num >= 0) {
+            System.out.println("mv " + register_name.get(num) + ", " + "a0");
+          } else {
+            System.out.println("lw a0, " + (num * 4) + "(s0)");
+          }
+        }
+      } else {
+        if (reg.equals("true")) {
+          System.out.println("li a0, 1");
+        } else {
+          System.out.println("li a0, 0");
+        }
+      }
+    }
+    System.out.println("j .return" + func_num);
+    return;
+  }
 }

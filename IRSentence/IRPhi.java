@@ -153,4 +153,10 @@ public class IRPhi extends IRCode {
     }
     return;
   }
+
+  @Override
+  public void CodegenWithOptim(HashMap<String, Integer> registers, HashMap<Integer, String> register_name)
+      throws Exception {
+    throw new Exception("Unexpected phi!");
+  }
 }
