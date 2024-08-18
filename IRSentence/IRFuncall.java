@@ -174,7 +174,7 @@ public class IRFuncall extends IRCode {
       try {
         Integer.parseInt(res);
       } catch (NumberFormatException e) {
-        if (CheckLit(res)) {
+        if (CheckLit(res) && (!is_global.containsKey(res))) {
           if (!def.containsKey(res)) {
             use.put(res, null);
           }
