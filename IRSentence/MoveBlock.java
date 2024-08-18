@@ -20,7 +20,15 @@ public class MoveBlock extends IRCode {
       try {
         Integer.parseInt(move.src);
       } catch (NumberFormatException e) {
-        use.put(move.src, null);
+        if (CheckLit(move.src)) {
+          use.put(move.src, null);
+        } else {
+          if(move.src.equals("true")) {
+            move.src = "1";
+          } else {
+            move.src = "0";
+          }
+        }
       }
     }
     return;
@@ -73,9 +81,9 @@ public class MoveBlock extends IRCode {
   @Override
   public void CodePrint() {
     System.out.print("b" + num + ":");
-    for(PseudoMove move:moves) {
+    for (PseudoMove move : moves) {
       System.out.print(move.src + "->" + move.des + ";");
     }
-    System.out.println("TO: b" + to ); 
+    System.out.println("TO: b" + to);
   }
 }

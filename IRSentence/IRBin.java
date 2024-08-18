@@ -320,20 +320,34 @@ public class IRBin extends IRCode {
           throw new Exception("Unexpected Symbol.");
         }
       }
+      boolean signal = (result >= 0);
+      result = signal ? result : -result;
       if (target >= 0) {
         if ((result >> 12) != 0) {
           System.out.println("lui " + register_name.get(target) + ", " + (result >> 12));
           System.out.println(
               "addi " + register_name.get(target) + ", " + register_name.get(target) + ", " + (result & 0x00000fff));
+          if (!signal) {
+            System.out.println("neg " + register_name.get(target) + ", " + register_name.get(target));
+          }
         } else {
           System.out.println("li " + register_name.get(target) + ", " + result);
+          if (!signal) {
+            System.out.println("neg " + register_name.get(target) + ", " + register_name.get(target));
+          }
         }
       } else {
         if ((result >> 12) != 0) {
           System.out.println("lui t0, " + (result >> 12));
           System.out.println("addi t0, t0, " + (result & 0x00000fff));
+          if (!signal) {
+            System.out.println("neg t0, t0");
+          }
         } else {
           System.out.println("li t0, " + result);
+          if (!signal) {
+            System.out.println("neg t0, t0");
+          }
         }
         System.out.println("sw t0, " + target * 4 + "(s0)");
       }
@@ -342,11 +356,19 @@ public class IRBin extends IRCode {
     String reg_1 = null;
     String reg_2 = null;
     if (is_int1) {
+      boolean signal1 = value1 >= 0;
+      value1 = signal1 ? value1 : -value1;
       if ((value1 >> 12) != 0) {
         System.out.println("lui t0, " + (value1 >> 12));
         System.out.println("addi t0, t0, " + (value1 & 0x00000fff));
+        if (!signal1) {
+          System.out.println("neg t0, t0");
+        }
       } else {
         System.out.println("li t0, " + value1);
+        if (!signal1) {
+          System.out.println("neg t0, t0");
+        }
       }
       reg_1 = "t0";
     } else {
@@ -365,11 +387,19 @@ public class IRBin extends IRCode {
       }
     }
     if (is_int2) {
+      boolean signal2 = value2 >= 0;
+      value2 = signal2 ? value2 : -value2;
       if ((value2 >> 12) != 0) {
         System.out.println("lui t1, " + (value2 >> 12));
         System.out.println("addi t1, t1, " + (value2 & 0x00000fff));
+        if (!signal2) {
+          System.out.println("neg t1, t1");
+        }
       } else {
         System.out.println("li t1, " + value2);
+        if (!signal2) {
+          System.out.println("neg t1, t1");
+        }
       }
       reg_2 = "t1";
     } else {

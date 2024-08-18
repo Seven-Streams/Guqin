@@ -358,9 +358,9 @@ public class LivenessAnalysis {
       if (code instanceof IRFuncall) {
         IRFuncall res = (IRFuncall) code;
         if (res.reg.size() > 8) {
-          func_res = res.reg.size() + 5;
+          func_res = res.reg.size() + 17;
         } else {
-          func_res = 13;
+          func_res = 25;
         }
       }
       if (code instanceof IRFuncend) {

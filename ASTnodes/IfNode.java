@@ -45,12 +45,13 @@ public class IfNode extends StatNode {
     }
     machine.generated.add(new IRLabel(branch_lb));
     branch.GenerateIR(machine);
-    IRjmp end_jmp = new IRjmp(end);
-    machine.generated.add(end_jmp);
+    IRjmp end_jmp1 = new IRjmp(end);
+    IRjmp end_jmp2 = new IRjmp(end);
+    machine.generated.add(end_jmp1);
     if (else_branch != null) {
       machine.generated.add(new IRLabel(else_branch_lb));
       else_branch.GenerateIR(machine);
-      machine.generated.add(end_jmp);
+      machine.generated.add(end_jmp2);
     }
     machine.generated.add(new IRLabel(end));
     machine.now_name.pop();

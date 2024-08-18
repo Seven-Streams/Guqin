@@ -86,7 +86,7 @@ public class Conditionjmp extends IRCode {
     try {
       Integer.parseInt(reg);
     } catch (NumberFormatException e) {
-      if (!def.containsKey(reg)) {
+      if ((!def.containsKey(reg)) && CheckLit(reg)) {
         use.put(reg, null);
       }
     }
@@ -95,11 +95,20 @@ public class Conditionjmp extends IRCode {
 
   @Override
   public void CodegenWithOptim(HashMap<String, Integer> registers, HashMap<Integer, String> register_name) {
-    int value = registers.get(reg);
-    if(value >= 0) {
-      System.out.println("beqz " + register_name.get(value) + ", b" + label2);
+    if (CheckLit(reg)) {
+      int value = registers.get(reg);
+      if (value >= 0) {
+        System.out.println("beqz " + register_name.get(value) + ", b" + label2);
+      } else {
+        System.out.println("lw t0, " + (value * 4) + "(s0)");
+        System.out.println("beqz t0, b" + label2);
+      }
     } else {
-      System.out.println("lw t0, " + (value * 4) + "(s0)");
+      if (reg.equals("true")) {
+        System.out.println("li t0, 1");
+      } else {
+        System.out.println("li t0, 0");
+      }
       System.out.println("beqz t0, b" + label2);
     }
     System.out.println("j b" + label1);

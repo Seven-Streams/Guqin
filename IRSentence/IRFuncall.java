@@ -182,7 +182,7 @@ public class IRFuncall extends IRCode {
       }
     }
     if (target_reg != null) {
-        def.put(target_reg, null);
+      def.put(target_reg, null);
     }
     return;
   }
@@ -236,17 +236,25 @@ public class IRFuncall extends IRCode {
           System.out.println("li a" + i + ", " + num);
         }
       } catch (NumberFormatException e) {
-        if (!is_global.containsKey(reg.get(i))) {
-          int value = registers.get(reg.get(i));
-          if (value >= 0) {
-            System.out.println("mv a" + i + ", " + register_name.get(value));
+        if (CheckLit(reg.get(i))) {
+          if (!is_global.containsKey(reg.get(i))) {
+            int value = registers.get(reg.get(i));
+            if (value >= 0) {
+              System.out.println("mv a" + i + ", " + register_name.get(value));
+            } else {
+              System.out.println("lw a" + i + ", " + (4 * value) + "(s0)");
+            }
           } else {
-            System.out.println("lw a" + i + ", " + (4 * value) + "(s0)");
+            System.out.println("lui a" + i + ", %hi(" + reg.get(i).substring(1) + ")");
+            System.out.println("addi a" + i + ", a" + i + ", %lo(" + reg.get(i).substring(1) + ")");
+            System.out.println("lw a" + i + ", 0(a" + i + ")");
           }
         } else {
-          System.out.println("lui a" + i + ", %hi(" + reg.get(i).substring(1) + ")");
-          System.out.println("addi a" + i + ", a" + i + ", %lo(" + reg.get(i).substring(1) + ")");
-          System.out.println("lw a" + i + ", 0(a" + i + ")");
+          if(reg.get(i).equals("true")) {
+            System.out.println("li a" + i + ", 1");
+          } else {
+            System.out.println("li a" + i + ", 0");
+          }
         }
       }
     }
