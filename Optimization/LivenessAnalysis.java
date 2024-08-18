@@ -1,6 +1,4 @@
 package Optimization;
-
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -44,6 +42,31 @@ public class LivenessAnalysis {
     AllocateAll(degree);
     CalculateStack();
     RegisterName();
+    // PrintNum();
+    // PrintInterval();
+    // PrintReg();
+  }
+
+  void PrintInterval() {
+    for(HashMap<String, Interval> check: interval_check.values()) {
+      for(Interval to_print: check.values()) {
+        System.out.println(to_print.name + ":" + to_print.start + "->" + to_print.end);
+      }
+    }
+  }
+  void PrintNum() {
+    for(IRCode code: machine.generated) {
+      System.out.print(code.sentence_number + ":");
+      code.CodePrint();
+    }
+  }
+
+  void PrintReg() {
+    for(HashMap<String, Integer> entry: registers.values()) {
+      for(Map.Entry<String, Integer> pair: entry.entrySet()) {
+        System.out.println(pair.getKey() + ":" + pair.getValue());
+      }
+    }
   }
 
   void PrintName() {
@@ -218,39 +241,32 @@ public class LivenessAnalysis {
   void InOutCheck() {
     in.clear();
     out.clear();
-    ArrayList<Integer> start = new ArrayList<>();
+    Queue<Integer> check_list = new LinkedList<>();
     for (int node : graph.keySet()) {
       if (graph.get(node).isEmpty()) {
-        start.add(node);
+        check_list.add(node);
       }
-    }
-    Queue<Integer> check_list = new LinkedList<>();
-    for (int end : start) {
-      check_list.add(end);
     }
     while (!check_list.isEmpty()) {
       boolean flag = false;
       int to_check = check_list.poll();
       HashMap<String, Boolean> res = new HashMap<>();
-      for (String use_v : use.get(to_check).keySet()) {
-        res.put(use_v, null);
-      }
-      for (String def_v : def.get(to_check).keySet()) {
-        res.remove(def_v);
-      }
       if (!in.containsKey(to_check)) {
         in.put(to_check, new HashMap<>());
       }
       if (!out.containsKey(to_check)) {
         out.put(to_check, new HashMap<>());
       }
-      HashMap<String, Boolean> to_operate = in.get(to_check);
-      for (String use_v : use.get(to_check).keySet()) {
-        if (!to_operate.containsKey(use_v)) {
-          to_operate.put(use_v, null);
-          flag = true;
-        }
+      for (String out_v : out.get(to_check).keySet()) {
+        res.put(out_v, null);
       }
+      for (String def_v : def.get(to_check).keySet()) {
+        res.remove(def_v);
+      }
+      for (String use_v : use.get(to_check).keySet()) {
+        res.put(use_v, null);
+      }
+      HashMap<String, Boolean> to_operate = in.get(to_check);
       for (String res_v : res.keySet()) {
         if (!to_operate.containsKey(res_v)) {
           to_operate.put(res_v, null);

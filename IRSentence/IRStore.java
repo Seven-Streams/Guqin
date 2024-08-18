@@ -163,8 +163,12 @@ public class IRStore extends IRCode {
 
   @Override
   public void UseDefCheck(HashMap<String, Boolean> def, HashMap<String, Boolean> use) {
-    if (!def.containsKey(from)) {
-      use.put(from, null);
+    try {
+      Integer.parseInt(from);
+    } catch (NumberFormatException e) {
+      if ((!def.containsKey(from)) && CheckLit(from)) {
+        use.put(from, null);
+      }
     }
     def.put(name, null);
     return;
@@ -177,11 +181,16 @@ public class IRStore extends IRCode {
     if (!(from.equals("true") || from.equals("false") || from.equals("null"))) {
       try {
         int num = Integer.parseInt(from);
+        boolean signal = num >= 0;
+        num = signal ? num : -num;
         if ((num >> 12) != 0) {
           System.out.println("lui t0, " + (num >> 12));
           System.out.println("addi t0, t0, " + (num & 0x00000fff));
         } else {
           System.out.println("li t0, " + num);
+        }
+        if (!signal) {
+          System.out.println("neg t0, t0");
         }
       } catch (NumberFormatException e) {
         if (registers.get(from) >= 0) {
@@ -202,11 +211,22 @@ public class IRStore extends IRCode {
       System.out.println("addi t1, t1, %lo(" + name.substring(1) + ")");
       System.out.println("sw " + src_reg + ", 0(t1)");
     } else {
-      if (registers.get(name) >= 0) {
-        System.out.println("sw " + src_reg + ", 0(" + register_name.get(registers.get(name)) + ")");
+      int value = registers.get(name);
+      if (value >= 0) {
+        System.out.println("sw " + src_reg + ", 0(" + register_name.get(value) + ")");
       } else {
-        System.out.println("lw t1, " + (4 * registers.get(name)) + "(s0)");
-        System.out.println("sw " + src_reg + ", 0(t1)" );
+        value = -value;
+        if ((value >> 10) == 0) {
+          System.out.println("lw t1, " + (4 * -value) + "(s0)");
+        } else {
+
+          System.out.println("lui t1, " + (value >> 10));
+          System.out.println("addi t1, t1, " + ((value << 2) & 0x00000fff));
+          System.out.println("neg t1, t1");
+          System.out.println("add t1, t1, s0");
+          System.out.println("lw t1, 0(t1)");
+        }
+        System.out.println("sw " + src_reg + ", 0(t1)");
       }
     }
     return;

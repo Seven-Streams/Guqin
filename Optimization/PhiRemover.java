@@ -86,7 +86,7 @@ public class PhiRemover {
           new_block.to = ftpair.to;
           ArrayList<PseudoMove> op2 = new ArrayList<>();
           for (PseudoMove op : moves.get(ftpair.from).get(ftpair.to)) {
-            String res = "%reg" + Integer.toString(++machine.tmp_time);
+            String res = "%reg$" + Integer.toString(++machine.tmp_time);
             new_block.moves.add(new PseudoMove(op.src, res));
             op2.add(new PseudoMove(res, op.des));
           }
@@ -106,7 +106,7 @@ public class PhiRemover {
           new_block.to = ftpair.to;
           ArrayList<PseudoMove> op2 = new ArrayList<>();
           for (PseudoMove op : moves.get(ftpair.from).get(ftpair.to)) {
-            String res = "%reg" + Integer.toString(++machine.tmp_time);
+            String res = "%reg$" + Integer.toString(++machine.tmp_time);
             new_block.moves.add(new PseudoMove(op.src, res));
             op2.add(new PseudoMove(res, op.des));
           }
@@ -123,7 +123,7 @@ public class PhiRemover {
           new_block.to = ftpair2.to;
           ArrayList<PseudoMove> op2 = new ArrayList<>();
           for (PseudoMove op : moves.get(ftpair2.from).get(ftpair2.to)) {
-            String res = "%reg" + Integer.toString(++machine.tmp_time);
+            String res = "%reg$" + Integer.toString(++machine.tmp_time);
             new_block.moves.add(new PseudoMove(op.src, res));
             op2.add(new PseudoMove(res, op.des));
           }

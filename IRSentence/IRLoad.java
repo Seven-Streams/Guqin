@@ -135,17 +135,35 @@ public class IRLoad extends IRCode {
       if (place >= 0) {
         addr = register_name.get(place);
       } else {
-        System.out.println("lw t0, " + (place * 4) + "(s0)");
+        place = -place;
+        if ((place >> 10) == 0) {
+          System.out.println("lw t0, " + (-place * 4) + "(s0)");
+        } else {
+          System.out.println("lui t0, " + (place >> 10));
+          System.out.println("addi t0, t0, " + ((place << 2) & (0x00000fff)));
+          System.out.println("neg t0, t0");
+          System.out.println("add t0, t0, s0");
+          System.out.println("lw t0, 0(t0)");
+        }
       }
     }
     System.out.println("lw t0, 0(" + addr + ")");
     int target_value = registers.get(des);
-    if(target_value >= 0) {
+    if (target_value >= 0) {
       System.out.println("mv " + register_name.get(target_value) + ", t0");
     } else {
-      System.out.println("sw t0, " + (target_value * 4) + "(s0)");
+      target_value = -target_value;
+      if ((target_value >> 10) == 0) {
+        System.out.println("sw t0, " + (-target_value * 4) + "(s0)");
+      } else {
+        System.out.println("lui t1, " + (target_value >> 10));
+        System.out.println("addi t1, t1, " + ((target_value << 2) & (0x00000fff)));
+        System.out.println("neg t1, t1");
+        System.out.println("add t1, t1, s0");
+        System.out.println("sw t0, 0(t1)");
+      }
     }
-    
+
     return;
   }
 }

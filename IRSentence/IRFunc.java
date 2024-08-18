@@ -88,10 +88,11 @@ public class IRFunc extends IRCode {
     sp_length = size;
     if ((size >> 12) == 0) {
       System.out.println("addi sp, sp, -" + size);
+      System.out.println("li t0, " + size);
     } else {
-      System.out.println("lui a0, " + (size >> 12));
-      System.out.println("addi a0, a0, " + (size & 0x00000fff));
-      System.out.println("sub sp, sp, a0");
+      System.out.println("lui t0, " + (size >> 12));
+      System.out.println("addi t0, t0, " + (size & 0x00000fff));
+      System.out.println("sub sp, sp, t0");
     }
     System.out.println("sw ra, " + (size - 4) + "(sp)");
     for (int i = 0; i <= 11; i++) {

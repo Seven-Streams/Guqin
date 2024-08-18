@@ -8,8 +8,6 @@ public class MoveBlock extends IRCode {
   public int to = 0;
   public int num = 0;
   public ArrayList<PseudoMove> moves = new ArrayList<>();
-  public ArrayList<IRLoad> loads = new ArrayList<>();
-  public ArrayList<IRStore> stores = new ArrayList<>();
 
   @Override
   public void UseDefCheck(HashMap<String, Boolean> def, HashMap<String, Boolean> use) {
@@ -70,5 +68,14 @@ public class MoveBlock extends IRCode {
     }
     System.out.println("j b" + to);
     return;
+  }
+
+  @Override
+  public void CodePrint() {
+    System.out.print("b" + num + ":");
+    for(PseudoMove move:moves) {
+      System.out.print(move.src + "->" + move.des + ";");
+    }
+    System.out.println("TO: b" + to ); 
   }
 }

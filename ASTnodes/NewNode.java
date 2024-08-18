@@ -96,7 +96,10 @@ public class NewNode extends ExprNode {
               String res = "%reg$" + Integer.toString(++machine.tmp_time);
               alloc.des = new String(res);
               alloc.type = "i32";
-              machine.generated.add(alloc);
+              if (!machine.alloc.containsKey(machine.func_name)) {
+                machine.alloc.put(machine.func_name, new ArrayList<>());
+              }
+              machine.alloc.get(machine.func_name).add(alloc);
               IRStore init = new IRStore();
               init.from = "0";
               init.name = new String(res);
@@ -184,7 +187,7 @@ public class NewNode extends ExprNode {
   }
 
   void BuildInner(int x, ArrayList<String> config, Composer machine, String beginning) {
-    if((x == (config.size() - 1)) && (x != (dim - 1))) {
+    if ((x == (config.size() - 1)) && (x != (dim - 1))) {
       return;
     }
     int condition = ++machine.label_number;
@@ -194,7 +197,10 @@ public class NewNode extends ExprNode {
     String res = "%reg$" + Integer.toString(++machine.tmp_time);
     alloc.des = new String(res);
     alloc.type = "i32";
-    machine.generated.add(alloc);
+    if (!machine.alloc.containsKey(machine.func_name)) {
+      machine.alloc.put(machine.func_name, new ArrayList<>());
+    }
+    machine.alloc.get(machine.func_name).add(alloc);
     IRStore init = new IRStore();
     init.from = "0";
     init.name = new String(res);

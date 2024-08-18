@@ -51,14 +51,16 @@ public class IRReturn extends IRCode {
 
   @Override
   public void CheckTime(HashMap<String, Integer> use, HashMap<String, Integer> def, Composer machine) {
-    try {
-      Integer.parseInt(reg);
-    } catch (NumberFormatException e) {
-      if (CheckLit(reg)) {
-        if (use.containsKey(reg)) {
-          use.put(reg, use.get(reg) + 1);
-        } else {
-          use.put(reg, 1);
+    if (reg != null) {
+      try {
+        Integer.parseInt(reg);
+      } catch (NumberFormatException e) {
+        if (CheckLit(reg)) {
+          if (use.containsKey(reg)) {
+            use.put(reg, use.get(reg) + 1);
+          } else {
+            use.put(reg, 1);
+          }
         }
       }
     }

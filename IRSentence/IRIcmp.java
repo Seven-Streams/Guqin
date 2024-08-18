@@ -262,7 +262,16 @@ public class IRIcmp extends IRCode {
         if (reg_1 >= 0) {
           addr1 = register_name.get(reg_1);
         } else {
-          System.out.println("lw t0, " + (reg_1 * 4) + "(s0)");
+          reg_1 = -reg_1;
+          if ((reg_1 >> 10) == 0) {
+            System.out.println("lw t0, " + (-reg_1 * 4) + "(s0)");
+          } else {
+            System.out.println("lui t0, " + (reg_1 >> 10));
+            System.out.println("addi t0, t0," + ((reg_1 << 2) & 0x00000fff));
+            System.out.println("neg t0, t0");
+            System.out.println("add t0, t0, s0");
+            System.out.println("lw t0, 0(t0)");
+          }
         }
       }
     }
@@ -286,7 +295,16 @@ public class IRIcmp extends IRCode {
         if (reg_2 >= 0) {
           addr2 = register_name.get(reg_2);
         } else {
-          System.out.println("lw t1, " + (reg_2 * 4) + "(s0)");
+          reg_2 = -reg_2;
+          if ((reg_2 >> 10) == 0) {
+            System.out.println("lw t1, " + (-reg_2 * 4) + "(s0)");
+          } else {
+            System.out.println("lui t1, " + (reg_2 >> 10));
+            System.out.println("addi t1, t1," + ((reg_2 << 2) & 0x00000fff));
+            System.out.println("neg t1, t1");
+            System.out.println("add t1, t1, s0");
+            System.out.println("lw t1, 0(t1)");
+          }
         }
       }
     }
@@ -328,8 +346,17 @@ public class IRIcmp extends IRCode {
         throw new Exception("Unexpected Symbol.");
       }
     }
-    if(target_value < 0) {
-      System.out.println("sw t0, " + (target_value * 4) + "(s0)");
+    if (target_value < 0) {
+      target_value = -target_value;
+      if ((target_value >> 10) == 0) {
+        System.out.println("sw t0, " + (-target_value * 4) + "(s0)");
+      } else {
+        System.out.println("lui t1, " + (target_value >> 10));
+        System.out.println("addi t1, t1, " + ((target_value << 2) & 0x00000fff));
+        System.out.println("neg t1, t1");
+        System.out.println("add t1, t1, s0");
+        System.out.println("sw t0, 0(t1)");
+      }
     }
     return;
   }

@@ -28,21 +28,21 @@ public class IRAlloc extends IRCode {
 
   @Override
   public boolean EmptyStore(HashMap<String, Integer> use) {
-   return !use.containsKey(des);
+    return !use.containsKey(des);
   }
 
   @Override
   public void CheckTime(HashMap<String, Integer> use, HashMap<String, Integer> def, Composer machine) {
-    if(def.containsKey(des)) {
+    if (def.containsKey(des)) {
       def.put(des, def.get(des) + 1);
     } else {
       def.put(des, 1);
     }
   }
 
-  @Override 
+  @Override
   public boolean AssignOnce(HashMap<String, Integer> def) {
-    return (def.get(des) == 1);
+    return false;
   }
 
   @Override

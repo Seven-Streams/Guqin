@@ -1,2 +1,2 @@
 export PATH="/usr/local/opt/bin:$PATH"
-testcases/codegen/scripts/test_llvm_ir.bash 'make test' testcases/codegen/t36.mx Composer/Inner.c IR_tmp 
+testcases/codegen/scripts/test_llvm_ir.bash 'make test' testcases/codegen/t58.mx Composer/Inner.c IR_tmp 

@@ -182,9 +182,7 @@ public class IRFuncall extends IRCode {
       }
     }
     if (target_reg != null) {
-      if (!def.containsKey(target_reg)) {
-        use.put(target_reg, null);
-      }
+        def.put(target_reg, null);
     }
     return;
   }

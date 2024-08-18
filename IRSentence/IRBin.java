@@ -331,7 +331,7 @@ public class IRBin extends IRCode {
       } else {
         if ((result >> 12) != 0) {
           System.out.println("lui t0, " + (result >> 12));
-          System.out.println("addi t0, t0" + (result & 0x00000fff));
+          System.out.println("addi t0, t0, " + (result & 0x00000fff));
         } else {
           System.out.println("li t0, " + result);
         }
@@ -351,7 +351,16 @@ public class IRBin extends IRCode {
       reg_1 = "t0";
     } else {
       if (value1 < 0) {
-        System.out.println("lw t0, " + (value1 * 4) + "(s0)");
+        value1 = -value1;
+        if ((value1 >> 10) == 0) {
+          System.out.println("lw t0, " + (-value1 * 4) + "(s0)");
+        } else {
+          System.out.println("lui t0, " + (value1 >> 10));
+          System.out.println("addi t0, t0, " + ((value1 << 2) & 0x00000fff));
+          System.out.println("neg t0, t0");
+          System.out.println("add t0, t0, s0");
+          System.out.println("lw t0, 0(t0)");
+        }
         reg_1 = "t0";
       }
     }
@@ -365,7 +374,16 @@ public class IRBin extends IRCode {
       reg_2 = "t1";
     } else {
       if (value2 < 0) {
-        System.out.println("lw t1, " + value2 * 4 + "(s0)");
+        value2 = -value2;
+        if ((value2 >> 10) == 0) {
+          System.out.println("lw t1, " + (-value2 * 4) + "(s0)");
+        } else {
+          System.out.println("lui t1, " + (value2 >> 10));
+          System.out.println("addi t1, t1, " + ((value2 << 2) & 0x00000fff));
+          System.out.println("neg t1, t1");
+          System.out.println("add t1, t1, s0");
+          System.out.println("lw t1, 0(t1)");
+        }
         reg_2 = "t1";
       }
     }
@@ -427,7 +445,16 @@ public class IRBin extends IRCode {
       }
     }
     if (target < 0) {
-      System.out.println("sw t0, " + (target * 4) + "(s0)");
+      target = -target;
+      if ((target >> 10) == 0) {
+        System.out.println("sw t0, " + (-target * 4) + "(s0)");
+      } else {
+        System.out.println("lui t1, " + (target >> 10));
+        System.out.println("addi t1, t1, " + ((target << 2) & 0x00000fff));
+        System.out.println("neg t1, t1");
+        System.out.println("add t1, t1, s0");
+        System.out.println("sw t0, 0(t1)");
+      }
     }
     return;
   }
