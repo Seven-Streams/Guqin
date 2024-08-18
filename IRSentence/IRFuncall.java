@@ -259,19 +259,20 @@ public class IRFuncall extends IRCode {
       }
     }
     System.out.println("call " + func_name);
-    if (target_reg != null) {
-      int value = registers.get(target_reg);
-      if (value >= 0) {
-        System.out.println("mv " + register_name.get(value) + ", a0");
-      } else {
-        System.out.println("sw a0, " + (value * 4) + "(s0)");
-      }
-    }
+    System.out.println("mv t0, a0");
     for (int i = 0; i < 8; i++) {
       System.out.println("lw a" + i + "," + ((i + extra) * 4) + "(sp)");
     }
     for (int i = 2; i <= 6; i++) {
       System.out.println("lw t" + i + ", " + ((i + extra + 6) * 4) + "(sp)");
+    }
+      if (target_reg != null) {
+      int value = registers.get(target_reg);
+      if (value >= 0) {
+        System.out.println("mv " + register_name.get(value) + ", t0");
+      } else {
+        System.out.println("sw t0, " + (value * 4) + "(s0)");
+      }
     }
     return;
   }
