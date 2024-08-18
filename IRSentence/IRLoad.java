@@ -116,7 +116,7 @@ public class IRLoad extends IRCode {
 
   @Override
   public void UseDefCheck(HashMap<String, Boolean> def, HashMap<String, Boolean> use) {
-    if (!def.containsKey(src)) {
+    if ((!def.containsKey(src)) && (!is_global.containsKey(src))) {
       use.put(src, null);
     }
     def.put(des, null);

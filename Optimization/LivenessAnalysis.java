@@ -1,4 +1,5 @@
 package Optimization;
+
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -37,6 +38,7 @@ public class LivenessAnalysis {
     NumberIns();
     UseDefCheck();
     InOutCheck();
+    // PrintInOut();
     GetSentenceInOut();
     SortingIntervals();
     AllocateAll(degree);
@@ -47,23 +49,40 @@ public class LivenessAnalysis {
     // PrintReg();
   }
 
+  void PrintInOut() {
+    for (Map.Entry<Integer, HashMap<String, Boolean>> entry : in.entrySet()) {
+      System.out.println(entry.getKey() + ":");
+      System.out.print("in:");
+      for (String in_v : entry.getValue().keySet()) {
+        System.out.print(in_v + ", ");
+      }
+      System.out.println();
+      System.out.print("out:");
+      for (String out_v : out.get(entry.getKey()).keySet()) {
+        System.out.print(out_v + ", ");
+      }
+      System.out.println();
+    }
+  }
+
   void PrintInterval() {
-    for(HashMap<String, Interval> check: interval_check.values()) {
-      for(Interval to_print: check.values()) {
+    for (HashMap<String, Interval> check : interval_check.values()) {
+      for (Interval to_print : check.values()) {
         System.out.println(to_print.name + ":" + to_print.start + "->" + to_print.end);
       }
     }
   }
+
   void PrintNum() {
-    for(IRCode code: machine.generated) {
+    for (IRCode code : machine.generated) {
       System.out.print(code.sentence_number + ":");
       code.CodePrint();
     }
   }
 
   void PrintReg() {
-    for(HashMap<String, Integer> entry: registers.values()) {
-      for(Map.Entry<String, Integer> pair: entry.entrySet()) {
+    for (HashMap<String, Integer> entry : registers.values()) {
+      for (Map.Entry<String, Integer> pair : entry.entrySet()) {
         System.out.println(pair.getKey() + ":" + pair.getValue());
       }
     }
@@ -195,6 +214,12 @@ public class LivenessAnalysis {
   }
 
   void UseDefCheck() {
+    for (IRCode code : machine.global) {
+      code.UseDefCheck(null, null);
+    }
+    for (IRCode code : machine.const_str) {
+      code.UseDefCheck(null, null);
+    }
     use.clear();
     def.clear();
     int func = 0;
@@ -213,10 +238,6 @@ public class LivenessAnalysis {
         now = label.label;
       }
       if (code instanceof IRFunc) {
-        if (res_def != null) {
-          use.put(now, res_use);
-          def.put(now, res_def);
-        }
         res_def = new HashMap<>();
         res_use = new HashMap<>();
         now = --func;
@@ -239,6 +260,7 @@ public class LivenessAnalysis {
   }
 
   void InOutCheck() {
+    HashMap<Integer, Boolean> visit = new HashMap<>();
     in.clear();
     out.clear();
     Queue<Integer> check_list = new LinkedList<>();
@@ -248,7 +270,6 @@ public class LivenessAnalysis {
       }
     }
     while (!check_list.isEmpty()) {
-      boolean flag = false;
       int to_check = check_list.poll();
       HashMap<String, Boolean> res = new HashMap<>();
       if (!in.containsKey(to_check)) {
@@ -270,26 +291,27 @@ public class LivenessAnalysis {
       for (String res_v : res.keySet()) {
         if (!to_operate.containsKey(res_v)) {
           to_operate.put(res_v, null);
-          flag = true;
         }
       }
-      if (flag) {
-        if (pre.containsKey(to_check)) {
-          for (int pre_v : pre.get(to_check).keySet()) {
-            if (!out.containsKey(pre_v)) {
-              out.put(pre_v, new HashMap<>());
+      if (pre.containsKey(to_check)) {
+        for (int pre_v : pre.get(to_check).keySet()) {
+          if (!out.containsKey(pre_v)) {
+            out.put(pre_v, new HashMap<>());
+          }
+          boolean flag_2 = false;
+          HashMap<String, Boolean> out_check = out.get(pre_v);
+          for (String value : to_operate.keySet()) {
+            if (!out_check.containsKey(value)) {
+              out_check.put(value, null);
+              flag_2 = true;
             }
-            boolean flag_2 = false;
-            HashMap<String, Boolean> out_check = out.get(pre_v);
-            for (String value : to_operate.keySet()) {
-              if (!out_check.containsKey(value)) {
-                out_check.put(value, null);
-                flag_2 = true;
-              }
-            }
-            if (flag_2) {
-              check_list.add(pre_v);
-            }
+          }
+          if (!visit.containsKey(pre_v)) {
+            flag_2 = true;
+            visit.put(pre_v, null);
+          }
+          if (flag_2) {
+            check_list.add(pre_v);
           }
         }
       }
@@ -358,9 +380,9 @@ public class LivenessAnalysis {
       if (code instanceof IRFuncall) {
         IRFuncall res = (IRFuncall) code;
         if (res.reg.size() > 8) {
-          func_res = res.reg.size() + 17;
+          func_res = res.reg.size() + 18;
         } else {
-          func_res = 25;
+          func_res = 26;
         }
       }
       if (code instanceof IRFuncend) {

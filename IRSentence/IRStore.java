@@ -170,7 +170,9 @@ public class IRStore extends IRCode {
         use.put(from, null);
       }
     }
-    def.put(name, null);
+    if ((!is_global.containsKey(name)) && (!def.containsKey(name))) {
+      use.put(name, null);
+    }
     return;
   }
 
@@ -229,6 +231,7 @@ public class IRStore extends IRCode {
         System.out.println("sw " + src_reg + ", 0(t1)");
       }
     }
+
     return;
   }
 }

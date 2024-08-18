@@ -28,4 +28,9 @@ public class IRGlobal extends IRCode{
       throws Exception {
     Codegen();
   }
+
+  @Override
+  public void UseDefCheck(HashMap<String, Boolean> def, HashMap<String, Boolean> use) {
+    is_global.put(name, null);
+  }
 }
