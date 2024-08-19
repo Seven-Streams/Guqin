@@ -23,6 +23,7 @@ public class IRCode {
   public static int func_num = 0;
   public static int sp_length = 0;
   public int sentence_number = 0;
+  public static HashMap<Integer, Integer> register_use = null;
   public static HashMap<String, Boolean> is_global = new HashMap<>();
   public static HashMap<String, String> relative_addr = new HashMap<>();
   public boolean CheckLit(String to_check) {

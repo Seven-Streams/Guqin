@@ -95,8 +95,9 @@ public class IRFunc extends IRCode {
       System.out.println("sub sp, sp, t0");
     }
     System.out.println("sw ra, " + (size - 4) + "(sp)");
-    for (int i = 0; i <= 11; i++) {
-      System.out.println("sw s" + i + ", " + (size - 8 - 4 * i) + "(sp)");
+    System.out.println("sw s0, " + (size - 8) + "(sp)");
+    for (int i = 0; i <= Integer.min(register_use.get(-func_num), 10); i++) {
+      System.out.println("sw s" + (i + 1) + ", " + (size - 12 - 4 * i) + "(sp)");
     }
     System.out.println("addi s0, sp, " + size);
     if (names.size() < 8) {

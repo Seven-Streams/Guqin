@@ -28,6 +28,7 @@ public class LivenessAnalysis {
   public HashMap<Integer, HashMap<String, Boolean>> out = new HashMap<>();
   public HashMap<Integer, String> register_names = new HashMap<>();
   public HashMap<Integer, Interval> func_length = new HashMap<>();
+  public HashMap<Integer, Integer> max_register_use = new HashMap<>();
 
   public LivenessAnalysis(Composer _machine) {
     machine = _machine;
@@ -38,15 +39,11 @@ public class LivenessAnalysis {
     NumberIns();
     UseDefCheck();
     InOutCheck();
-    // PrintInOut();
     GetSentenceInOut();
     SortingIntervals();
     AllocateAll(degree);
     CalculateStack();
     RegisterName();
-    // PrintNum();
-    // PrintInterval();
-    // PrintReg();
   }
 
   void PrintInOut() {
@@ -333,9 +330,11 @@ public class LivenessAnalysis {
     for (int i = -1; i >= func_cnt; i--) {
       RegisterAllocate(i, degree);
     }
+    IRCode.register_use = max_register_use;
   }
 
   void RegisterAllocate(int func_num, int degree) {
+    max_register_use.put(func_num, -1);
     HashMap<Integer, Interval> free = new HashMap<>();
     for (int i = 0; i < degree; i++) {
       free.put(i, null);
@@ -351,18 +350,28 @@ public class LivenessAnalysis {
           free.put(i, now_alloc);
           registers.get(func_num).put(now_alloc.name, i);
           spilled = false;
+          if (max_register_use.get(func_num) < i) {
+            max_register_use.put(func_num, i);
+          }
           break;
         }
         if (free.get(i).end < now_alloc.start) {
           free.put(i, now_alloc);
           registers.get(func_num).put(now_alloc.name, i);
           spilled = false;
+          if (max_register_use.get(func_num) < i) {
+            max_register_use.put(func_num, i);
+          }
           break;
         }
       }
       if (spilled) {
         registers.get(func_num).put(now_alloc.name, --stack_num);
       }
+    }
+    IRFunc main_check = (IRFunc)(machine.generated.get(block_entries.get(func_num)));
+    if(main_check.name.equals("main")) {
+      max_register_use.put(func_num, -1);
     }
     stack_variables.put(func_num, -stack_num);
     return;

@@ -11,6 +11,7 @@ public class IRFuncall extends IRCode {
   public String target_reg = null;
   public String func_name = null;
   public String func_type = null;
+  public HashMap<Integer, Boolean> occupied = new HashMap<>();
   public ArrayList<String> type = new ArrayList<>();
   public ArrayList<String> reg = new ArrayList<>();
 

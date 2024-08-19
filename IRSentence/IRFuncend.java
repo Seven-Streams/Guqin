@@ -37,8 +37,9 @@ public class IRFuncend extends IRCode {
     System.out.println("");
     System.out.println(".return" + func_num + ":");
     System.out.println("lw ra, " + (sp_length - 4) + "(sp)");
-    for (int i = 0; i <= 11; i++) {
-      System.out.println("lw s" + i + ", " + (sp_length - 8 - 4 * i) + "(sp)");
+    System.out.println("lw s0, " + (sp_length - 8) + "(sp)");
+    for (int i = 0; i <= Integer.min(register_use.get(-func_num), 10); i++) {
+      System.out.println("lw s" + (i + 1) + ", " + (sp_length - 12 - 4 * i) + "(sp)");
     }
     if ((sp_length >> 12) == 0) {
       System.out.println("addi sp, sp, " + sp_length);

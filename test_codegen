@@ -1,2 +1,2 @@
 export PATH="/usr/local/opt/bin:$PATH"
-testcases/codegen/scripts/test_asm.bash 'make test' testcases/optim/sha_1.mx Composer/builtin.s tmp
+testcases/codegen/scripts/test_asm.bash 'make test' testcases/optim/dijkstra.mx Composer/builtin.s tmp
