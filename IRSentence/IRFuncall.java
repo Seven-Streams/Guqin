@@ -56,7 +56,6 @@ public class IRFuncall extends IRCode {
         }
       }
     } else {
-      System.out.println("mv a0, sp");
       for (int i = 8; i < reg.size(); i++) {
         try {
           int num = Integer.parseInt(reg.get(i));
@@ -69,14 +68,14 @@ public class IRFuncall extends IRCode {
         } catch (NumberFormatException e) {
           if (!is_global.get(reg.get(i))) {
             String addr1 = relative_addr.get(reg.get(i));
-            System.out.println("lw a0, " + addr1);
+            System.out.println("lw sp, " + addr1);
           } else {
-            System.out.println("lui a0, %hi(" + reg.get(i).substring(1) + ")");
-            System.out.println("addi a0, a0, " + "%lo(" + reg.get(i).substring(1) + ")");
-            System.out.println("lw a0, 0(a0)");
+            System.out.println("lui sp, %hi(" + reg.get(i).substring(1) + ")");
+            System.out.println("addi sp, sp, " + "%lo(" + reg.get(i).substring(1) + ")");
+            System.out.println("lw sp, 0(sp)");
           }
         }
-        System.out.println("sw a1, " + ((i - 8) * 4) + "(a0)");
+        System.out.println("sw a1, " + ((i - 8) * 4) + "(sp)");
       }
       for (int i = 0; i < 8; i++) {
         try {
