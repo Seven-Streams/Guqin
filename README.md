@@ -15,7 +15,7 @@ Guqin is a kind of Chinese traditional musical instrument. For example, the famo
   - [x] Trsnslate IR to RISCV assemble language
 - [ ] Optimization
   - [x] Mem2Reg
-  - [x] Register Allocation
+  - [ ] Register Allocation(I'm working HERE.)
   - [ ] to be continued...
 
 ## The songs I love listening when coding
@@ -32,7 +32,6 @@ Guqin is a kind of Chinese traditional musical instrument. For example, the famo
 - [25時の情熱](https://music.163.com/song?id=2156224250)
 - [鏡花水月](https://music.163.com/song?id=33913866)
 - [自伤无色](https://music.163.com/song?id=31460022)
-- [夢花火](https://music.163.com/song?id=28308659)
 
 ## Warning
 

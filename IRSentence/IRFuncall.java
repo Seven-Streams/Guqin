@@ -288,23 +288,14 @@ public class IRFuncall extends IRCode {
       if (value >= 0) {
         System.out.println("mv " + register_name.get(value) + ", a0");
       } else {
-        value = -value;
-        if ((value >> 10) == 0) {
-          System.out.println("sw a0, " + (-value * 4) + "(s0)");
-        } else {
-          System.out.println("lui t1" + (value >> 10));
-          System.out.println("addi t1, t1, " + ((value << 2) & 0x00000fff));
-          System.out.println("neg t1, t1");
-          System.out.println("add t1, t1, s0");
-          System.out.println("sw a0, 0(t1)");
-        }
+        System.out.println("sw a0, " + (value * 4) + "(s0)");
       }
     }
-    for (int i = 0; i < to_save.size(); i++) {
-      if((target_reg != null) && (registers.get(target_reg) >= 0) && to_save.get(i).equals(register_name.get(registers.get(target_reg)))) {
-        continue;
-      }
-      System.out.println("lw " + to_save.get(i) + "," + ((i + extra) * 4) + "(sp)");
+    for (int i = 0; i < 8; i++) {
+      System.out.println("lw a" + i + "," + ((i + extra) * 4) + "(sp)");
+    }
+    for (int i = 2; i <= 6; i++) {
+      System.out.println("lw t" + i + ", " + ((i + extra + 6) * 4) + "(sp)");
     }
     return;
   }
