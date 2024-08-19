@@ -221,7 +221,6 @@ public class IRStore extends IRCode {
         if ((value >> 10) == 0) {
           System.out.println("lw t1, " + (4 * -value) + "(s0)");
         } else {
-
           System.out.println("lui t1, " + (value >> 10));
           System.out.println("addi t1, t1, " + ((value << 2) & 0x00000fff));
           System.out.println("neg t1, t1");

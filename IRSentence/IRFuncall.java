@@ -209,7 +209,16 @@ public class IRFuncall extends IRCode {
             if (value >= 0) {
               str = register_name.get(value);
             } else {
-              System.out.println("lw t0, " + (4 * value) + "(s0)");
+              value = -value;
+              if ((value >> 10) == 0) {
+                System.out.println("lw t0, " + (4 * -value) + "(s0)");
+              } else {
+                System.out.println("lui t0" + (value << 10));
+                System.out.println("addi t0, t0, " + ((value << 2) & 0x00000fff));
+                System.out.println("neg t0, t0");
+                System.out.println("add t0, t0, s0");
+                System.out.println("lw t0, 0(t0)");
+              }
             }
           } else {
             System.out.println("lui t0, %hi(" + reg.get(i).substring(1) + ")");
@@ -222,13 +231,13 @@ public class IRFuncall extends IRCode {
     }
     int extra = Integer.max(0, reg.size() - 8);
     ArrayList<String> to_save = new ArrayList<>();
-    for(Integer reg_num: to_save_registers.get(sentence_number).keySet()) {
-      if(reg_num <= 10) {
+    for (Integer reg_num : to_save_registers.get(sentence_number).keySet()) {
+      if (reg_num <= 10) {
         continue;
       }
       to_save.add(register_name.get(reg_num));
     }
-    for(int i = 0; i < to_save.size(); i++) {
+    for (int i = 0; i < to_save.size(); i++) {
       System.out.println("sw " + to_save.get(i) + "," + ((i + extra) * 4) + "(sp)");
     }
     int total = Integer.min(8, reg.size());
@@ -248,7 +257,16 @@ public class IRFuncall extends IRCode {
             if (value >= 0) {
               System.out.println("mv a" + i + ", " + register_name.get(value));
             } else {
-              System.out.println("lw a" + i + ", " + (4 * value) + "(s0)");
+              value = -value;
+              if ((value >> 10) == 0) {
+                System.out.println("lw a" + i + ", " + (4 * -value) + "(s0)");
+              } else {
+                System.out.println("lui " + "a" + i + ", " + (value << 10));
+                System.out.println("addi " + "a" + i + ", a" + i + ", " + ((value << 2) & 0x00000fff));
+                System.out.println("neg a" + i + ", a" + i);
+                System.out.println("add a" + i + ", a" + i + ", s0");
+                System.out.println("lw a" + i + ", 0(a" + i + ")");
+              }
             }
           } else {
             System.out.println("lui a" + i + ", %hi(" + reg.get(i).substring(1) + ")");
@@ -256,7 +274,7 @@ public class IRFuncall extends IRCode {
             System.out.println("lw a" + i + ", 0(a" + i + ")");
           }
         } else {
-          if(reg.get(i).equals("true")) {
+          if (reg.get(i).equals("true")) {
             System.out.println("li a" + i + ", 1");
           } else {
             System.out.println("li a" + i + ", 0");
@@ -266,15 +284,24 @@ public class IRFuncall extends IRCode {
     }
     System.out.println("call " + func_name);
     System.out.println("mv t0, a0");
-    for(int i = 0; i < to_save.size(); i++) {
+    for (int i = 0; i < to_save.size(); i++) {
       System.out.println("lw " + to_save.get(i) + "," + ((i + extra) * 4) + "(sp)");
     }
-      if (target_reg != null) {
+    if (target_reg != null) {
       int value = registers.get(target_reg);
       if (value >= 0) {
         System.out.println("mv " + register_name.get(value) + ", t0");
       } else {
-        System.out.println("sw t0, " + (value * 4) + "(s0)");
+        value = -value;
+        if ((value >> 10) == 0) {
+          System.out.println("sw t0, " + (-value * 4) + "(s0)");
+        } else {
+          System.out.println("lui t1" + (value << 10));
+          System.out.println("addi t1, t1, " + ((value << 2) & 0x00000fff));
+          System.out.println("neg t1, t1");
+          System.out.println("add t1, t1, s0");
+          System.out.println("sw t0, 0(t1)");
+        }
       }
     }
     return;

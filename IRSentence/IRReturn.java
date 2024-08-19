@@ -127,7 +127,16 @@ public class IRReturn extends IRCode {
           if (num >= 0) {
             System.out.println("mv " + "a0, " + register_name.get(num));
           } else {
-            System.out.println("lw a0, " + (num * 4) + "(s0)");
+            num = -num;
+            if((num >> 10) == 0) {
+            System.out.println("lw a0, " + (-num * 4) + "(s0)");
+            } else {
+              System.out.println("lui t0, " + (num >> 10));
+              System.out.println("addi t0, t0, " + ((num << 2) & 0x00000fff));
+              System.out.println("neg t0, t0");
+              System.out.println("add t0, t0, s0");
+              System.out.println("lw a0, 0(t0)");
+            }
           }
         }
       } else {

@@ -106,7 +106,16 @@ public class IRFunc extends IRCode {
         if (value >= 0) {
           System.out.println("mv " + register_name.get(value) + ", " + "a" + i);
         } else {
-          System.out.println("sw a" + i + " , " + (value * 4) + "(s0)");
+          value = -value;
+          if ((value >> 10) == 0) {
+            System.out.println("sw a" + i + " , " + (-value * 4) + "(s0)");
+          } else {
+            System.out.println("lui t0, " + (value >> 10));
+            System.out.println("addi t0, t0, " + ((value << 2) & 0x00000fff));
+            System.out.println("neg t0, t0");
+            System.out.println("add t0, t0, s0");
+            System.out.println("sw a" + i + ", 0(t0)");
+          }
         }
       }
     } else {
@@ -115,16 +124,41 @@ public class IRFunc extends IRCode {
         if (value >= 0) {
           System.out.println("mv " + register_name.get(value) + ", " + "a" + i);
         } else {
-          System.out.println("sw a" + i + " , " + (value * 4) + "(s0)");
+          value = -value;
+          if ((value >> 10) == 0) {
+            System.out.println("sw a" + i + " , " + (-value * 4) + "(s0)");
+          } else {
+            System.out.println("lui t0, " + (value >> 10));
+            System.out.println("addi t0, t0, " + ((value << 2) & 0x00000fff));
+            System.out.println("neg t0, t0");
+            System.out.println("add t0, t0, s0");
+            System.out.println("sw a" + i + ", 0(t0)");
+          }
         }
       }
       for (int i = 8; i < names.size(); i++) {
-        System.out.println("lw t0, " + ((i - 8) * 4) + "(s0)");
+        if (((i - 8) >> 10) == 0) {
+          System.out.println("lw t0, " + ((i - 8) * 4) + "(s0)");
+        } else {
+          System.out.println("lui t0, " + ((i - 8) >> 10));
+          System.out.println("addi t0, t0" + (((i - 8) << 2) & 0x00000fff));
+          System.out.println("lw t0, 0(t0)");
+        }
         int value = registers.get(names.get(i));
         if (value >= 0) {
           System.out.println("mv " + register_name.get(value) + ", t0");
+        } else {
+          value = -value;
+          if((value >> 10) == 0) {
+          System.out.println("sw t0, " + (-value * 4) + "(s0)");
+          } else {
+            System.out.println("lui t1, " + (value >> 10));
+            System.out.println("addi t1, t1, " + ((value << 2) & 0x00000fff));
+            System.out.println("neg t1, t1");
+            System.out.println("add t1, t1, s0");
+            System.out.println("sw t0, 0(t1)");
+          }
         }
-        System.out.println("sw t0, " + (value * 4) + "(s0)");
       }
     }
     return;

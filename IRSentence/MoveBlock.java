@@ -53,7 +53,16 @@ public class MoveBlock extends IRCode {
           str_des = register_name.get(value_des);
           System.out.println("mv " + str_des + ", t0");
         } else {
-          System.out.println("sw t0, " + (value_des * 4) + "(s0)");
+          value_des = -value_des;
+          if((value_des >> 10) == 0) {
+          System.out.println("sw t0, " + (-value_des * 4) + "(s0)");
+          } else {
+            System.out.println("lui t1, " + (value_des >> 10));
+            System.out.println("addi t1, t1, " + ((value_des << 2) & 0x00000fff));
+            System.out.println("neg t1, t1");
+            System.out.println("add t1, t1, s0");
+            System.out.println("sw t0, 0(t1)");
+          }
         }
       } catch (NumberFormatException e) {
         int value_src = registers.get(move.src);
@@ -70,7 +79,16 @@ public class MoveBlock extends IRCode {
         }
         System.out.println("mv " + str_des + ", " + str_src);
         if (value_des < 0) {
-          System.out.println("sw t1, " + (value_des * 4) + "(s0)");
+          value_des = -value_des;
+          if((value_des >> 10) == 0) {
+          System.out.println("sw t1, " + (-value_des * 4) + "(s0)");
+          } else {
+            System.out.println("lui t0, " + (value_des >> 10));
+            System.out.println("addi t0, t0," + ((value_des << 2) & 0x00000fff));
+            System.out.println("neg t0, t0");
+            System.out.println("add t0, t0, s0");
+            System.out.println("sw t1, 0(t0)");
+          }
         }
       }
     }

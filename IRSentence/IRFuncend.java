@@ -38,15 +38,15 @@ public class IRFuncend extends IRCode {
     System.out.println(".return" + func_num + ":");
     System.out.println("lw ra, " + (sp_length - 4) + "(sp)");
     System.out.println("lw s0, " + (sp_length - 8) + "(sp)");
-    for (int i = 0; i <= Integer.min(register_use.get(-func_num), 10); i++) {
-      System.out.println("lw s" + (i + 1) + ", " + (sp_length - 12 - 4 * i) + "(sp)");
-    }
     if ((sp_length >> 12) == 0) {
       System.out.println("addi sp, sp, " + sp_length);
     } else {
       System.out.println("lui t0, " + (sp_length >> 12));
       System.out.println("addi t0, t0, " + (sp_length & 0x00000fff));
       System.out.println("add sp, sp, t0");
+    }
+    for (int i = 0; i <= Integer.min(register_use.get(-func_num), 10); i++) {
+      System.out.println("lw s" + (i + 1) + ", " + (- 12 - 4 * i) + "(sp)");
     }
     System.out.println("ret");
   }
