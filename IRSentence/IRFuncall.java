@@ -56,6 +56,7 @@ public class IRFuncall extends IRCode {
         }
       }
     } else {
+      System.out.println("mv a0, sp");
       for (int i = 8; i < reg.size(); i++) {
         try {
           int num = Integer.parseInt(reg.get(i));
@@ -68,14 +69,14 @@ public class IRFuncall extends IRCode {
         } catch (NumberFormatException e) {
           if (!is_global.get(reg.get(i))) {
             String addr1 = relative_addr.get(reg.get(i));
-            System.out.println("lw sp, " + addr1);
+            System.out.println("lw a0, " + addr1);
           } else {
-            System.out.println("lui sp, %hi(" + reg.get(i).substring(1) + ")");
-            System.out.println("addi sp, sp, " + "%lo(" + reg.get(i).substring(1) + ")");
-            System.out.println("lw sp, 0(sp)");
+            System.out.println("lui a0, %hi(" + reg.get(i).substring(1) + ")");
+            System.out.println("addi a0, a0, " + "%lo(" + reg.get(i).substring(1) + ")");
+            System.out.println("lw a0, 0(a0)");
           }
         }
-        System.out.println("sw a1, " + ((i - 8) * 4) + "(sp)");
+        System.out.println("sw a1, " + ((i - 8) * 4) + "(a0)");
       }
       for (int i = 0; i < 8; i++) {
         try {
@@ -287,14 +288,23 @@ public class IRFuncall extends IRCode {
       if (value >= 0) {
         System.out.println("mv " + register_name.get(value) + ", a0");
       } else {
-        System.out.println("sw a0, " + (value * 4) + "(s0)");
+        value = -value;
+        if ((value >> 10) == 0) {
+          System.out.println("sw a0, " + (-value * 4) + "(s0)");
+        } else {
+          System.out.println("lui t1" + (value >> 10));
+          System.out.println("addi t1, t1, " + ((value << 2) & 0x00000fff));
+          System.out.println("neg t1, t1");
+          System.out.println("add t1, t1, s0");
+          System.out.println("sw a0, 0(t1)");
+        }
       }
     }
-    for (int i = 0; i < 8; i++) {
-      System.out.println("lw a" + i + "," + ((i + extra) * 4) + "(sp)");
-    }
-    for (int i = 2; i <= 6; i++) {
-      System.out.println("lw t" + i + ", " + ((i + extra + 6) * 4) + "(sp)");
+    for (int i = 0; i < to_save.size(); i++) {
+      if((target_reg != null) && (registers.get(target_reg) >= 0) && to_save.get(i).equals(register_name.get(registers.get(target_reg)))) {
+        continue;
+      }
+      System.out.println("lw " + to_save.get(i) + "," + ((i + extra) * 4) + "(sp)");
     }
     return;
   }

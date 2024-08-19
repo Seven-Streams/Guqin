@@ -86,23 +86,9 @@ public class PhiRemover {
           new_block.to = ftpair.to;
           ArrayList<PseudoMove> op2 = new ArrayList<>();
           for (PseudoMove op : moves.get(ftpair.from).get(ftpair.to)) {
-            boolean danger = false;
-            for(PseudoMove check_op: moves.get(ftpair.from).get(ftpair.to)) {
-              if(op == check_op) {
-                continue;
-              }
-              if(op.des.equals(check_op.src)) {
-                danger = true;
-                break;
-              }
-            }
-            if(danger) {
             String res = "%reg$" + Integer.toString(++machine.tmp_time);
             new_block.moves.add(new PseudoMove(op.src, res));
             op2.add(new PseudoMove(res, op.des));
-            } else {
-              new_block.moves.add(new PseudoMove(op.src, op.des));
-            }
           }
           for (PseudoMove op_v : op2) {
             new_block.moves.add(op_v);
@@ -120,23 +106,9 @@ public class PhiRemover {
           new_block.to = ftpair.to;
           ArrayList<PseudoMove> op2 = new ArrayList<>();
           for (PseudoMove op : moves.get(ftpair.from).get(ftpair.to)) {
-            boolean danger = false;
-            for(PseudoMove check_op: moves.get(ftpair.from).get(ftpair.to)) {
-              if(op == check_op) {
-                continue;
-              }
-              if(op.des.equals(check_op.src)) {
-                danger = true;
-                break;
-              }
-            }
-            if(danger) {
             String res = "%reg$" + Integer.toString(++machine.tmp_time);
             new_block.moves.add(new PseudoMove(op.src, res));
             op2.add(new PseudoMove(res, op.des));
-            } else {
-              new_block.moves.add(new PseudoMove(op.src, op.des));
-            }
           }
           for (PseudoMove op_v : op2) {
             new_block.moves.add(op_v);
@@ -151,23 +123,9 @@ public class PhiRemover {
           new_block.to = ftpair2.to;
           ArrayList<PseudoMove> op2 = new ArrayList<>();
           for (PseudoMove op : moves.get(ftpair2.from).get(ftpair2.to)) {
-            boolean danger = false;
-            for(PseudoMove check_op: moves.get(ftpair2.from).get(ftpair2.to)) {
-              if(op == check_op) {
-                continue;
-              }
-              if(op.des.equals(check_op.src)) {
-                danger = true;
-                break;
-              }
-            }
-            if(danger) {
             String res = "%reg$" + Integer.toString(++machine.tmp_time);
             new_block.moves.add(new PseudoMove(op.src, res));
             op2.add(new PseudoMove(res, op.des));
-            } else {
-              new_block.moves.add(new PseudoMove(op.src, op.des));
-            }
           }
           for (PseudoMove op_v : op2) {
             new_block.moves.add(op_v);

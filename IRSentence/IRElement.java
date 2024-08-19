@@ -194,7 +194,6 @@ public class IRElement extends IRCode {
   @Override
   public void CodegenWithOptim(HashMap<String, Integer> registers, HashMap<Integer, String> register_name)
       throws Exception {
-    int target_value = registers.get(output);
     int src_value = registers.get(src);
     String src_str = "t0";
     if (src_value >= 0) {
@@ -206,20 +205,11 @@ public class IRElement extends IRCode {
       try {
         int num_i = Integer.parseInt(num2);
         if ((num_i >> 10) == 0) {
-          if (target_value < 0) {
-            System.out.println("addi t1, " + src_str + ", " + Integer.toString(num_i * 4));
-          } else {
-            System.out.println(
-                "addi " + register_name.get(target_value) + ", " + src_str + ", " + Integer.toString(num_i * 4));
-          }
+          System.out.println("addi t1, " + src_str + ", " + Integer.toString(num_i * 4));
         } else {
           System.out.println("lui t1, " + (num_i >> 10));
           System.out.println("addi t1, t1, " + ((num_i << 2) & 0x00000fff));
-          if (target_value < 0) {
-            System.out.println("add t1, " + src_str + ", t1");
-          } else {
-            System.out.println("add " + register_name.get(target_value) + ", t1, " + src_str);
-          }
+          System.out.println("add t1, " + src_str + ", t1");
         }
       } catch (NumberFormatException e) {
         int value_i = registers.get(num2);
@@ -239,30 +229,17 @@ public class IRElement extends IRCode {
           }
           System.out.println("slli t1, t1, 2");
         }
-        if (target_value < 0) {
-          System.out.println("add t1, t1, " + src_str);
-        } else {
-          System.out.println("add " + register_name.get(target_value) + ", t1, " + src_str);
-        }
+        System.out.println("add t1, t1, " + src_str);
       }
     } else {
       try {
         int num_i = Integer.parseInt(num1);
         if ((num_i >> 10) == 0) {
-          if (target_value < 0) {
-            System.out.println("addi t1, " + src_str + ", " + Integer.toString(num_i * 4));
-          } else {
-            System.out.println(
-                "addi " + register_name.get(target_value) + ", " + src_str + ", " + Integer.toString(num_i * 4));
-          }
+          System.out.println("addi t1, " + src_str + ", " + Integer.toString(num_i * 4));
         } else {
           System.out.println("lui t1, " + (num_i >> 10));
           System.out.println("addi t1, t1, " + ((num_i << 2) & 0x00000fff));
-          if (target_value < 0) {
-            System.out.println("add t1, " + src_str + ", t1");
-          } else {
-            System.out.println("add " + register_name.get(target_value) + ", t1, " + src_str);
-          }
+          System.out.println("add t1, " + src_str + ", t1");
         }
       } catch (NumberFormatException e) {
         int value_i = registers.get(num1);
@@ -282,13 +259,10 @@ public class IRElement extends IRCode {
           }
           System.out.println("slli t1, t1, 2");
         }
-        if (target_value < 0) {
-          System.out.println("add t1, t1, " + src_str);
-        } else {
-          System.out.println("add " + register_name.get(target_value) + ", t1, " + src_str);
-        }
+        System.out.println("add t1, t1, " + src_str);
       }
     }
+    int target_value = registers.get(output);
     if (target_value < 0) {
       target_value = -target_value;
       if ((target_value >> 10) == 0) {
@@ -300,6 +274,8 @@ public class IRElement extends IRCode {
         System.out.println("add t0, t0, s0");
         System.out.println("sw t1, 0(t0)");
       }
+    } else {
+      System.out.println("mv " + register_name.get(target_value) + ", t1");
     }
     return;
   }
