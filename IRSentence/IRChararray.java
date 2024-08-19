@@ -40,16 +40,11 @@ public class IRChararray extends IRCode {
     System.out.println("\"");
     System.out.println(".align 4");
     System.out.println(reg.substring(1) + ":");
-    System.out.println(".word 0");
+    System.out.println(".word " + reg.substring(1) + ".data");
     return;
   }
 
   public void Init() {
-    System.out.println("lui a0, %hi(" + reg.substring(1) + ".data)");
-    System.out.println("addi a0, a0, " + "%lo(" + reg.substring(1) + ".data)");
-    System.out.println("lui a1, %hi(" + reg.substring(1) + ")");
-    System.out.println("addi a1, a1, " + "%lo(" + reg.substring(1) + ")");
-    System.out.println("sw a0, 0(a1)");
     return;
   }
 
