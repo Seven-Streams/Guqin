@@ -8,6 +8,7 @@ import Composer.Composer;
 import Optimization.NameLabelPair;
 
 public class IRFuncall extends IRCode {
+  public static HashMap<Integer, HashMap<Integer, Boolean>> to_save_registers = null;
   public String target_reg = null;
   public String func_name = null;
   public String func_type = null;
@@ -220,11 +221,15 @@ public class IRFuncall extends IRCode {
       }
     }
     int extra = Integer.max(0, reg.size() - 8);
-    for (int i = 0; i < 8; i++) {
-      System.out.println("sw a" + i + ", " + ((i + extra) * 4) + "(sp)");
+    ArrayList<String> to_save = new ArrayList<>();
+    for(Integer reg_num: to_save_registers.get(sentence_number).keySet()) {
+      if(reg_num <= 10) {
+        continue;
+      }
+      to_save.add(register_name.get(reg_num));
     }
-    for (int i = 2; i <= 6; i++) {
-      System.out.println("sw t" + i + ", " + ((i + extra + 6) * 4) + "(sp)");
+    for(int i = 0; i < to_save.size(); i++) {
+      System.out.println("sw " + to_save.get(i) + "," + ((i + extra) * 4) + "(sp)");
     }
     int total = Integer.min(8, reg.size());
     for (int i = 0; i < total; i++) {
@@ -261,11 +266,8 @@ public class IRFuncall extends IRCode {
     }
     System.out.println("call " + func_name);
     System.out.println("mv t0, a0");
-    for (int i = 0; i < 8; i++) {
-      System.out.println("lw a" + i + "," + ((i + extra) * 4) + "(sp)");
-    }
-    for (int i = 2; i <= 6; i++) {
-      System.out.println("lw t" + i + ", " + ((i + extra + 6) * 4) + "(sp)");
+    for(int i = 0; i < to_save.size(); i++) {
+      System.out.println("lw " + to_save.get(i) + "," + ((i + extra) * 4) + "(sp)");
     }
       if (target_reg != null) {
       int value = registers.get(target_reg);

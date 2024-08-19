@@ -286,7 +286,7 @@ public class IRBin extends IRCode {
         }
         case ("/"): {
           if (value2 == 0) {
-            result = -1;
+            return; // It's an undefined behavior.
           } else {
             result = value1 / value2;
           }

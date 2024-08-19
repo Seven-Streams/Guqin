@@ -29,6 +29,7 @@ public class LivenessAnalysis {
   public HashMap<Integer, String> register_names = new HashMap<>();
   public HashMap<Integer, Interval> func_length = new HashMap<>();
   public HashMap<Integer, Integer> max_register_use = new HashMap<>();
+  public HashMap<Integer, HashMap<Integer, Boolean>> calling_use = new HashMap<>();
 
   public LivenessAnalysis(Composer _machine) {
     machine = _machine;
@@ -200,6 +201,9 @@ public class LivenessAnalysis {
         break;
       } else {
         machine.generated.get(i).sentence_number = ++number;
+        if (machine.generated.get(i) instanceof IRFuncall) {
+          calling_use.put(number, new HashMap<>());
+        }
       }
     }
     for (int nxt : graph.get(index).keySet()) {
@@ -331,6 +335,7 @@ public class LivenessAnalysis {
       RegisterAllocate(i, degree);
     }
     IRCode.register_use = max_register_use;
+    IRFuncall.to_save_registers = calling_use;
   }
 
   void RegisterAllocate(int func_num, int degree) {
@@ -353,6 +358,11 @@ public class LivenessAnalysis {
           if (max_register_use.get(func_num) < i) {
             max_register_use.put(func_num, i);
           }
+          for (Map.Entry<Integer, HashMap<Integer, Boolean>> entry : calling_use.entrySet()) {
+            if ((now_alloc.start <= entry.getKey()) && (now_alloc.end >= entry.getKey())) {
+              entry.getValue().put(i, null);
+            }
+          }
           break;
         }
         if (free.get(i).end < now_alloc.start) {
@@ -362,6 +372,11 @@ public class LivenessAnalysis {
           if (max_register_use.get(func_num) < i) {
             max_register_use.put(func_num, i);
           }
+          for (Map.Entry<Integer, HashMap<Integer, Boolean>> entry : calling_use.entrySet()) {
+            if ((now_alloc.start <= entry.getKey()) && (now_alloc.end >= entry.getKey())) {
+              entry.getValue().put(i, null);
+            }
+          }
           break;
         }
       }
@@ -369,8 +384,8 @@ public class LivenessAnalysis {
         registers.get(func_num).put(now_alloc.name, --stack_num);
       }
     }
-    IRFunc main_check = (IRFunc)(machine.generated.get(block_entries.get(func_num)));
-    if(main_check.name.equals("main")) {
+    IRFunc main_check = (IRFunc) (machine.generated.get(block_entries.get(func_num)));
+    if (main_check.name.equals("main")) {
       max_register_use.put(func_num, -1);
     }
     stack_variables.put(func_num, -stack_num);
