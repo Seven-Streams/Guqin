@@ -12,16 +12,14 @@ public class MoveBlock extends IRCode {
   @Override
   public void UseDefCheck(HashMap<String, Boolean> def, HashMap<String, Boolean> use) {
     for (PseudoMove move : moves) {
-      try {
-        Integer.parseInt(move.des);
-      } catch (NumberFormatException e) {
-        def.put(move.des, null);
-      }
+      def.put(move.des, null);
       try {
         Integer.parseInt(move.src);
       } catch (NumberFormatException e) {
         if (CheckLit(move.src)) {
-          use.put(move.src, null);
+          if (!def.containsKey(move.src)) {
+            use.put(move.src, null);
+          }
         } else {
           if (move.src.equals("true")) {
             move.src = "1";
@@ -78,7 +76,7 @@ public class MoveBlock extends IRCode {
           String reg = register_name.get(des_num);
           System.out.println("lw " + reg + ", " + (src_num * 4) + "(s0)");
         }
-        if((src_num < 0) && (des_num < 0)) {
+        if ((src_num < 0) && (des_num < 0)) {
           System.out.println("lw t0, " + (src_num * 4) + "(s0)");
           System.out.println("sw t0, " + (des_num * 4) + "(s0)");
         }

@@ -37,14 +37,8 @@ public class IRChararray extends IRCode {
     is_global.put(reg, true);
     System.out.println(reg.substring(1) + ".data:");// This part is to avoid "@".
     System.out.print(".asciz \"" + value);
-    int add = (value.length() + 1) % 4;
-    if (add == 0) {
-      add = 4;
-    }
-    for (int i = 0; i < (4 - add); i++) {
-      System.out.print("\\0");
-    }
     System.out.println("\"");
+    System.out.println(".align 4");
     System.out.println(reg.substring(1) + ":");
     System.out.println(".word 0");
     return;

@@ -45,6 +45,9 @@ public class LivenessAnalysis {
     AllocateAll(degree);
     CalculateStack();
     RegisterName();
+    // PrintNum();
+    // PrintReg();
+    // PrintInOut();
   }
 
   void PrintInOut() {
@@ -128,13 +131,10 @@ public class LivenessAnalysis {
     graph.clear();
     int now = 0;
     HashMap<Integer, Boolean> nxt = null;
-    Interval to_put = null;
     for (int i = 0; i < machine.generated.size(); i++) {
       IRCode code = machine.generated.get(i);
       if (code instanceof IRFunc) {
-        to_put = new Interval();
         now = --func_cnt;
-        to_put.start = now;
         block_entries.put(now, i);
         nxt = new HashMap<>();
       }
@@ -251,11 +251,11 @@ public class LivenessAnalysis {
         res_use = new HashMap<>();
         now = move.num;
       }
+      code.UseDefCheck(res_def, res_use);
       if (code instanceof IRFuncend) {
         use.put(now, res_use);
         def.put(now, res_def);
       }
-      code.UseDefCheck(res_def, res_use);
     }
     return;
   }

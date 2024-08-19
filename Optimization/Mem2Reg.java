@@ -41,6 +41,7 @@ public class Mem2Reg {
     ReservePhi();
     RemoveAlloca();
     PhiReOrder();
+
   }
 
   void PhiReOrder() {
