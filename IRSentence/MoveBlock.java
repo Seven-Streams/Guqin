@@ -23,7 +23,7 @@ public class MoveBlock extends IRCode {
         if (CheckLit(move.src)) {
           use.put(move.src, null);
         } else {
-          if(move.src.equals("true")) {
+          if (move.src.equals("true")) {
             move.src = "1";
           } else {
             move.src = "0";
@@ -40,55 +40,47 @@ public class MoveBlock extends IRCode {
     System.out.println("b" + num + ":");
     for (PseudoMove move : moves) {
       try {
-        int value = Integer.parseInt(move.src);
-        if ((value >> 12) != 0) {
-          System.out.println("lui t0, " + (value >> 12));
-          System.out.println("addi t0, t0, " + (value & 0x00000fff));
-        } else {
-          System.out.println("li t0, " + value);
+        int src_value = Integer.parseInt(move.src);
+        int des_value = registers.get(move.des);
+        String target = "t0";
+        if (des_value >= 0) {
+          target = register_name.get(des_value);
         }
-        int value_des = registers.get(move.des);
-        String str_des = "t1";
-        if (value_des >= 0) {
-          str_des = register_name.get(value_des);
-          System.out.println("mv " + str_des + ", t0");
+        if ((src_value >> 12) != 0) {
+          System.out.println("lui " + target + ", " + (src_value >> 12));
+          System.out.println("addi " + target + ", " + target + ", " + ((src_value) & 0x00000fff));
         } else {
-          value_des = -value_des;
-          if((value_des >> 10) == 0) {
-          System.out.println("sw t0, " + (-value_des * 4) + "(s0)");
+          System.out.println("li " + target + ", " + src_value);
+        }
+        if (des_value < 0) {
+          des_value = -des_value;
+          if ((des_value >> 10) == 0) {
+            System.out.println("sw t0, " + (-des_value * 4) + "(s0)");
           } else {
-            System.out.println("lui t1, " + (value_des >> 10));
-            System.out.println("addi t1, t1, " + ((value_des << 2) & 0x00000fff));
+            System.out.println("lui t1, " + (des_value >> 10));
+            System.out.println("addi t1, t1, " + ((des_value << 2) & 0x00000fff));
             System.out.println("neg t1, t1");
             System.out.println("add t1, t1, s0");
             System.out.println("sw t0, 0(t1)");
           }
         }
       } catch (NumberFormatException e) {
-        int value_src = registers.get(move.src);
-        int value_des = registers.get(move.des);
-        String str_src = "t0";
-        String str_des = "t1";
-        if (value_src >= 0) {
-          str_src = register_name.get(value_src);
-        } else {
-          System.out.println("lw t0, " + (value_src * 4) + "(s0)");
+        int src_num = registers.get(move.src);
+        int des_num = registers.get(move.des);
+        if ((src_num >= 0) && (des_num >= 0)) {
+          System.out.println("mv " + register_name.get(des_num) + ", " + register_name.get(src_num));
         }
-        if (value_des >= 0) {
-          str_des = register_name.get(value_des);
+        if ((src_num >= 0) && (des_num < 0)) {
+          String reg = register_name.get(src_num);
+          System.out.println("sw " + reg + ", " + (des_num * 4) + "(s0)");
         }
-        System.out.println("mv " + str_des + ", " + str_src);
-        if (value_des < 0) {
-          value_des = -value_des;
-          if((value_des >> 10) == 0) {
-          System.out.println("sw t1, " + (-value_des * 4) + "(s0)");
-          } else {
-            System.out.println("lui t0, " + (value_des >> 10));
-            System.out.println("addi t0, t0," + ((value_des << 2) & 0x00000fff));
-            System.out.println("neg t0, t0");
-            System.out.println("add t0, t0, s0");
-            System.out.println("sw t1, 0(t0)");
-          }
+        if ((src_num < 0) && (des_num >= 0)) {
+          String reg = register_name.get(des_num);
+          System.out.println("lw " + reg + ", " + (src_num * 4) + "(s0)");
+        }
+        if((src_num < 0) && (des_num < 0)) {
+          System.out.println("lw t0, " + (src_num * 4) + "(s0)");
+          System.out.println("sw t0, " + (des_num * 4) + "(s0)");
         }
       }
     }
