@@ -147,11 +147,13 @@ public class IRLoad extends IRCode {
         }
       }
     }
-    System.out.println("lw t0, 0(" + addr + ")");
     int target_value = registers.get(des);
-    if (target_value >= 0) {
-      System.out.println("mv " + register_name.get(target_value) + ", t0");
+    if (target_value < 0) {
+      System.out.println("lw t0, 0(" + addr + ")");
     } else {
+      System.out.println("lw " + register_name.get(target_value) + ", 0(" + addr + ")");
+    }
+    if (target_value < 0) {
       target_value = -target_value;
       if ((target_value >> 10) == 0) {
         System.out.println("sw t0, " + (-target_value * 4) + "(s0)");
