@@ -359,7 +359,7 @@ public class LivenessAnalysis {
             max_register_use.put(func_num, i);
           }
           for (Map.Entry<Integer, HashMap<Integer, Boolean>> entry : calling_use.entrySet()) {
-            if ((now_alloc.start <= entry.getKey()) && (now_alloc.end >= entry.getKey())) {
+            if ((now_alloc.start < entry.getKey()) && (now_alloc.end > entry.getKey())) {
               entry.getValue().put(i, null);
             }
           }
