@@ -6,6 +6,7 @@ import java.util.Stack;
 
 import Composer.Composer;
 import Optimization.NameLabelPair;
+import Optimization.PseudoMove;
 
 public class IRFuncall extends IRCode {
   public static HashMap<Integer, HashMap<Integer, Boolean>> to_save_registers = null;
@@ -212,7 +213,7 @@ public class IRFuncall extends IRCode {
               if ((value >> 10) == 0) {
                 System.out.println("lw t0, " + (4 * -value) + "(s0)");
               } else {
-                System.out.println("lui t0" + (value << 10));
+                System.out.println("lui t0" + (value >> 10));
                 System.out.println("addi t0, t0, " + ((value << 2) & 0x00000fff));
                 System.out.println("neg t0, t0");
                 System.out.println("add t0, t0, s0");
@@ -231,7 +232,7 @@ public class IRFuncall extends IRCode {
     int extra = Integer.max(0, reg.size() - 8);
     ArrayList<String> to_save = new ArrayList<>();
     for (Integer reg_num : to_save_registers.get(sentence_number).keySet()) {
-      if (reg_num <= 10) {
+      if ((reg_num <= 10)) {
         continue;
       }
       to_save.add(register_name.get(reg_num));
@@ -240,46 +241,72 @@ public class IRFuncall extends IRCode {
       System.out.println("sw " + to_save.get(i) + "," + ((i + extra) * 4) + "(sp)");
     }
     int total = Integer.min(8, reg.size());
+    HashMap<Integer, Boolean> danger = new HashMap<>();
     for (int i = 0; i < total; i++) {
+      try {
+        Integer.parseInt(reg.get(i));
+      } catch (NumberFormatException e) {
+        if (CheckLit(reg.get(i)) && (!is_global.containsKey(reg.get(i)))) {
+          if (registers.get(reg.get(i)) >= 0) {
+            danger.put(registers.get(reg.get(i)), null);
+          }
+        }
+      }
+    }
+    ArrayList<PseudoMove> moves = new ArrayList<>();
+    for (int i = 0; i < total; i++) {
+      String func_in = null;
+      for (int j = 12; j < 27; j++) {
+        if (!danger.containsKey(j)) {
+          func_in = register_name.get(j);
+          PseudoMove move = new PseudoMove(func_in, "a" + i);
+          danger.put(j, null);
+          moves.add(move);
+          break;
+        }
+      }
       try {
         int num = Integer.parseInt(reg.get(i));
         if ((num >> 12) != 0) {
-          System.out.println("lui a" + i + ", " + (num >> 12));
-          System.out.println("addi a" + i + ", a" + i + ", " + (num & 0x00000fff));
+          System.out.println("lui " + func_in + ", " + (num >> 12));
+          System.out.println("addi " + func_in + ", " + func_in + ", " + (num & 0x00000fff));
         } else {
-          System.out.println("li a" + i + ", " + num);
+          System.out.println("li " + func_in + ", " + num);
         }
       } catch (NumberFormatException e) {
         if (CheckLit(reg.get(i))) {
           if (!is_global.containsKey(reg.get(i))) {
             int value = registers.get(reg.get(i));
             if (value >= 0) {
-              System.out.println("mv a" + i + ", " + register_name.get(value));
+              System.out.println("mv " + func_in + ", " + register_name.get(value));
             } else {
               value = -value;
               if ((value >> 10) == 0) {
-                System.out.println("lw a" + i + ", " + (4 * -value) + "(s0)");
+                System.out.println("lw " + func_in + ", " + (4 * -value) + "(s0)");
               } else {
-                System.out.println("lui " + "a" + i + ", " + (value << 10));
-                System.out.println("addi " + "a" + i + ", a" + i + ", " + ((value << 2) & 0x00000fff));
-                System.out.println("neg a" + i + ", a" + i);
-                System.out.println("add a" + i + ", a" + i + ", s0");
-                System.out.println("lw a" + i + ", 0(a" + i + ")");
+                System.out.println("lui " + func_in + ", " + (value >> 10));
+                System.out.println("addi " + func_in + ", " + func_in + ", " + ((value << 2) & 0x00000fff));
+                System.out.println("neg " + func_in + ", " + func_in);
+                System.out.println("add " + func_in + ", " + func_in + ", s0");
+                System.out.println("lw " + func_in + ", 0(" + func_in + ")");
               }
             }
           } else {
-            System.out.println("lui a" + i + ", %hi(" + reg.get(i).substring(1) + ")");
-            System.out.println("addi a" + i + ", a" + i + ", %lo(" + reg.get(i).substring(1) + ")");
-            System.out.println("lw a" + i + ", 0(a" + i + ")");
+            System.out.println("lui " + func_in + ", %hi(" + reg.get(i).substring(1) + ")");
+            System.out.println("addi " + func_in + ", " + func_in + ", %lo(" + reg.get(i).substring(1) + ")");
+            System.out.println("lw " + func_in + ", 0(" + func_in + ")");
           }
         } else {
           if (reg.get(i).equals("true")) {
-            System.out.println("li a" + i + ", 1");
+            System.out.println("li " + func_in + ", 1");
           } else {
-            System.out.println("li a" + i + ", 0");
+            System.out.println("li " + func_in + ", 0");
           }
         }
       }
+    }
+    for (PseudoMove move : moves) {
+      System.out.println("mv " + move.des + ", " + move.src);
     }
     System.out.println("call " + func_name);
     if (target_reg != null) {
@@ -300,7 +327,8 @@ public class IRFuncall extends IRCode {
       }
     }
     for (int i = 0; i < to_save.size(); i++) {
-      if((target_reg != null) && (registers.get(target_reg) >= 0) && to_save.get(i).equals(register_name.get(registers.get(target_reg)))) {
+      if ((target_reg != null) && (registers.get(target_reg) >= 0)
+          && to_save.get(i).equals(register_name.get(registers.get(target_reg)))) {
         continue;
       }
       System.out.println("lw " + to_save.get(i) + "," + ((i + extra) * 4) + "(sp)");

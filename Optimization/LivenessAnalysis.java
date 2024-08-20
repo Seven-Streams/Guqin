@@ -43,11 +43,12 @@ public class LivenessAnalysis {
     GetSentenceInOut();
     SortingIntervals();
     AllocateAll(degree);
+    // PrintNum();
+    // PrintGraph();
     CalculateStack();
     RegisterName();
-    // PrintNum();
     // PrintReg();
-    // PrintInOut();
+    // PrintInterval();
   }
 
   void PrintInOut() {
@@ -92,6 +93,16 @@ public class LivenessAnalysis {
   void PrintName() {
     for (Map.Entry<Integer, String> pair : register_names.entrySet()) {
       System.out.println(pair.getKey() + " " + pair.getValue());
+    }
+  }
+
+  void PrintGraph() {
+    for (Map.Entry<Integer, HashMap<Integer, Boolean>> node : graph.entrySet()) {
+      System.out.print(node.getKey() + ":");
+      for (int to : node.getValue().keySet()) {
+        System.out.print(to + ", ");
+      }
+      System.out.println();
     }
   }
 
@@ -412,7 +423,7 @@ public class LivenessAnalysis {
         func_res = Integer.max(func_res, (reg_cnt + 2 + Integer.max(0, res.reg.size() - 8)));
       }
       if (code instanceof IRFuncend) {
-        check.size = func_res + stack_variables.get(now_func);
+        check.size = func_res + stack_variables.get(now_func) + 14;
       }
     }
     return;
@@ -426,9 +437,12 @@ public class LivenessAnalysis {
     for (int i = 2; i <= 6; i++) {
       register_names.put(cnt++, "t" + Integer.toString(i));
     }
+    register_names.put(cnt++, "gp");
     for (int i = 7; i >= 0; i--) {
       register_names.put(cnt++, "a" + Integer.toString(i));
     }
+    register_names.put(cnt++, "t0");
+    register_names.put(cnt++, "t1");
     return;
   }
 

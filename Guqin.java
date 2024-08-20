@@ -60,7 +60,7 @@ public class Guqin {
         LivenessAnalysis allocator = new LivenessAnalysis(Yuchuan);
         PhiRemover eraser = new PhiRemover(Yuchuan);
         eraser.Remove();
-        allocator.Allocator(24);
+        allocator.Allocator(25);
         allocator.Codegen();
         System.exit(0);
     }
