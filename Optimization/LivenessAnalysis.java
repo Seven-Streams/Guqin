@@ -403,11 +403,13 @@ public class LivenessAnalysis {
       }
       if (code instanceof IRFuncall) {
         IRFuncall res = (IRFuncall) code;
-        if (res.reg.size() > 8) {
-          func_res = res.reg.size() + 18;
-        } else {
-          func_res = 26;
+        int reg_cnt = 0;
+        for (int to_save : calling_use.get(res.sentence_number).keySet()) {
+          if (to_save > 10) {
+            reg_cnt++;
+          }
         }
+        func_res = Integer.max(func_res, (reg_cnt + 2 + Integer.max(0, res.reg.size() - 8)));
       }
       if (code instanceof IRFuncend) {
         check.size = func_res + stack_variables.get(now_func);
