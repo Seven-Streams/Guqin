@@ -63,7 +63,6 @@ public class Guqin {
         PhiRemover eraser = new PhiRemover(Yuchuan);
         eraser.Remove();
         allocator.Allocator(25);
-        allocator.PrintBuiltIn();
         allocator.Codegen();
         System.exit(0);
     }
