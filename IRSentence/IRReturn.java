@@ -27,12 +27,7 @@ public class IRReturn extends IRCode {
         String return_value = null;
         try {
           int test = Integer.parseInt(reg);
-          if ((test >> 12) != 0) {
-            System.out.println("lui a0, " + (test >> 12));
-          } else {
-            System.out.println("andi a0, a0, 0");
-          }
-          System.out.println("addi a0, a0, " + (test & 0x00000fff));
+          System.out.println("li a0, " + test);
         } catch (NumberFormatException e) {
           return_value = relative_addr.get(reg);
           System.out.println("lw a0, " + return_value);
@@ -122,7 +117,7 @@ public class IRReturn extends IRCode {
           if (num >= 0) {
             System.out.println("mv " + "a0, " + register_name.get(num));
           } else {
-            if ((num >> 10) == 0) {
+            if ((num >> 9) == 0) {
               System.out.println("lw a0, " + (num * 4) + "(s0)");
             } else {
               System.out.println("li t0, " + (num * 4));

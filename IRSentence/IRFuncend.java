@@ -36,16 +36,16 @@ public class IRFuncend extends IRCode {
     System.out.println("j .return" + func_num);
     System.out.println("");
     System.out.println(".return" + func_num + ":");
-    System.out.println("lw ra, " + (sp_length - 4) + "(sp)");
-    System.out.println("lw s0, " + (sp_length - 8) + "(sp)");
-    if ((sp_length >> 12) == 0) {
+    if ((sp_length >> 11) == 0) {
       System.out.println("addi sp, sp, " + sp_length);
     } else {
       System.out.println("li t0, " + (sp_length));
       System.out.println("add sp, sp, t0");
     }
+    System.out.println("lw ra, " + (-4) + "(sp)");
+    System.out.println("lw s0, " + (-8) + "(sp)");
     for (int i = 0; i <= Integer.min(register_use.get(-func_num), 10); i++) {
-      System.out.println("lw s" + (i + 1) + ", " + (- 12 - 4 * i) + "(sp)");
+      System.out.println("lw s" + (i + 1) + ", " + (-12 - 4 * i) + "(sp)");
     }
     System.out.println("ret");
   }

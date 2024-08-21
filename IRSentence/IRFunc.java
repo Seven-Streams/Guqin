@@ -88,12 +88,13 @@ public class IRFunc extends IRCode {
     sp_length = size;
     System.out.println("li t0, " + size);
     System.out.println("sub sp, sp, t0");
-    System.out.println("sw ra, " + (size - 4) + "(sp)");
-    System.out.println("sw s0, " + (size - 8) + "(sp)");
+    System.out.println("add t1, sp, t0");
+    System.out.println("sw ra, " + (-4) + "(t1)");
+    System.out.println("sw s0, " + (-8) + "(t1)");
     for (int i = 0; i <= Integer.min(register_use.get(-func_num), 10); i++) {
-      System.out.println("sw s" + (i + 1) + ", " + (size - 12 - 4 * i) + "(sp)");
+      System.out.println("sw s" + (i + 1) + ", " + (-12 - 4 * i) + "(t1)");
     }
-    System.out.println("addi s0, sp, " + size);
+    System.out.println("add s0, sp, t0");
     if (names.size() < 8) {
       for (int i = 0; i < names.size(); i++) {
         int value = registers.get(names.get(i));
@@ -125,7 +126,7 @@ public class IRFunc extends IRCode {
         }
       }
       for (int i = 8; i < names.size(); i++) {
-        if (((i - 8) >> 10) == 0) {
+        if (((i - 8) >> 9) == 0) {
           System.out.println("lw t0, " + ((i - 8) * 4) + "(s0)");
         } else {
           System.out.println("li t0, " + ((i - 8) * 4));

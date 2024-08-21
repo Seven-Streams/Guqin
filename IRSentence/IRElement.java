@@ -205,7 +205,7 @@ public class IRElement extends IRCode {
     if (num2 != null) {
       try {
         int num_i = Integer.parseInt(num2);
-        if ((num_i >> 10) == 0) {
+        if ((num_i >> 9) == 0) {
           if (target_value < 0) {
             System.out.println("addi t1, " + src_str + ", " + Integer.toString(num_i * 4));
           } else {
@@ -213,8 +213,7 @@ public class IRElement extends IRCode {
                 "addi " + register_name.get(target_value) + ", " + src_str + ", " + Integer.toString(num_i * 4));
           }
         } else {
-          System.out.println("lui t1, " + (num_i >> 10));
-          System.out.println("addi t1, t1, " + ((num_i << 2) & 0x00000fff));
+          System.out.println("li t1, " + (num_i * 4));
           if (target_value < 0) {
             System.out.println("add t1, " + src_str + ", t1");
           } else {

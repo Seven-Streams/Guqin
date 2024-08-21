@@ -57,7 +57,7 @@ public class IRIcmp extends IRCode {
       if (op1.equals("true")) {
         System.out.println("li a0, 1 ");
       } else {
-        System.out.println("li, a0, 0");
+        System.out.println("li a0, 0");
       }
     } else {
       try {
@@ -77,7 +77,7 @@ public class IRIcmp extends IRCode {
       if (op2.equals("true")) {
         System.out.println("li a1, 1 ");
       } else {
-        System.out.println("li, a1, 0");
+        System.out.println("li a1, 0");
       }
     } else {
       try {
@@ -246,7 +246,7 @@ public class IRIcmp extends IRCode {
       if (op1.equals("true")) {
         System.out.println("li t0, 1");
       } else {
-        System.out.println("li, t0, 0");
+        System.out.println("li t0, 0");
       }
     } else {
       try {
@@ -271,7 +271,7 @@ public class IRIcmp extends IRCode {
       if (op2.equals("true")) {
         System.out.println("li t1, 1");
       } else {
-        System.out.println("li, t1, 0");
+        System.out.println("li t1, 0");
       }
     } else {
       try {

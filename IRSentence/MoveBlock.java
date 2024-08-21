@@ -46,20 +46,12 @@ public class MoveBlock extends IRCode {
         if (des_value >= 0) {
           target = register_name.get(des_value);
         }
-        if ((src_value >> 12) != 0) {
-          System.out.println("lui " + target + ", " + (src_value >> 12));
-          System.out.println("addi " + target + ", " + target + ", " + ((src_value) & 0x00000fff));
-        } else {
-          System.out.println("li " + target + ", " + src_value);
-        }
+        System.out.println("li " + target + ", " + src_value);
         if (des_value < 0) {
-          des_value = -des_value;
-          if ((des_value >> 10) == 0) {
-            System.out.println("sw t0, " + (-des_value * 4) + "(s0)");
+          if ((des_value >> 9) == 0) {
+            System.out.println("sw t0, " + (des_value * 4) + "(s0)");
           } else {
-            System.out.println("lui t1, " + (des_value >> 10));
-            System.out.println("addi t1, t1, " + ((des_value << 2) & 0x00000fff));
-            System.out.println("neg t1, t1");
+            System.out.println("li t1, " + (des_value * 4));
             System.out.println("add t1, t1, s0");
             System.out.println("sw t0, 0(t1)");
           }
