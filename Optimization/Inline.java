@@ -1,9 +1,8 @@
 package Optimization;
 
 import java.util.HashMap;
-
-import Composer.*;
 import IRSentence.*;
+import Composer.*;
 
 public class Inline {
   Composer machine = null;
@@ -14,7 +13,23 @@ public class Inline {
     machine = _machine;
   }
 
-  public void FuncCheck(int bound) {
+  public void Optim(int bound) {
+    CheckGlobal();
+    FuncCheck(bound);
+    InlineFunc();
+    EmbeddingInline();
+
+  }
+  void CheckGlobal() {
+    for(IRCode code: machine.global) {
+      code.CheckGlobal();
+    }
+    for(IRCode chars: machine.const_str) {
+      chars.CheckGlobal();
+    }
+  }
+
+  void FuncCheck(int bound) {
     ready_to_inline.clear();
     entry.clear();
     String name = null;
@@ -42,11 +57,11 @@ public class Inline {
     }
   }
 
-  public void InlineFunc() {
+  void InlineFunc() {
     for (int i = 0; i < machine.generated.size(); i++) {
       IRCode code = machine.generated.get(i);
       if (code instanceof IRFuncall) {
-        IRFuncall call = (IRFuncall)code;
+        IRFuncall call = (IRFuncall) code;
         if (ready_to_inline.get(call.func_name)) {
           InlineFunc to_inline = GetInline(entry.get(call.func_name), call);
           machine.generated.set(i, to_inline);
@@ -56,16 +71,16 @@ public class Inline {
     return;
   }
 
-  public InlineFunc GetInline(int start, IRFuncall calling_info) {
+  InlineFunc GetInline(int start, IRFuncall calling_info) {
     InlineFunc return_value = new InlineFunc();
     return return_value;
   }
 
-  public void EmbeddingInline() {
-    for(int i = 0; i < machine.generated.size(); i++) {
+  void EmbeddingInline() {
+    for (int i = 0; i < machine.generated.size(); i++) {
       IRCode code = machine.generated.get(i);
-      if(code instanceof InlineFunc) {
-        machine.generated.addAll(i + 1, ((InlineFunc)code).operations);
+      if (code instanceof InlineFunc) {
+        machine.generated.addAll(i + 1, ((InlineFunc) code).operations);
         machine.generated.remove(i);
         continue;
       }

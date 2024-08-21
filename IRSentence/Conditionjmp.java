@@ -123,4 +123,38 @@ public class Conditionjmp extends IRCode {
     System.out.println("j b" + label1);
     return;
   }
+
+  @Override
+  public IRCode GetInline(HashMap<String, String> now_name, HashMap<Integer, Integer> now_label, Composer machine)
+      throws Exception {
+    Conditionjmp return_value = new Conditionjmp();
+    try{
+      Integer.parseInt(reg);
+      return_value.reg = new String(reg);
+    }catch(NumberFormatException e) {
+      if((CheckLit(reg)) && (!is_global.containsKey(reg))) {
+        if(now_name.containsKey(reg)) {
+          return_value.reg = new String(now_name.get(reg));
+        } else {
+          return_value.reg = new String("%reg$" + (++machine.tmp_time));
+          now_name.put(reg, return_value.reg);
+        }
+      } else {
+        return_value.reg = new String(reg);
+      }
+    }
+    if(now_label.containsKey(label1)) {
+      return_value.label1 = now_label.get(label1);
+    } else {
+      return_value.label1 = ++machine.label_number;
+      now_label.put(label1, return_value.label1);
+    }
+    if(now_label.containsKey(label2)) {
+      return_value.label2 = now_label.get(label2);
+    } else {
+      return_value.label2 = ++machine.label_number;
+      now_label.put(label2, return_value.label2);
+    }
+    return return_value;
+  }
 }

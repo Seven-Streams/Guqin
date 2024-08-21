@@ -489,4 +489,44 @@ public class IRBin extends IRCode {
     }
     return;
   }
+
+  @Override
+  public IRCode GetInline(HashMap<String, String> now_name, HashMap<Integer, Integer> now_label, Composer machine)
+      throws Exception {
+    IRBin return_value = new IRBin();
+    return_value.symbol = new String(symbol);
+    try {
+      Integer.parseInt(op1);
+    } catch (NumberFormatException e) {
+      if (!is_global.containsKey(op1)) {
+        if (now_name.containsKey(op1)) {
+          return_value.op1 = new String(now_name.get(op1));
+        } else {
+          return_value.op1 = new String("%reg$" + (++machine.tmp_time));
+          now_name.put(op1, return_value.op1);
+        }
+      }
+    }
+    try {
+      Integer.parseInt(op2);
+    } catch (NumberFormatException e) {
+      if (!is_global.containsKey(op2)) {
+        if (now_name.containsKey(op2)) {
+          return_value.op2 = new String(now_name.get(op2));
+        } else {
+          return_value.op2 = new String("%reg$" + (++machine.tmp_time));
+          now_name.put(op2, return_value.op2);
+        }
+      }
+    }
+    if(!(is_global.containsKey(target_reg))) {
+      if(now_name.containsKey(target_reg)) {
+        return_value.target_reg = new String(now_name.get(target_reg));
+      } else {
+        return_value.target_reg = new String("%reg$" + (++machine.tmp_time));
+        now_name.put(target_reg, return_value.target_reg);
+      }
+    }
+    return return_value;
+  }
 }

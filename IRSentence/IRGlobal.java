@@ -5,6 +5,11 @@ import java.util.HashMap;
 public class IRGlobal extends IRCode{
   public String name = null;
   public String type = null;
+
+  @Override
+  public void CheckGlobal() {
+    is_global.put(name, null);
+  }
   @Override
   public void CodePrint() {
     if(type.equals("ptr")) {

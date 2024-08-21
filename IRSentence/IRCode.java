@@ -30,6 +30,7 @@ public class IRCode {
   public boolean CheckLit(String to_check) {
     return(!((to_check.equals("true")) || to_check.equals("false") || to_check.equals("null")));
   }
-
+  public void CheckGlobal(){};
   public void CodegenWithOptim(HashMap<String, Integer> registers, HashMap<Integer, String> register_name) throws Exception{} 
+  public IRCode GetInline(HashMap<String, String> now_name, HashMap<Integer, Integer> now_label, Composer machine) throws Exception{return new IRCode();}
 }

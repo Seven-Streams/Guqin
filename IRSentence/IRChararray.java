@@ -58,4 +58,9 @@ public class IRChararray extends IRCode {
   public void UseDefCheck(HashMap<String, Boolean> def, HashMap<String, Boolean> use) {
     is_global.put(reg, null);
   }
+
+  @Override
+  public void CheckGlobal() {
+    is_global.put(reg, null);
+  }
 }
