@@ -57,10 +57,9 @@ public class PhiRemover {
   }
 
   void BuildNewBlocks() {
-    ArrayList<MoveBlock> move_buffer = new ArrayList<>();
+    HashMap<Integer, ArrayList<MoveBlock>> move_buffer = new HashMap<>();
     int func = 0;
     int now = 0;
-    int last_label = 0;
     for (int i = 0; i < machine.generated.size(); i++) {
       IRCode code = machine.generated.get(i);
       if (code instanceof IRFunc) {
@@ -68,14 +67,7 @@ public class PhiRemover {
       }
       if (code instanceof IRLabel) {
         IRLabel label = (IRLabel) code;
-        last_label = i;
         now = label.label;
-      }
-      if (code instanceof IRFuncend) {
-        for (MoveBlock move : move_buffer) {
-          machine.generated.add(last_label, move);
-        }
-        move_buffer.clear();
       }
       if (code instanceof IRjmp) {
         IRjmp jmp = (IRjmp) code;
@@ -108,7 +100,10 @@ public class PhiRemover {
             new_block.moves.add(op_v);
           }
           jmp.label = new_block.num;
-          move_buffer.add(new_block);
+          if(move_buffer.get(new_block.to) == null) {
+            move_buffer.put(new_block.to, new ArrayList<>());
+          }
+          move_buffer.get(new_block.to).add(new_block);
         }
       }
       if (code instanceof Conditionjmp) {
@@ -142,7 +137,10 @@ public class PhiRemover {
             new_block.moves.add(op_v);
           }
           condtion_jmp.label1 = new_block.num;
-          move_buffer.add(new_block);
+          if(move_buffer.get(new_block.to) == null) {
+            move_buffer.put(new_block.to, new ArrayList<>());
+          }
+          move_buffer.get(new_block.to).add(new_block);
         }
         FromToPair ftpair2 = new FromToPair(now, condtion_jmp.label2);
         if (moves.containsKey(ftpair2.from) && moves.get(ftpair2.from).containsKey(ftpair2.to)) {
@@ -173,7 +171,21 @@ public class PhiRemover {
             new_block.moves.add(op_v);
           }
           condtion_jmp.label2 = new_block.num;
-          move_buffer.add(new_block);
+          if(move_buffer.get(new_block.to) == null) {
+            move_buffer.put(new_block.to, new ArrayList<>());
+          }
+          move_buffer.get(new_block.to).add(new_block);
+        }
+      }
+    }
+    for(int i = 0; i < machine.generated.size(); i++) {
+      if(machine.generated.get(i) instanceof IRLabel) {
+        IRLabel code = (IRLabel)machine.generated.get(i);
+        if(move_buffer.containsKey(code.label)) {
+          for(MoveBlock move_block: move_buffer.get(code.label)) {
+            machine.generated.add(i, move_block);
+          }
+          move_buffer.remove(code.label);
         }
       }
     }

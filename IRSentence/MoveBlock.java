@@ -4,6 +4,8 @@ import Optimization.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import Composer.Composer;
+
 public class MoveBlock extends IRCode {
   public int to = 0;
   public int num = 0;
@@ -93,5 +95,53 @@ public class MoveBlock extends IRCode {
       System.out.print(move.src + "->" + move.des + ";");
     }
     System.out.println("TO: b" + to);
+  }
+
+  @Override
+  public IRCode GetInline(HashMap<String, String> now_name, HashMap<Integer, Integer> now_label, Composer machine)
+      throws Exception {
+    MoveBlock return_value = new MoveBlock();
+    if (now_label.containsKey(num)) {
+      return_value.num = now_label.get(num);
+    } else {
+      return_value.num = ++machine.label_number;
+      now_label.put(num, return_value.num);
+    }
+    if (now_label.containsKey(to)) {
+      return_value.to = now_label.get(to);
+    } else {
+      return_value.to = ++machine.label_number;
+      now_label.put(to, return_value.to);
+    }
+    for (PseudoMove move : moves) {
+      PseudoMove new_move = new PseudoMove(null, null);
+      try {
+        Integer.parseInt(move.src);
+        new_move.src = new String(move.src);
+      } catch (NumberFormatException e) {
+        if (now_name.containsKey(move.src)) {
+          new_move.src = new String(now_name.get(move.src));
+        } else {
+          if ((!CheckLit(move.src)) || (is_global.containsKey(move.src))) {
+            new_move.src = new String(move.src);
+          } else {
+            new_move.src = new String("%reg$" + (++machine.tmp_time));
+            now_name.put(move.src, new_move.src);
+          }
+        }
+      }
+      if (now_name.containsKey(move.des)) {
+        new_move.des = new String(now_name.get(move.des));
+      } else {
+        if ((!CheckLit(move.des)) || (is_global.containsKey(move.des))) {
+          new_move.des = new String(move.des);
+        } else {
+          new_move.des = new String("%reg$" + (++machine.tmp_time));
+          now_name.put(move.des, new_move.des);
+        }
+      }
+      return_value.moves.add(new_move);
+    }
+    return return_value;
   }
 }

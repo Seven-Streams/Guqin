@@ -230,7 +230,39 @@ public class IRStore extends IRCode {
         System.out.println("sw " + src_reg + ", 0(t1)");
       }
     }
-
     return;
+  }
+
+  @Override
+  public IRCode GetInline(HashMap<String, String> now_name, HashMap<Integer, Integer> now_label, Composer machine)
+      throws Exception {
+    IRStore return_value = new IRStore();
+    return_value.type = new String(type);
+    try {
+      Integer.parseInt(from);
+      return_value.from = new String(from);
+    } catch (NumberFormatException e) {
+      if (now_name.containsKey(from)) {
+        return_value.from = new String(now_name.get(from));
+      } else {
+        if (is_global.containsKey(from) || (!CheckLit(from))) {
+          return_value.from = new String(from);
+        } else {
+          return_value.from = new String("%reg$" + (++machine.tmp_time));
+          now_name.put(from, return_value.from);
+        }
+      }
+    }
+    if (now_name.containsKey(name)) {
+      return_value.name = new String(now_name.get(name));
+    } else {
+      if (is_global.containsKey(name)) {
+        return_value.name = new String(name);
+      } else {
+        return_value.name = new String("%reg$" + (++machine.tmp_time));
+        now_name.put(name, return_value.name);
+      }
+    }
+    return return_value;
   }
 }

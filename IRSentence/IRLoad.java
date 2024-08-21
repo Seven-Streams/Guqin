@@ -167,7 +167,29 @@ public class IRLoad extends IRCode {
         System.out.println("sw t0, 0(t1)");
       }
     }
-
     return;
+  }
+
+  @Override
+  public IRCode GetInline(HashMap<String, String> now_name, HashMap<Integer, Integer> now_label, Composer machine)
+      throws Exception {
+    IRLoad return_value = new IRLoad();
+    return_value.type = new String(type);
+    if(now_name.containsKey(src)) {
+      return_value.src = new String(now_name.get(src));
+    } else {
+      return_value.src = new String(src);
+    }
+    if(now_name.containsKey(des)) {
+      return_value.des = new String(now_name.get(des));
+    } else {
+      if(is_global.containsKey(des)) {
+        return_value.des = new String(des);
+      } else {
+        return_value.des = new String("%reg$" + (++machine.tmp_time));
+        now_name.put(des, return_value.des);
+      }
+    }
+    return return_value;
   }
 }

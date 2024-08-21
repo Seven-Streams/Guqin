@@ -9,6 +9,7 @@ import Optimization.NameLabelPair;
 public class Conditionjmp extends IRCode {
   public int label1 = 0;
   public int label2 = 0;
+  public static int cnt = 0;
   public String reg = null;
 
   @Override
@@ -96,13 +97,14 @@ public class Conditionjmp extends IRCode {
   @Override
   public void CodegenWithOptim(HashMap<String, Integer> registers, HashMap<Integer, String> register_name) {
     if (CheckLit(reg)) {
+      int now_label = ++cnt;
       int value = registers.get(reg);
       if (value >= 0) {
-        System.out.println("beqz " + register_name.get(value) + ", b" + label2);
+        System.out.println("beqz " + register_name.get(value) + ", cond." + now_label);
       } else {
         value = -value;
-        if((value >> 10) == 0) {
-        System.out.println("lw t0, " + (-value * 4) + "(s0)");
+        if ((value >> 10) == 0) {
+          System.out.println("lw t0, " + (-value * 4) + "(s0)");
         } else {
           System.out.println("lui t0" + (value >> 10));
           System.out.println("addi t0, t0, " + ((value << 2) & 0x00000fff));
@@ -110,8 +112,12 @@ public class Conditionjmp extends IRCode {
           System.out.println("add t0, t0, s0");
           System.out.println("lw t0, 0(t0)");
         }
-        System.out.println("beqz t0, b" + label2);
+        System.out.println("beqz t0, " + "cond." + now_label);
       }
+      System.out.println("j b" + label1);
+      System.out.println("cond." + now_label + ":");
+      System.out.println("j b" + label2);
+      return;
     } else {
       if (reg.equals("true")) {
         System.out.println("j b" + label1);
@@ -120,20 +126,18 @@ public class Conditionjmp extends IRCode {
       }
       return;
     }
-    System.out.println("j b" + label1);
-    return;
   }
 
   @Override
   public IRCode GetInline(HashMap<String, String> now_name, HashMap<Integer, Integer> now_label, Composer machine)
       throws Exception {
     Conditionjmp return_value = new Conditionjmp();
-    try{
+    try {
       Integer.parseInt(reg);
       return_value.reg = new String(reg);
-    }catch(NumberFormatException e) {
-      if((CheckLit(reg)) && (!is_global.containsKey(reg))) {
-        if(now_name.containsKey(reg)) {
+    } catch (NumberFormatException e) {
+      if ((CheckLit(reg)) && (!is_global.containsKey(reg))) {
+        if (now_name.containsKey(reg)) {
           return_value.reg = new String(now_name.get(reg));
         } else {
           return_value.reg = new String("%reg$" + (++machine.tmp_time));
@@ -143,13 +147,13 @@ public class Conditionjmp extends IRCode {
         return_value.reg = new String(reg);
       }
     }
-    if(now_label.containsKey(label1)) {
+    if (now_label.containsKey(label1)) {
       return_value.label1 = now_label.get(label1);
     } else {
       return_value.label1 = ++machine.label_number;
       now_label.put(label1, return_value.label1);
     }
-    if(now_label.containsKey(label2)) {
+    if (now_label.containsKey(label2)) {
       return_value.label2 = now_label.get(label2);
     } else {
       return_value.label2 = ++machine.label_number;

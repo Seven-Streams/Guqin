@@ -368,26 +368,32 @@ public class IRIcmp extends IRCode {
     return_value.symbol = new String(symbol);
     try {
       Integer.parseInt(op1);
+      return_value.op1 = new String(op1);
     } catch (NumberFormatException e) {
-      if (!is_global.containsKey(op1)) {
+      if ((!is_global.containsKey(op1)) && CheckLit(op1)) {
         if (now_name.containsKey(op1)) {
           return_value.op1 = new String(now_name.get(op1));
         } else {
           return_value.op1 = new String("%reg$" + (++machine.tmp_time));
           now_name.put(op1, return_value.op1);
         }
+      } else {
+        return_value.op1 = new String(op1);
       }
     }
     try {
       Integer.parseInt(op2);
+      return_value.op2 = new String(op2);
     } catch (NumberFormatException e) {
-      if (!is_global.containsKey(op2)) {
+      if (!is_global.containsKey(op2) && CheckLit(op2)) {
         if (now_name.containsKey(op2)) {
           return_value.op2 = new String(now_name.get(op2));
         } else {
           return_value.op2 = new String("%reg$" + (++machine.tmp_time));
           now_name.put(op2, return_value.op2);
         }
+      } else {
+        return_value.op2 = new String(op2);
       }
     }
     if (!(is_global.containsKey(target_reg))) {

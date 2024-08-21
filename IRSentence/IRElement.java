@@ -303,4 +303,42 @@ public class IRElement extends IRCode {
     }
     return;
   }
+
+  @Override
+  public IRCode GetInline(HashMap<String, String> now_name, HashMap<Integer, Integer> now_label, Composer machine)
+      throws Exception {
+    IRElement return_value = new IRElement();
+    return_value.now_type = new String(now_type);
+    try {
+      Integer.parseInt(num1);
+      return_value.num1 = new String(num1);
+    } catch (NumberFormatException e) {
+      if (!is_global.containsKey(num1)) {
+        return_value.num1 = new String("%reg$" + (++machine.tmp_time));
+        now_name.put(num1, return_value.num1);
+      } else {
+        return_value.num1 = new String(num1);
+      }
+    }
+    if (num2 != null) {
+      try {
+        Integer.parseInt(num2);
+        return_value.num2 = new String(num2);
+      } catch (NumberFormatException e) {
+        if (!is_global.containsKey(num2)) {
+          return_value.num2 = new String("%reg$" + (++machine.tmp_time));
+          now_name.put(num2, return_value.num2);
+        } else {
+          return_value.num2 = new String(num2);
+        }
+      }
+    }
+    if(!is_global.containsKey(output)) {
+      return_value.output = new String(output);
+    } else {
+      return_value.output = new String("%reg$" + (++machine.tmp_time));
+      now_name.put(output, return_value.output);
+    }
+    return return_value;
+  }
 }

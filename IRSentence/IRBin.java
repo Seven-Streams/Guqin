@@ -497,6 +497,7 @@ public class IRBin extends IRCode {
     return_value.symbol = new String(symbol);
     try {
       Integer.parseInt(op1);
+      return_value.op1 = new String(op1);
     } catch (NumberFormatException e) {
       if (!is_global.containsKey(op1)) {
         if (now_name.containsKey(op1)) {
@@ -509,6 +510,7 @@ public class IRBin extends IRCode {
     }
     try {
       Integer.parseInt(op2);
+      return_value.op2 = new String(op2);
     } catch (NumberFormatException e) {
       if (!is_global.containsKey(op2)) {
         if (now_name.containsKey(op2)) {
