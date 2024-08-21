@@ -471,6 +471,7 @@ public class IRBin extends IRCode {
         break;
       }
       default: {
+        System.out.println(symbol);
         throw new Exception("Unexpected Symbol.");
       }
     }

@@ -106,7 +106,7 @@ public class DoubleNode extends ExprNode {
       }
       if (type.equals("bool")) {
         if (symbol.equals("==") || symbol.equals("!=")) {
-          IRBin res = new IRBin();
+          IRIcmp res = new IRIcmp();
           Info info1 = value1.GenerateIR(machine);
           Info info2 = value2.GenerateIR(machine);
           res.op1 = info1.reg;

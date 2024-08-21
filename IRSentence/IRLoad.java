@@ -86,7 +86,7 @@ public class IRLoad extends IRCode {
   @Override
   public void UpdateSingleBlock(HashMap<String, String> single) {
     boolean flag = false;
-    while (single.containsKey(src)) {
+    while (single.containsKey(src) && (single.get(src) != null)) {
       flag = true;
       src = new String(single.get(src));
     }
@@ -100,7 +100,9 @@ public class IRLoad extends IRCode {
   public void UpdateNames(HashMap<String, Stack<NameLabelPair>> variable_stack, HashMap<String, String> reg_value,
       int now_block) {
     if (variable_stack.containsKey(src)) {
-      reg_value.put(des, variable_stack.get(src).peek().name);
+      if (!variable_stack.get(src).isEmpty()) {
+        reg_value.put(des, variable_stack.get(src).peek().name);
+      }
       return;
     }
     if (reg_value.containsKey(src)) {
