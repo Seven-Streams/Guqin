@@ -41,8 +41,7 @@ public class IRFuncend extends IRCode {
     if ((sp_length >> 12) == 0) {
       System.out.println("addi sp, sp, " + sp_length);
     } else {
-      System.out.println("lui t0, " + (sp_length >> 12));
-      System.out.println("addi t0, t0, " + (sp_length & 0x00000fff));
+      System.out.println("li t0, " + (sp_length));
       System.out.println("add sp, sp, t0");
     }
     for (int i = 0; i <= Integer.min(register_use.get(-func_num), 10); i++) {

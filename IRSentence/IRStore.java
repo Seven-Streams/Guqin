@@ -183,17 +183,7 @@ public class IRStore extends IRCode {
     if (!(from.equals("true") || from.equals("false") || from.equals("null"))) {
       try {
         int num = Integer.parseInt(from);
-        boolean signal = num >= 0;
-        num = signal ? num : -num;
-        if ((num >> 12) != 0) {
-          System.out.println("lui t0, " + (num >> 12));
-          System.out.println("addi t0, t0, " + (num & 0x00000fff));
-        } else {
-          System.out.println("li t0, " + num);
-        }
-        if (!signal) {
-          System.out.println("neg t0, t0");
-        }
+        System.out.println("li t0, " + num);
       } catch (NumberFormatException e) {
         if (registers.get(from) >= 0) {
           src_reg = register_name.get(registers.get(from));
@@ -217,13 +207,10 @@ public class IRStore extends IRCode {
       if (value >= 0) {
         System.out.println("sw " + src_reg + ", 0(" + register_name.get(value) + ")");
       } else {
-        value = -value;
-        if ((value >> 10) == 0) {
-          System.out.println("lw t1, " + (4 * -value) + "(s0)");
+        if ((value >> 9) == 0) {
+          System.out.println("lw t1, " + (4 * value) + "(s0)");
         } else {
-          System.out.println("lui t1, " + (value >> 10));
-          System.out.println("addi t1, t1, " + ((value << 2) & 0x00000fff));
-          System.out.println("neg t1, t1");
+          System.out.println("li t1, " + (value * 4));
           System.out.println("add t1, t1, s0");
           System.out.println("lw t1, 0(t1)");
         }

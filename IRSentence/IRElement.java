@@ -227,13 +227,10 @@ public class IRElement extends IRCode {
           String num_str = register_name.get(value_i);
           System.out.println("slli t1, " + num_str + ", 2");
         } else {
-          value_i = -value_i;
-          if ((value_i >> 10) == 0) {
-            System.out.println("lw t1, " + (-value_i * 4) + "(s0)");
+          if ((value_i >> 9) == 0) {
+            System.out.println("lw t1, " + (value_i * 4) + "(s0)");
           } else {
-            System.out.println("lui t1" + (value_i >> 10));
-            System.out.println("addi t1, t1, " + ((value_i << 2) & 0x00000fff));
-            System.out.println("neg t1, t1");
+            System.out.println("li t1, " + (value_i * 4));
             System.out.println("add t1, t1, s0");
             System.out.println("lw t1, 0(t1)");
           }
@@ -248,7 +245,7 @@ public class IRElement extends IRCode {
     } else {
       try {
         int num_i = Integer.parseInt(num1);
-        if ((num_i >> 10) == 0) {
+        if ((num_i >> 9) == 0) {
           if (target_value < 0) {
             System.out.println("addi t1, " + src_str + ", " + Integer.toString(num_i * 4));
           } else {
@@ -256,8 +253,7 @@ public class IRElement extends IRCode {
                 "addi " + register_name.get(target_value) + ", " + src_str + ", " + Integer.toString(num_i * 4));
           }
         } else {
-          System.out.println("lui t1, " + (num_i >> 10));
-          System.out.println("addi t1, t1, " + ((num_i << 2) & 0x00000fff));
+         System.out.println("li t1, " + (num_i * 4));
           if (target_value < 0) {
             System.out.println("add t1, " + src_str + ", t1");
           } else {
@@ -270,13 +266,10 @@ public class IRElement extends IRCode {
           String from_str = register_name.get(value_i);
           System.out.println("slli t1, " + from_str + ", 2");
         } else {
-          value_i = -value_i;
-          if ((value_i >> 10) == 0) {
-            System.out.println("lw t1, " + (-value_i * 4) + "(s0)");
+          if ((value_i >> 9) == 0) {
+            System.out.println("lw t1, " + (value_i * 4) + "(s0)");
           } else {
-            System.out.println("lui t1" + (value_i >> 10));
-            System.out.println("addi t1, t1, " + ((value_i << 2) & 0x00000fff));
-            System.out.println("neg t1, t1");
+            System.out.println("li t1, " + (value_i * 4));
             System.out.println("add t1, t1, s0");
             System.out.println("lw t1, 0(t1)");
           }
@@ -290,13 +283,10 @@ public class IRElement extends IRCode {
       }
     }
     if (target_value < 0) {
-      target_value = -target_value;
-      if ((target_value >> 10) == 0) {
-        System.out.println("sw t1, " + (-target_value * 4) + "(s0)");
+      if ((target_value >> 9) == 0) {
+        System.out.println("sw t1, " + (target_value * 4) + "(s0)");
       } else {
-        System.out.println("lui t0, " + (target_value >> 10));
-        System.out.println("addi t0, t0, " + ((target_value << 2) & 0x00000fff));
-        System.out.println("neg t0, t0");
+        System.out.println("li t0, " + (target_value * 4));
         System.out.println("add t0, t0, s0");
         System.out.println("sw t1, 0(t0)");
       }

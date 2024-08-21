@@ -86,14 +86,8 @@ public class IRFunc extends IRCode {
     size *= 16;
     now_s0 = 8;
     sp_length = size;
-    if ((size >> 12) == 0) {
-      System.out.println("addi sp, sp, -" + size);
-      System.out.println("li t0, " + size);
-    } else {
-      System.out.println("lui t0, " + (size >> 12));
-      System.out.println("addi t0, t0, " + (size & 0x00000fff));
-      System.out.println("sub sp, sp, t0");
-    }
+    System.out.println("li t0, " + size);
+    System.out.println("sub sp, sp, t0");
     System.out.println("sw ra, " + (size - 4) + "(sp)");
     System.out.println("sw s0, " + (size - 8) + "(sp)");
     for (int i = 0; i <= Integer.min(register_use.get(-func_num), 10); i++) {
@@ -106,13 +100,10 @@ public class IRFunc extends IRCode {
         if (value >= 0) {
           System.out.println("mv " + register_name.get(value) + ", " + "a" + i);
         } else {
-          value = -value;
-          if ((value >> 10) == 0) {
-            System.out.println("sw a" + i + " , " + (-value * 4) + "(s0)");
+          if ((value >> 9) == 0) {
+            System.out.println("sw a" + i + " , " + (value * 4) + "(s0)");
           } else {
-            System.out.println("lui t0, " + (value >> 10));
-            System.out.println("addi t0, t0, " + ((value << 2) & 0x00000fff));
-            System.out.println("neg t0, t0");
+            System.out.println("li t0, " + (value * 4));
             System.out.println("add t0, t0, s0");
             System.out.println("sw a" + i + ", 0(t0)");
           }
@@ -124,13 +115,10 @@ public class IRFunc extends IRCode {
         if (value >= 0) {
           System.out.println("mv " + register_name.get(value) + ", " + "a" + i);
         } else {
-          value = -value;
-          if ((value >> 10) == 0) {
-            System.out.println("sw a" + i + " , " + (-value * 4) + "(s0)");
+          if ((value >> 9) == 0) {
+            System.out.println("sw a" + i + " , " + (value * 4) + "(s0)");
           } else {
-            System.out.println("lui t0, " + (value >> 10));
-            System.out.println("addi t0, t0, " + ((value << 2) & 0x00000fff));
-            System.out.println("neg t0, t0");
+            System.out.println("li t0, " + (value * 4));
             System.out.println("add t0, t0, s0");
             System.out.println("sw a" + i + ", 0(t0)");
           }
@@ -140,21 +128,18 @@ public class IRFunc extends IRCode {
         if (((i - 8) >> 10) == 0) {
           System.out.println("lw t0, " + ((i - 8) * 4) + "(s0)");
         } else {
-          System.out.println("lui t0, " + ((i - 8) >> 10));
-          System.out.println("addi t0, t0" + (((i - 8) << 2) & 0x00000fff));
+          System.out.println("li t0, " + ((i - 8) * 4));
+          System.out.println("add t0, t0, s0");
           System.out.println("lw t0, 0(t0)");
         }
         int value = registers.get(names.get(i));
         if (value >= 0) {
           System.out.println("mv " + register_name.get(value) + ", t0");
         } else {
-          value = -value;
-          if((value >> 10) == 0) {
-          System.out.println("sw t0, " + (-value * 4) + "(s0)");
+          if ((value >> 9) == 0) {
+            System.out.println("sw t0, " + (value * 4) + "(s0)");
           } else {
-            System.out.println("lui t1, " + (value >> 10));
-            System.out.println("addi t1, t1, " + ((value << 2) & 0x00000fff));
-            System.out.println("neg t1, t1");
+            System.out.println("li t1, " + (value * 4));
             System.out.println("add t1, t1, s0");
             System.out.println("sw t0, 0(t1)");
           }

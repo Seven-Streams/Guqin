@@ -251,24 +251,16 @@ public class IRIcmp extends IRCode {
     } else {
       try {
         int ins_1 = Integer.parseInt(op1);
-        if ((ins_1 >> 12) != 0) {
-          System.out.println("lui t0, " + (ins_1 >> 12));
-          System.out.println("addi t0, t0, " + (ins_1 & 0x00000fff));
-        } else {
-          System.out.println("li t0, " + ins_1);
-        }
+        System.out.println("li t0, " + ins_1);
       } catch (NumberFormatException e) {
         int reg_1 = registers.get(op1);
         if (reg_1 >= 0) {
           addr1 = register_name.get(reg_1);
         } else {
-          reg_1 = -reg_1;
-          if ((reg_1 >> 10) == 0) {
-            System.out.println("lw t0, " + (-reg_1 * 4) + "(s0)");
+          if ((reg_1 >> 9) == 0) {
+            System.out.println("lw t0, " + (reg_1 * 4) + "(s0)");
           } else {
-            System.out.println("lui t0, " + (reg_1 >> 10));
-            System.out.println("addi t0, t0," + ((reg_1 << 2) & 0x00000fff));
-            System.out.println("neg t0, t0");
+            System.out.println("li t0, " + (reg_1 * 4));
             System.out.println("add t0, t0, s0");
             System.out.println("lw t0, 0(t0)");
           }
@@ -284,24 +276,16 @@ public class IRIcmp extends IRCode {
     } else {
       try {
         int ins_2 = Integer.parseInt(op2);
-        if ((ins_2 >> 12) != 0) {
-          System.out.println("lui t1, " + (ins_2 >> 12));
-          System.out.println("addi t1, t1, " + (ins_2 & 0x00000fff));
-        } else {
-          System.out.println("li t1, " + ins_2);
-        }
+        System.out.println("li t1, " + ins_2);
       } catch (NumberFormatException e) {
         int reg_2 = registers.get(op2);
         if (reg_2 >= 0) {
           addr2 = register_name.get(reg_2);
         } else {
-          reg_2 = -reg_2;
-          if ((reg_2 >> 10) == 0) {
-            System.out.println("lw t1, " + (-reg_2 * 4) + "(s0)");
+          if ((reg_2 >> 9) == 0) {
+            System.out.println("lw t1, " + (reg_2 * 4) + "(s0)");
           } else {
-            System.out.println("lui t1, " + (reg_2 >> 10));
-            System.out.println("addi t1, t1," + ((reg_2 << 2) & 0x00000fff));
-            System.out.println("neg t1, t1");
+            System.out.println("li t1, " + (reg_2 * 4));
             System.out.println("add t1, t1, s0");
             System.out.println("lw t1, 0(t1)");
           }
@@ -347,13 +331,10 @@ public class IRIcmp extends IRCode {
       }
     }
     if (target_value < 0) {
-      target_value = -target_value;
-      if ((target_value >> 10) == 0) {
-        System.out.println("sw t0, " + (-target_value * 4) + "(s0)");
+      if ((target_value >> 9) == 0) {
+        System.out.println("sw t0, " + (target_value * 4) + "(s0)");
       } else {
-        System.out.println("lui t1, " + (target_value >> 10));
-        System.out.println("addi t1, t1, " + ((target_value << 2) & 0x00000fff));
-        System.out.println("neg t1, t1");
+        System.out.println("li t1, " + (target_value * 4));
         System.out.println("add t1, t1, s0");
         System.out.println("sw t0, 0(t1)");
       }

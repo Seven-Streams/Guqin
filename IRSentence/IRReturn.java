@@ -116,24 +116,16 @@ public class IRReturn extends IRCode {
       if (!(reg.equals("true") || reg.equals("false") || reg.equals("null"))) {
         try {
           int test = Integer.parseInt(reg);
-          if ((test >> 12) != 0) {
-            System.out.println("lui a0, " + (test >> 12));
-            System.out.println("addi a0, a0, " + (test & 0x00000fff));
-          } else {
-            System.out.println("li a0, " + test);
-          }
+          System.out.println("li a0, " + test);
         } catch (NumberFormatException e) {
           int num = registers.get(reg);
           if (num >= 0) {
             System.out.println("mv " + "a0, " + register_name.get(num));
           } else {
-            num = -num;
-            if((num >> 10) == 0) {
-            System.out.println("lw a0, " + (-num * 4) + "(s0)");
+            if ((num >> 10) == 0) {
+              System.out.println("lw a0, " + (num * 4) + "(s0)");
             } else {
-              System.out.println("lui t0, " + (num >> 10));
-              System.out.println("addi t0, t0, " + ((num << 2) & 0x00000fff));
-              System.out.println("neg t0, t0");
+              System.out.println("li t0, " + (num * 4));
               System.out.println("add t0, t0, s0");
               System.out.println("lw a0, 0(t0)");
             }

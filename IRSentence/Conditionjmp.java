@@ -102,13 +102,10 @@ public class Conditionjmp extends IRCode {
       if (value >= 0) {
         System.out.println("beqz " + register_name.get(value) + ", cond." + now_label);
       } else {
-        value = -value;
-        if ((value >> 10) == 0) {
-          System.out.println("lw t0, " + (-value * 4) + "(s0)");
+        if ((value >> 9) == 0) {
+          System.out.println("lw t0, " + (value * 4) + "(s0)");
         } else {
-          System.out.println("lui t0" + (value >> 10));
-          System.out.println("addi t0, t0, " + ((value << 2) & 0x00000fff));
-          System.out.println("neg t0, t0");
+          System.out.println("li t0, " + (value * 4));
           System.out.println("add t0, t0, s0");
           System.out.println("lw t0, 0(t0)");
         }

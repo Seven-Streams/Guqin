@@ -192,33 +192,25 @@ public class IRFuncall extends IRCode {
   @Override
   public void CodegenWithOptim(HashMap<String, Integer> registers, HashMap<Integer, String> register_name)
       throws Exception {
-        if(Empty_func.containsKey(func_name)) {
-          return;
-        }
+    if (Empty_func.containsKey(func_name)) {
+      return;
+    }
     if (reg.size() > 8) {
       for (int i = 8; i < reg.size(); i++) {
         String str = "t0";
         try {
           int num = Integer.parseInt(reg.get(i));
-          if ((num >> 12) != 0) {
-            System.out.println("lui t0" + ", " + (num >> 12));
-            System.out.println("addi t0, t0, " + (num & 0x00000fff));
-          } else {
-            System.out.println("li t0, " + num);
-          }
+          System.out.println("li t0, " + num);
         } catch (NumberFormatException e) {
           if (!is_global.containsKey(reg.get(i))) {
             int value = registers.get(reg.get(i));
             if (value >= 0) {
               str = register_name.get(value);
             } else {
-              value = -value;
-              if ((value >> 10) == 0) {
-                System.out.println("lw t0, " + (4 * -value) + "(s0)");
+              if ((value >> 9) == 0) {
+                System.out.println("lw t0, " + (4 * value) + "(s0)");
               } else {
-                System.out.println("lui t0" + (value >> 10));
-                System.out.println("addi t0, t0, " + ((value << 2) & 0x00000fff));
-                System.out.println("neg t0, t0");
+                System.out.println("li t0, " + (4 * value));
                 System.out.println("add t0, t0, s0");
                 System.out.println("lw t0, 0(t0)");
               }
@@ -275,12 +267,7 @@ public class IRFuncall extends IRCode {
       }
       try {
         int num = Integer.parseInt(reg.get(i));
-        if ((num >> 12) != 0) {
-          System.out.println("lui " + func_in + ", " + (num >> 12));
-          System.out.println("addi " + func_in + ", " + func_in + ", " + (num & 0x00000fff));
-        } else {
-          System.out.println("li " + func_in + ", " + num);
-        }
+        System.out.println("li " + func_in + ", " + num);
       } catch (NumberFormatException e) {
         if (CheckLit(reg.get(i))) {
           if (!is_global.containsKey(reg.get(i))) {
@@ -288,13 +275,10 @@ public class IRFuncall extends IRCode {
             if (value >= 0) {
               System.out.println("mv " + func_in + ", " + register_name.get(value));
             } else {
-              value = -value;
-              if ((value >> 10) == 0) {
-                System.out.println("lw " + func_in + ", " + (4 * -value) + "(s0)");
+              if ((value >> 9) == 0) {
+                System.out.println("lw " + func_in + ", " + (4 * value) + "(s0)");
               } else {
-                System.out.println("lui " + func_in + ", " + (value >> 10));
-                System.out.println("addi " + func_in + ", " + func_in + ", " + ((value << 2) & 0x00000fff));
-                System.out.println("neg " + func_in + ", " + func_in);
+              System.out.println("li " + func_in + ", " + (value * 4));
                 System.out.println("add " + func_in + ", " + func_in + ", s0");
                 System.out.println("lw " + func_in + ", 0(" + func_in + ")");
               }
@@ -322,13 +306,10 @@ public class IRFuncall extends IRCode {
       if (value >= 0) {
         System.out.println("mv " + register_name.get(value) + ", a0");
       } else {
-        value = -value;
-        if ((value >> 10) == 0) {
-          System.out.println("sw a0, " + (-value * 4) + "(s0)");
+        if ((value >> 9) == 0) {
+          System.out.println("sw a0, " + (value * 4) + "(s0)");
         } else {
-          System.out.println("lui t1" + (value >> 10));
-          System.out.println("addi t1, t1, " + ((value << 2) & 0x00000fff));
-          System.out.println("neg t1, t1");
+          System.out.println("li t1, " + (value * 4));
           System.out.println("add t1, t1, s0");
           System.out.println("sw a0, 0(t1)");
         }
