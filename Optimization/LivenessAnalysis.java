@@ -119,6 +119,9 @@ public class LivenessAnalysis {
     System.out.println(".text");
     System.out.println(".globl main");
     for (IRCode code : machine.generated) {
+      if((code.sentence_number == 0) && (!(code instanceof IRFuncend))) {
+        continue;
+      }
       boolean to_init = false;
       if (code instanceof IRFunc) {
         cnt--;
@@ -384,7 +387,7 @@ public class LivenessAnalysis {
             max_register_use.put(func_num, i);
           }
           for (Map.Entry<Integer, HashMap<Integer, Boolean>> entry : calling_use.entrySet()) {
-            if ((now_alloc.start <= entry.getKey()) && (now_alloc.end >= entry.getKey())) {
+            if ((now_alloc.start < entry.getKey()) && (now_alloc.end > entry.getKey())) {
               entry.getValue().put(i, null);
             }
           }
@@ -415,6 +418,9 @@ public class LivenessAnalysis {
       if (code instanceof IRFuncall) {
         IRFuncall res = (IRFuncall) code;
         int reg_cnt = 0;
+        if(res.sentence_number == 0) {
+          continue;
+        }
         for (int to_save : calling_use.get(res.sentence_number).keySet()) {
           if (to_save > 10) {
             reg_cnt++;

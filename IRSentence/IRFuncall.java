@@ -256,13 +256,18 @@ public class IRFuncall extends IRCode {
     ArrayList<PseudoMove> moves = new ArrayList<>();
     for (int i = 0; i < total; i++) {
       String func_in = null;
-      for (int j = 12; j < 27; j++) {
-        if (!danger.containsKey(j)) {
-          func_in = register_name.get(j);
-          PseudoMove move = new PseudoMove(func_in, "a" + i);
-          danger.put(j, null);
-          moves.add(move);
-          break;
+      if (!danger.containsKey(24 - i)) {
+        func_in = register_name.get(24 - i);
+        danger.put(24 - i, null);
+      } else {
+        for (int j = 12; j < 27; j++) {
+          if (!danger.containsKey(j)) {
+            func_in = register_name.get(j);
+            PseudoMove move = new PseudoMove(func_in, "a" + i);
+            danger.put(j, null);
+            moves.add(move);
+            break;
+          }
         }
       }
       try {
