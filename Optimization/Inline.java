@@ -49,14 +49,15 @@ public class Inline {
         IRFuncall call = (IRFuncall)code;
         if (ready_to_inline.get(call.func_name)) {
           InlineFunc to_inline = GetInline(entry.get(call.func_name), call);
+          machine.generated.set(i, to_inline);
         }
       }
     }
+    return;
   }
 
   public InlineFunc GetInline(int start, IRFuncall calling_info) {
     InlineFunc return_value = new InlineFunc();
-
     return return_value;
   }
 

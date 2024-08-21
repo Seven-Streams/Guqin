@@ -192,6 +192,9 @@ public class IRFuncall extends IRCode {
   @Override
   public void CodegenWithOptim(HashMap<String, Integer> registers, HashMap<Integer, String> register_name)
       throws Exception {
+        if(Empty_func.containsKey(func_name)) {
+          return;
+        }
     if (reg.size() > 8) {
       for (int i = 8; i < reg.size(); i++) {
         String str = "t0";

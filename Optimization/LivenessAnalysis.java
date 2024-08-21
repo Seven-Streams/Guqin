@@ -51,6 +51,17 @@ public class LivenessAnalysis {
     // PrintInterval();
   }
 
+  void CheckUnecessaryCalling() {
+    for(int i = 0; i < machine.generated.size(); i++) {
+      if(machine.generated.get(i) instanceof IRFunc) {
+        if(machine.generated.get(i + 1) instanceof IRFuncend) {
+          IRFunc.Empty_func.put(((IRFunc)machine.generated.get(i)).name, null);
+        }
+      }
+    }
+    return;
+  }
+
   void PrintInOut() {
     for (Map.Entry<Integer, HashMap<String, Boolean>> entry : in.entrySet()) {
       System.out.println(entry.getKey() + ":");
@@ -119,7 +130,7 @@ public class LivenessAnalysis {
     System.out.println(".text");
     System.out.println(".globl main");
     for (IRCode code : machine.generated) {
-      if((code.sentence_number == 0) && (!(code instanceof IRFuncend))) {
+      if ((code.sentence_number == 0) && (!(code instanceof IRFuncend))) {
         continue;
       }
       boolean to_init = false;
@@ -418,7 +429,7 @@ public class LivenessAnalysis {
       if (code instanceof IRFuncall) {
         IRFuncall res = (IRFuncall) code;
         int reg_cnt = 0;
-        if(res.sentence_number == 0) {
+        if (res.sentence_number == 0) {
           continue;
         }
         for (int to_save : calling_use.get(res.sentence_number).keySet()) {
@@ -670,549 +681,550 @@ public class LivenessAnalysis {
     }
     return;
   }
+
   public void PrintBuiltIn() {
     System.out.println("\t.text\r\n" + //
-            "\t.attribute\t4, 16\r\n" + //
-            "\t.attribute\t5, \"rv32i2p1_m2p0_a2p1_c2p0\"\r\n" + //
-            "\t.file\t\"Inner.c\"\r\n" + //
-            "\t.globl\tprintln                         # -- Begin function println\r\n" + //
-            "\t.p2align\t1\r\n" + //
-            "\t.type\tprintln,@function\r\n" + //
-            "println:                                # @println\r\n" + //
-            "# %bb.0:\r\n" + //
-            "\taddi\tsp, sp, -16\r\n" + //
-            "\tsw\tra, 12(sp)                      # 4-byte Folded Spill\r\n" + //
-            "\tsw\ts0, 8(sp)                       # 4-byte Folded Spill\r\n" + //
-            "\taddi\ts0, sp, 16\r\n" + //
-            "\tsw\ta0, -12(s0)\r\n" + //
-            "\tlw\ta0, -12(s0)\r\n" + //
-            "\tcall\tputs\r\n" + //
-            "\tlw\tra, 12(sp)                      # 4-byte Folded Reload\r\n" + //
-            "\tlw\ts0, 8(sp)                       # 4-byte Folded Reload\r\n" + //
-            "\taddi\tsp, sp, 16\r\n" + //
-            "\tret\r\n" + //
-            ".Lfunc_end0:\r\n" + //
-            "\t.size\tprintln, .Lfunc_end0-println\r\n" + //
-            "                                        # -- End function\r\n" + //
-            "\t.globl\tprint                           # -- Begin function print\r\n" + //
-            "\t.p2align\t1\r\n" + //
-            "\t.type\tprint,@function\r\n" + //
-            "print:                                  # @print\r\n" + //
-            "# %bb.0:\r\n" + //
-            "\taddi\tsp, sp, -16\r\n" + //
-            "\tsw\tra, 12(sp)                      # 4-byte Folded Spill\r\n" + //
-            "\tsw\ts0, 8(sp)                       # 4-byte Folded Spill\r\n" + //
-            "\taddi\ts0, sp, 16\r\n" + //
-            "\tsw\ta0, -12(s0)\r\n" + //
-            "\tlw\ta1, -12(s0)\r\n" + //
-            "\tlui\ta0, %hi(.L.str)\r\n" + //
-            "\taddi\ta0, a0, %lo(.L.str)\r\n" + //
-            "\tcall\tprintf\r\n" + //
-            "\tlw\tra, 12(sp)                      # 4-byte Folded Reload\r\n" + //
-            "\tlw\ts0, 8(sp)                       # 4-byte Folded Reload\r\n" + //
-            "\taddi\tsp, sp, 16\r\n" + //
-            "\tret\r\n" + //
-            ".Lfunc_end1:\r\n" + //
-            "\t.size\tprint, .Lfunc_end1-print\r\n" + //
-            "                                        # -- End function\r\n" + //
-            "\t.globl\tprintInt                        # -- Begin function printInt\r\n" + //
-            "\t.p2align\t1\r\n" + //
-            "\t.type\tprintInt,@function\r\n" + //
-            "printInt:                               # @printInt\r\n" + //
-            "# %bb.0:\r\n" + //
-            "\taddi\tsp, sp, -16\r\n" + //
-            "\tsw\tra, 12(sp)                      # 4-byte Folded Spill\r\n" + //
-            "\tsw\ts0, 8(sp)                       # 4-byte Folded Spill\r\n" + //
-            "\taddi\ts0, sp, 16\r\n" + //
-            "\tsw\ta0, -12(s0)\r\n" + //
-            "\tlw\ta1, -12(s0)\r\n" + //
-            "\tlui\ta0, %hi(.L.str.1)\r\n" + //
-            "\taddi\ta0, a0, %lo(.L.str.1)\r\n" + //
-            "\tcall\tprintf\r\n" + //
-            "\tlw\tra, 12(sp)                      # 4-byte Folded Reload\r\n" + //
-            "\tlw\ts0, 8(sp)                       # 4-byte Folded Reload\r\n" + //
-            "\taddi\tsp, sp, 16\r\n" + //
-            "\tret\r\n" + //
-            ".Lfunc_end2:\r\n" + //
-            "\t.size\tprintInt, .Lfunc_end2-printInt\r\n" + //
-            "                                        # -- End function\r\n" + //
-            "\t.globl\tprintIntln                      # -- Begin function printIntln\r\n" + //
-            "\t.p2align\t1\r\n" + //
-            "\t.type\tprintIntln,@function\r\n" + //
-            "printIntln:                             # @printIntln\r\n" + //
-            "# %bb.0:\r\n" + //
-            "\taddi\tsp, sp, -16\r\n" + //
-            "\tsw\tra, 12(sp)                      # 4-byte Folded Spill\r\n" + //
-            "\tsw\ts0, 8(sp)                       # 4-byte Folded Spill\r\n" + //
-            "\taddi\ts0, sp, 16\r\n" + //
-            "\tsw\ta0, -12(s0)\r\n" + //
-            "\tlw\ta1, -12(s0)\r\n" + //
-            "\tlui\ta0, %hi(.L.str.2)\r\n" + //
-            "\taddi\ta0, a0, %lo(.L.str.2)\r\n" + //
-            "\tcall\tprintf\r\n" + //
-            "\tlw\tra, 12(sp)                      # 4-byte Folded Reload\r\n" + //
-            "\tlw\ts0, 8(sp)                       # 4-byte Folded Reload\r\n" + //
-            "\taddi\tsp, sp, 16\r\n" + //
-            "\tret\r\n" + //
-            ".Lfunc_end3:\r\n" + //
-            "\t.size\tprintIntln, .Lfunc_end3-printIntln\r\n" + //
-            "                                        # -- End function\r\n" + //
-            "\t.globl\ttoString                        # -- Begin function toString\r\n" + //
-            "\t.p2align\t1\r\n" + //
-            "\t.type\ttoString,@function\r\n" + //
-            "toString:                               # @toString\r\n" + //
-            "# %bb.0:\r\n" + //
-            "\taddi\tsp, sp, -32\r\n" + //
-            "\tsw\tra, 28(sp)                      # 4-byte Folded Spill\r\n" + //
-            "\tsw\ts0, 24(sp)                      # 4-byte Folded Spill\r\n" + //
-            "\taddi\ts0, sp, 32\r\n" + //
-            "\tsw\ta0, -12(s0)\r\n" + //
-            "\tli\ta0, 15\r\n" + //
-            "\tcall\tmalloc\r\n" + //
-            "\tsw\ta0, -16(s0)\r\n" + //
-            "\tlw\ta0, -16(s0)\r\n" + //
-            "\tlw\ta2, -12(s0)\r\n" + //
-            "\tlui\ta1, %hi(.L.str.1)\r\n" + //
-            "\taddi\ta1, a1, %lo(.L.str.1)\r\n" + //
-            "\tcall\tsprintf\r\n" + //
-            "\tlw\ta0, -16(s0)\r\n" + //
-            "\tcall\tstrlen\r\n" + //
-            "\taddi\ta0, a0, 1\r\n" + //
-            "\tcall\tmalloc\r\n" + //
-            "\tsw\ta0, -20(s0)\r\n" + //
-            "\tlw\ta0, -20(s0)\r\n" + //
-            "\tlw\ta1, -16(s0)\r\n" + //
-            "\tcall\tstrcpy\r\n" + //
-            "\tlw\ta0, -16(s0)\r\n" + //
-            "\tcall\tfree\r\n" + //
-            "\tlw\ta0, -20(s0)\r\n" + //
-            "\tlw\tra, 28(sp)                      # 4-byte Folded Reload\r\n" + //
-            "\tlw\ts0, 24(sp)                      # 4-byte Folded Reload\r\n" + //
-            "\taddi\tsp, sp, 32\r\n" + //
-            "\tret\r\n" + //
-            ".Lfunc_end4:\r\n" + //
-            "\t.size\ttoString, .Lfunc_end4-toString\r\n" + //
-            "                                        # -- End function\r\n" + //
-            "\t.globl\tgetInt                          # -- Begin function getInt\r\n" + //
-            "\t.p2align\t1\r\n" + //
-            "\t.type\tgetInt,@function\r\n" + //
-            "getInt:                                 # @getInt\r\n" + //
-            "# %bb.0:\r\n" + //
-            "\taddi\tsp, sp, -16\r\n" + //
-            "\tsw\tra, 12(sp)                      # 4-byte Folded Spill\r\n" + //
-            "\tsw\ts0, 8(sp)                       # 4-byte Folded Spill\r\n" + //
-            "\taddi\ts0, sp, 16\r\n" + //
-            "\tlui\ta0, %hi(.L.str.1)\r\n" + //
-            "\taddi\ta0, a0, %lo(.L.str.1)\r\n" + //
-            "\taddi\ta1, s0, -12\r\n" + //
-            "\tcall\tscanf\r\n" + //
-            "\tlw\ta0, -12(s0)\r\n" + //
-            "\tlw\tra, 12(sp)                      # 4-byte Folded Reload\r\n" + //
-            "\tlw\ts0, 8(sp)                       # 4-byte Folded Reload\r\n" + //
-            "\taddi\tsp, sp, 16\r\n" + //
-            "\tret\r\n" + //
-            ".Lfunc_end5:\r\n" + //
-            "\t.size\tgetInt, .Lfunc_end5-getInt\r\n" + //
-            "                                        # -- End function\r\n" + //
-            "\t.globl\tgetString                       # -- Begin function getString\r\n" + //
-            "\t.p2align\t1\r\n" + //
-            "\t.type\tgetString,@function\r\n" + //
-            "getString:                              # @getString\r\n" + //
-            "# %bb.0:\r\n" + //
-            "\taddi\tsp, sp, -16\r\n" + //
-            "\tsw\tra, 12(sp)                      # 4-byte Folded Spill\r\n" + //
-            "\tsw\ts0, 8(sp)                       # 4-byte Folded Spill\r\n" + //
-            "\taddi\ts0, sp, 16\r\n" + //
-            "\tlui\ta0, 1\r\n" + //
-            "\tcall\tmalloc\r\n" + //
-            "\tsw\ta0, -12(s0)\r\n" + //
-            "\tlw\ta1, -12(s0)\r\n" + //
-            "\tlui\ta0, %hi(.L.str)\r\n" + //
-            "\taddi\ta0, a0, %lo(.L.str)\r\n" + //
-            "\tcall\tscanf\r\n" + //
-            "\tlw\ta0, -12(s0)\r\n" + //
-            "\tcall\tstrlen\r\n" + //
-            "\taddi\ta0, a0, 1\r\n" + //
-            "\tcall\tmalloc\r\n" + //
-            "\tsw\ta0, -16(s0)\r\n" + //
-            "\tlw\ta0, -16(s0)\r\n" + //
-            "\tlw\ta1, -12(s0)\r\n" + //
-            "\tcall\tstrcpy\r\n" + //
-            "\tlw\ta0, -12(s0)\r\n" + //
-            "\tcall\tfree\r\n" + //
-            "\tlw\ta0, -16(s0)\r\n" + //
-            "\tlw\tra, 12(sp)                      # 4-byte Folded Reload\r\n" + //
-            "\tlw\ts0, 8(sp)                       # 4-byte Folded Reload\r\n" + //
-            "\taddi\tsp, sp, 16\r\n" + //
-            "\tret\r\n" + //
-            ".Lfunc_end6:\r\n" + //
-            "\t.size\tgetString, .Lfunc_end6-getString\r\n" + //
-            "                                        # -- End function\r\n" + //
-            "\t.globl\tstring_length                   # -- Begin function string_length\r\n" + //
-            "\t.p2align\t1\r\n" + //
-            "\t.type\tstring_length,@function\r\n" + //
-            "string_length:                          # @string_length\r\n" + //
-            "# %bb.0:\r\n" + //
-            "\taddi\tsp, sp, -16\r\n" + //
-            "\tsw\tra, 12(sp)                      # 4-byte Folded Spill\r\n" + //
-            "\tsw\ts0, 8(sp)                       # 4-byte Folded Spill\r\n" + //
-            "\taddi\ts0, sp, 16\r\n" + //
-            "\tsw\ta0, -12(s0)\r\n" + //
-            "\tlw\ta0, -12(s0)\r\n" + //
-            "\tcall\tstrlen\r\n" + //
-            "\tlw\tra, 12(sp)                      # 4-byte Folded Reload\r\n" + //
-            "\tlw\ts0, 8(sp)                       # 4-byte Folded Reload\r\n" + //
-            "\taddi\tsp, sp, 16\r\n" + //
-            "\tret\r\n" + //
-            ".Lfunc_end7:\r\n" + //
-            "\t.size\tstring_length, .Lfunc_end7-string_length\r\n" + //
-            "                                        # -- End function\r\n" + //
-            "\t.globl\tstring_substring                # -- Begin function string_substring\r\n" + //
-            "\t.p2align\t1\r\n" + //
-            "\t.type\tstring_substring,@function\r\n" + //
-            "string_substring:                       # @string_substring\r\n" + //
-            "# %bb.0:\r\n" + //
-            "\taddi\tsp, sp, -32\r\n" + //
-            "\tsw\tra, 28(sp)                      # 4-byte Folded Spill\r\n" + //
-            "\tsw\ts0, 24(sp)                      # 4-byte Folded Spill\r\n" + //
-            "\taddi\ts0, sp, 32\r\n" + //
-            "\tsw\ta0, -12(s0)\r\n" + //
-            "\tsw\ta1, -16(s0)\r\n" + //
-            "\tsw\ta2, -20(s0)\r\n" + //
-            "\tli\ta0, 5\r\n" + //
-            "\tcall\tmalloc\r\n" + //
-            "\tsw\ta0, -24(s0)\r\n" + //
-            "\tlw\ta0, -24(s0)\r\n" + //
-            "\tlw\ta1, -12(s0)\r\n" + //
-            "\tlw\ta2, -16(s0)\r\n" + //
-            "\tadd\ta1, a1, a2\r\n" + //
-            "\tcall\tstrcpy\r\n" + //
-            "\tlw\ta0, -24(s0)\r\n" + //
-            "\tlw\ta1, -20(s0)\r\n" + //
-            "\tlw\ta2, -16(s0)\r\n" + //
-            "\tsub\ta1, a1, a2\r\n" + //
-            "\tadd\ta1, a1, a0\r\n" + //
-            "\tli\ta0, 0\r\n" + //
-            "\tsb\ta0, 0(a1)\r\n" + //
-            "\tlw\ta0, -24(s0)\r\n" + //
-            "\tcall\tstrlen\r\n" + //
-            "\taddi\ta0, a0, 1\r\n" + //
-            "\tcall\tmalloc\r\n" + //
-            "\tsw\ta0, -28(s0)\r\n" + //
-            "\tlw\ta0, -28(s0)\r\n" + //
-            "\tlw\ta1, -24(s0)\r\n" + //
-            "\tcall\tstrcpy\r\n" + //
-            "\tlw\ta0, -24(s0)\r\n" + //
-            "\tcall\tfree\r\n" + //
-            "\tlw\ta0, -28(s0)\r\n" + //
-            "\tlw\tra, 28(sp)                      # 4-byte Folded Reload\r\n" + //
-            "\tlw\ts0, 24(sp)                      # 4-byte Folded Reload\r\n" + //
-            "\taddi\tsp, sp, 32\r\n" + //
-            "\tret\r\n" + //
-            ".Lfunc_end8:\r\n" + //
-            "\t.size\tstring_substring, .Lfunc_end8-string_substring\r\n" + //
-            "                                        # -- End function\r\n" + //
-            "\t.globl\tstring_parseInt                 # -- Begin function string_parseInt\r\n" + //
-            "\t.p2align\t1\r\n" + //
-            "\t.type\tstring_parseInt,@function\r\n" + //
-            "string_parseInt:                        # @string_parseInt\r\n" + //
-            "# %bb.0:\r\n" + //
-            "\taddi\tsp, sp, -32\r\n" + //
-            "\tsw\tra, 28(sp)                      # 4-byte Folded Spill\r\n" + //
-            "\tsw\ts0, 24(sp)                      # 4-byte Folded Spill\r\n" + //
-            "\taddi\ts0, sp, 32\r\n" + //
-            "\tsw\ta0, -12(s0)\r\n" + //
-            "\tli\ta0, 0\r\n" + //
-            "\tsw\ta0, -16(s0)\r\n" + //
-            "\tsw\ta0, -20(s0)\r\n" + //
-            "\tj\t.LBB9_1\r\n" + //
-            ".LBB9_1:                                # =>This Inner Loop Header: Depth=1\r\n" + //
-            "\tlw\ta0, -20(s0)\r\n" + //
-            "\tsw\ta0, -24(s0)                     # 4-byte Folded Spill\r\n" + //
-            "\tlw\ta0, -12(s0)\r\n" + //
-            "\tcall\tstrlen\r\n" + //
-            "\tmv\ta1, a0\r\n" + //
-            "\tlw\ta0, -24(s0)                     # 4-byte Folded Reload\r\n" + //
-            "\tbgeu\ta0, a1, .LBB9_8\r\n" + //
-            "\tj\t.LBB9_2\r\n" + //
-            ".LBB9_2:                                #   in Loop: Header=BB9_1 Depth=1\r\n" + //
-            "\tlw\ta0, -12(s0)\r\n" + //
-            "\tlw\ta1, -20(s0)\r\n" + //
-            "\tadd\ta0, a0, a1\r\n" + //
-            "\tlbu\ta0, 0(a0)\r\n" + //
-            "\tli\ta1, 48\r\n" + //
-            "\tblt\ta0, a1, .LBB9_5\r\n" + //
-            "\tj\t.LBB9_3\r\n" + //
-            ".LBB9_3:                                #   in Loop: Header=BB9_1 Depth=1\r\n" + //
-            "\tlw\ta0, -12(s0)\r\n" + //
-            "\tlw\ta1, -20(s0)\r\n" + //
-            "\tadd\ta0, a0, a1\r\n" + //
-            "\tlbu\ta1, 0(a0)\r\n" + //
-            "\tli\ta0, 57\r\n" + //
-            "\tblt\ta0, a1, .LBB9_5\r\n" + //
-            "\tj\t.LBB9_4\r\n" + //
-            ".LBB9_4:                                #   in Loop: Header=BB9_1 Depth=1\r\n" + //
-            "\tlw\ta0, -16(s0)\r\n" + //
-            "\tli\ta1, 10\r\n" + //
-            "\tmul\ta0, a0, a1\r\n" + //
-            "\tsw\ta0, -16(s0)\r\n" + //
-            "\tlw\ta0, -12(s0)\r\n" + //
-            "\tlw\ta1, -20(s0)\r\n" + //
-            "\tadd\ta0, a0, a1\r\n" + //
-            "\tlbu\ta0, 0(a0)\r\n" + //
-            "\tlw\ta1, -16(s0)\r\n" + //
-            "\tadd\ta0, a0, a1\r\n" + //
-            "\taddi\ta0, a0, -48\r\n" + //
-            "\tsw\ta0, -16(s0)\r\n" + //
-            "\tj\t.LBB9_6\r\n" + //
-            ".LBB9_5:\r\n" + //
-            "\tj\t.LBB9_8\r\n" + //
-            ".LBB9_6:                                #   in Loop: Header=BB9_1 Depth=1\r\n" + //
-            "\tj\t.LBB9_7\r\n" + //
-            ".LBB9_7:                                #   in Loop: Header=BB9_1 Depth=1\r\n" + //
-            "\tlw\ta0, -20(s0)\r\n" + //
-            "\taddi\ta0, a0, 1\r\n" + //
-            "\tsw\ta0, -20(s0)\r\n" + //
-            "\tj\t.LBB9_1\r\n" + //
-            ".LBB9_8:\r\n" + //
-            "\tlw\ta0, -16(s0)\r\n" + //
-            "\tlw\tra, 28(sp)                      # 4-byte Folded Reload\r\n" + //
-            "\tlw\ts0, 24(sp)                      # 4-byte Folded Reload\r\n" + //
-            "\taddi\tsp, sp, 32\r\n" + //
-            "\tret\r\n" + //
-            ".Lfunc_end9:\r\n" + //
-            "\t.size\tstring_parseInt, .Lfunc_end9-string_parseInt\r\n" + //
-            "                                        # -- End function\r\n" + //
-            "\t.globl\tstring_ord                      # -- Begin function string_ord\r\n" + //
-            "\t.p2align\t1\r\n" + //
-            "\t.type\tstring_ord,@function\r\n" + //
-            "string_ord:                             # @string_ord\r\n" + //
-            "# %bb.0:\r\n" + //
-            "\taddi\tsp, sp, -16\r\n" + //
-            "\tsw\tra, 12(sp)                      # 4-byte Folded Spill\r\n" + //
-            "\tsw\ts0, 8(sp)                       # 4-byte Folded Spill\r\n" + //
-            "\taddi\ts0, sp, 16\r\n" + //
-            "\tsw\ta0, -12(s0)\r\n" + //
-            "\tsw\ta1, -16(s0)\r\n" + //
-            "\tlw\ta0, -12(s0)\r\n" + //
-            "\tlw\ta1, -16(s0)\r\n" + //
-            "\tadd\ta0, a0, a1\r\n" + //
-            "\tlbu\ta0, 0(a0)\r\n" + //
-            "\tlw\tra, 12(sp)                      # 4-byte Folded Reload\r\n" + //
-            "\tlw\ts0, 8(sp)                       # 4-byte Folded Reload\r\n" + //
-            "\taddi\tsp, sp, 16\r\n" + //
-            "\tret\r\n" + //
-            ".Lfunc_end10:\r\n" + //
-            "\t.size\tstring_ord, .Lfunc_end10-string_ord\r\n" + //
-            "                                        # -- End function\r\n" + //
-            "\t.globl\tstring_cmp                      # -- Begin function string_cmp\r\n" + //
-            "\t.p2align\t1\r\n" + //
-            "\t.type\tstring_cmp,@function\r\n" + //
-            "string_cmp:                             # @string_cmp\r\n" + //
-            "# %bb.0:\r\n" + //
-            "\taddi\tsp, sp, -16\r\n" + //
-            "\tsw\tra, 12(sp)                      # 4-byte Folded Spill\r\n" + //
-            "\tsw\ts0, 8(sp)                       # 4-byte Folded Spill\r\n" + //
-            "\taddi\ts0, sp, 16\r\n" + //
-            "\tsw\ta0, -12(s0)\r\n" + //
-            "\tsw\ta1, -16(s0)\r\n" + //
-            "\tlw\ta0, -12(s0)\r\n" + //
-            "\tlw\ta1, -16(s0)\r\n" + //
-            "\tcall\tstrcmp\r\n" + //
-            "\tlw\tra, 12(sp)                      # 4-byte Folded Reload\r\n" + //
-            "\tlw\ts0, 8(sp)                       # 4-byte Folded Reload\r\n" + //
-            "\taddi\tsp, sp, 16\r\n" + //
-            "\tret\r\n" + //
-            ".Lfunc_end11:\r\n" + //
-            "\t.size\tstring_cmp, .Lfunc_end11-string_cmp\r\n" + //
-            "                                        # -- End function\r\n" + //
-            "\t.globl\tstring_cat                      # -- Begin function string_cat\r\n" + //
-            "\t.p2align\t1\r\n" + //
-            "\t.type\tstring_cat,@function\r\n" + //
-            "string_cat:                             # @string_cat\r\n" + //
-            "# %bb.0:\r\n" + //
-            "\taddi\tsp, sp, -32\r\n" + //
-            "\tsw\tra, 28(sp)                      # 4-byte Folded Spill\r\n" + //
-            "\tsw\ts0, 24(sp)                      # 4-byte Folded Spill\r\n" + //
-            "\taddi\ts0, sp, 32\r\n" + //
-            "\tsw\ta0, -12(s0)\r\n" + //
-            "\tsw\ta1, -16(s0)\r\n" + //
-            "\tlw\ta0, -12(s0)\r\n" + //
-            "\tcall\tstring_length\r\n" + //
-            "\tsw\ta0, -24(s0)                     # 4-byte Folded Spill\r\n" + //
-            "\tlw\ta0, -16(s0)\r\n" + //
-            "\tcall\tstring_length\r\n" + //
-            "\tmv\ta1, a0\r\n" + //
-            "\tlw\ta0, -24(s0)                     # 4-byte Folded Reload\r\n" + //
-            "\tadd\ta0, a0, a1\r\n" + //
-            "\taddi\ta0, a0, 1\r\n" + //
-            "\tcall\tmalloc\r\n" + //
-            "\tsw\ta0, -20(s0)\r\n" + //
-            "\tlw\ta0, -20(s0)\r\n" + //
-            "\tlw\ta1, -12(s0)\r\n" + //
-            "\tcall\tstrcpy\r\n" + //
-            "\tlw\ta0, -20(s0)\r\n" + //
-            "\tlw\ta1, -16(s0)\r\n" + //
-            "\tcall\tstrcat\r\n" + //
-            "\tlw\ta0, -20(s0)\r\n" + //
-            "\tlw\tra, 28(sp)                      # 4-byte Folded Reload\r\n" + //
-            "\tlw\ts0, 24(sp)                      # 4-byte Folded Reload\r\n" + //
-            "\taddi\tsp, sp, 32\r\n" + //
-            "\tret\r\n" + //
-            ".Lfunc_end12:\r\n" + //
-            "\t.size\tstring_cat, .Lfunc_end12-string_cat\r\n" + //
-            "                                        # -- End function\r\n" + //
-            "\t.globl\tptr_array                       # -- Begin function ptr_array\r\n" + //
-            "\t.p2align\t1\r\n" + //
-            "\t.type\tptr_array,@function\r\n" + //
-            "ptr_array:                              # @ptr_array\r\n" + //
-            "# %bb.0:\r\n" + //
-            "\taddi\tsp, sp, -16\r\n" + //
-            "\tsw\tra, 12(sp)                      # 4-byte Folded Spill\r\n" + //
-            "\tsw\ts0, 8(sp)                       # 4-byte Folded Spill\r\n" + //
-            "\taddi\ts0, sp, 16\r\n" + //
-            "\tsw\ta0, -12(s0)\r\n" + //
-            "\tlw\ta0, -12(s0)\r\n" + //
-            "\tslli\ta0, a0, 2\r\n" + //
-            "\taddi\ta0, a0, 4\r\n" + //
-            "\tcall\tmalloc\r\n" + //
-            "\tsw\ta0, -16(s0)\r\n" + //
-            "\tlw\ta0, -12(s0)\r\n" + //
-            "\tlw\ta1, -16(s0)\r\n" + //
-            "\tsw\ta0, 0(a1)\r\n" + //
-            "\tlw\ta0, -16(s0)\r\n" + //
-            "\taddi\ta0, a0, 4\r\n" + //
-            "\tlw\tra, 12(sp)                      # 4-byte Folded Reload\r\n" + //
-            "\tlw\ts0, 8(sp)                       # 4-byte Folded Reload\r\n" + //
-            "\taddi\tsp, sp, 16\r\n" + //
-            "\tret\r\n" + //
-            ".Lfunc_end13:\r\n" + //
-            "\t.size\tptr_array, .Lfunc_end13-ptr_array\r\n" + //
-            "                                        # -- End function\r\n" + //
-            "\t.globl\tint_array                       # -- Begin function int_array\r\n" + //
-            "\t.p2align\t1\r\n" + //
-            "\t.type\tint_array,@function\r\n" + //
-            "int_array:                              # @int_array\r\n" + //
-            "# %bb.0:\r\n" + //
-            "\taddi\tsp, sp, -16\r\n" + //
-            "\tsw\tra, 12(sp)                      # 4-byte Folded Spill\r\n" + //
-            "\tsw\ts0, 8(sp)                       # 4-byte Folded Spill\r\n" + //
-            "\taddi\ts0, sp, 16\r\n" + //
-            "\tsw\ta0, -12(s0)\r\n" + //
-            "\tlw\ta0, -12(s0)\r\n" + //
-            "\tslli\ta0, a0, 2\r\n" + //
-            "\taddi\ta0, a0, 4\r\n" + //
-            "\tcall\tmalloc\r\n" + //
-            "\tsw\ta0, -16(s0)\r\n" + //
-            "\tlw\ta0, -12(s0)\r\n" + //
-            "\tlw\ta1, -16(s0)\r\n" + //
-            "\tsw\ta0, 0(a1)\r\n" + //
-            "\tlw\ta0, -16(s0)\r\n" + //
-            "\taddi\ta0, a0, 4\r\n" + //
-            "\tlw\tra, 12(sp)                      # 4-byte Folded Reload\r\n" + //
-            "\tlw\ts0, 8(sp)                       # 4-byte Folded Reload\r\n" + //
-            "\taddi\tsp, sp, 16\r\n" + //
-            "\tret\r\n" + //
-            ".Lfunc_end14:\r\n" + //
-            "\t.size\tint_array, .Lfunc_end14-int_array\r\n" + //
-            "                                        # -- End function\r\n" + //
-            "\t.globl\tarray_size                      # -- Begin function array_size\r\n" + //
-            "\t.p2align\t1\r\n" + //
-            "\t.type\tarray_size,@function\r\n" + //
-            "array_size:                             # @array_size\r\n" + //
-            "# %bb.0:\r\n" + //
-            "\taddi\tsp, sp, -16\r\n" + //
-            "\tsw\tra, 12(sp)                      # 4-byte Folded Spill\r\n" + //
-            "\tsw\ts0, 8(sp)                       # 4-byte Folded Spill\r\n" + //
-            "\taddi\ts0, sp, 16\r\n" + //
-            "\tsw\ta0, -12(s0)\r\n" + //
-            "\tlw\ta0, -12(s0)\r\n" + //
-            "\tlw\ta0, -4(a0)\r\n" + //
-            "\tlw\tra, 12(sp)                      # 4-byte Folded Reload\r\n" + //
-            "\tlw\ts0, 8(sp)                       # 4-byte Folded Reload\r\n" + //
-            "\taddi\tsp, sp, 16\r\n" + //
-            "\tret\r\n" + //
-            ".Lfunc_end15:\r\n" + //
-            "\t.size\tarray_size, .Lfunc_end15-array_size\r\n" + //
-            "                                        # -- End function\r\n" + //
-            "\t.globl\tstring_copy                     # -- Begin function string_copy\r\n" + //
-            "\t.p2align\t1\r\n" + //
-            "\t.type\tstring_copy,@function\r\n" + //
-            "string_copy:                            # @string_copy\r\n" + //
-            "# %bb.0:\r\n" + //
-            "\taddi\tsp, sp, -16\r\n" + //
-            "\tsw\tra, 12(sp)                      # 4-byte Folded Spill\r\n" + //
-            "\tsw\ts0, 8(sp)                       # 4-byte Folded Spill\r\n" + //
-            "\taddi\ts0, sp, 16\r\n" + //
-            "\tsw\ta0, -12(s0)\r\n" + //
-            "\tlw\ta0, -12(s0)\r\n" + //
-            "\tcall\tstrlen\r\n" + //
-            "\taddi\ta0, a0, 1\r\n" + //
-            "\tcall\tmalloc\r\n" + //
-            "\tsw\ta0, -16(s0)\r\n" + //
-            "\tlw\ta0, -16(s0)\r\n" + //
-            "\tlw\ta1, -12(s0)\r\n" + //
-            "\tcall\tstrcpy\r\n" + //
-            "\tlw\ta0, -16(s0)\r\n" + //
-            "\tlw\tra, 12(sp)                      # 4-byte Folded Reload\r\n" + //
-            "\tlw\ts0, 8(sp)                       # 4-byte Folded Reload\r\n" + //
-            "\taddi\tsp, sp, 16\r\n" + //
-            "\tret\r\n" + //
-            ".Lfunc_end16:\r\n" + //
-            "\t.size\tstring_copy, .Lfunc_end16-string_copy\r\n" + //
-            "                                        # -- End function\r\n" + //
-            "\t.globl\tMyNew                           # -- Begin function MyNew\r\n" + //
-            "\t.p2align\t1\r\n" + //
-            "\t.type\tMyNew,@function\r\n" + //
-            "MyNew:                                  # @MyNew\r\n" + //
-            "# %bb.0:\r\n" + //
-            "\taddi\tsp, sp, -16\r\n" + //
-            "\tsw\tra, 12(sp)                      # 4-byte Folded Spill\r\n" + //
-            "\tsw\ts0, 8(sp)                       # 4-byte Folded Spill\r\n" + //
-            "\taddi\ts0, sp, 16\r\n" + //
-            "\tsw\ta0, -12(s0)\r\n" + //
-            "\tlw\ta0, -12(s0)\r\n" + //
-            "\tcall\tmalloc\r\n" + //
-            "\tsw\ta0, -16(s0)\r\n" + //
-            "\tlw\ta0, -16(s0)\r\n" + //
-            "\tlw\tra, 12(sp)                      # 4-byte Folded Reload\r\n" + //
-            "\tlw\ts0, 8(sp)                       # 4-byte Folded Reload\r\n" + //
-            "\taddi\tsp, sp, 16\r\n" + //
-            "\tret\r\n" + //
-            ".Lfunc_end17:\r\n" + //
-            "\t.size\tMyNew, .Lfunc_end17-MyNew\r\n" + //
-            "                                        # -- End function\r\n" + //
-            "\t.type\t.L.str,@object                  # @.str\r\n" + //
-            "\t.section\t.rodata.str1.1,\"aMS\",@progbits,1\r\n" + //
-            ".L.str:\r\n" + //
-            "\t.asciz\t\"%s\"\r\n" + //
-            "\t.size\t.L.str, 3\r\n" + //
-            "\r\n" + //
-            "\t.type\t.L.str.1,@object                # @.str.1\r\n" + //
-            ".L.str.1:\r\n" + //
-            "\t.asciz\t\"%d\"\r\n" + //
-            "\t.size\t.L.str.1, 3\r\n" + //
-            "\r\n" + //
-            "\t.type\t.L.str.2,@object                # @.str.2\r\n" + //
-            ".L.str.2:\r\n" + //
-            "\t.asciz\t\"%d\\n" + //
-            "\"\r\n" + //
-            "\t.size\t.L.str.2, 4\r\n" + //
-            "\r\n" + //
-            "\t.ident\t\"Ubuntu clang version 18.1.8 (++20240731024944+3b5b5c1ec4a3-1~exp1~20240731145000.144)\"\r\n" + //
-            "\t.section\t\".note.GNU-stack\",\"\",@progbits\r\n" + //
-            "\t.addrsig\r\n" + //
-            "\t.addrsig_sym puts\r\n" + //
-            "\t.addrsig_sym printf\r\n" + //
-            "\t.addrsig_sym malloc\r\n" + //
-            "\t.addrsig_sym sprintf\r\n" + //
-            "\t.addrsig_sym strlen\r\n" + //
-            "\t.addrsig_sym strcpy\r\n" + //
-            "\t.addrsig_sym free\r\n" + //
-            "\t.addrsig_sym scanf\r\n" + //
-            "\t.addrsig_sym string_length\r\n" + //
-            "\t.addrsig_sym strcmp\r\n" + //
-            "\t.addrsig_sym strcat\r\n" + //
-            "");
+        "\t.attribute\t4, 16\r\n" + //
+        "\t.attribute\t5, \"rv32i2p1_m2p0_a2p1_c2p0\"\r\n" + //
+        "\t.file\t\"Inner.c\"\r\n" + //
+        "\t.globl\tprintln                         # -- Begin function println\r\n" + //
+        "\t.p2align\t1\r\n" + //
+        "\t.type\tprintln,@function\r\n" + //
+        "println:                                # @println\r\n" + //
+        "# %bb.0:\r\n" + //
+        "\taddi\tsp, sp, -16\r\n" + //
+        "\tsw\tra, 12(sp)                      # 4-byte Folded Spill\r\n" + //
+        "\tsw\ts0, 8(sp)                       # 4-byte Folded Spill\r\n" + //
+        "\taddi\ts0, sp, 16\r\n" + //
+        "\tsw\ta0, -12(s0)\r\n" + //
+        "\tlw\ta0, -12(s0)\r\n" + //
+        "\tcall\tputs\r\n" + //
+        "\tlw\tra, 12(sp)                      # 4-byte Folded Reload\r\n" + //
+        "\tlw\ts0, 8(sp)                       # 4-byte Folded Reload\r\n" + //
+        "\taddi\tsp, sp, 16\r\n" + //
+        "\tret\r\n" + //
+        ".Lfunc_end0:\r\n" + //
+        "\t.size\tprintln, .Lfunc_end0-println\r\n" + //
+        "                                        # -- End function\r\n" + //
+        "\t.globl\tprint                           # -- Begin function print\r\n" + //
+        "\t.p2align\t1\r\n" + //
+        "\t.type\tprint,@function\r\n" + //
+        "print:                                  # @print\r\n" + //
+        "# %bb.0:\r\n" + //
+        "\taddi\tsp, sp, -16\r\n" + //
+        "\tsw\tra, 12(sp)                      # 4-byte Folded Spill\r\n" + //
+        "\tsw\ts0, 8(sp)                       # 4-byte Folded Spill\r\n" + //
+        "\taddi\ts0, sp, 16\r\n" + //
+        "\tsw\ta0, -12(s0)\r\n" + //
+        "\tlw\ta1, -12(s0)\r\n" + //
+        "\tlui\ta0, %hi(.L.str)\r\n" + //
+        "\taddi\ta0, a0, %lo(.L.str)\r\n" + //
+        "\tcall\tprintf\r\n" + //
+        "\tlw\tra, 12(sp)                      # 4-byte Folded Reload\r\n" + //
+        "\tlw\ts0, 8(sp)                       # 4-byte Folded Reload\r\n" + //
+        "\taddi\tsp, sp, 16\r\n" + //
+        "\tret\r\n" + //
+        ".Lfunc_end1:\r\n" + //
+        "\t.size\tprint, .Lfunc_end1-print\r\n" + //
+        "                                        # -- End function\r\n" + //
+        "\t.globl\tprintInt                        # -- Begin function printInt\r\n" + //
+        "\t.p2align\t1\r\n" + //
+        "\t.type\tprintInt,@function\r\n" + //
+        "printInt:                               # @printInt\r\n" + //
+        "# %bb.0:\r\n" + //
+        "\taddi\tsp, sp, -16\r\n" + //
+        "\tsw\tra, 12(sp)                      # 4-byte Folded Spill\r\n" + //
+        "\tsw\ts0, 8(sp)                       # 4-byte Folded Spill\r\n" + //
+        "\taddi\ts0, sp, 16\r\n" + //
+        "\tsw\ta0, -12(s0)\r\n" + //
+        "\tlw\ta1, -12(s0)\r\n" + //
+        "\tlui\ta0, %hi(.L.str.1)\r\n" + //
+        "\taddi\ta0, a0, %lo(.L.str.1)\r\n" + //
+        "\tcall\tprintf\r\n" + //
+        "\tlw\tra, 12(sp)                      # 4-byte Folded Reload\r\n" + //
+        "\tlw\ts0, 8(sp)                       # 4-byte Folded Reload\r\n" + //
+        "\taddi\tsp, sp, 16\r\n" + //
+        "\tret\r\n" + //
+        ".Lfunc_end2:\r\n" + //
+        "\t.size\tprintInt, .Lfunc_end2-printInt\r\n" + //
+        "                                        # -- End function\r\n" + //
+        "\t.globl\tprintIntln                      # -- Begin function printIntln\r\n" + //
+        "\t.p2align\t1\r\n" + //
+        "\t.type\tprintIntln,@function\r\n" + //
+        "printIntln:                             # @printIntln\r\n" + //
+        "# %bb.0:\r\n" + //
+        "\taddi\tsp, sp, -16\r\n" + //
+        "\tsw\tra, 12(sp)                      # 4-byte Folded Spill\r\n" + //
+        "\tsw\ts0, 8(sp)                       # 4-byte Folded Spill\r\n" + //
+        "\taddi\ts0, sp, 16\r\n" + //
+        "\tsw\ta0, -12(s0)\r\n" + //
+        "\tlw\ta1, -12(s0)\r\n" + //
+        "\tlui\ta0, %hi(.L.str.2)\r\n" + //
+        "\taddi\ta0, a0, %lo(.L.str.2)\r\n" + //
+        "\tcall\tprintf\r\n" + //
+        "\tlw\tra, 12(sp)                      # 4-byte Folded Reload\r\n" + //
+        "\tlw\ts0, 8(sp)                       # 4-byte Folded Reload\r\n" + //
+        "\taddi\tsp, sp, 16\r\n" + //
+        "\tret\r\n" + //
+        ".Lfunc_end3:\r\n" + //
+        "\t.size\tprintIntln, .Lfunc_end3-printIntln\r\n" + //
+        "                                        # -- End function\r\n" + //
+        "\t.globl\ttoString                        # -- Begin function toString\r\n" + //
+        "\t.p2align\t1\r\n" + //
+        "\t.type\ttoString,@function\r\n" + //
+        "toString:                               # @toString\r\n" + //
+        "# %bb.0:\r\n" + //
+        "\taddi\tsp, sp, -32\r\n" + //
+        "\tsw\tra, 28(sp)                      # 4-byte Folded Spill\r\n" + //
+        "\tsw\ts0, 24(sp)                      # 4-byte Folded Spill\r\n" + //
+        "\taddi\ts0, sp, 32\r\n" + //
+        "\tsw\ta0, -12(s0)\r\n" + //
+        "\tli\ta0, 15\r\n" + //
+        "\tcall\tmalloc\r\n" + //
+        "\tsw\ta0, -16(s0)\r\n" + //
+        "\tlw\ta0, -16(s0)\r\n" + //
+        "\tlw\ta2, -12(s0)\r\n" + //
+        "\tlui\ta1, %hi(.L.str.1)\r\n" + //
+        "\taddi\ta1, a1, %lo(.L.str.1)\r\n" + //
+        "\tcall\tsprintf\r\n" + //
+        "\tlw\ta0, -16(s0)\r\n" + //
+        "\tcall\tstrlen\r\n" + //
+        "\taddi\ta0, a0, 1\r\n" + //
+        "\tcall\tmalloc\r\n" + //
+        "\tsw\ta0, -20(s0)\r\n" + //
+        "\tlw\ta0, -20(s0)\r\n" + //
+        "\tlw\ta1, -16(s0)\r\n" + //
+        "\tcall\tstrcpy\r\n" + //
+        "\tlw\ta0, -16(s0)\r\n" + //
+        "\tcall\tfree\r\n" + //
+        "\tlw\ta0, -20(s0)\r\n" + //
+        "\tlw\tra, 28(sp)                      # 4-byte Folded Reload\r\n" + //
+        "\tlw\ts0, 24(sp)                      # 4-byte Folded Reload\r\n" + //
+        "\taddi\tsp, sp, 32\r\n" + //
+        "\tret\r\n" + //
+        ".Lfunc_end4:\r\n" + //
+        "\t.size\ttoString, .Lfunc_end4-toString\r\n" + //
+        "                                        # -- End function\r\n" + //
+        "\t.globl\tgetInt                          # -- Begin function getInt\r\n" + //
+        "\t.p2align\t1\r\n" + //
+        "\t.type\tgetInt,@function\r\n" + //
+        "getInt:                                 # @getInt\r\n" + //
+        "# %bb.0:\r\n" + //
+        "\taddi\tsp, sp, -16\r\n" + //
+        "\tsw\tra, 12(sp)                      # 4-byte Folded Spill\r\n" + //
+        "\tsw\ts0, 8(sp)                       # 4-byte Folded Spill\r\n" + //
+        "\taddi\ts0, sp, 16\r\n" + //
+        "\tlui\ta0, %hi(.L.str.1)\r\n" + //
+        "\taddi\ta0, a0, %lo(.L.str.1)\r\n" + //
+        "\taddi\ta1, s0, -12\r\n" + //
+        "\tcall\tscanf\r\n" + //
+        "\tlw\ta0, -12(s0)\r\n" + //
+        "\tlw\tra, 12(sp)                      # 4-byte Folded Reload\r\n" + //
+        "\tlw\ts0, 8(sp)                       # 4-byte Folded Reload\r\n" + //
+        "\taddi\tsp, sp, 16\r\n" + //
+        "\tret\r\n" + //
+        ".Lfunc_end5:\r\n" + //
+        "\t.size\tgetInt, .Lfunc_end5-getInt\r\n" + //
+        "                                        # -- End function\r\n" + //
+        "\t.globl\tgetString                       # -- Begin function getString\r\n" + //
+        "\t.p2align\t1\r\n" + //
+        "\t.type\tgetString,@function\r\n" + //
+        "getString:                              # @getString\r\n" + //
+        "# %bb.0:\r\n" + //
+        "\taddi\tsp, sp, -16\r\n" + //
+        "\tsw\tra, 12(sp)                      # 4-byte Folded Spill\r\n" + //
+        "\tsw\ts0, 8(sp)                       # 4-byte Folded Spill\r\n" + //
+        "\taddi\ts0, sp, 16\r\n" + //
+        "\tlui\ta0, 1\r\n" + //
+        "\tcall\tmalloc\r\n" + //
+        "\tsw\ta0, -12(s0)\r\n" + //
+        "\tlw\ta1, -12(s0)\r\n" + //
+        "\tlui\ta0, %hi(.L.str)\r\n" + //
+        "\taddi\ta0, a0, %lo(.L.str)\r\n" + //
+        "\tcall\tscanf\r\n" + //
+        "\tlw\ta0, -12(s0)\r\n" + //
+        "\tcall\tstrlen\r\n" + //
+        "\taddi\ta0, a0, 1\r\n" + //
+        "\tcall\tmalloc\r\n" + //
+        "\tsw\ta0, -16(s0)\r\n" + //
+        "\tlw\ta0, -16(s0)\r\n" + //
+        "\tlw\ta1, -12(s0)\r\n" + //
+        "\tcall\tstrcpy\r\n" + //
+        "\tlw\ta0, -12(s0)\r\n" + //
+        "\tcall\tfree\r\n" + //
+        "\tlw\ta0, -16(s0)\r\n" + //
+        "\tlw\tra, 12(sp)                      # 4-byte Folded Reload\r\n" + //
+        "\tlw\ts0, 8(sp)                       # 4-byte Folded Reload\r\n" + //
+        "\taddi\tsp, sp, 16\r\n" + //
+        "\tret\r\n" + //
+        ".Lfunc_end6:\r\n" + //
+        "\t.size\tgetString, .Lfunc_end6-getString\r\n" + //
+        "                                        # -- End function\r\n" + //
+        "\t.globl\tstring_length                   # -- Begin function string_length\r\n" + //
+        "\t.p2align\t1\r\n" + //
+        "\t.type\tstring_length,@function\r\n" + //
+        "string_length:                          # @string_length\r\n" + //
+        "# %bb.0:\r\n" + //
+        "\taddi\tsp, sp, -16\r\n" + //
+        "\tsw\tra, 12(sp)                      # 4-byte Folded Spill\r\n" + //
+        "\tsw\ts0, 8(sp)                       # 4-byte Folded Spill\r\n" + //
+        "\taddi\ts0, sp, 16\r\n" + //
+        "\tsw\ta0, -12(s0)\r\n" + //
+        "\tlw\ta0, -12(s0)\r\n" + //
+        "\tcall\tstrlen\r\n" + //
+        "\tlw\tra, 12(sp)                      # 4-byte Folded Reload\r\n" + //
+        "\tlw\ts0, 8(sp)                       # 4-byte Folded Reload\r\n" + //
+        "\taddi\tsp, sp, 16\r\n" + //
+        "\tret\r\n" + //
+        ".Lfunc_end7:\r\n" + //
+        "\t.size\tstring_length, .Lfunc_end7-string_length\r\n" + //
+        "                                        # -- End function\r\n" + //
+        "\t.globl\tstring_substring                # -- Begin function string_substring\r\n" + //
+        "\t.p2align\t1\r\n" + //
+        "\t.type\tstring_substring,@function\r\n" + //
+        "string_substring:                       # @string_substring\r\n" + //
+        "# %bb.0:\r\n" + //
+        "\taddi\tsp, sp, -32\r\n" + //
+        "\tsw\tra, 28(sp)                      # 4-byte Folded Spill\r\n" + //
+        "\tsw\ts0, 24(sp)                      # 4-byte Folded Spill\r\n" + //
+        "\taddi\ts0, sp, 32\r\n" + //
+        "\tsw\ta0, -12(s0)\r\n" + //
+        "\tsw\ta1, -16(s0)\r\n" + //
+        "\tsw\ta2, -20(s0)\r\n" + //
+        "\tli\ta0, 5\r\n" + //
+        "\tcall\tmalloc\r\n" + //
+        "\tsw\ta0, -24(s0)\r\n" + //
+        "\tlw\ta0, -24(s0)\r\n" + //
+        "\tlw\ta1, -12(s0)\r\n" + //
+        "\tlw\ta2, -16(s0)\r\n" + //
+        "\tadd\ta1, a1, a2\r\n" + //
+        "\tcall\tstrcpy\r\n" + //
+        "\tlw\ta0, -24(s0)\r\n" + //
+        "\tlw\ta1, -20(s0)\r\n" + //
+        "\tlw\ta2, -16(s0)\r\n" + //
+        "\tsub\ta1, a1, a2\r\n" + //
+        "\tadd\ta1, a1, a0\r\n" + //
+        "\tli\ta0, 0\r\n" + //
+        "\tsb\ta0, 0(a1)\r\n" + //
+        "\tlw\ta0, -24(s0)\r\n" + //
+        "\tcall\tstrlen\r\n" + //
+        "\taddi\ta0, a0, 1\r\n" + //
+        "\tcall\tmalloc\r\n" + //
+        "\tsw\ta0, -28(s0)\r\n" + //
+        "\tlw\ta0, -28(s0)\r\n" + //
+        "\tlw\ta1, -24(s0)\r\n" + //
+        "\tcall\tstrcpy\r\n" + //
+        "\tlw\ta0, -24(s0)\r\n" + //
+        "\tcall\tfree\r\n" + //
+        "\tlw\ta0, -28(s0)\r\n" + //
+        "\tlw\tra, 28(sp)                      # 4-byte Folded Reload\r\n" + //
+        "\tlw\ts0, 24(sp)                      # 4-byte Folded Reload\r\n" + //
+        "\taddi\tsp, sp, 32\r\n" + //
+        "\tret\r\n" + //
+        ".Lfunc_end8:\r\n" + //
+        "\t.size\tstring_substring, .Lfunc_end8-string_substring\r\n" + //
+        "                                        # -- End function\r\n" + //
+        "\t.globl\tstring_parseInt                 # -- Begin function string_parseInt\r\n" + //
+        "\t.p2align\t1\r\n" + //
+        "\t.type\tstring_parseInt,@function\r\n" + //
+        "string_parseInt:                        # @string_parseInt\r\n" + //
+        "# %bb.0:\r\n" + //
+        "\taddi\tsp, sp, -32\r\n" + //
+        "\tsw\tra, 28(sp)                      # 4-byte Folded Spill\r\n" + //
+        "\tsw\ts0, 24(sp)                      # 4-byte Folded Spill\r\n" + //
+        "\taddi\ts0, sp, 32\r\n" + //
+        "\tsw\ta0, -12(s0)\r\n" + //
+        "\tli\ta0, 0\r\n" + //
+        "\tsw\ta0, -16(s0)\r\n" + //
+        "\tsw\ta0, -20(s0)\r\n" + //
+        "\tj\t.LBB9_1\r\n" + //
+        ".LBB9_1:                                # =>This Inner Loop Header: Depth=1\r\n" + //
+        "\tlw\ta0, -20(s0)\r\n" + //
+        "\tsw\ta0, -24(s0)                     # 4-byte Folded Spill\r\n" + //
+        "\tlw\ta0, -12(s0)\r\n" + //
+        "\tcall\tstrlen\r\n" + //
+        "\tmv\ta1, a0\r\n" + //
+        "\tlw\ta0, -24(s0)                     # 4-byte Folded Reload\r\n" + //
+        "\tbgeu\ta0, a1, .LBB9_8\r\n" + //
+        "\tj\t.LBB9_2\r\n" + //
+        ".LBB9_2:                                #   in Loop: Header=BB9_1 Depth=1\r\n" + //
+        "\tlw\ta0, -12(s0)\r\n" + //
+        "\tlw\ta1, -20(s0)\r\n" + //
+        "\tadd\ta0, a0, a1\r\n" + //
+        "\tlbu\ta0, 0(a0)\r\n" + //
+        "\tli\ta1, 48\r\n" + //
+        "\tblt\ta0, a1, .LBB9_5\r\n" + //
+        "\tj\t.LBB9_3\r\n" + //
+        ".LBB9_3:                                #   in Loop: Header=BB9_1 Depth=1\r\n" + //
+        "\tlw\ta0, -12(s0)\r\n" + //
+        "\tlw\ta1, -20(s0)\r\n" + //
+        "\tadd\ta0, a0, a1\r\n" + //
+        "\tlbu\ta1, 0(a0)\r\n" + //
+        "\tli\ta0, 57\r\n" + //
+        "\tblt\ta0, a1, .LBB9_5\r\n" + //
+        "\tj\t.LBB9_4\r\n" + //
+        ".LBB9_4:                                #   in Loop: Header=BB9_1 Depth=1\r\n" + //
+        "\tlw\ta0, -16(s0)\r\n" + //
+        "\tli\ta1, 10\r\n" + //
+        "\tmul\ta0, a0, a1\r\n" + //
+        "\tsw\ta0, -16(s0)\r\n" + //
+        "\tlw\ta0, -12(s0)\r\n" + //
+        "\tlw\ta1, -20(s0)\r\n" + //
+        "\tadd\ta0, a0, a1\r\n" + //
+        "\tlbu\ta0, 0(a0)\r\n" + //
+        "\tlw\ta1, -16(s0)\r\n" + //
+        "\tadd\ta0, a0, a1\r\n" + //
+        "\taddi\ta0, a0, -48\r\n" + //
+        "\tsw\ta0, -16(s0)\r\n" + //
+        "\tj\t.LBB9_6\r\n" + //
+        ".LBB9_5:\r\n" + //
+        "\tj\t.LBB9_8\r\n" + //
+        ".LBB9_6:                                #   in Loop: Header=BB9_1 Depth=1\r\n" + //
+        "\tj\t.LBB9_7\r\n" + //
+        ".LBB9_7:                                #   in Loop: Header=BB9_1 Depth=1\r\n" + //
+        "\tlw\ta0, -20(s0)\r\n" + //
+        "\taddi\ta0, a0, 1\r\n" + //
+        "\tsw\ta0, -20(s0)\r\n" + //
+        "\tj\t.LBB9_1\r\n" + //
+        ".LBB9_8:\r\n" + //
+        "\tlw\ta0, -16(s0)\r\n" + //
+        "\tlw\tra, 28(sp)                      # 4-byte Folded Reload\r\n" + //
+        "\tlw\ts0, 24(sp)                      # 4-byte Folded Reload\r\n" + //
+        "\taddi\tsp, sp, 32\r\n" + //
+        "\tret\r\n" + //
+        ".Lfunc_end9:\r\n" + //
+        "\t.size\tstring_parseInt, .Lfunc_end9-string_parseInt\r\n" + //
+        "                                        # -- End function\r\n" + //
+        "\t.globl\tstring_ord                      # -- Begin function string_ord\r\n" + //
+        "\t.p2align\t1\r\n" + //
+        "\t.type\tstring_ord,@function\r\n" + //
+        "string_ord:                             # @string_ord\r\n" + //
+        "# %bb.0:\r\n" + //
+        "\taddi\tsp, sp, -16\r\n" + //
+        "\tsw\tra, 12(sp)                      # 4-byte Folded Spill\r\n" + //
+        "\tsw\ts0, 8(sp)                       # 4-byte Folded Spill\r\n" + //
+        "\taddi\ts0, sp, 16\r\n" + //
+        "\tsw\ta0, -12(s0)\r\n" + //
+        "\tsw\ta1, -16(s0)\r\n" + //
+        "\tlw\ta0, -12(s0)\r\n" + //
+        "\tlw\ta1, -16(s0)\r\n" + //
+        "\tadd\ta0, a0, a1\r\n" + //
+        "\tlbu\ta0, 0(a0)\r\n" + //
+        "\tlw\tra, 12(sp)                      # 4-byte Folded Reload\r\n" + //
+        "\tlw\ts0, 8(sp)                       # 4-byte Folded Reload\r\n" + //
+        "\taddi\tsp, sp, 16\r\n" + //
+        "\tret\r\n" + //
+        ".Lfunc_end10:\r\n" + //
+        "\t.size\tstring_ord, .Lfunc_end10-string_ord\r\n" + //
+        "                                        # -- End function\r\n" + //
+        "\t.globl\tstring_cmp                      # -- Begin function string_cmp\r\n" + //
+        "\t.p2align\t1\r\n" + //
+        "\t.type\tstring_cmp,@function\r\n" + //
+        "string_cmp:                             # @string_cmp\r\n" + //
+        "# %bb.0:\r\n" + //
+        "\taddi\tsp, sp, -16\r\n" + //
+        "\tsw\tra, 12(sp)                      # 4-byte Folded Spill\r\n" + //
+        "\tsw\ts0, 8(sp)                       # 4-byte Folded Spill\r\n" + //
+        "\taddi\ts0, sp, 16\r\n" + //
+        "\tsw\ta0, -12(s0)\r\n" + //
+        "\tsw\ta1, -16(s0)\r\n" + //
+        "\tlw\ta0, -12(s0)\r\n" + //
+        "\tlw\ta1, -16(s0)\r\n" + //
+        "\tcall\tstrcmp\r\n" + //
+        "\tlw\tra, 12(sp)                      # 4-byte Folded Reload\r\n" + //
+        "\tlw\ts0, 8(sp)                       # 4-byte Folded Reload\r\n" + //
+        "\taddi\tsp, sp, 16\r\n" + //
+        "\tret\r\n" + //
+        ".Lfunc_end11:\r\n" + //
+        "\t.size\tstring_cmp, .Lfunc_end11-string_cmp\r\n" + //
+        "                                        # -- End function\r\n" + //
+        "\t.globl\tstring_cat                      # -- Begin function string_cat\r\n" + //
+        "\t.p2align\t1\r\n" + //
+        "\t.type\tstring_cat,@function\r\n" + //
+        "string_cat:                             # @string_cat\r\n" + //
+        "# %bb.0:\r\n" + //
+        "\taddi\tsp, sp, -32\r\n" + //
+        "\tsw\tra, 28(sp)                      # 4-byte Folded Spill\r\n" + //
+        "\tsw\ts0, 24(sp)                      # 4-byte Folded Spill\r\n" + //
+        "\taddi\ts0, sp, 32\r\n" + //
+        "\tsw\ta0, -12(s0)\r\n" + //
+        "\tsw\ta1, -16(s0)\r\n" + //
+        "\tlw\ta0, -12(s0)\r\n" + //
+        "\tcall\tstring_length\r\n" + //
+        "\tsw\ta0, -24(s0)                     # 4-byte Folded Spill\r\n" + //
+        "\tlw\ta0, -16(s0)\r\n" + //
+        "\tcall\tstring_length\r\n" + //
+        "\tmv\ta1, a0\r\n" + //
+        "\tlw\ta0, -24(s0)                     # 4-byte Folded Reload\r\n" + //
+        "\tadd\ta0, a0, a1\r\n" + //
+        "\taddi\ta0, a0, 1\r\n" + //
+        "\tcall\tmalloc\r\n" + //
+        "\tsw\ta0, -20(s0)\r\n" + //
+        "\tlw\ta0, -20(s0)\r\n" + //
+        "\tlw\ta1, -12(s0)\r\n" + //
+        "\tcall\tstrcpy\r\n" + //
+        "\tlw\ta0, -20(s0)\r\n" + //
+        "\tlw\ta1, -16(s0)\r\n" + //
+        "\tcall\tstrcat\r\n" + //
+        "\tlw\ta0, -20(s0)\r\n" + //
+        "\tlw\tra, 28(sp)                      # 4-byte Folded Reload\r\n" + //
+        "\tlw\ts0, 24(sp)                      # 4-byte Folded Reload\r\n" + //
+        "\taddi\tsp, sp, 32\r\n" + //
+        "\tret\r\n" + //
+        ".Lfunc_end12:\r\n" + //
+        "\t.size\tstring_cat, .Lfunc_end12-string_cat\r\n" + //
+        "                                        # -- End function\r\n" + //
+        "\t.globl\tptr_array                       # -- Begin function ptr_array\r\n" + //
+        "\t.p2align\t1\r\n" + //
+        "\t.type\tptr_array,@function\r\n" + //
+        "ptr_array:                              # @ptr_array\r\n" + //
+        "# %bb.0:\r\n" + //
+        "\taddi\tsp, sp, -16\r\n" + //
+        "\tsw\tra, 12(sp)                      # 4-byte Folded Spill\r\n" + //
+        "\tsw\ts0, 8(sp)                       # 4-byte Folded Spill\r\n" + //
+        "\taddi\ts0, sp, 16\r\n" + //
+        "\tsw\ta0, -12(s0)\r\n" + //
+        "\tlw\ta0, -12(s0)\r\n" + //
+        "\tslli\ta0, a0, 2\r\n" + //
+        "\taddi\ta0, a0, 4\r\n" + //
+        "\tcall\tmalloc\r\n" + //
+        "\tsw\ta0, -16(s0)\r\n" + //
+        "\tlw\ta0, -12(s0)\r\n" + //
+        "\tlw\ta1, -16(s0)\r\n" + //
+        "\tsw\ta0, 0(a1)\r\n" + //
+        "\tlw\ta0, -16(s0)\r\n" + //
+        "\taddi\ta0, a0, 4\r\n" + //
+        "\tlw\tra, 12(sp)                      # 4-byte Folded Reload\r\n" + //
+        "\tlw\ts0, 8(sp)                       # 4-byte Folded Reload\r\n" + //
+        "\taddi\tsp, sp, 16\r\n" + //
+        "\tret\r\n" + //
+        ".Lfunc_end13:\r\n" + //
+        "\t.size\tptr_array, .Lfunc_end13-ptr_array\r\n" + //
+        "                                        # -- End function\r\n" + //
+        "\t.globl\tint_array                       # -- Begin function int_array\r\n" + //
+        "\t.p2align\t1\r\n" + //
+        "\t.type\tint_array,@function\r\n" + //
+        "int_array:                              # @int_array\r\n" + //
+        "# %bb.0:\r\n" + //
+        "\taddi\tsp, sp, -16\r\n" + //
+        "\tsw\tra, 12(sp)                      # 4-byte Folded Spill\r\n" + //
+        "\tsw\ts0, 8(sp)                       # 4-byte Folded Spill\r\n" + //
+        "\taddi\ts0, sp, 16\r\n" + //
+        "\tsw\ta0, -12(s0)\r\n" + //
+        "\tlw\ta0, -12(s0)\r\n" + //
+        "\tslli\ta0, a0, 2\r\n" + //
+        "\taddi\ta0, a0, 4\r\n" + //
+        "\tcall\tmalloc\r\n" + //
+        "\tsw\ta0, -16(s0)\r\n" + //
+        "\tlw\ta0, -12(s0)\r\n" + //
+        "\tlw\ta1, -16(s0)\r\n" + //
+        "\tsw\ta0, 0(a1)\r\n" + //
+        "\tlw\ta0, -16(s0)\r\n" + //
+        "\taddi\ta0, a0, 4\r\n" + //
+        "\tlw\tra, 12(sp)                      # 4-byte Folded Reload\r\n" + //
+        "\tlw\ts0, 8(sp)                       # 4-byte Folded Reload\r\n" + //
+        "\taddi\tsp, sp, 16\r\n" + //
+        "\tret\r\n" + //
+        ".Lfunc_end14:\r\n" + //
+        "\t.size\tint_array, .Lfunc_end14-int_array\r\n" + //
+        "                                        # -- End function\r\n" + //
+        "\t.globl\tarray_size                      # -- Begin function array_size\r\n" + //
+        "\t.p2align\t1\r\n" + //
+        "\t.type\tarray_size,@function\r\n" + //
+        "array_size:                             # @array_size\r\n" + //
+        "# %bb.0:\r\n" + //
+        "\taddi\tsp, sp, -16\r\n" + //
+        "\tsw\tra, 12(sp)                      # 4-byte Folded Spill\r\n" + //
+        "\tsw\ts0, 8(sp)                       # 4-byte Folded Spill\r\n" + //
+        "\taddi\ts0, sp, 16\r\n" + //
+        "\tsw\ta0, -12(s0)\r\n" + //
+        "\tlw\ta0, -12(s0)\r\n" + //
+        "\tlw\ta0, -4(a0)\r\n" + //
+        "\tlw\tra, 12(sp)                      # 4-byte Folded Reload\r\n" + //
+        "\tlw\ts0, 8(sp)                       # 4-byte Folded Reload\r\n" + //
+        "\taddi\tsp, sp, 16\r\n" + //
+        "\tret\r\n" + //
+        ".Lfunc_end15:\r\n" + //
+        "\t.size\tarray_size, .Lfunc_end15-array_size\r\n" + //
+        "                                        # -- End function\r\n" + //
+        "\t.globl\tstring_copy                     # -- Begin function string_copy\r\n" + //
+        "\t.p2align\t1\r\n" + //
+        "\t.type\tstring_copy,@function\r\n" + //
+        "string_copy:                            # @string_copy\r\n" + //
+        "# %bb.0:\r\n" + //
+        "\taddi\tsp, sp, -16\r\n" + //
+        "\tsw\tra, 12(sp)                      # 4-byte Folded Spill\r\n" + //
+        "\tsw\ts0, 8(sp)                       # 4-byte Folded Spill\r\n" + //
+        "\taddi\ts0, sp, 16\r\n" + //
+        "\tsw\ta0, -12(s0)\r\n" + //
+        "\tlw\ta0, -12(s0)\r\n" + //
+        "\tcall\tstrlen\r\n" + //
+        "\taddi\ta0, a0, 1\r\n" + //
+        "\tcall\tmalloc\r\n" + //
+        "\tsw\ta0, -16(s0)\r\n" + //
+        "\tlw\ta0, -16(s0)\r\n" + //
+        "\tlw\ta1, -12(s0)\r\n" + //
+        "\tcall\tstrcpy\r\n" + //
+        "\tlw\ta0, -16(s0)\r\n" + //
+        "\tlw\tra, 12(sp)                      # 4-byte Folded Reload\r\n" + //
+        "\tlw\ts0, 8(sp)                       # 4-byte Folded Reload\r\n" + //
+        "\taddi\tsp, sp, 16\r\n" + //
+        "\tret\r\n" + //
+        ".Lfunc_end16:\r\n" + //
+        "\t.size\tstring_copy, .Lfunc_end16-string_copy\r\n" + //
+        "                                        # -- End function\r\n" + //
+        "\t.globl\tMyNew                           # -- Begin function MyNew\r\n" + //
+        "\t.p2align\t1\r\n" + //
+        "\t.type\tMyNew,@function\r\n" + //
+        "MyNew:                                  # @MyNew\r\n" + //
+        "# %bb.0:\r\n" + //
+        "\taddi\tsp, sp, -16\r\n" + //
+        "\tsw\tra, 12(sp)                      # 4-byte Folded Spill\r\n" + //
+        "\tsw\ts0, 8(sp)                       # 4-byte Folded Spill\r\n" + //
+        "\taddi\ts0, sp, 16\r\n" + //
+        "\tsw\ta0, -12(s0)\r\n" + //
+        "\tlw\ta0, -12(s0)\r\n" + //
+        "\tcall\tmalloc\r\n" + //
+        "\tsw\ta0, -16(s0)\r\n" + //
+        "\tlw\ta0, -16(s0)\r\n" + //
+        "\tlw\tra, 12(sp)                      # 4-byte Folded Reload\r\n" + //
+        "\tlw\ts0, 8(sp)                       # 4-byte Folded Reload\r\n" + //
+        "\taddi\tsp, sp, 16\r\n" + //
+        "\tret\r\n" + //
+        ".Lfunc_end17:\r\n" + //
+        "\t.size\tMyNew, .Lfunc_end17-MyNew\r\n" + //
+        "                                        # -- End function\r\n" + //
+        "\t.type\t.L.str,@object                  # @.str\r\n" + //
+        "\t.section\t.rodata.str1.1,\"aMS\",@progbits,1\r\n" + //
+        ".L.str:\r\n" + //
+        "\t.asciz\t\"%s\"\r\n" + //
+        "\t.size\t.L.str, 3\r\n" + //
+        "\r\n" + //
+        "\t.type\t.L.str.1,@object                # @.str.1\r\n" + //
+        ".L.str.1:\r\n" + //
+        "\t.asciz\t\"%d\"\r\n" + //
+        "\t.size\t.L.str.1, 3\r\n" + //
+        "\r\n" + //
+        "\t.type\t.L.str.2,@object                # @.str.2\r\n" + //
+        ".L.str.2:\r\n" + //
+        "\t.asciz\t\"%d\\n" + //
+        "\"\r\n" + //
+        "\t.size\t.L.str.2, 4\r\n" + //
+        "\r\n" + //
+        "\t.ident\t\"Ubuntu clang version 18.1.8 (++20240731024944+3b5b5c1ec4a3-1~exp1~20240731145000.144)\"\r\n" + //
+        "\t.section\t\".note.GNU-stack\",\"\",@progbits\r\n" + //
+        "\t.addrsig\r\n" + //
+        "\t.addrsig_sym puts\r\n" + //
+        "\t.addrsig_sym printf\r\n" + //
+        "\t.addrsig_sym malloc\r\n" + //
+        "\t.addrsig_sym sprintf\r\n" + //
+        "\t.addrsig_sym strlen\r\n" + //
+        "\t.addrsig_sym strcpy\r\n" + //
+        "\t.addrsig_sym free\r\n" + //
+        "\t.addrsig_sym scanf\r\n" + //
+        "\t.addrsig_sym string_length\r\n" + //
+        "\t.addrsig_sym strcmp\r\n" + //
+        "\t.addrsig_sym strcat\r\n" + //
+        "");
   }
 }

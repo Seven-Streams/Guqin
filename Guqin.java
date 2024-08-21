@@ -52,6 +52,8 @@ public class Guqin {
         }
         Composer Yuchuan = new Composer(AST);
         Yuchuan.translate((ProgNode) entry);
+        RemoveEmptyCall call_remover = new RemoveEmptyCall(Yuchuan);
+        call_remover.CheckUnecessaryCalling();
         Mem2Reg M2R = new Mem2Reg(Yuchuan);
         M2R.Optim();
         // Yuchuan.LLVMOutput();
