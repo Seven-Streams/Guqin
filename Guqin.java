@@ -56,12 +56,11 @@ public class Guqin {
         call_remover.CheckUnecessaryCalling();
         Mem2Reg M2R = new Mem2Reg(Yuchuan);
         M2R.Optim();
-        // Yuchuan.LLVMOutput();
-        // Yuchuan.Codegen();
-        // System.exit(0);
-        LivenessAnalysis allocator = new LivenessAnalysis(Yuchuan);
         PhiRemover eraser = new PhiRemover(Yuchuan);
         eraser.Remove();
+        Inline inliner = new Inline(Yuchuan);
+        inliner.Optim(30);
+        LivenessAnalysis allocator = new LivenessAnalysis(Yuchuan);
         allocator.Allocator(25);
         allocator.PrintBuiltIn();
         allocator.Codegen();

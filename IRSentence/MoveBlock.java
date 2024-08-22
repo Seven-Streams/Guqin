@@ -106,7 +106,7 @@ public class MoveBlock extends IRCode {
       now_label.put(to, return_value.to);
     }
     for (PseudoMove move : moves) {
-      PseudoMove new_move = new PseudoMove(null, null);
+      PseudoMove new_move = new PseudoMove("null", "null");
       try {
         Integer.parseInt(move.src);
         new_move.src = new String(move.src);

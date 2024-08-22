@@ -5,6 +5,7 @@ import java.util.Stack;
 
 import Composer.Composer;
 import Optimization.NameLabelPair;
+import Optimization.PseudoMove;
 
 public class IRReturn extends IRCode {
   public String reg = null;
@@ -136,5 +137,31 @@ public class IRReturn extends IRCode {
     }
     System.out.println("j .return" + func_num);
     return;
+  }
+
+  @Override
+  public IRCode GetInline(HashMap<String, String> now_name, HashMap<Integer, Integer> now_label, Composer machine)
+      throws Exception {
+    if (reg != null) {
+      PseudoMove move = new PseudoMove("null", "null");
+      try {
+        Integer.parseInt(reg);
+        move.src = new String(reg);
+      } catch (NumberFormatException e) {
+        if (is_global.containsKey(reg)) {
+          move.src = new String(reg);
+        } else {
+          if (now_name.containsKey(reg)) {
+            move.src = new String(now_name.get(reg));
+          } else {
+            move.src = new String("%reg$" + (++machine.tmp_time));
+            now_name.put(reg, move.src);
+          }
+        }
+      }
+      move.des = new String(now_name.get("return"));
+      return move;
+    }
+    return null;
   }
 }

@@ -2,6 +2,8 @@ package IRSentence;
 
 import java.util.HashMap;
 
+import Composer.Composer;
+
 public class IRFuncend extends IRCode {
   @Override
   public void CodePrint() {
@@ -48,5 +50,12 @@ public class IRFuncend extends IRCode {
       System.out.println("lw s" + (i + 1) + ", " + (-12 - 4 * i) + "(sp)");
     }
     System.out.println("ret");
+  }
+
+  @Override
+  public IRCode GetInline(HashMap<String, String> now_name, HashMap<Integer, Integer> now_label, Composer machine)
+      throws Exception {
+    IRLabel return_value = new IRLabel(now_label.get(0));
+    return return_value;
   }
 }
