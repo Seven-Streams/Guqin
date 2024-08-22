@@ -16,6 +16,7 @@ Guqin is a kind of Chinese traditional musical instrument. For example, the famo
 - [ ] Optimization
   - [x] Mem2Reg
   - [x] Register Allocation
+  - [x] Inline Functions
   - [ ] to be continued...
 
 ## The songs I love listening when coding
