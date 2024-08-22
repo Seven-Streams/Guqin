@@ -278,7 +278,7 @@ public class IRFuncall extends IRCode {
               if ((value >> 9) == 0) {
                 System.out.println("lw " + func_in + ", " + (4 * value) + "(s0)");
               } else {
-              System.out.println("li " + func_in + ", " + (value * 4));
+                System.out.println("li " + func_in + ", " + (value * 4));
                 System.out.println("add " + func_in + ", " + func_in + ", s0");
                 System.out.println("lw " + func_in + ", 0(" + func_in + ")");
               }
@@ -323,5 +323,44 @@ public class IRFuncall extends IRCode {
       System.out.println("lw " + to_save.get(i) + "," + ((i + extra) * 4) + "(sp)");
     }
     return;
+  }
+
+  @Override
+  public IRCode GetInline(HashMap<String, String> now_name, HashMap<Integer, Integer> now_label, Composer machine)
+      throws Exception {
+    IRFuncall return_value = new IRFuncall();
+    return_value.func_name = new String(func_name);
+    return_value.func_type = new String(func_type);
+    if (target_reg != null) {
+      if (is_global.containsKey(target_reg)) {
+        return_value.target_reg = new String(target_reg);
+      } else {
+        if (now_name.containsKey(target_reg)) {
+          return_value.target_reg = new String(now_name.get(target_reg));
+        } else {
+          return_value.target_reg = new String("%reg$" + (++machine.tmp_time));
+          now_name.put(target_reg, return_value.target_reg);
+        }
+      }
+    }
+    for (String reg_v : reg) {
+      try{
+        Integer.parseInt(reg_v);
+        return_value.reg.add(new String(reg_v));
+      }catch(NumberFormatException e) {
+        if((!CheckLit(reg_v)) || is_global.containsKey(reg_v)) {
+          return_value.reg.add(new String(reg_v));
+        } else {
+          if (now_name.containsKey(reg_v)) {
+            return_value.reg.add(new String(now_name.get(reg_v)));
+          } else {
+            String tmp = new String("%reg$" + (++machine.tmp_time));
+            return_value.reg.add(tmp);
+            now_name.put(reg_v, tmp);
+          }
+        }
+      }
+    }
+    return return_value;
   }
 }

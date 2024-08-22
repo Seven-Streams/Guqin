@@ -143,12 +143,12 @@ public class IRReturn extends IRCode {
   public IRCode GetInline(HashMap<String, String> now_name, HashMap<Integer, Integer> now_label, Composer machine)
       throws Exception {
     if (reg != null) {
-      PseudoMove move = new PseudoMove("null", "null");
+      PseudoMove move = new PseudoMove("isnull", "isnull");
       try {
         Integer.parseInt(reg);
         move.src = new String(reg);
       } catch (NumberFormatException e) {
-        if (is_global.containsKey(reg)) {
+        if (is_global.containsKey(reg) || (!CheckLit(reg))) {
           move.src = new String(reg);
         } else {
           if (now_name.containsKey(reg)) {

@@ -34,7 +34,7 @@ public class IRjmp extends IRCode {
   @Override
   public IRCode GetInline(HashMap<String, String> now_name, HashMap<Integer, Integer> now_label, Composer machine)
       throws Exception {
-    IRLabel return_value = new IRLabel();
+    IRjmp return_value = new IRjmp();
     if(now_label.containsKey(label)) {
       return_value.label = now_label.get(label);
     } else {

@@ -1,6 +1,8 @@
 package Optimization;
 
 import java.util.*;
+
+import Composer.Composer;
 import IRSentence.*;
 
 public class PseudoMove extends IRCode {
@@ -79,5 +81,37 @@ public class PseudoMove extends IRCode {
   public void CodePrint() {
     System.out.print(src + "->" + des + ";");
     return;
+  }
+
+  @Override
+  public IRCode GetInline(HashMap<String, String> now_name, HashMap<Integer, Integer> now_label, Composer machine)
+      throws Exception {
+    PseudoMove new_move = new PseudoMove("null", "null");
+    try {
+      Integer.parseInt(src);
+      new_move.src = new String(src);
+    } catch (NumberFormatException e) {
+      if (now_name.containsKey(src)) {
+        new_move.src = new String(now_name.get(src));
+      } else {
+        if ((!CheckLit(src)) || (is_global.containsKey(src))) {
+          new_move.src = new String(src);
+        } else {
+          new_move.src = new String("%reg$" + (++machine.tmp_time));
+          now_name.put(src, new_move.src);
+        }
+      }
+    }
+    if (now_name.containsKey(des)) {
+      new_move.des = new String(now_name.get(des));
+    } else {
+      if ((!CheckLit(des)) || (is_global.containsKey(des))) {
+        new_move.des = new String(des);
+      } else {
+        new_move.des = new String("%reg$" + (++machine.tmp_time));
+        now_name.put(des, new_move.des);
+      }
+    }
+    return new_move;
   }
 }

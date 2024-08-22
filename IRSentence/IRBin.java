@@ -433,6 +433,7 @@ public class IRBin extends IRCode {
       throws Exception {
     IRBin return_value = new IRBin();
     return_value.symbol = new String(symbol);
+    return_value.type = new String(type);
     try {
       Integer.parseInt(op1);
       return_value.op1 = new String(op1);
@@ -466,6 +467,8 @@ public class IRBin extends IRCode {
         return_value.target_reg = new String("%reg$" + (++machine.tmp_time));
         now_name.put(target_reg, return_value.target_reg);
       }
+    } else {
+      target_reg = new String(target_reg);
     }
     return return_value;
   }

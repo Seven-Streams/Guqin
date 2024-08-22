@@ -8,16 +8,22 @@ public class Inline {
   Composer machine = null;
   HashMap<String, Boolean> ready_to_inline = new HashMap<>();
   HashMap<String, Integer> entry = new HashMap<>();
+  boolean flag = true;
 
   public Inline(Composer _machine) {
     machine = _machine;
   }
 
   public void Optim(int bound) throws Exception {
-    CheckGlobal();
-    FuncCheck(bound);
-    InlineFunc();
-    EmbeddingInline();
+    flag = true;
+    while (flag) {
+      flag = false;
+      ready_to_inline.clear();
+      CheckGlobal();
+      FuncCheck(bound);
+      InlineFunc();
+      EmbeddingInline();
+    }
   }
 
   void CheckGlobal() {
@@ -48,14 +54,16 @@ public class Inline {
         IRFuncall call = (IRFuncall) code;
         if (!(call.func_name.equals("print") || call.func_name.equals("println") || call.func_name.equals("ord") ||
             call.func_name.equals("length") || call.func_name.equals("parseInt") || call.func_name.equals("substring")
-            || call.func_name.equals("printInt") || call.func_name.equals("printIntln")))
+            || call.func_name.equals("printInt") || call.func_name.equals("printIntln")
+            || call.func_name.equals("MyNew") || call.func_name.equals("int_array")
+            || call.func_name.equals("ptr_array")))
           have_calling = true;
       }
       if (code instanceof IRFuncend) {
         if ((sentence_cnt <= bound) && (!have_calling)) {
-          ready_to_inline.put(name, true);
+          ready_to_inline.put(new String(name), true);
         } else {
-          ready_to_inline.put(name, false);
+          ready_to_inline.put(new String(name), false);
         }
       }
     }
@@ -81,7 +89,7 @@ public class Inline {
     HashMap<String, String> name_replace = new HashMap<>();
     IRFunc declar = (IRFunc) machine.generated.get(start);
     for (int i = 0; i < calling_info.reg.size(); i++) {
-      name_replace.put(declar.names.get(i), calling_info.reg.get(i));
+      name_replace.put(new String(declar.names.get(i)), new String(calling_info.reg.get(i)));
     }
     label_replace.put(0, ++machine.label_number);
     // 0 represented the end of the inline fuc.
@@ -109,9 +117,16 @@ public class Inline {
     for (int i = 0; i < machine.generated.size(); i++) {
       IRCode code = machine.generated.get(i);
       if (code instanceof InlineFunc) {
-        machine.generated.addAll(i + 1, ((InlineFunc) code).operations);
+        InlineFunc check = (InlineFunc) code;
+        if (check.operations.size() > 1) {
+          flag = true;
+          IRLabel label = (IRLabel) check.operations.get(check.operations.size() - 1);
+          IRjmp res = new IRjmp(label.label);
+          check.operations.add(check.operations.size() - 1, res);
+          machine.generated.addAll(i + 1, ((InlineFunc) code).operations);
+        }
         machine.generated.remove(i);
-        continue;
+        i--;
       }
     }
     return;
