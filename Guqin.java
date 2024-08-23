@@ -59,7 +59,7 @@ public class Guqin {
         PhiRemover eraser = new PhiRemover(Yuchuan);
         eraser.Remove();
         Inline inliner = new Inline(Yuchuan);
-        inliner.Optim(30);
+        inliner.Optim(50);
         LivenessAnalysis allocator = new LivenessAnalysis(Yuchuan);
         allocator.Allocator(25);
         // Yuchuan.LLVMOutput();
