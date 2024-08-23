@@ -7,8 +7,8 @@ import java.util.HashMap;
 import Composer.Composer;
 
 public class MoveBlock extends IRCode {
-  public int to = 0;
-  public int num = 0;
+  public Integer to = null;
+  public Integer num = null;
   public ArrayList<PseudoMove> moves = new ArrayList<>();
 
   @Override
@@ -37,7 +37,9 @@ public class MoveBlock extends IRCode {
   @Override
   public void CodegenWithOptim(HashMap<String, Integer> registers, HashMap<Integer, String> register_name)
       throws Exception {
-    System.out.println("b" + num + ":");
+    if (num != null) {
+      System.out.println("b" + num + ":");
+    }
     for (PseudoMove move : moves) {
       try {
         int src_value = Integer.parseInt(move.src);
@@ -76,7 +78,9 @@ public class MoveBlock extends IRCode {
         }
       }
     }
-    System.out.println("j b" + to);
+    if (to != null) {
+      System.out.println("j b" + to);
+    }
     return;
   }
 
