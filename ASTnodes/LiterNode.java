@@ -3,6 +3,7 @@ package ASTnodes;
 import Composer.*;
 import IRSentence.IRChararray;
 import IRSentence.IRFuncall;
+import IRSentence.IRLoad;
 
 //To make the function of a class more clearly, let "this" be %0.
 public class LiterNode extends ExprNode {
@@ -49,14 +50,12 @@ public class LiterNode extends ExprNode {
       }
       to_add.size = ++str_size;
       machine.const_str.add(to_add);
-      IRFuncall to_call = new IRFuncall();
-      to_call.func_name = ("string_copy");
-      to_call.func_type = "ptr";
-      to_call.target_reg = new String("%reg$" + Integer.toString(++machine.tmp_time));
-      to_call.reg.add(to_add.reg);
-      to_call.type.add("ptr");
-      machine.generated.add(to_call);
-      res.reg = new String(to_call.target_reg);
+      IRLoad to_load = new IRLoad();
+      to_load.type = "ptr";
+      to_load.des = new String("%reg$" + Integer.toString(++machine.tmp_time));
+      to_load.src = new String(to_add.reg);
+      machine.generated.add(to_load);
+      res.reg = new String(to_load.des);
       return res;
     }
     System.out.println("INVALID IN LITER!");
