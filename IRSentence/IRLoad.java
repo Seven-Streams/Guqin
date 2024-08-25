@@ -169,15 +169,15 @@ public class IRLoad extends IRCode {
       throws Exception {
     IRLoad return_value = new IRLoad();
     return_value.type = new String(type);
-    if(now_name.containsKey(src)) {
+    if (now_name.containsKey(src)) {
       return_value.src = new String(now_name.get(src));
     } else {
       return_value.src = new String(src);
     }
-    if(now_name.containsKey(des)) {
+    if (now_name.containsKey(des)) {
       return_value.des = new String(now_name.get(des));
     } else {
-      if(is_global.containsKey(des)) {
+      if (is_global.containsKey(des)) {
         return_value.des = new String(des);
       } else {
         return_value.des = new String("%reg$" + (++machine.tmp_time));
@@ -185,5 +185,15 @@ public class IRLoad extends IRCode {
       }
     }
     return return_value;
+  }
+
+  @Override
+  public void AliveUseDefCheck(HashMap<String, Boolean> def, HashMap<String, Boolean> use) {
+    if (!use.containsKey(des)) {
+      dead = true;
+    } else {
+      dead = false;
+      UseDefCheck(def, use);
+    }
   }
 }

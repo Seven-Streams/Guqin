@@ -52,22 +52,8 @@ public class Guqin {
         }
         Composer Yuchuan = new Composer(AST);
         Yuchuan.translate((ProgNode) entry);
-        RemoveEmptyCall call_remover = new RemoveEmptyCall(Yuchuan);
-        call_remover.CheckUnecessaryCalling();
-        Mem2Reg M2R = new Mem2Reg(Yuchuan);
-        M2R.Optim();
-        PhiRemover eraser = new PhiRemover(Yuchuan);
-        eraser.Remove();
-        NaiveADCE ADCER = new NaiveADCE(Yuchuan);
-        ADCER.Optim();
-        Inline inliner = new Inline(Yuchuan);
-        inliner.Optim(50);
-        LivenessAnalysis allocator = new LivenessAnalysis(Yuchuan);
-        allocator.Allocator(25);
-        RemoveJmp jp = new RemoveJmp(Yuchuan);
-        jp.Optim();
-        allocator.PrintBuiltIn();
-        allocator.Codegen();
+        Optimizor adam = new Optimizor(Yuchuan);
+        adam.OptimizedCodegen();
         System.exit(0);
     }
 }

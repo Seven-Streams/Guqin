@@ -23,6 +23,7 @@ public class IRCode {
   public static int func_num = 0;
   public static int sp_length = 0;
   public int sentence_number = 0;
+  public boolean dead = false;
   public static HashMap<String, Boolean> Empty_func = new HashMap<>();
   public static HashMap<Integer, Integer> register_use = null;
   public static HashMap<String, Boolean> is_global = new HashMap<>();
@@ -30,6 +31,7 @@ public class IRCode {
   public boolean CheckLit(String to_check) {
     return(!((to_check.equals("true")) || to_check.equals("false") || to_check.equals("null")));
   }
+  public void AliveUseDefCheck(HashMap<String, Boolean> def, HashMap<String, Boolean> use){UseDefCheck(def, use);}
   public void CheckGlobal(){};
   public void CodegenWithOptim(HashMap<String, Integer> registers, HashMap<Integer, String> register_name) throws Exception{} 
   public IRCode GetInline(HashMap<String, String> now_name, HashMap<Integer, Integer> now_label, Composer machine) throws Exception{return new IRCode();}

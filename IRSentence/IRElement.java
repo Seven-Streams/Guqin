@@ -298,10 +298,10 @@ public class IRElement extends IRCode {
       throws Exception {
     IRElement return_value = new IRElement();
     return_value.now_type = new String(now_type);
-    if(is_global.containsKey(src)) {
+    if (is_global.containsKey(src)) {
       return_value.src = new String(src);
     } else {
-      if(now_name.containsKey(src)) {
+      if (now_name.containsKey(src)) {
         return_value.src = new String(now_name.get(src));
       } else {
         return_value.src = new String("%reg$" + (++machine.tmp_time));
@@ -351,5 +351,15 @@ public class IRElement extends IRCode {
       }
     }
     return return_value;
+  }
+
+  @Override
+  public void AliveUseDefCheck(HashMap<String, Boolean> def, HashMap<String, Boolean> use) {
+    if (!use.containsKey(output)) {
+      dead = true;
+    } else {
+      dead = false;
+      UseDefCheck(def, use);
+    }
   }
 }

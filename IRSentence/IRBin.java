@@ -472,4 +472,14 @@ public class IRBin extends IRCode {
     }
     return return_value;
   }
+
+  @Override
+  public void AliveUseDefCheck(HashMap<String, Boolean> def, HashMap<String, Boolean> use) {
+    if (!use.containsKey(target_reg)) {
+      dead = true;
+    } else {
+      dead = false;
+      UseDefCheck(def, use);
+    }
+  }
 }

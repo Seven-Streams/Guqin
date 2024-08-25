@@ -8,15 +8,11 @@ import java.util.TreeMap;
 
 import Composer.*;
 import IRSentence.Conditionjmp;
-import IRSentence.IRBin;
 import IRSentence.IRClass;
 import IRSentence.IRCode;
-import IRSentence.IRElement;
 import IRSentence.IRFunc;
 import IRSentence.IRFuncend;
-import IRSentence.IRIcmp;
 import IRSentence.IRLabel;
-import IRSentence.IRLoad;
 import IRSentence.IRjmp;
 import IRSentence.MoveBlock;
 
@@ -28,8 +24,6 @@ public class NaiveADCE {
   HashMap<Integer, HashMap<Integer, Boolean>> graph = new HashMap<>();
   HashMap<Integer, HashMap<Integer, Boolean>> pre = new HashMap<>();
   HashMap<Integer, TreeMap<Integer, Boolean>> from = new HashMap<>();
-  public HashMap<Integer, HashMap<String, Boolean>> use = new HashMap<>();
-  public HashMap<Integer, HashMap<String, Boolean>> def = new HashMap<>();
   public HashMap<Integer, HashMap<String, Boolean>> in = new HashMap<>();
   public HashMap<Integer, HashMap<String, Boolean>> out = new HashMap<>();
   public HashMap<Integer, Boolean> contains_end = new HashMap<>();
@@ -40,10 +34,39 @@ public class NaiveADCE {
 
   public void Optim() {
     BuildGraph();
-    UseDefCheck();
     InOutCheck();
-    RemoveDeadCode();
+    DeadCheck();
     Rebuild();
+    RemoveDead();
+  }
+
+  void PrintOut() {
+    for (int i = -1; i >= func_cnt; i--) {
+      System.out.print(i + ":");
+      for (String out_v : out.get(i).keySet()) {
+        System.out.print(out_v + " ");
+      }
+      System.out.println("");
+    }
+    for (int i = 1; i <= largest_label; i++) {
+      if (out.containsKey(i)) {
+        System.out.print(i + ":");
+        for (String out_v : out.get(i).keySet()) {
+          System.out.print(out_v + " ");
+        }
+        System.out.println("");
+      }
+    }
+  }
+
+  void RemoveDead() {
+    for (int i = machine.generated.size() - 1; i >= 0; i--) {
+      IRCode code = machine.generated.get(i);
+      if (code.dead) {
+        machine.generated.remove(i);
+      }
+    }
+    return;
   }
 
   void Rebuild() {
@@ -63,78 +86,36 @@ public class NaiveADCE {
     return;
   }
 
-  void RemoveDeadCode() {
-    HashMap<String, Boolean> res_use = new HashMap<>();
-    HashMap<String, Boolean> res_def = new HashMap<>();
+  void DeadCheck() {
     for (int i = -1; i >= func_cnt; i--) {
       ArrayList<IRCode> check_list = blocks.get(i);
       HashMap<String, Boolean> now_out = out.get(i);
-      if(now_out == null) {
-        now_out = new HashMap<>();
+      if (now_out == null) {
+        continue;
       }
+      HashMap<String, Boolean> res_def = new HashMap<>();
       for (int j = check_list.size() - 1; j >= 0; j--) {
-        IRCode code = check_list.get(j);
-        boolean dead = false;
-        res_use.clear();
         res_def.clear();
-        code.UseDefCheck(res_def, res_use);
-        if (code instanceof IRLoad || code instanceof IRBin || code instanceof IRIcmp || code instanceof IRElement) {
-          dead = true;
-          for (String def_v : res_def.keySet()) {
-            if (now_out.containsKey(def_v)) {
-              dead = false;
-              break;
-            }
-          }
-        }
+        IRCode code = check_list.get(j);
+        code.AliveUseDefCheck(res_def, now_out);
         for (String def_v : res_def.keySet()) {
           now_out.remove(def_v);
-        }
-        if (!dead) {
-          for (String use_v : res_use.keySet()) {
-            now_out.put(use_v, null);
-          }
-        } else {
-          for (String use_v : res_use.keySet()) {
-            now_out.remove(use_v);
-          }
-          check_list.remove(j);
         }
       }
     }
     for (int i = 1; i <= largest_label; i++) {
       ArrayList<IRCode> check_list = blocks.get(i);
       HashMap<String, Boolean> now_out = out.get(i);
-      if(now_out == null) {
+      if (now_out == null) {
         continue;
       }
+      HashMap<String, Boolean> res_def = new HashMap<>();
       for (int j = check_list.size() - 1; j >= 0; j--) {
-        IRCode code = check_list.get(j);
-        boolean dead = false;
-        res_use.clear();
         res_def.clear();
-        code.UseDefCheck(res_def, res_use);
-        if (code instanceof IRLoad || code instanceof IRBin || code instanceof IRIcmp || code instanceof IRElement) {
-          dead = true;
-          for (String def_v : res_def.keySet()) {
-            if (now_out.containsKey(def_v)) {
-              dead = false;
-              break;
-            }
-          }
-        }
+        IRCode code = check_list.get(j);
+        code.AliveUseDefCheck(res_def, now_out);
         for (String def_v : res_def.keySet()) {
           now_out.remove(def_v);
-        }
-        if (!dead) {
-          for (String use_v : res_use.keySet()) {
-            now_out.put(use_v, null);
-          }
-        } else {
-          for (String use_v : res_use.keySet()) {
-            now_out.remove(use_v);
-          }
-          check_list.remove(j);
         }
       }
     }
@@ -224,52 +205,6 @@ public class NaiveADCE {
     return;
   }
 
-  void UseDefCheck() {
-    for (IRCode code : machine.global) {
-      code.UseDefCheck(null, null);
-    }
-    for (IRCode code : machine.const_str) {
-      code.UseDefCheck(null, null);
-    }
-    use.clear();
-    def.clear();
-    int func = 0;
-    int now = 0;
-    HashMap<String, Boolean> res_def = null;
-    HashMap<String, Boolean> res_use = null;
-    for (IRCode code : machine.generated) {
-      if (code instanceof IRLabel) {
-        if (res_def != null) {
-          use.put(now, res_use);
-          def.put(now, res_def);
-        }
-        IRLabel label = (IRLabel) code;
-        res_def = new HashMap<>();
-        res_use = new HashMap<>();
-        now = label.label;
-      }
-      if (code instanceof IRFunc) {
-        res_def = new HashMap<>();
-        res_use = new HashMap<>();
-        now = --func;
-      }
-      if (code instanceof MoveBlock) {
-        MoveBlock move = (MoveBlock) code;
-        use.put(now, res_use);
-        def.put(now, res_def);
-        res_def = new HashMap<>();
-        res_use = new HashMap<>();
-        now = move.num;
-      }
-      code.UseDefCheck(res_def, res_use);
-      if (code instanceof IRFuncend) {
-        use.put(now, res_use);
-        def.put(now, res_def);
-      }
-    }
-    return;
-  }
-
   void InOutCheck() {
     HashMap<Integer, Boolean> visit = new HashMap<>();
     in.clear();
@@ -282,7 +217,9 @@ public class NaiveADCE {
     }
     while (!check_list.isEmpty()) {
       int to_check = check_list.poll();
-      HashMap<String, Boolean> res = new HashMap<>();
+      ArrayList<IRCode> codes = blocks.get(to_check);
+      HashMap<String, Boolean> res_out = new HashMap<>();
+      HashMap<String, Boolean> res_def = new HashMap<>();
       if (!in.containsKey(to_check)) {
         in.put(to_check, new HashMap<>());
       }
@@ -290,16 +227,18 @@ public class NaiveADCE {
         out.put(to_check, new HashMap<>());
       }
       for (String out_v : out.get(to_check).keySet()) {
-        res.put(out_v, null);
+        res_out.put(out_v, null);
       }
-      for (String def_v : def.get(to_check).keySet()) {
-        res.remove(def_v);
-      }
-      for (String use_v : use.get(to_check).keySet()) {
-        res.put(use_v, null);
+      for (int i = codes.size() - 1; i >= 0; i--) {
+        res_def.clear();
+        IRCode code = codes.get(i);
+        code.AliveUseDefCheck(res_def, res_out);
+        for (String def_v : res_def.keySet()) {
+          res_out.remove(def_v);
+        }
       }
       HashMap<String, Boolean> to_operate = in.get(to_check);
-      for (String res_v : res.keySet()) {
+      for (String res_v : res_out.keySet()) {
         if (!to_operate.containsKey(res_v)) {
           to_operate.put(res_v, null);
         }
@@ -309,19 +248,19 @@ public class NaiveADCE {
           if (!out.containsKey(pre_v)) {
             out.put(pre_v, new HashMap<>());
           }
-          boolean flag_2 = false;
+          boolean flag = false;
           HashMap<String, Boolean> out_check = out.get(pre_v);
           for (String value : to_operate.keySet()) {
             if (!out_check.containsKey(value)) {
               out_check.put(value, null);
-              flag_2 = true;
+              flag = true;
             }
           }
           if (!visit.containsKey(pre_v)) {
-            flag_2 = true;
+            flag = true;
             visit.put(pre_v, null);
           }
-          if (flag_2) {
+          if (flag) {
             check_list.add(pre_v);
           }
         }

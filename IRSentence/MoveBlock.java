@@ -41,6 +41,9 @@ public class MoveBlock extends IRCode {
       System.out.println("b" + num + ":");
     }
     for (PseudoMove move : moves) {
+      if (move.dead) {
+        continue;
+      }
       try {
         int src_value = Integer.parseInt(move.src);
         int des_value = registers.get(move.des);
@@ -88,7 +91,9 @@ public class MoveBlock extends IRCode {
   public void CodePrint() {
     System.out.print("b" + num + ":");
     for (PseudoMove move : moves) {
-      System.out.print(move.src + "->" + move.des + ";");
+      if (!move.dead) {
+        System.out.print(move.src + "->" + move.des + ";");
+      }
     }
     System.out.println("TO: b" + to);
   }
@@ -139,5 +144,33 @@ public class MoveBlock extends IRCode {
       return_value.moves.add(new_move);
     }
     return return_value;
+  }
+
+  @Override
+  public void AliveUseDefCheck(HashMap<String, Boolean> def, HashMap<String, Boolean> use) {
+    for (PseudoMove move : moves) {
+      if (!use.containsKey(move.des)) {
+        move.dead = true;
+      } else {
+        move.dead = false;
+        def.put(move.des, null);
+        try {
+          Integer.parseInt(move.src);
+        } catch (NumberFormatException e) {
+          if (CheckLit(move.src)) {
+            if (!def.containsKey(move.src)) {
+              use.put(move.src, null);
+            }
+          } else {
+            if (move.src.equals("true")) {
+              move.src = "1";
+            } else {
+              move.src = "0";
+            }
+          }
+        }
+      }
+    }
+    return;
   }
 }
