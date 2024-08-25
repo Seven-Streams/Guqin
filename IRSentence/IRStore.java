@@ -192,7 +192,13 @@ public class IRStore extends IRCode {
         if (registers.get(from) >= 0) {
           src_reg = register_name.get(registers.get(from));
         } else {
+          if((registers.get(from) >> 9) == 0) {
           System.out.println("lw t0, " + (registers.get(from) * 4) + "(s0)");
+          } else {
+            System.out.println("li t1, " + (registers.get(from) * 4));
+            System.out.println("add t1, t1, s0");
+            System.out.println("lw t0, 0(t1)");
+          }
         }
       }
     } else {

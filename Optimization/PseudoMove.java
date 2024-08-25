@@ -63,15 +63,39 @@ public class PseudoMove extends IRCode {
       }
       if ((src_num >= 0) && (des_num < 0)) {
         String reg = register_name.get(src_num);
-        System.out.println("sw " + reg + ", " + (des_num * 4) + "(s0)");
+        if ((des_num >> 9) == 0) {
+          System.out.println("sw " + reg + ", " + (des_num * 4) + "(s0)");
+        } else {
+          System.out.println("li t1, " + (des_num * 4));
+          System.out.println("add t1, t1, s0");
+          System.out.println("sw " + reg + ", 0(t1)");
+        }
       }
       if ((src_num < 0) && (des_num >= 0)) {
         String reg = register_name.get(des_num);
-        System.out.println("lw " + reg + ", " + (src_num * 4) + "(s0)");
+        if ((src_num >> 9) == 0) {
+          System.out.println("lw " + reg + ", " + (src_num * 4) + "(s0)");
+        } else {
+          System.out.println("li t1, " + (src_num * 4));
+          System.out.println("add t1, t1, s0");
+          System.out.println("lw " + reg + ", " + "0(t1)");
+        }
       }
       if ((src_num < 0) && (des_num < 0)) {
-        System.out.println("lw t0, " + (src_num * 4) + "(s0)");
-        System.out.println("sw t0, " + (des_num * 4) + "(s0)");
+        if ((src_num >> 9) == 0) {
+          System.out.println("lw t0, " + (src_num * 4) + "(s0)");
+        } else {
+          System.out.println("li t1, " + (src_num * 4));
+          System.out.println("add t1, t1, s0");
+          System.out.println("lw t0, " + "0(t1)");
+        }
+        if ((des_num >> 9) == 0) {
+          System.out.println("sw t0, " + (des_num * 4) + "(s0)");
+        } else {
+          System.out.println("li t1, " + (des_num * 4));
+          System.out.println("add t1, t1, s0");
+          System.out.println("sw t0, 0(t1)");
+        }
       }
     }
     return;
