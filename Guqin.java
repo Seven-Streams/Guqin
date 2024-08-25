@@ -58,14 +58,14 @@ public class Guqin {
         M2R.Optim();
         PhiRemover eraser = new PhiRemover(Yuchuan);
         eraser.Remove();
+        NaiveADCE ADCER = new NaiveADCE(Yuchuan);
+        ADCER.Optim();
         Inline inliner = new Inline(Yuchuan);
         inliner.Optim(50);
         LivenessAnalysis allocator = new LivenessAnalysis(Yuchuan);
         allocator.Allocator(25);
-        // Yuchuan.LLVMOutput();
         RemoveJmp jp = new RemoveJmp(Yuchuan);
         jp.Optim();
-        // Yuchuan.LLVMOutput();
         allocator.PrintBuiltIn();
         allocator.Codegen();
         System.exit(0);

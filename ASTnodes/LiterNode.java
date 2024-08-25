@@ -2,7 +2,6 @@ package ASTnodes;
 
 import Composer.*;
 import IRSentence.IRChararray;
-import IRSentence.IRFuncall;
 import IRSentence.IRLoad;
 
 //To make the function of a class more clearly, let "this" be %0.

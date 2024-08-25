@@ -170,8 +170,12 @@ public class IRStore extends IRCode {
         use.put(from, null);
       }
     }
-    if ((!is_global.containsKey(name)) && (!def.containsKey(name))) {
-      use.put(name, null);
+    if ((!is_global.containsKey(name))) {
+      if (!def.containsKey(name)) {
+        use.put(name, null);
+      }
+    } else {
+      def.put(name, null);
     }
     return;
   }
