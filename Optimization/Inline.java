@@ -18,14 +18,19 @@ public class Inline {
   public void Optim(int bound) throws Exception {
     flag = true;
     first = true;
+    int cnt = 0;
     while (flag) {
       flag = false;
+      cnt++;
       ready_to_inline.clear();
       CheckGlobal();
       FuncCheck(bound);
       InlineFunc();
       EmbeddingInline();
       first = false;
+      if(cnt >= 2) {
+        break;
+      }
     }
     return;
   }

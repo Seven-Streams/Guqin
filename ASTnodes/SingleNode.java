@@ -69,9 +69,9 @@ public class SingleNode extends ExprNode {
       output = new String("%reg$" + ++machine.tmp_time);
       Info res_int = value.GenerateIR(machine);
       IRBin bin = new IRBin();
-      bin.symbol = "*";
-      bin.op1 = new String(res_int.reg);
-      bin.op2 = "-1";
+      bin.symbol = "-";
+      bin.op2 = new String(res_int.reg);
+      bin.op1 = "0";
       bin.type = "i32";
       bin.target_reg = output;
       machine.generated.add(bin);

@@ -384,6 +384,120 @@ public class IRBin extends IRCode {
       }
       return;
     }
+    if ((((is_int1) && ((value1 >> 9) == 0)) || ((is_int2) && ((value2 >> 9) == 0)))
+        && (symbol.equals("*"))) {
+      int const_value = is_int1 ? value1 : value2;
+      int reg_value = is_int1 ? value2 : value1;
+      boolean power = true;
+      int cnt = 0;
+      boolean symbol = false;
+      if (const_value < 0) {
+        symbol = true;
+        const_value = -const_value;
+      }
+      int test = const_value;
+      while (test != 0) {
+        cnt++;
+        test >>= 1;
+        if (((test & 1) != 0) && (test != 1)) {
+          power = false;
+          break;
+        }
+      }
+      String target_name = null;
+      if (target < 0) {
+        target_name = "t0";
+      } else {
+        target_name = register_name.get(target);
+      }
+      if (const_value == 0) {
+        System.out.println("li " + target_name + ", 0");
+        if (target < 0) {
+          if ((target >> 9) == 0) {
+            System.out.println("sw t0, " + (target * 4) + "(s0)");
+          } else {
+            System.out.println("li t1, " + (target * 4));
+            System.out.println("add t1, t1, s0");
+            System.out.println("sw t0, 0(t1)");
+          }
+        }
+        return;
+      }
+      if (power) {
+        String reg = null;
+        if (reg_value < 0) {
+          System.out.println("li t1, " + (reg_value * 4));
+          System.out.println("add t1, t1, s0");
+          System.out.println("lw t1, 0(t1)");
+          reg = "t1";
+        } else {
+          reg = register_name.get(reg_value);
+        }
+        System.out.println("slli " + target_name + ", " + reg + ", " + (cnt - 1));
+        if(symbol) {
+          System.out.println("neg " + target_name + ", " + target_name);
+        }
+        if (target < 0) {
+          if ((target >> 9) == 0) {
+            System.out.println("sw t0, " + (target * 4) + "(s0)");
+          } else {
+            System.out.println("li t1, " + (target * 4));
+            System.out.println("add t1, t1, s0");
+            System.out.println("sw t0, 0(t1)");
+          }
+        }
+        return;
+      }
+    }
+    if (((is_int2) && ((value2 >> 9) == 0))
+        && (symbol.equals("-") || symbol.equals(">>") || symbol.equals("<<"))) {
+      int const_value = is_int1 ? value1 : value2;
+      int reg_value = is_int1 ? value2 : value1;
+      String reg = null;
+      if (reg_value < 0) {
+        System.out.println("li t1, " + (reg_value * 4));
+        System.out.println("add t1, t1, s0");
+        System.out.println("lw t1, 0(t1)");
+        reg = "t1";
+      } else {
+        reg = register_name.get(reg_value);
+      }
+      String target_name = null;
+      if (target < 0) {
+        target_name = "t0";
+      } else {
+        target_name = register_name.get(target);
+      }
+      switch (symbol) {
+        case ("<<"): {
+          System.out.println("slli " + target_name + ", " + reg + ", " + const_value);
+          break;
+        }
+        case (">>"): {
+          System.out.println("srli " + target_name + ", " + reg + ", " + const_value);
+          break;
+        }
+        case ("-"): {
+          const_value = -const_value;
+          System.out.println("addi " + target_name + ", " + reg + ", " + const_value);
+          break;
+        }
+        default: {
+          System.out.println(symbol);
+          throw new Exception("Unexpected Symbol.");
+        }
+      }
+      if (target < 0) {
+        if ((target >> 9) == 0) {
+          System.out.println("sw t0, " + (target * 4) + "(s0)");
+        } else {
+          System.out.println("li t1, " + (target * 4));
+          System.out.println("add t1, t1, s0");
+          System.out.println("sw t0, 0(t1)");
+        }
+      }
+      return;
+    }
     if (is_int1) {
       System.out.println("li t0, " + value1);
       reg_1 = "t0";
@@ -432,6 +546,7 @@ public class IRBin extends IRCode {
         break;
       }
       case ("*"): {
+        System.out.println("HERE");
         System.out.println("mul " + target_name + ", " + reg_1 + ", " + reg_2);
         break;
       }
