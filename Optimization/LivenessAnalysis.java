@@ -43,19 +43,15 @@ public class LivenessAnalysis {
     GetSentenceInOut();
     SortingIntervals();
     AllocateAll(degree);
-    // PrintNum();
-    // PrintGraph();
     CalculateStack();
     RegisterName();
-    // PrintReg();
-    // PrintInterval();
   }
 
   void CheckUnecessaryCalling() {
-    for(int i = 0; i < machine.generated.size(); i++) {
-      if(machine.generated.get(i) instanceof IRFunc) {
-        if(machine.generated.get(i + 1) instanceof IRFuncend) {
-          IRFunc.Empty_func.put(((IRFunc)machine.generated.get(i)).name, null);
+    for (int i = 0; i < machine.generated.size(); i++) {
+      if (machine.generated.get(i) instanceof IRFunc) {
+        if (machine.generated.get(i + 1) instanceof IRFuncend) {
+          IRFunc.Empty_func.put(((IRFunc) machine.generated.get(i)).name, null);
         }
       }
     }
@@ -211,29 +207,35 @@ public class LivenessAnalysis {
   }
 
   void NumberIns() {
+    visit.clear();
     for (int i = -1; i >= func_cnt; i--) {
       NumberBlocks(i);
     }
   }
 
-  void NumberBlocks(int index) {
-    int begin = block_entries.get(index);
-    visit.put(index, null);
-    machine.generated.get(begin).sentence_number = ++number;
-    for (int i = begin + 1; i < machine.generated.size(); i++) {
-      if (machine.generated.get(i) instanceof IRLabel || machine.generated.get(i) instanceof IRFunc
-          || machine.generated.get(i) instanceof MoveBlock) {
-        break;
-      } else {
-        machine.generated.get(i).sentence_number = ++number;
-        if (machine.generated.get(i) instanceof IRFuncall) {
-          calling_use.put(number, new HashMap<>());
+  void NumberBlocks(int start) {
+    Queue<Integer> to_num = new LinkedList<>();
+    to_num.add(start);
+    while (!to_num.isEmpty()) {
+      int index = to_num.poll();
+      int begin = block_entries.get(index);
+      visit.put(index, null);
+      machine.generated.get(begin).sentence_number = ++number;
+      for (int i = begin + 1; i < machine.generated.size(); i++) {
+        if (machine.generated.get(i) instanceof IRLabel || machine.generated.get(i) instanceof IRFunc
+            || machine.generated.get(i) instanceof MoveBlock) {
+          break;
+        } else {
+          machine.generated.get(i).sentence_number = ++number;
+          if (machine.generated.get(i) instanceof IRFuncall) {
+            calling_use.put(number, new HashMap<>());
+          }
         }
       }
-    }
-    for (int nxt : graph.get(index).keySet()) {
-      if (!visit.containsKey(nxt)) {
-        NumberBlocks(nxt);
+      for (int nxt : graph.get(index).keySet()) {
+        if (!visit.containsKey(nxt)) {
+          to_num.add(nxt);
+        }
       }
     }
     return;
