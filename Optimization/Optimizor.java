@@ -21,7 +21,7 @@ public class Optimizor {
     Inline inliner = new Inline(machine);
     inliner.Optim(50);
     LivenessAnalysis allocator = new LivenessAnalysis(machine);
-    allocator.Allocator(25);
+    allocator.Allocator(27);
     RemoveJmp jp = new RemoveJmp(machine);
     jp.Optim();
     allocator.PrintBuiltIn();

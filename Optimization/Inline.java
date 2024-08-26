@@ -24,6 +24,7 @@ public class Inline {
       InlineFunc();
       EmbeddingInline();
     }
+    return;
   }
 
   void CheckGlobal() {
@@ -49,20 +50,6 @@ public class Inline {
         entry.put(name, i);
         have_calling = false;
         sentence_cnt = 1;
-      }
-      if (code instanceof IRFuncall) {
-        IRFuncall call = (IRFuncall) code;
-        if (!(call.func_name.equals("print") || call.func_name.equals("println") || call.func_name.equals("string_ord")
-            ||
-            call.func_name.equals("string_length") || call.func_name.equals("string_parseInt")
-            || call.func_name.equals("string_substring")
-            || call.func_name.equals("printInt") || call.func_name.equals("printIntln")
-            || call.func_name.equals("MyNew") || call.func_name.equals("int_array")
-            || call.func_name.equals("ptr_array") || call.func_name.equals("array_size")
-            || call.func_name.equals("toString") || call.func_name.equals("getInt")
-            || call.func_name.equals("getString") || call.func_name.equals("string_length")
-            || call.func_name.equals("string_cmp") || call.func_name.equals("string_cat") || call.func_name.equals("string_copy")))
-          have_calling = true;
       }
       if (code instanceof IRFuncend) {
         if ((sentence_cnt <= bound) && (!have_calling)) {

@@ -456,10 +456,12 @@ public class LivenessAnalysis {
     for (int i = 2; i <= 6; i++) {
       register_names.put(cnt++, "t" + Integer.toString(i));
     }
-    register_names.put(cnt++, "gp");
+    register_names.put(cnt++, "ra");
     for (int i = 7; i >= 0; i--) {
       register_names.put(cnt++, "a" + Integer.toString(i));
     }
+    register_names.put(cnt++, "gp");
+    register_names.put(cnt++, "tp");
     register_names.put(cnt++, "t0");
     register_names.put(cnt++, "t1");
     return;
