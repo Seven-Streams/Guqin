@@ -35,6 +35,7 @@ public class LiterNode extends ExprNode {
     }
     if (type.equals("bool") || type.equals("int")) {
       res.reg = new String(value);
+      res.is_const = true;
       return res;
     }
     if (type.equals("string")) {

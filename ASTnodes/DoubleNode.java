@@ -72,6 +72,7 @@ public class DoubleNode extends ExprNode {
 
   @Override
   public Info GenerateIR(Composer machine) {
+
     Info return_value = new Info();
     int tmp = ++machine.tmp_time;
     String target_reg = "%reg$" + Integer.toString(tmp);
@@ -80,6 +81,88 @@ public class DoubleNode extends ExprNode {
       if (type.equals("int")) {
         Info info1 = value1.GenerateIR(machine);
         Info info2 = value2.GenerateIR(machine);
+        if (info1.is_const && info2.is_const) {
+          int int1 = Integer.parseInt(info1.reg);
+          int int2 = Integer.parseInt(info2.reg);
+          return_value.is_const = true;
+          switch (symbol) {
+            case ("=="): {
+              return_value.reg = (int1 == int2) ? "true" : "false";
+              return return_value;
+            }
+            case ("<="): {
+              return_value.reg = (int1 <= int2) ? "true" : "false";
+              return return_value;
+            }
+            case (">="): {
+              return_value.reg = (int1 >= int2) ? "true" : "false";
+              return return_value;
+            }
+            case ("<"): {
+              return_value.reg = (int1 < int2) ? "true" : "false";
+              return return_value;
+            }
+            case (">"): {
+              return_value.reg = (int1 > int2) ? "true" : "false";
+              return return_value;
+            }
+            case ("!="): {
+              return_value.reg = (int1 != int2) ? "true" : "false";
+              return return_value;
+            }
+            case ("+"): {
+              return_value.reg = Integer.toString(int1 + int2);
+              return return_value;
+            }
+            case ("-"): {
+              return_value.reg = Integer.toString(int1 - int2);
+              return return_value;
+            }
+            case ("*"): {
+              return_value.reg = Integer.toString(int1 * int2);
+              return return_value;
+            }
+            case ("/"): {
+              if (int2 == 0) {
+                return_value.reg = "114514";
+                return return_value;
+              }
+              return_value.reg = Integer.toString(int1 / int2);
+              return return_value;
+            }
+            case ("%"): {
+              if (int2 == 0) {
+                return_value.reg = "114514";
+                return return_value;
+              }
+              return_value.reg = Integer.toString(int1 % int2);
+              return return_value;
+            }
+            case ("<<"): {
+              return_value.reg = Integer.toString(int1 << int2);
+              return return_value;
+            }
+            case (">>"): {
+              return_value.reg = Integer.toString(int1 >> int2);
+              return return_value;
+            }
+            case ("&"): {
+              return_value.reg = Integer.toString(int1 & int2);
+              return return_value;
+            }
+            case ("|"): {
+              return_value.reg = Integer.toString(int1 | int2);
+              return return_value;
+            }
+            case ("^"): {
+              return_value.reg = Integer.toString(int1 ^ int2);
+              return return_value;
+            }
+            default: {
+              System.out.println("NOT THIS SYMBOL!");
+            }
+          }
+        }
         if (symbol.equals("==") || symbol.equals("!=") || symbol.equals("<") || symbol.equals(">")
             || symbol.equals("<=")
             || symbol.equals(">=")) {
@@ -109,6 +192,15 @@ public class DoubleNode extends ExprNode {
           IRIcmp res = new IRIcmp();
           Info info1 = value1.GenerateIR(machine);
           Info info2 = value2.GenerateIR(machine);
+          if (info1.is_const && info2.is_const) {
+            return_value.is_const = true;
+            if (info1.reg.equals(info2.reg)) {
+              return_value.reg = symbol.equals("==") ? "true" : "false";
+            } else {
+              return_value.reg = symbol.equals("!=") ? "true" : "false";
+            }
+            return return_value;
+          }
           res.op1 = info1.reg;
           res.op2 = info2.reg;
           res.symbol = symbol;
@@ -128,6 +220,17 @@ public class DoubleNode extends ExprNode {
           machine.generated.add(judge0);
           machine.generated.add(new IRLabel(br2));
           Info info2 = value2.GenerateIR(machine);
+          if (info1.is_const && info2.is_const) {
+            return_value.is_const = true;
+            machine.generated.remove(machine.generated.size() - 1);
+            machine.generated.remove(machine.generated.size() - 1);
+            if (info1.reg.equals("true") || info2.reg.equals("true")) {
+              return_value.reg = "true";
+            } else {
+              return_value.reg = "false";
+            }
+            return return_value;
+          }
           Conditionjmp judge1 = new Conditionjmp(let1, let0, info2.reg);
           machine.generated.add(judge1);
           machine.generated.add(new IRLabel(let1));
@@ -157,6 +260,17 @@ public class DoubleNode extends ExprNode {
           machine.generated.add(judge0);
           machine.generated.add(new IRLabel(br2));
           Info info2 = value2.GenerateIR(machine);
+          if (info1.is_const && info2.is_const) {
+            return_value.is_const = true;
+            machine.generated.remove(machine.generated.size() - 1);
+            machine.generated.remove(machine.generated.size() - 1);
+            if (info1.reg.equals("true") && info2.reg.equals("true")) {
+              return_value.reg = "true";
+            } else {
+              return_value.reg = "false";
+            }
+            return return_value;
+          }
           Conditionjmp judge1 = new Conditionjmp(let1, let0, info2.reg);
           machine.generated.add(judge1);
           machine.generated.add(new IRLabel(let1));

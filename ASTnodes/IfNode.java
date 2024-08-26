@@ -36,6 +36,16 @@ public class IfNode extends StatNode {
     int branch_lb = ++machine.label_number;
     int else_branch_lb = ++machine.label_number;
     int end = ++machine.label_number;
+    if (judge.is_const) {
+      if (judge.reg.equals("true")) {
+        branch.GenerateIR(machine);
+      } else {
+        if(else_branch != null) {
+          else_branch.GenerateIR(machine);
+        }
+      }
+      return new Info();
+    }
     if (else_branch != null) {
       Conditionjmp res_jmp = new Conditionjmp(branch_lb, else_branch_lb, judge.reg);
       machine.generated.add(res_jmp);

@@ -332,6 +332,58 @@ public class IRBin extends IRCode {
     }
     String reg_1 = null;
     String reg_2 = null;
+    if ((((is_int1) && ((value1 >> 9) == 0)) || ((is_int2) && ((value2 >> 9) == 0)))
+        && (symbol.equals("+") || symbol.equals("&") || symbol.equals("|") || symbol.equals("^"))) {
+      int const_value = is_int1 ? value1 : value2;
+      int reg_value = is_int1 ? value2 : value1;
+      String reg = null;
+      if (reg_value < 0) {
+        System.out.println("li t1, " + (reg_value * 4));
+        System.out.println("add t1, t1, s0");
+        System.out.println("lw t1, 0(t1)");
+        reg = "t1";
+      } else {
+        reg = register_name.get(reg_value);
+      }
+      String target_name = null;
+      if (target < 0) {
+        target_name = "t0";
+      } else {
+        target_name = register_name.get(target);
+      }
+      switch (symbol) {
+        case ("+"): {
+          System.out.println("addi " + target_name + ", " + reg + ", " + const_value);
+          break;
+        }
+        case ("&"): {
+          System.out.println("andi " + target_name + ", " + reg + ", " + const_value);
+          break;
+        }
+        case ("|"): {
+          System.out.println("ori " + target_name + ", " + reg + ", " + const_value);
+          break;
+        }
+        case ("^"): {
+          System.out.println("xori " + target_name + ", " + reg + ", " + const_value);
+          break;
+        }
+        default: {
+          System.out.println(symbol);
+          throw new Exception("Unexpected Symbol.");
+        }
+      }
+      if (target < 0) {
+        if ((target >> 9) == 0) {
+          System.out.println("sw t0, " + (target * 4) + "(s0)");
+        } else {
+          System.out.println("li t1, " + (target * 4));
+          System.out.println("add t1, t1, s0");
+          System.out.println("sw t0, 0(t1)");
+        }
+      }
+      return;
+    }
     if (is_int1) {
       System.out.println("li t0, " + value1);
       reg_1 = "t0";

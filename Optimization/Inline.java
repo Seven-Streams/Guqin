@@ -9,6 +9,7 @@ public class Inline {
   HashMap<String, Boolean> ready_to_inline = new HashMap<>();
   HashMap<String, Integer> entry = new HashMap<>();
   boolean flag = true;
+  boolean first = true;
 
   public Inline(Composer _machine) {
     machine = _machine;
@@ -16,6 +17,7 @@ public class Inline {
 
   public void Optim(int bound) throws Exception {
     flag = true;
+    first = true;
     while (flag) {
       flag = false;
       ready_to_inline.clear();
@@ -23,6 +25,7 @@ public class Inline {
       FuncCheck(bound);
       InlineFunc();
       EmbeddingInline();
+      first = false;
     }
     return;
   }
@@ -41,18 +44,16 @@ public class Inline {
     entry.clear();
     String name = null;
     int sentence_cnt = 0;
-    boolean have_calling = false;
     for (int i = 0; i < machine.generated.size(); i++) {
       IRCode code = machine.generated.get(i);
       sentence_cnt++;
       if (code instanceof IRFunc) {
         name = ((IRFunc) code).name;
         entry.put(name, i);
-        have_calling = false;
         sentence_cnt = 1;
       }
       if (code instanceof IRFuncend) {
-        if ((sentence_cnt <= bound) && (!have_calling)) {
+        if (sentence_cnt <= bound) {
           ready_to_inline.put(new String(name), true);
         } else {
           ready_to_inline.put(new String(name), false);
@@ -66,7 +67,7 @@ public class Inline {
       IRCode code = machine.generated.get(i);
       if (code instanceof IRFuncall) {
         IRFuncall call = (IRFuncall) code;
-        if (ready_to_inline.containsKey(call.func_name) && ready_to_inline.get(call.func_name)) {
+        if (ready_to_inline.containsKey(call.func_name) && ((ready_to_inline.get(call.func_name)) || first)) {
           InlineFunc to_inline = GetInline(entry.get(call.func_name), call);
           machine.generated.set(i, to_inline);
         }
