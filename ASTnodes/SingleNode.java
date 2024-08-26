@@ -46,6 +46,10 @@ public class SingleNode extends ExprNode {
     if (symbol.equals("!")) {
       output = new String("%reg$" + ++machine.tmp_time);
       Info res_bool = value.GenerateIR(machine);
+      if (res_bool.is_const) {
+        return_value.is_const = true;
+        return_value.reg = res_bool.reg.equals("true") ? "false" : "true";
+      }
       IRIcmp icmp = new IRIcmp();
       icmp.symbol = "!=";
       icmp.op1 = new String(res_bool.reg);
@@ -57,6 +61,12 @@ public class SingleNode extends ExprNode {
     if (symbol.equals("~")) {
       output = new String("%reg$" + ++machine.tmp_time);
       Info res_int = value.GenerateIR(machine);
+      if (res_int.is_const) {
+        return_value.is_const = true;
+        int to_operate = Integer.parseInt(res_int.reg);
+        return_value.reg = Integer.toString(~to_operate);
+        return return_value;
+      }
       IRBin bin = new IRBin();
       bin.symbol = "^";
       bin.op1 = new String(res_int.reg);
@@ -68,6 +78,12 @@ public class SingleNode extends ExprNode {
     if (symbol.equals("-")) {
       output = new String("%reg$" + ++machine.tmp_time);
       Info res_int = value.GenerateIR(machine);
+      if (res_int.is_const) {
+        return_value.is_const = true;
+        int to_operate = Integer.parseInt(res_int.reg);
+        return_value.reg = Integer.toString(-to_operate);
+        return return_value;
+      }
       IRBin bin = new IRBin();
       bin.symbol = "-";
       bin.op2 = new String(res_int.reg);
@@ -123,7 +139,8 @@ public class SingleNode extends ExprNode {
     return_value.reg = output;
     return return_value;
   }
-  @Override 
+
+  @Override
   public Info GetLeftValuePtr(Composer machine) {
     return value.GetLeftValuePtr(machine);
   }
