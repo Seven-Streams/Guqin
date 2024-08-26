@@ -40,8 +40,21 @@ public class WhileNode extends StatNode {
     machine.generated.add(new IRjmp(res_label.condition));
     machine.generated.add(new IRLabel(res_label.condition));
     Info cond_reg = condition.GenerateIR(machine);
+    if(cond_reg.is_const) {
+      machine.generated.remove(machine.generated.size() - 1);
+      machine.generated.remove(machine.generated.size() - 1);
+      if(cond_reg.reg.equals("true")) {
+        IRjmp jmp = new IRjmp(res_label.body);
+        machine.generated.add(jmp);
+        res_label.condition = res_label.body;
+      } else {
+        Info.loop.remove(Info.loop.size() - 1);
+        return new Info();
+      }
+    } else {
     Conditionjmp cond_jmp = new Conditionjmp(res_label.body, res_label.end, cond_reg.reg);
     machine.generated.add(cond_jmp);
+    }
     machine.now_name.push(new HashMap<>());
     machine.generated.add(new IRLabel(res_label.body));
     stats.GenerateIR(machine);

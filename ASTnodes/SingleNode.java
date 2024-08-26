@@ -49,6 +49,7 @@ public class SingleNode extends ExprNode {
       if (res_bool.is_const) {
         return_value.is_const = true;
         return_value.reg = res_bool.reg.equals("true") ? "false" : "true";
+        return return_value;
       }
       IRIcmp icmp = new IRIcmp();
       icmp.symbol = "!=";
