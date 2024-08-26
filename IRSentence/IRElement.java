@@ -200,7 +200,14 @@ public class IRElement extends IRCode {
     if (src_value >= 0) {
       src_str = register_name.get(src_value);
     } else {
+      if((src_value >> 9) == 0) {
+
       System.out.println("lw t0, " + (4 * src_value) + "(s0)");
+      } else {
+        System.out.println("li t0, " + (4 * src_value));
+        System.out.println("add t0, t0, s0");
+        System.out.println("lw t0, 0(t0)");
+      }
     }
     if (num2 != null) {
       try {
