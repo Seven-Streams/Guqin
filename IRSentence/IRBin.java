@@ -546,7 +546,6 @@ public class IRBin extends IRCode {
         break;
       }
       case ("*"): {
-        System.out.println("HERE");
         System.out.println("mul " + target_name + ", " + reg_1 + ", " + reg_2);
         break;
       }
