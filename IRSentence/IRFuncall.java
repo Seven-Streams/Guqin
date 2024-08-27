@@ -3,13 +3,14 @@ package IRSentence;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Stack;
+import java.util.TreeMap;
 
 import Composer.Composer;
 import Optimization.NameLabelPair;
 import Optimization.PseudoMove;
 
 public class IRFuncall extends IRCode {
-  public static HashMap<Integer, HashMap<Integer, Boolean>> to_save_registers = null;
+  public static TreeMap<Integer, HashMap<Integer, Boolean>> to_save_registers = null;
   public String target_reg = null;
   public String func_name = null;
   public String func_type = null;

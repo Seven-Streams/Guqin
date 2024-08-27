@@ -1,11 +1,12 @@
 package Optimization;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
-
+import java.util.TreeMap;
 import IRSentence.*;
 import Composer.*;
 
@@ -29,7 +30,7 @@ public class LivenessAnalysis {
   public HashMap<Integer, String> register_names = new HashMap<>();
   public HashMap<Integer, Interval> func_length = new HashMap<>();
   public HashMap<Integer, Integer> max_register_use = new HashMap<>();
-  public HashMap<Integer, HashMap<Integer, Boolean>> calling_use = new HashMap<>();
+  public TreeMap<Integer, HashMap<Integer, Boolean>> calling_use = new TreeMap<>();
 
   public LivenessAnalysis(Composer _machine) {
     machine = _machine;
@@ -367,9 +368,9 @@ public class LivenessAnalysis {
 
   void RegisterAllocate(int func_num, int degree) {
     max_register_use.put(func_num, -1);
-    HashMap<Integer, Interval> free = new HashMap<>();
+    ArrayList<Interval> free = new ArrayList<>();
     for (int i = 0; i < degree; i++) {
-      free.put(i, null);
+      free.add(null);
     }
     int stack_num = -13;
     PriorityQueue<Interval> to_alloc = intervals.get(func_num);
@@ -378,28 +379,15 @@ public class LivenessAnalysis {
       Interval now_alloc = to_alloc.poll();
       boolean spilled = true;
       for (int i = 0; i < degree; i++) {
-        if (free.get(i) == null) {
-          free.put(i, now_alloc);
+        if ((free.get(i) == null) || free.get(i).end < now_alloc.start) {
+          free.set(i, now_alloc);
           registers.get(func_num).put(now_alloc.name, i);
           spilled = false;
           if (max_register_use.get(func_num) < i) {
             max_register_use.put(func_num, i);
           }
-          for (Map.Entry<Integer, HashMap<Integer, Boolean>> entry : calling_use.entrySet()) {
-            if ((now_alloc.start < entry.getKey()) && (now_alloc.end > entry.getKey())) {
-              entry.getValue().put(i, null);
-            }
-          }
-          break;
-        }
-        if (free.get(i).end < now_alloc.start) {
-          free.put(i, now_alloc);
-          registers.get(func_num).put(now_alloc.name, i);
-          spilled = false;
-          if (max_register_use.get(func_num) < i) {
-            max_register_use.put(func_num, i);
-          }
-          for (Map.Entry<Integer, HashMap<Integer, Boolean>> entry : calling_use.entrySet()) {
+          Map<Integer, HashMap<Integer,Boolean>> submap = calling_use.subMap(now_alloc.start, now_alloc.end);
+          for (Map.Entry<Integer, HashMap<Integer, Boolean>> entry : submap.entrySet()) {
             if ((now_alloc.start < entry.getKey()) && (now_alloc.end > entry.getKey())) {
               entry.getValue().put(i, null);
             }

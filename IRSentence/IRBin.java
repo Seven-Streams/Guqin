@@ -385,14 +385,14 @@ public class IRBin extends IRCode {
       return;
     }
     if ((((is_int1) && ((value1 >> 9) == 0)) || ((is_int2) && ((value2 >> 9) == 0)))
-        && (symbol.equals("*"))) {
+        && (symbol.equals("*") || symbol.equals("/"))) {
       int const_value = is_int1 ? value1 : value2;
       int reg_value = is_int1 ? value2 : value1;
       boolean power = true;
       int cnt = 0;
-      boolean symbol = false;
+      boolean symbol_const = false;
       if (const_value < 0) {
-        symbol = true;
+        symbol_const = true;
         const_value = -const_value;
       }
       int test = const_value;
@@ -433,8 +433,22 @@ public class IRBin extends IRCode {
         } else {
           reg = register_name.get(reg_value);
         }
-        System.out.println("slli " + target_name + ", " + reg + ", " + (cnt - 1));
-        if(symbol) {
+        switch (symbol) {
+          case ("*"): {
+            System.out.println("slli " + target_name + ", " + reg + ", " + (cnt - 1));
+            break;
+          }
+          case ("/"): {
+            System.out.println("srai " + target_name + ", " + reg + ", 31");
+            System.out.println("srli " + target_name + ", " + target_name + ", " + (33 - cnt));
+            System.out.println("add " + target_name + ", " + reg + ", " + target_name);
+            System.out.println("srai " + target_name + ", " + target_name + ", " + (cnt - 1));
+            break;
+          }
+          default:
+            break;
+        }
+        if (symbol_const) {
           System.out.println("neg " + target_name + ", " + target_name);
         }
         if (target < 0) {

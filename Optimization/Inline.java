@@ -8,29 +8,18 @@ public class Inline {
   Composer machine = null;
   HashMap<String, Boolean> ready_to_inline = new HashMap<>();
   HashMap<String, Integer> entry = new HashMap<>();
-  boolean flag = true;
-  boolean first = true;
 
   public Inline(Composer _machine) {
     machine = _machine;
   }
 
   public void Optim(int bound) throws Exception {
-    flag = true;
-    first = true;
-    int cnt = 0;
-    while (flag) {
-      flag = false;
-      cnt++;
+    for(int i = 0; i < 2; i++) {
       ready_to_inline.clear();
       CheckGlobal();
       FuncCheck(bound);
       InlineFunc();
       EmbeddingInline();
-      first = false;
-      if(cnt >= 2) {
-        break;
-      }
     }
     return;
   }
@@ -117,7 +106,6 @@ public class Inline {
       if (code instanceof InlineFunc) {
         InlineFunc check = (InlineFunc) code;
         if (check.operations.size() > 1) {
-          flag = true;
           IRLabel label = (IRLabel) check.operations.get(check.operations.size() - 1);
           IRjmp res = new IRjmp(label.label);
           check.operations.add(check.operations.size() - 1, res);
