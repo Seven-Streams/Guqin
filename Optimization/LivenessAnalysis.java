@@ -31,6 +31,7 @@ public class LivenessAnalysis {
   public HashMap<Integer, Interval> func_length = new HashMap<>();
   public HashMap<Integer, Integer> max_register_use = new HashMap<>();
   public TreeMap<Integer, HashMap<Integer, Boolean>> calling_use = new TreeMap<>();
+  public HashMap<Integer, Integer> visit_cnt = new HashMap<>();
 
   public LivenessAnalysis(Composer _machine) {
     machine = _machine;
@@ -214,30 +215,32 @@ public class LivenessAnalysis {
     }
   }
 
-  void NumberBlocks(int start) {
-    Queue<Integer> to_num = new LinkedList<>();
-    to_num.add(start);
-    while (!to_num.isEmpty()) {
-      int index = to_num.poll();
-      int begin = block_entries.get(index);
-      visit.put(index, null);
-      machine.generated.get(begin).sentence_number = ++number;
-      for (int i = begin + 1; i < machine.generated.size(); i++) {
-        if (machine.generated.get(i) instanceof IRLabel || machine.generated.get(i) instanceof IRFunc
-            || machine.generated.get(i) instanceof MoveBlock) {
-          break;
-        } else {
-          machine.generated.get(i).sentence_number = ++number;
-          if (machine.generated.get(i) instanceof IRFuncall) {
-            calling_use.put(number, new HashMap<>());
-          }
+  void NumberBlocks(int index) {
+    int begin = block_entries.get(index);
+    visit.put(index, null);
+    if (!visit_cnt.containsKey(index)) {
+      visit_cnt.put(index, 0);
+    }
+    visit_cnt.put(index, visit_cnt.get(index) + 1);
+    machine.generated.get(begin).sentence_number = ++number;
+    for (int i = begin + 1; i < machine.generated.size(); i++) {
+      if (machine.generated.get(i) instanceof IRLabel || machine.generated.get(i) instanceof IRFunc
+          || machine.generated.get(i) instanceof MoveBlock) {
+        break;
+      } else {
+        machine.generated.get(i).sentence_number = ++number;
+        if (machine.generated.get(i) instanceof IRFuncall) {
+          calling_use.put(number, new HashMap<>());
         }
       }
-      for (int nxt : graph.get(index).keySet()) {
-        if (!visit.containsKey(nxt)) {
-          to_num.add(nxt);
-        }
+    }
+    for (int nxt : graph.get(index).keySet()) {
+      if (!visit.containsKey(nxt)) {
+        NumberBlocks(nxt);
       }
+    }
+    if (visit_cnt.get(index) < 50) {
+      visit.remove(index);
     }
     return;
   }
@@ -386,7 +389,7 @@ public class LivenessAnalysis {
           if (max_register_use.get(func_num) < i) {
             max_register_use.put(func_num, i);
           }
-          Map<Integer, HashMap<Integer,Boolean>> submap = calling_use.subMap(now_alloc.start, now_alloc.end);
+          Map<Integer, HashMap<Integer, Boolean>> submap = calling_use.subMap(now_alloc.start, now_alloc.end);
           for (Map.Entry<Integer, HashMap<Integer, Boolean>> entry : submap.entrySet()) {
             if ((now_alloc.start < entry.getKey()) && (now_alloc.end > entry.getKey())) {
               entry.getValue().put(i, null);
