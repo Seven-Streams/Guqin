@@ -72,7 +72,7 @@ public class Inline {
       IRCode code = machine.generated.get(i);
       if (code instanceof IRFuncall) {
         IRFuncall call = (IRFuncall) code;
-        if (ready_to_inline.containsKey(call.func_name) && ((ready_to_inline.get(call.func_name)) || first)) {
+        if (ready_to_inline.containsKey(call.func_name) && (ready_to_inline.get(call.func_name))) {
           InlineFunc to_inline = GetInline(entry.get(call.func_name), call);
           machine.generated.set(i, to_inline);
         }

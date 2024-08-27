@@ -65,6 +65,9 @@ public class MoveBlock extends IRCode {
         int src_num = registers.get(move.src);
         int des_num = registers.get(move.des);
         if ((src_num >= 0) && (des_num >= 0)) {
+          if(des_num == src_num) {
+            continue;
+          }
           System.out.println("mv " + register_name.get(des_num) + ", " + register_name.get(src_num));
         }
         if ((src_num >= 0) && (des_num < 0)) {

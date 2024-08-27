@@ -116,7 +116,9 @@ public class IRReturn extends IRCode {
         } catch (NumberFormatException e) {
           int num = registers.get(reg);
           if (num >= 0) {
-            System.out.println("mv " + "a0, " + register_name.get(num));
+            if (!register_name.get(num).equals("a0")) {
+              System.out.println("mv " + "a0, " + register_name.get(num));
+            }
           } else {
             if ((num >> 9) == 0) {
               System.out.println("lw a0, " + (num * 4) + "(s0)");

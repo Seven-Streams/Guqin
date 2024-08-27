@@ -273,7 +273,9 @@ public class IRFuncall extends IRCode {
           if (!is_global.containsKey(reg.get(i))) {
             int value = registers.get(reg.get(i));
             if (value >= 0) {
-              System.out.println("mv " + func_in + ", " + register_name.get(value));
+              if (!func_in.equals(register_name.get(value))) {
+                System.out.println("mv " + func_in + ", " + register_name.get(value));
+              }
             } else {
               if ((value >> 9) == 0) {
                 System.out.println("lw " + func_in + ", " + (4 * value) + "(s0)");
@@ -298,13 +300,17 @@ public class IRFuncall extends IRCode {
       }
     }
     for (PseudoMove move : moves) {
-      System.out.println("mv " + move.des + ", " + move.src);
+      if (!move.des.equals(move.src)) {
+        System.out.println("mv " + move.des + ", " + move.src);
+      }
     }
     System.out.println("call " + func_name);
     if (target_reg != null) {
       int value = registers.get(target_reg);
       if (value >= 0) {
-        System.out.println("mv " + register_name.get(value) + ", a0");
+        if (!register_name.get(value).equals("a0")) {
+          System.out.println("mv " + register_name.get(value) + ", a0");
+        }
       } else {
         if ((value >> 9) == 0) {
           System.out.println("sw a0, " + (value * 4) + "(s0)");
@@ -344,11 +350,11 @@ public class IRFuncall extends IRCode {
       }
     }
     for (String reg_v : reg) {
-      try{
+      try {
         Integer.parseInt(reg_v);
         return_value.reg.add(new String(reg_v));
-      }catch(NumberFormatException e) {
-        if((!CheckLit(reg_v)) || is_global.containsKey(reg_v)) {
+      } catch (NumberFormatException e) {
+        if ((!CheckLit(reg_v)) || is_global.containsKey(reg_v)) {
           return_value.reg.add(new String(reg_v));
         } else {
           if (now_name.containsKey(reg_v)) {

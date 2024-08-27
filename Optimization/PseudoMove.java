@@ -59,7 +59,9 @@ public class PseudoMove extends IRCode {
       int src_num = registers.get(src);
       int des_num = registers.get(des);
       if ((src_num >= 0) && (des_num >= 0)) {
-        System.out.println("mv " + register_name.get(des_num) + ", " + register_name.get(src_num));
+        if (src_num != des_num) {
+          System.out.println("mv " + register_name.get(des_num) + ", " + register_name.get(src_num));
+        }
       }
       if ((src_num >= 0) && (des_num < 0)) {
         String reg = register_name.get(src_num);

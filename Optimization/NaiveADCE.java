@@ -65,6 +65,14 @@ public class NaiveADCE {
       if (code.dead) {
         machine.generated.remove(i);
       }
+      if(code instanceof MoveBlock) {
+        MoveBlock move_block = (MoveBlock)code;
+        for(int j = move_block.moves.size() - 1; j >= 0; j--) {
+          if(move_block.moves.get(j).dead) {
+            move_block.moves.remove(j);
+          }
+        }
+      }
     }
     return;
   }

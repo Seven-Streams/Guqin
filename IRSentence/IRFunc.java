@@ -99,7 +99,9 @@ public class IRFunc extends IRCode {
       for (int i = 0; i < names.size(); i++) {
         int value = registers.get(names.get(i));
         if (value >= 0) {
-          System.out.println("mv " + register_name.get(value) + ", " + "a" + i);
+          if (!register_name.get(value).equals("a" + i)) {
+            System.out.println("mv " + register_name.get(value) + ", " + "a" + i);
+          }
         } else {
           if ((value >> 9) == 0) {
             System.out.println("sw a" + i + " , " + (value * 4) + "(s0)");
@@ -114,7 +116,9 @@ public class IRFunc extends IRCode {
       for (int i = 0; i < 8; i++) {
         int value = registers.get(names.get(i));
         if (value >= 0) {
-          System.out.println("mv " + register_name.get(value) + ", " + "a" + i);
+          if (!register_name.get(value).equals("a" + i)) {
+            System.out.println("mv " + register_name.get(value) + ", " + "a" + i);
+          }
         } else {
           if ((value >> 9) == 0) {
             System.out.println("sw a" + i + " , " + (value * 4) + "(s0)");
@@ -126,17 +130,19 @@ public class IRFunc extends IRCode {
         }
       }
       for (int i = 8; i < names.size(); i++) {
+        int value = registers.get(names.get(i));
+        String target_reg = "t0";
+        if (value >= 0) {
+          target_reg = register_name.get(value);
+        }
         if (((i - 8) >> 9) == 0) {
-          System.out.println("lw t0, " + ((i - 8) * 4) + "(s0)");
+          System.out.println("lw " + target_reg + ", " + ((i - 8) * 4) + "(s0)");
         } else {
           System.out.println("li t0, " + ((i - 8) * 4));
           System.out.println("add t0, t0, s0");
-          System.out.println("lw t0, 0(t0)");
+          System.out.println("lw " + target_reg + ", 0(t0)");
         }
-        int value = registers.get(names.get(i));
-        if (value >= 0) {
-          System.out.println("mv " + register_name.get(value) + ", t0");
-        } else {
+        if (value < 0) {
           if ((value >> 9) == 0) {
             System.out.println("sw t0, " + (value * 4) + "(s0)");
           } else {

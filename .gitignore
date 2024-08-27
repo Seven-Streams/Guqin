@@ -19,7 +19,7 @@ guqinListener.java
 testall
 test_single
 testall_codegen
-testall_codegen
+test_codegen
 test_IR
 testall_IR
 /bin

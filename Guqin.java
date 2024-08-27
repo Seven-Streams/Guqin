@@ -45,13 +45,9 @@ public class Guqin {
             System.out.println(e.getMessage());
             System.exit(-1);
         }
-        if (args.length > 0) {
-            if (args[0].equals("sema")) {
-                System.exit(0);
-            }
-        }
         Composer Yuchuan = new Composer(AST);
         Yuchuan.translate((ProgNode) entry);
+        // Yuchuan.LLVMOutput();
         Optimizor adam = new Optimizor(Yuchuan);
         adam.OptimizedCodegen();
         System.exit(0);
