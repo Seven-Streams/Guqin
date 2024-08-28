@@ -307,18 +307,20 @@ public class IRFuncall extends IRCode {
     }
     System.out.println("call " + func_name);
     if (target_reg != null) {
-      int value = registers.get(target_reg);
-      if (value >= 0) {
-        if (!register_name.get(value).equals("a0")) {
-          System.out.println("mv " + register_name.get(value) + ", a0");
-        }
-      } else {
-        if ((value >> 9) == 0) {
-          System.out.println("sw a0, " + (value * 4) + "(s0)");
+      if (registers.containsKey(target_reg)) {
+        int value = registers.get(target_reg);
+        if (value >= 0) {
+          if (!register_name.get(value).equals("a0")) {
+            System.out.println("mv " + register_name.get(value) + ", a0");
+          }
         } else {
-          System.out.println("li t1, " + (value * 4));
-          System.out.println("add t1, t1, s0");
-          System.out.println("sw a0, 0(t1)");
+          if ((value >> 9) == 0) {
+            System.out.println("sw a0, " + (value * 4) + "(s0)");
+          } else {
+            System.out.println("li t1, " + (value * 4));
+            System.out.println("add t1, t1, s0");
+            System.out.println("sw a0, 0(t1)");
+          }
         }
       }
     }
@@ -373,8 +375,8 @@ public class IRFuncall extends IRCode {
 
   @Override
   public void GlobalConstReplace(HashMap<String, String> mapping) {
-    for(int i = 0; i < reg.size(); i++) {
-      if(mapping.containsKey(reg.get(i))) {
+    for (int i = 0; i < reg.size(); i++) {
+      if (mapping.containsKey(reg.get(i))) {
         reg.set(i, new String(mapping.get(reg.get(i))));
       }
     }

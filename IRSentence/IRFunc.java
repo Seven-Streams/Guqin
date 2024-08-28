@@ -97,6 +97,9 @@ public class IRFunc extends IRCode {
     System.out.println("add s0, sp, t0");
     if (names.size() < 8) {
       for (int i = 0; i < names.size(); i++) {
+        if (!registers.containsKey(names.get(i))) {
+          continue;
+        }
         int value = registers.get(names.get(i));
         if (value >= 0) {
           if (!register_name.get(value).equals("a" + i)) {
@@ -114,6 +117,9 @@ public class IRFunc extends IRCode {
       }
     } else {
       for (int i = 0; i < 8; i++) {
+        if (!registers.containsKey(names.get(i))) {
+          continue;
+        }
         int value = registers.get(names.get(i));
         if (value >= 0) {
           if (!register_name.get(value).equals("a" + i)) {
@@ -130,6 +136,9 @@ public class IRFunc extends IRCode {
         }
       }
       for (int i = 8; i < names.size(); i++) {
+        if (!registers.containsKey(names.get(i))) {
+          continue;
+        }
         int value = registers.get(names.get(i));
         String target_reg = "t0";
         if (value >= 0) {

@@ -65,7 +65,7 @@ public class MoveBlock extends IRCode {
         int src_num = registers.get(move.src);
         int des_num = registers.get(move.des);
         if ((src_num >= 0) && (des_num >= 0)) {
-          if(des_num == src_num) {
+          if (des_num == src_num) {
             continue;
           }
           System.out.println("mv " + register_name.get(des_num) + ", " + register_name.get(src_num));
@@ -116,13 +116,17 @@ public class MoveBlock extends IRCode {
 
   @Override
   public void CodePrint() {
-    System.out.print("b" + num + ":");
+    if (num != null) {
+      System.out.print("b" + num + ":");
+    }
     for (PseudoMove move : moves) {
       if (!move.dead) {
         System.out.print(move.src + "->" + move.des + ";");
       }
     }
-    System.out.println("TO: b" + to);
+    if (to != null) {
+      System.out.println("TO: b" + to);
+    }
   }
 
   @Override

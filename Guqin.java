@@ -47,7 +47,6 @@ public class Guqin {
         }
         Composer Yuchuan = new Composer(AST);
         Yuchuan.translate((ProgNode) entry);
-        // Yuchuan.LLVMOutput();
         Optimizor adam = new Optimizor(Yuchuan);
         adam.OptimizedCodegen();
         System.exit(0);

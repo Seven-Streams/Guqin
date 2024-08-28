@@ -38,6 +38,9 @@ public class PseudoMove extends IRCode {
   @Override
   public void CodegenWithOptim(HashMap<String, Integer> registers, HashMap<Integer, String> register_name)
       throws Exception {
+    if (!registers.containsKey(des)) {
+      return;
+    }
     try {
       int src_value = Integer.parseInt(src);
       int des_value = registers.get(des);
