@@ -443,7 +443,7 @@ public class LivenessAnalysis {
           }
         }
       }
-      if (!spilled) {
+      if(!spilled) {
         continue;
       }
       for (int i = 0; i < degree; i++) {
@@ -552,6 +552,18 @@ public class LivenessAnalysis {
           if (total_out == null) {
             total_out = new HashMap<>();
           }
+          for (String out_v : total_out.keySet()) {
+            if (!interval_check.get(cnt).containsKey(out_v)) {
+              interval_check.get(cnt).put(out_v, new Interval(now_num, now_num, out_v));
+            } else {
+              if (interval_check.get(cnt).get(out_v).start > now_num) {
+                interval_check.get(cnt).get(out_v).start = now_num;
+              }
+              if (interval_check.get(cnt).get(out_v).end < now_num) {
+                interval_check.get(cnt).get(out_v).end = now_num;
+              }
+            }
+          }
           def_res.clear();
           use_res.clear();
           machine.generated.get(j).UseDefCheck(def_res, use_res);
@@ -571,11 +583,6 @@ public class LivenessAnalysis {
               if (interval_check.get(cnt).get(out_v).end < now_num) {
                 interval_check.get(cnt).get(out_v).end = now_num;
               }
-            }
-          }
-          for (String use_v : use_res.keySet()) {
-            if (interval_check.get(cnt).get(use_v).end < (now_num + 1)) {
-              interval_check.get(cnt).get(use_v).end = now_num + 1;
             }
           }
         }
@@ -605,6 +612,18 @@ public class LivenessAnalysis {
         HashMap<String, Boolean> def_res = new HashMap<>();
         for (int j = end; j >= i; j--) {
           int now_num = machine.generated.get(j).sentence_number;
+          for (String out_v : total_out.keySet()) {
+            if (!interval_check.get(cnt).containsKey(out_v)) {
+              interval_check.get(cnt).put(out_v, new Interval(now_num, now_num, out_v));
+            } else {
+              if (interval_check.get(cnt).get(out_v).start > now_num) {
+                interval_check.get(cnt).get(out_v).start = now_num;
+              }
+              if (interval_check.get(cnt).get(out_v).end < now_num) {
+                interval_check.get(cnt).get(out_v).end = now_num;
+              }
+            }
+          }
           def_res.clear();
           use_res.clear();
           machine.generated.get(j).UseDefCheck(def_res, use_res);
@@ -624,11 +643,6 @@ public class LivenessAnalysis {
               if (interval_check.get(cnt).get(out_v).end < now_num) {
                 interval_check.get(cnt).get(out_v).end = now_num;
               }
-            }
-          }
-          for (String use_v : use_res.keySet()) {
-            if (interval_check.get(cnt).get(use_v).end < (now_num + 1)) {
-              interval_check.get(cnt).get(use_v).end = now_num + 1;
             }
           }
         }
