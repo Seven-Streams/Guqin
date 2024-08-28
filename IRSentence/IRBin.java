@@ -252,6 +252,9 @@ public class IRBin extends IRCode {
   @Override
   public void CodegenWithOptim(HashMap<String, Integer> registers, HashMap<Integer, String> register_name)
       throws Exception {
+    if(!registers.containsKey(target_reg)) {
+      return;
+    }
     int target = registers.get(target_reg);
     boolean is_int1 = false;
     int value1;

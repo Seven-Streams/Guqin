@@ -240,6 +240,9 @@ public class IRIcmp extends IRCode {
   @Override
   public void CodegenWithOptim(HashMap<String, Integer> registers, HashMap<Integer, String> register_name)
       throws Exception {
+        if(!registers.containsKey(target_reg)) {
+          return;
+        }
     String addr1 = "t0";
     String addr2 = "t1";
     if (op1.equals("true") || op1.equals("false") || op1.equals("null")) {

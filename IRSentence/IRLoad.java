@@ -128,6 +128,9 @@ public class IRLoad extends IRCode {
   @Override
   public void CodegenWithOptim(HashMap<String, Integer> registers, HashMap<Integer, String> register_name)
       throws Exception {
+        if(!registers.containsKey(des)) {
+          return;
+        }
     String addr = "t0";
     if (is_global.containsKey(src)) {
       System.out.println("lui t0, " + "%hi(" + src.substring(1) + ")");

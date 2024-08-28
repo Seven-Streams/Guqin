@@ -194,15 +194,18 @@ public class IRElement extends IRCode {
   @Override
   public void CodegenWithOptim(HashMap<String, Integer> registers, HashMap<Integer, String> register_name)
       throws Exception {
+    if (!registers.containsKey(output)) {
+      return;
+    }
     int target_value = registers.get(output);
     int src_value = registers.get(src);
     String src_str = "t0";
     if (src_value >= 0) {
       src_str = register_name.get(src_value);
     } else {
-      if((src_value >> 9) == 0) {
+      if ((src_value >> 9) == 0) {
 
-      System.out.println("lw t0, " + (4 * src_value) + "(s0)");
+        System.out.println("lw t0, " + (4 * src_value) + "(s0)");
       } else {
         System.out.println("li t0, " + (4 * src_value));
         System.out.println("add t0, t0, s0");
@@ -372,10 +375,10 @@ public class IRElement extends IRCode {
 
   @Override
   public void GlobalConstReplace(HashMap<String, String> mapping) {
-    if(mapping.containsKey(num1)) {
+    if (mapping.containsKey(num1)) {
       num1 = new String(mapping.get(num1));
     }
-    if(mapping.containsKey(num2)) {
+    if (mapping.containsKey(num2)) {
       num2 = new String(mapping.get(num2));
     }
     return;

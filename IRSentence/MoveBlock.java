@@ -44,6 +44,9 @@ public class MoveBlock extends IRCode {
       if (move.dead) {
         continue;
       }
+      if (!registers.containsKey(move.des)) {
+        continue;
+      }
       try {
         int src_value = Integer.parseInt(move.src);
         int des_value = registers.get(move.des);
