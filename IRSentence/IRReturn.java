@@ -166,4 +166,12 @@ public class IRReturn extends IRCode {
     }
     return null;
   }
+
+  @Override
+  public void GlobalConstReplace(HashMap<String, String> mapping) {
+    if(mapping.containsKey(reg)) {
+      reg = new String(mapping.get(reg));
+    }
+    return;
+  }
 }

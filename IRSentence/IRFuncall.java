@@ -370,4 +370,14 @@ public class IRFuncall extends IRCode {
     }
     return return_value;
   }
+
+  @Override
+  public void GlobalConstReplace(HashMap<String, String> mapping) {
+    for(int i = 0; i < reg.size(); i++) {
+      if(mapping.containsKey(reg.get(i))) {
+        reg.set(i, new String(mapping.get(reg.get(i))));
+      }
+    }
+    return;
+  }
 }

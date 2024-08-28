@@ -158,4 +158,12 @@ public class Conditionjmp extends IRCode {
     }
     return return_value;
   }
+
+  @Override
+  public void GlobalConstReplace(HashMap<String, String> mapping) {
+    if(mapping.containsKey(reg)) {
+      reg = new String(mapping.get(reg));
+    }
+    return;
+  }
 }

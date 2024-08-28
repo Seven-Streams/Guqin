@@ -262,4 +262,12 @@ public class IRStore extends IRCode {
     }
     return return_value;
   }
+
+  @Override
+  public void GlobalConstReplace(HashMap<String, String> mapping) {
+    if(mapping.containsKey(from)) {
+      from = new String(mapping.get(from));
+    }
+    return;
+  }
 }

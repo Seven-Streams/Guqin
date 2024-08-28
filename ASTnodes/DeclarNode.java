@@ -20,7 +20,7 @@ public class DeclarNode extends StatNode {
   public Mypair check() throws Exception {
     Mypair resMypair = new Mypair(type, dim);
     if (!class_memory.containsKey(type)) {
-      if(type.equals("void")) {
+      if (type.equals("void")) {
         throw new Exception("Invalid Type");
       }
       throw new Exception("Undefined Identifier");
@@ -88,7 +88,7 @@ public class DeclarNode extends StatNode {
         machine.now_name.peek().put(ID.get(i), res);
         IRGlobal to_add = new IRGlobal();
         to_add.name = new String(res.new_name);
-                if (dim != 0) {
+        if (dim != 0) {
           to_add.type = "ptr";
         } else {
           switch (type) {
@@ -106,17 +106,25 @@ public class DeclarNode extends StatNode {
             }
           }
         }
-        machine.global.add(to_add);
         if (Initial.containsKey(i)) {
           machine.generated = machine.init;
           Info init_info = Initial.get(i).GenerateIR(machine);
-          IRStore to_store = new IRStore();
-          to_store.name = res.new_name;
-          to_store.from = init_info.reg;
-          to_store.type = llvm_type;
-          machine.generated.add(to_store);
+          if (init_info.is_const) {
+            if (to_add.type.equals("i32")) {
+              to_add.value = new String(init_info.reg);
+            } else {
+              to_add.value = Integer.toString(init_info.reg.equals("true") ? 1 : 0);
+            }
+          } else {
+            IRStore to_store = new IRStore();
+            to_store.name = res.new_name;
+            to_store.from = init_info.reg;
+            to_store.type = llvm_type;
+            machine.generated.add(to_store);
+          }
           machine.generated = res_codes;
         }
+        machine.global.add(to_add);
       }
     } else {
       for (int i = 0; i < ID.size(); i++) {

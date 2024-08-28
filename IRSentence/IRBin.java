@@ -662,4 +662,15 @@ public class IRBin extends IRCode {
       UseDefCheck(def, use);
     }
   }
+
+  @Override
+  public void GlobalConstReplace(HashMap<String, String> mapping) {
+    if(mapping.containsKey(op1)) {
+      op1 = new String(mapping.get(op1));
+    }
+    if(mapping.containsKey(op2)) {
+      op2 = new String(mapping.get(op2));
+    }
+    return;
+  }
 }

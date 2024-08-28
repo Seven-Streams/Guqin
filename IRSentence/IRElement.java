@@ -369,4 +369,15 @@ public class IRElement extends IRCode {
       UseDefCheck(def, use);
     }
   }
+
+  @Override
+  public void GlobalConstReplace(HashMap<String, String> mapping) {
+    if(mapping.containsKey(num1)) {
+      num1 = new String(mapping.get(num1));
+    }
+    if(mapping.containsKey(num2)) {
+      num2 = new String(mapping.get(num2));
+    }
+    return;
+  }
 }

@@ -159,4 +159,14 @@ public class IRPhi extends IRCode {
       throws Exception {
     throw new Exception("Unexpected phi!");
   }
+
+  @Override
+  public void GlobalConstReplace(HashMap<String, String> mapping) {
+    for(int i = 0; i < values.size(); i++) {
+      if(mapping.containsKey(values.get(i))) {
+        values.set(i, mapping.get(values.get(i)));
+      }
+    }
+    return;
+  }
 }
