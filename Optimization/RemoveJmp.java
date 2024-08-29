@@ -64,13 +64,17 @@ public class RemoveJmp {
 
   void Rebuild() {
     machine.generated.clear();
+    HashMap<Integer, Integer> loop = IRCode.loop_info;
+    for (Map.Entry<Integer, Integer> entry : loop.entrySet()) {
+      if (blocks.containsKey(entry.getKey())) {
+        if (blocks.containsKey(entry.getValue())) {
+          blocks.get(entry.getKey()).addAll(blocks.get(entry.getValue()));
+          blocks.remove(entry.getValue());
+        }
+      }
+    }
     for (int i = -1; i >= func_cnt; i--) {
       TreeMap<Integer, Boolean> code_list = from.get(i);
-      // for (int label : code_list.keySet()) {
-      // if (blocks.containsKey(label)) {
-      // machine.generated.addAll(blocks.get(label));
-      // }
-      // }
       int label = code_list.firstKey();
       while (!code_list.isEmpty()) {
         if (blocks.containsKey(label)) {
@@ -223,6 +227,11 @@ public class RemoveJmp {
             graph.remove(res);
             pre.remove(res);
             blocks.remove(res);
+            if (IRCode.loop_info.containsKey(res)) {
+              int value = IRCode.loop_info.get(res);
+              IRCode.loop_info.put(i, value);
+              IRCode.loop_info.remove(res);
+            }
             for (int value : graph.get(i).keySet()) {
               pre.get(value).remove(res);
               pre.get(value).put(i, null);
@@ -264,6 +273,11 @@ public class RemoveJmp {
             graph.remove(res);
             pre.remove(res);
             blocks.remove(res);
+            if (IRCode.loop_info.containsKey(res)) {
+              int value = IRCode.loop_info.get(res);
+              IRCode.loop_info.put(i, value);
+              IRCode.loop_info.remove(res);
+            }
             for (int value : graph.get(i).keySet()) {
               pre.get(value).remove(res);
               pre.get(value).put(i, null);

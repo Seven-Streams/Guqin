@@ -75,6 +75,9 @@ public class ForNode extends StatNode {
     machine.generated.add(check_jmp);
     machine.generated.add(new IRLabel(res_label.end));
     machine.scope_time++;
+    if (res_label.iteration != res_label.condition) {
+      IRCode.loop_info.put(res_label.iteration, res_label.condition);
+    }
     Info.loop.remove(Info.loop.size() - 1);
     return new Info();
   }

@@ -24,6 +24,7 @@ public class IRCode {
   public static int sp_length = 0;
   public int sentence_number = 0;
   public boolean dead = false;
+  public static HashMap<Integer, Integer> loop_info = new HashMap<>();
   public static HashMap<String, Boolean> Empty_func = new HashMap<>();
   public static HashMap<Integer, Integer> register_use = null;
   public static HashMap<String, Boolean> is_global = new HashMap<>();
