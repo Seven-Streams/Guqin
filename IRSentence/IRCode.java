@@ -33,6 +33,7 @@ public class IRCode {
   }
   public void AliveUseDefCheck(HashMap<String, Boolean> def, HashMap<String, Boolean> use){UseDefCheck(def, use);}
   public void CheckGlobal(){};
+  public String ConstCheck(HashMap<String, String> replace){return null;}
   public void CodegenWithOptim(HashMap<String, Integer> registers, HashMap<Integer, String> register_name) throws Exception{} 
   public void GlobalConstReplace(HashMap<String, String> mapping){}
   public IRCode GetInline(HashMap<String, String> now_name, HashMap<Integer, Integer> now_label, Composer machine) throws Exception{return new IRCode();}

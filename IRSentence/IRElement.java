@@ -383,4 +383,15 @@ public class IRElement extends IRCode {
     }
     return;
   }
+
+  @Override
+  public String ConstCheck(HashMap<String, String> replace) {
+    if(replace.containsKey(num1)) {
+      num1 = new String(replace.get(num1));
+    }
+    if(num2 != null && replace.containsKey(num2)) {
+      num2 = new String(replace.get(num2));
+    }
+    return null;
+  }
 }

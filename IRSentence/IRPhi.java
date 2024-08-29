@@ -140,14 +140,14 @@ public class IRPhi extends IRCode {
     return;
   }
 
-
   @Override
-  public void UpdateNames(HashMap<String, Stack<NameLabelPair>> variable_stack, HashMap<String, String> reg_value, int now_block) {
+  public void UpdateNames(HashMap<String, Stack<NameLabelPair>> variable_stack, HashMap<String, String> reg_value,
+      int now_block) {
     for (int i = 0; i < values.size(); i++) {
       if (variable_stack.containsKey(values.get(i))) {
         values.set(i, new String(variable_stack.get(values.get(i)).peek().name));
       }
-      if(reg_value.containsKey(values.get(i))) {
+      if (reg_value.containsKey(values.get(i))) {
         values.set(i, new String(reg_value.get(values.get(i))));
       }
     }
@@ -162,11 +162,65 @@ public class IRPhi extends IRCode {
 
   @Override
   public void GlobalConstReplace(HashMap<String, String> mapping) {
-    for(int i = 0; i < values.size(); i++) {
-      if(mapping.containsKey(values.get(i))) {
+    for (int i = 0; i < values.size(); i++) {
+      if (mapping.containsKey(values.get(i))) {
         values.set(i, mapping.get(values.get(i)));
       }
     }
     return;
+  }
+
+  @Override
+  public void UseDefCheck(HashMap<String, Boolean> def, HashMap<String, Boolean> use) {
+    for (String value : values) {
+      try {
+        Integer.parseInt(value);
+      } catch (NumberFormatException e) {
+        if (!def.containsKey(value)) {
+          use.put(value, null);
+        }
+      }
+    }
+    def.put(target, null);
+  }
+
+  @Override
+  public String ConstCheck(HashMap<String, String> replace) {
+    if(dead) {
+      return null;
+    }
+    boolean not_const = true;
+    for (int i = 0; i < values.size(); i++) {
+      String value = values.get(i);
+      try {
+        Integer.parseInt(value);
+      } catch (NumberFormatException e) {
+        if (CheckLit(value)) {
+          if (!replace.containsKey(value)) {
+            not_const = false;
+          } else {
+            values.set(i, replace.get(value));
+          }
+        } else {
+          values.set(i, Integer.toString(value.equals("true") ? 1 : 0));
+        }
+      }
+    }
+    if(not_const) {
+      return null;
+    }
+    String now = null;
+    for(String value: values) {
+      if(now == null) {
+        now = value;
+      } else {
+        if(!now.equals(value)) {
+          return null;
+        }
+      }
+    }
+    dead = true;
+    replace.put(target, now);
+    return target;
   }
 }

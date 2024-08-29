@@ -382,4 +382,14 @@ public class IRFuncall extends IRCode {
     }
     return;
   }
+
+  @Override
+  public String ConstCheck(HashMap<String, String> replace) {
+    for(int i = 0; i < reg.size(); i++) {
+      if(replace.containsKey(reg.get(i))) {
+        reg.set(i, new String(replace.get(reg.get(i))));
+      }
+    }
+    return null;
+  }
 }

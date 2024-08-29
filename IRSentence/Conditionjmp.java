@@ -96,32 +96,41 @@ public class Conditionjmp extends IRCode {
 
   @Override
   public void CodegenWithOptim(HashMap<String, Integer> registers, HashMap<Integer, String> register_name) {
-    if (CheckLit(reg)) {
-      int now_label = ++cnt;
-      int value = registers.get(reg);
-      if (value >= 0) {
-        System.out.println("beqz " + register_name.get(value) + ", cond." + now_label);
-      } else {
-        if ((value >> 9) == 0) {
-          System.out.println("lw t0, " + (value * 4) + "(s0)");
-        } else {
-          System.out.println("li t0, " + (value * 4));
-          System.out.println("add t0, t0, s0");
-          System.out.println("lw t0, 0(t0)");
-        }
-        System.out.println("beqz t0, " + "cond." + now_label);
-      }
-      System.out.println("j b" + label1);
-      System.out.println("cond." + now_label + ":");
-      System.out.println("j b" + label2);
-      return;
-    } else {
-      if (reg.equals("true")) {
+    try {
+      int value = Integer.parseInt(reg);
+      if (value == 1) {
         System.out.println("j b" + label1);
       } else {
         System.out.println("j b" + label2);
       }
-      return;
+    } catch (NumberFormatException e) {
+      if (CheckLit(reg)) {
+        int now_label = ++cnt;
+        int value = registers.get(reg);
+        if (value >= 0) {
+          System.out.println("beqz " + register_name.get(value) + ", cond." + now_label);
+        } else {
+          if ((value >> 9) == 0) {
+            System.out.println("lw t0, " + (value * 4) + "(s0)");
+          } else {
+            System.out.println("li t0, " + (value * 4));
+            System.out.println("add t0, t0, s0");
+            System.out.println("lw t0, 0(t0)");
+          }
+          System.out.println("beqz t0, " + "cond." + now_label);
+        }
+        System.out.println("j b" + label1);
+        System.out.println("cond." + now_label + ":");
+        System.out.println("j b" + label2);
+        return;
+      } else {
+        if (reg.equals("true")) {
+          System.out.println("j b" + label1);
+        } else {
+          System.out.println("j b" + label2);
+        }
+        return;
+      }
     }
   }
 
@@ -161,9 +170,17 @@ public class Conditionjmp extends IRCode {
 
   @Override
   public void GlobalConstReplace(HashMap<String, String> mapping) {
-    if(mapping.containsKey(reg)) {
+    if (mapping.containsKey(reg)) {
       reg = new String(mapping.get(reg));
     }
     return;
+  }
+
+  @Override
+  public String ConstCheck(HashMap<String, String> replace) {
+    if (replace.containsKey(reg)) {
+      reg = new String(replace.get(reg));
+    }
+    return null;
   }
 }

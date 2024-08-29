@@ -240,9 +240,9 @@ public class IRIcmp extends IRCode {
   @Override
   public void CodegenWithOptim(HashMap<String, Integer> registers, HashMap<Integer, String> register_name)
       throws Exception {
-        if(!registers.containsKey(target_reg)) {
-          return;
-        }
+    if (!registers.containsKey(target_reg)) {
+      return;
+    }
     String addr1 = "t0";
     String addr2 = "t1";
     if (op1.equals("true") || op1.equals("false") || op1.equals("null")) {
@@ -413,5 +413,76 @@ public class IRIcmp extends IRCode {
       op2 = new String(mapping.get(op2));
     }
     return;
+  }
+
+  @Override
+  public String ConstCheck(HashMap<String, String> replace) {
+    boolean ok = true;
+    if (dead) {
+      return null;
+    }
+    Integer value1 = null;
+    Integer value2 = null;
+    try {
+      value1 = Integer.parseInt(op1);
+    } catch (NumberFormatException e) {
+      if (CheckLit(op1)) {
+        if (!replace.containsKey(op1)) {
+          ok = false;
+        } else {
+          value1 = Integer.parseInt(replace.get(op1));
+          op1 = new String(replace.get(op1));
+        }
+      } else {
+        value1 = op1.equals("true") ? 1 : 0;
+      }
+    }
+    try {
+      value2 = Integer.parseInt(op2);
+    } catch (NumberFormatException e) {
+      if (CheckLit(op2)) {
+        if (!replace.containsKey(op2)) {
+          ok = false;
+        } else {
+          value2 = Integer.parseInt(replace.get(op2));
+          op2 = new String(replace.get(op2));
+        }
+      } else {
+        value2 = op2.equals("true") ? 1 : 0;
+      }
+    }
+    if(!ok) {
+      return null;
+    }
+    int result = 0;
+    switch (symbol) {
+      case ("=="): {
+        result = (value1 == value2) ? 1 : 0;
+        break;
+      }
+      case ("!="): {
+        result = (value1 != value2) ? 1 : 0;
+        break;
+      }
+      case (">"): {
+        result = (value1 > value2) ? 1 : 0;
+        break;
+      }
+      case ("<"): {
+        result = (value1 < value2) ? 1 : 0;
+        break;
+      }
+      case (">="): {
+        result = (value1 >= value2) ? 1 : 0;
+        break;
+      }
+      case ("<="): {
+        result = (value1 <= value2) ? 1 : 0;
+        break;
+      }
+    }
+    replace.put(target_reg, Integer.toString(result));
+    dead = true;
+    return target_reg;
   }
 }

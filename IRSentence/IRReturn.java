@@ -174,4 +174,12 @@ public class IRReturn extends IRCode {
     }
     return;
   }
+
+  @Override
+  public String ConstCheck(HashMap<String, String> replace) {
+    if(reg != null && replace.containsKey(reg)) {
+      reg = new String(replace.get(reg));
+    }
+    return null;
+  }
 }

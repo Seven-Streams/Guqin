@@ -270,4 +270,12 @@ public class IRStore extends IRCode {
     }
     return;
   }
+
+  @Override
+  public String ConstCheck(HashMap<String, String> replace) {
+    if(replace.containsKey(from)) {
+      from = new String(replace.get(from));
+    }
+    return null;
+  }
 }

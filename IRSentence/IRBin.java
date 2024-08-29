@@ -252,7 +252,7 @@ public class IRBin extends IRCode {
   @Override
   public void CodegenWithOptim(HashMap<String, Integer> registers, HashMap<Integer, String> register_name)
       throws Exception {
-    if(!registers.containsKey(target_reg)) {
+    if (!registers.containsKey(target_reg)) {
       return;
     }
     int target = registers.get(target_reg);
@@ -668,12 +668,102 @@ public class IRBin extends IRCode {
 
   @Override
   public void GlobalConstReplace(HashMap<String, String> mapping) {
-    if(mapping.containsKey(op1)) {
+    if (mapping.containsKey(op1)) {
       op1 = new String(mapping.get(op1));
     }
-    if(mapping.containsKey(op2)) {
+    if (mapping.containsKey(op2)) {
       op2 = new String(mapping.get(op2));
     }
     return;
+  }
+
+  @Override
+  public String ConstCheck(HashMap<String, String> replace) {
+    if (dead) {
+      return null;
+    }
+    boolean ok = true;
+    Integer value1 = null;
+    Integer value2 = null;
+    try {
+      value1 = Integer.parseInt(op1);
+    } catch (NumberFormatException e) {
+      if (!replace.containsKey(op1)) {
+        ok = false;
+      } else {
+        value1 = Integer.parseInt(replace.get(op1));
+        op1 = new String(replace.get(op1));
+      }
+    }
+    try {
+      value2 = Integer.parseInt(op2);
+    } catch (NumberFormatException e) {
+      if (!replace.containsKey(op2)) {
+        ok = false;
+      } else {
+        value2 = Integer.parseInt(replace.get(op2));
+        op2 = new String(replace.get(op2));
+      }
+    }
+    int result = 0;
+    if(!ok) {
+      return null;
+    }
+    switch (symbol) {
+      case ("+"): {
+        result = value1 + value2;
+        break;
+      }
+      case ("-"): {
+        result = value1 - value2;
+        break;
+      }
+      case ("*"): {
+        result = value1 * value2;
+        break;
+      }
+      case ("/"): {
+        if (value2 == 0) {
+          result = 114514;
+        } else {
+          result = value1 / value2;
+        }
+        break;
+      }
+      case ("<<"): {
+        result = value1 << value2;
+        break;
+      }
+      case (">>"): {
+        result = value1 >> value2;
+        break;
+      }
+      case ("%"): {
+        if (value2 == 0) {
+          result = 114514;
+        } else {
+          result = value1 % value2;
+        }
+        break;
+      }
+      case ("&"): {
+        result = value1 & value2;
+        break;
+      }
+      case ("|"): {
+        result = value1 | value2;
+        break;
+      }
+      case ("^"): {
+        result = value1 ^ value2;
+        break;
+      }
+      default: {
+        System.out.println("Error! Unexpected symbol!");
+      }
+    }
+    replace.put(target_reg, Integer.toString(result));
+    dead = true;
+    return target_reg;
   }
 }
