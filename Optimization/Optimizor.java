@@ -10,12 +10,12 @@ public class Optimizor {
   }
 
   public void OptimizedCodegen() throws Exception {
-    GlobalConst global_check = new GlobalConst(machine);
-    global_check.Optim();
     RemoveEmptyCall call_remover = new RemoveEmptyCall(machine);
     call_remover.CheckUnecessaryCalling();
     Mem2Reg M2R = new Mem2Reg(machine);
     M2R.Optim();
+    GlobalConst global_check = new GlobalConst(machine);
+    global_check.Optim();
     ConstFolding const_check = new ConstFolding(machine);
     const_check.Optim();
     PhiRemover eraser = new PhiRemover(machine);
