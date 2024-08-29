@@ -245,16 +245,22 @@ public class IRIcmp extends IRCode {
     }
     String addr1 = "t0";
     String addr2 = "t1";
+    Integer value1 = null;
+    Integer value2 = null;
     if (op1.equals("true") || op1.equals("false") || op1.equals("null")) {
       if (op1.equals("true")) {
-        System.out.println("li t0, 1");
+        value1 = 1;
       } else {
-        System.out.println("li t0, 0");
+        value1 = 0;
       }
     } else {
       try {
         int ins_1 = Integer.parseInt(op1);
-        System.out.println("li t0, " + ins_1);
+        if ((ins_1 >> 11) == 0) {
+          value1 = ins_1;
+        } else {
+          System.out.println("li t0, " + ins_1);
+        }
       } catch (NumberFormatException e) {
         int reg_1 = registers.get(op1);
         if (reg_1 >= 0) {
@@ -272,14 +278,18 @@ public class IRIcmp extends IRCode {
     }
     if (op2.equals("true") || op2.equals("false") || op2.equals("null")) {
       if (op2.equals("true")) {
-        System.out.println("li t1, 1");
+        value2 = 1;
       } else {
-        System.out.println("li t1, 0");
+        value2 = 0;
       }
     } else {
       try {
         int ins_2 = Integer.parseInt(op2);
-        System.out.println("li t1, " + ins_2);
+        if ((ins_2 >> 11) == 0) {
+          value2 = ins_2;
+        } else {
+          System.out.println("li t1, " + ins_2);
+        }
       } catch (NumberFormatException e) {
         int reg_2 = registers.get(op2);
         if (reg_2 >= 0) {
@@ -300,37 +310,186 @@ public class IRIcmp extends IRCode {
     if (target_value >= 0) {
       target_str = register_name.get(target_value);
     }
-    switch (symbol) {
-      case ("=="): {
-        System.out.println("sub t0, " + addr1 + ", " + addr2);
-        System.out.println("seqz " + target_str + ", t0");
-        break;
+    if ((value1 != null) || (value2 != null)) {
+      if ((value1 != null) && (value2 != null)) {
+        switch (symbol) {
+          case ("=="): {
+            if (value1 == value2) {
+              System.out.println("li " + target_str + " 1");
+            } else {
+              System.out.println("li " + target_str + " 0");
+            }
+            break;
+          }
+          case ("!="): {
+            if (value1 != value2) {
+              System.out.println("li " + target_str + " 1");
+            } else {
+              System.out.println("li " + target_str + " 0");
+            }
+            break;
+          }
+          case (">="): {
+            if (value1 >= value2) {
+              System.out.println("li " + target_str + " 1");
+            } else {
+              System.out.println("li " + target_str + " 0");
+            }
+            break;
+          }
+          case ("<="): {
+            if (value1 <= value2) {
+              System.out.println("li " + target_str + " 1");
+            } else {
+              System.out.println("li " + target_str + " 0");
+            }
+            break;
+          }
+          case (">"): {
+            if (value1 > value2) {
+              System.out.println("li " + target_str + " 1");
+            } else {
+              System.out.println("li " + target_str + " 0");
+            }
+            break;
+          }
+          case ("<"): {
+            if (value1 < value2) {
+              System.out.println("li " + target_str + " 1");
+            } else {
+              System.out.println("li " + target_str + " 0");
+            }
+            break;
+          }
+        }
+      } else {
+        if (value1 != null) {
+          switch (symbol) {
+            case ("=="): {
+              if (value1 != 0) {
+                value1 = -value1;
+                System.out.println("addi t0, " + addr2 + ", " + value1);
+                System.out.println("seqz " + target_str + ", t0");
+              } else {
+                System.out.println("seqz " + target_str + ", " + addr2);
+              }
+              break;
+            }
+            case ("!="): {
+              if (value1 != 0) {
+                value1 = -value1;
+                System.out.println("addi t0, " + addr2 + ", " + value1);
+                System.out.println("snez " + target_str + ", t0");
+              } else {
+                System.out.println("snez " + target_str + ", " + addr2);
+              }
+              break;
+            }
+            case (">"): {
+              System.out.println("slti " + target_str + ", " + addr2 + ", " + value1);
+              break;
+            }
+            case ("<"): {
+              System.out.println("li " + target_str + ", " + value1);
+              System.out.println("slt " + target_str + ", " + target_str + ", " + addr2);
+              break;
+            }
+            case (">="): {
+              System.out.println("li " + target_str + ", " + value1);
+              System.out.println("slt t0, " + target_str + ", " + addr2);
+              System.out.println("xori " + target_str + ", " + "t0" + ", 1");
+              break;
+            }
+            case ("<="): {
+              System.out.println("slti t0, " + addr2 + ", " + value1);
+              System.out.println("xori " + target_str + ", t0, 1");
+              break;
+            }
+            default: {
+              throw new Exception("Unexpected Symbol.");
+            }
+          }
+        } else {
+          switch (symbol) {
+            case ("=="): {
+              if (value2 != 0) {
+                value2 = -value2;
+                System.out.println("addi t1, " + addr1 + ", " + value2);
+                System.out.println("seqz " + target_str + ", t1");
+              } else {
+                System.out.println("seqz " + target_str + ", " + addr1);
+              }
+              break;
+            }
+            case ("!="): {
+              if (value2 != 0) {
+                value2 = -value2;
+                System.out.println("addi t0, " + addr1 + ", " + value2);
+                System.out.println("snez " + target_str + ", t0");
+              } else {
+                System.out.println("snez " + target_str + ", " + addr1);
+              }
+              break;
+            }
+            case (">"): {
+              System.out.println("li t1, " + value2);
+              System.out.println("slt " + target_str + ", t1, " + addr1);
+              break;
+            }
+            case ("<"): {
+              System.out.println("slti " + target_str + ", " + addr1 + ", " + value2);
+              break;
+            }
+            case (">="): {
+              System.out.println("slti t0, " + addr1 + ", " + value2);
+              System.out.println("xori " + target_str + ", t0, 1");
+              break;
+            }
+            case ("<="): {
+              System.out.println("li t1, " + value2);
+              System.out.println("slt t0, t1, " + addr1);
+              System.out.println("xori " + target_str + ", t0, 1");
+              break;
+            }
+            default: {
+              throw new Exception("Unexpected Symbol.");
+            }
+          }
+        }
       }
-      case ("!="): {
-        System.out.println("sub t0, " + addr1 + ", " + addr2);
-        System.out.println("snez " + target_str + ", t0");
-        break;
-      }
-      case (">"): {
-        System.out.println("slt " + target_str + ", " + addr2 + ", " + addr1);
-        break;
-      }
-      case ("<"): {
-        System.out.println("slt " + target_str + ", " + addr1 + ", " + addr2);
-        break;
-      }
-      case (">="): {
-        System.out.println("slt t0, " + addr1 + ", " + addr2);
-        System.out.println("xori " + target_str + ", t0, 1");
-        break;
-      }
-      case ("<="): {
-        System.out.println("slt t0, " + addr2 + ", " + addr1);
-        System.out.println("xori " + target_str + ", t0, 1");
-        break;
-      }
-      default: {
-        throw new Exception("Unexpected Symbol.");
+    } else {
+      switch (symbol) {
+        case ("=="): {
+          System.out.println("sub t0, " + addr1 + ", " + addr2);
+          System.out.println("seqz " + target_str + ", t0");
+          break;
+        }
+        case ("!="): {
+          System.out.println("sub t0, " + addr1 + ", " + addr2);
+          System.out.println("snez " + target_str + ", t0");
+          break;
+        }
+        case (">"): {
+          System.out.println("slt " + target_str + ", " + addr2 + ", " + addr1);
+          break;
+        }
+        case ("<"): {
+          System.out.println("slt " + target_str + ", " + addr1 + ", " + addr2);
+          break;
+        }
+        case (">="): {
+          System.out.println("slt t0, " + addr1 + ", " + addr2);
+          System.out.println("xori " + target_str + ", t0, 1");
+          break;
+        }
+        case ("<="): {
+          System.out.println("slt t0, " + addr2 + ", " + addr1);
+          System.out.println("xori " + target_str + ", t0, 1");
+          break;
+        }
+        default: {
+          throw new Exception("Unexpected Symbol.");
+        }
       }
     }
     if (target_value < 0) {
@@ -451,7 +610,7 @@ public class IRIcmp extends IRCode {
         value2 = op2.equals("true") ? 1 : 0;
       }
     }
-    if(!ok) {
+    if (!ok) {
       return null;
     }
     int result = 0;
