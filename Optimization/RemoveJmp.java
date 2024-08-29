@@ -21,15 +21,89 @@ public class RemoveJmp {
     BuildGraph();
     CheckSingle();
     Rebuild();
+    OptimTrail();
+  }
+
+  void OptimTrail() {
+    boolean last_label = false;
+    int label = 0;
+    for (int i = machine.generated.size() - 1; i >= 0; i--) {
+      IRCode code = machine.generated.get(i);
+      if (last_label) {
+        if (code instanceof IRjmp) {
+          IRjmp jmp = (IRjmp) code;
+          if (jmp.label == label) {
+            machine.generated.remove(i);
+            continue;
+          }
+        }
+        if (code instanceof MoveBlock) {
+          MoveBlock move = (MoveBlock) code;
+          if (move.to != null && (move.to == label)) {
+            move.to = null;
+          }
+        }
+      }
+      if (code instanceof IRLabel) {
+        IRLabel label_ins = (IRLabel) code;
+        label = label_ins.label;
+        last_label = true;
+      } else {
+        if (code instanceof MoveBlock) {
+          MoveBlock move = (MoveBlock) code;
+          if (move.num != null) {
+            last_label = true;
+            label = move.num;
+          }
+        } else {
+          last_label = false;
+        }
+      }
+    }
   }
 
   void Rebuild() {
     machine.generated.clear();
     for (int i = -1; i >= func_cnt; i--) {
       TreeMap<Integer, Boolean> code_list = from.get(i);
-      for (int label : code_list.keySet()) {
+      // for (int label : code_list.keySet()) {
+      // if (blocks.containsKey(label)) {
+      // machine.generated.addAll(blocks.get(label));
+      // }
+      // }
+      int label = code_list.firstKey();
+      while (!code_list.isEmpty()) {
         if (blocks.containsKey(label)) {
           machine.generated.addAll(blocks.get(label));
+        }
+        code_list.remove(label);
+        if (machine.generated.get(machine.generated.size() - 1) instanceof IRjmp) {
+          IRjmp jmp = (IRjmp) machine.generated.get(machine.generated.size() - 1);
+          if (code_list.containsKey(jmp.label)) {
+            label = jmp.label;
+          } else {
+            if (!code_list.isEmpty()) {
+              label = code_list.firstKey();
+            }
+          }
+        } else {
+          if (!code_list.isEmpty()) {
+            label = code_list.firstKey();
+          }
+        }
+        if (machine.generated.get(machine.generated.size() - 1) instanceof MoveBlock) {
+          MoveBlock move = (MoveBlock) machine.generated.get(machine.generated.size() - 1);
+          if (code_list.containsKey(move.to)) {
+            label = move.to;
+          } else {
+            if (!code_list.isEmpty()) {
+              label = code_list.firstKey();
+            }
+          }
+        } else {
+          if (!code_list.isEmpty()) {
+            label = code_list.firstKey();
+          }
         }
       }
     }
