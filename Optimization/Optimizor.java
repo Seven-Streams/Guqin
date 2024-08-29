@@ -24,7 +24,7 @@ public class Optimizor {
     ADCER.Optim();
     Inline inliner = new Inline(machine);
     inliner.Optim(50);
-    LivenessAnalysis allocator = new LivenessAnalysis(machine);
+    LinearScan allocator = new LinearScan(machine);
     allocator.Allocator(27);
     RemoveJmp jp = new RemoveJmp(machine);
     jp.Optim();

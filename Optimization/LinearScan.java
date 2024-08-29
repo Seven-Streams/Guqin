@@ -10,7 +10,7 @@ import java.util.TreeMap;
 import IRSentence.*;
 import Composer.*;
 
-public class LivenessAnalysis {
+public class LinearScan {
   Composer machine = null;
   int number = 0;
   int func_cnt = 0;
@@ -35,7 +35,7 @@ public class LivenessAnalysis {
   public HashMap<String, String> from_to_pair = new HashMap<>();
   public HashMap<String, Boolean> move_des = new HashMap<>();
 
-  public LivenessAnalysis(Composer _machine) {
+  public LinearScan(Composer _machine) {
     machine = _machine;
   }
 
