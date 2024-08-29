@@ -315,49 +315,49 @@ public class IRIcmp extends IRCode {
         switch (symbol) {
           case ("=="): {
             if (value1 == value2) {
-              System.out.println("li " + target_str + " 1");
+              System.out.println("li " + target_str + ", 1");
             } else {
-              System.out.println("li " + target_str + " 0");
+              System.out.println("li " + target_str + ", 0");
             }
             break;
           }
           case ("!="): {
             if (value1 != value2) {
-              System.out.println("li " + target_str + " 1");
+              System.out.println("li " + target_str + ", 1");
             } else {
-              System.out.println("li " + target_str + " 0");
+              System.out.println("li " + target_str + ", 0");
             }
             break;
           }
           case (">="): {
             if (value1 >= value2) {
-              System.out.println("li " + target_str + " 1");
+              System.out.println("li " + target_str + ", 1");
             } else {
-              System.out.println("li " + target_str + " 0");
+              System.out.println("li " + target_str + ", 0");
             }
             break;
           }
           case ("<="): {
             if (value1 <= value2) {
-              System.out.println("li " + target_str + " 1");
+              System.out.println("li " + target_str + ", 1");
             } else {
-              System.out.println("li " + target_str + " 0");
+              System.out.println("li " + target_str + ", 0");
             }
             break;
           }
           case (">"): {
             if (value1 > value2) {
-              System.out.println("li " + target_str + " 1");
+              System.out.println("li " + target_str + ", 1");
             } else {
-              System.out.println("li " + target_str + " 0");
+              System.out.println("li " + target_str + ", 0");
             }
             break;
           }
           case ("<"): {
             if (value1 < value2) {
-              System.out.println("li " + target_str + " 1");
+              System.out.println("li " + target_str + ", 1");
             } else {
-              System.out.println("li " + target_str + " 0");
+              System.out.println("li " + target_str + " ,0");
             }
             break;
           }
