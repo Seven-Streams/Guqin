@@ -86,15 +86,24 @@ public class IRFunc extends IRCode {
     size *= 16;
     now_s0 = 8;
     sp_length = size;
-    buffer.add("li t0, " + size);
-    buffer.add("sub sp, sp, t0");
-    buffer.add("add t1, sp, t0");
+    if (size <= 2047) {
+      buffer.add("addi sp, sp, " + -size);
+      buffer.add("addi t1, sp, " + size);
+    } else {
+      buffer.add("li t0, " + size);
+      buffer.add("sub sp, sp, t0");
+      buffer.add("add t1, sp, t0");
+    }
     buffer.add("sw ra, " + (-4) + "(t1)");
     buffer.add("sw s0, " + (-8) + "(t1)");
     for (int i = 0; i <= Integer.min(register_use.get(-func_num), 10); i++) {
       buffer.add("sw s" + (i + 1) + ", " + (-12 - 4 * i) + "(t1)");
     }
+    if(size <= 2047) {
+      buffer.add("addi s0, sp, " + size);
+    } else {
     buffer.add("add s0, sp, t0");
+    }
     if (names.size() < 8) {
       for (int i = 0; i < names.size(); i++) {
         if (!registers.containsKey(names.get(i))) {

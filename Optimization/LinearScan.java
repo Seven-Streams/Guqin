@@ -308,9 +308,9 @@ public class LinearScan {
         NumberBlocks(nxt);
       }
     }
-    if (visit_cnt.get(index) < 50) {
-      visit.remove(index);
-    }
+    // if (visit_cnt.get(index) < 50) {
+    //   visit.remove(index);
+    // }
     return;
   }
 
