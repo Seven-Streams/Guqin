@@ -18,6 +18,8 @@ public class Optimizor {
     global_check.Optim();
     ConstFolding const_check = new ConstFolding(machine);
     const_check.Optim();
+    SCCP sccp = new SCCP(machine);
+    sccp.Optim();
     PhiRemover eraser = new PhiRemover(machine);
     eraser.Remove();
     NaiveADCE ADCER = new NaiveADCE(machine);
