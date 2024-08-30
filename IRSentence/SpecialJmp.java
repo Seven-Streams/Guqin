@@ -48,11 +48,11 @@ public class SpecialJmp extends Conditionjmp {
           reg_str1 = register_name.get(addr);
         } else {
           if (((-addr) >> 9) == 0) {
-            System.out.println("lw t0, " + (addr * 4) + "(s0)");
+            buffer.add("lw t0, " + (addr * 4) + "(s0)");
           } else {
-            System.out.println("li t0, " + (addr * 4));
-            System.out.println("add t0, t0, s0");
-            System.out.println("lw t0, 0(t0)");
+            buffer.add("li t0, " + (addr * 4));
+            buffer.add("add t0, t0, s0");
+            buffer.add("lw t0, 0(t0)");
           }
         }
       } else {
@@ -68,11 +68,11 @@ public class SpecialJmp extends Conditionjmp {
           reg_str2 = register_name.get(addr);
         } else {
           if (((addr) >> 9) == 0) {
-            System.out.println("lw t1, " + (addr * 4) + "(s0)");
+            buffer.add("lw t1, " + (addr * 4) + "(s0)");
           } else {
-            System.out.println("li t1, " + (addr * 4));
-            System.out.println("add t1, t1, s0");
-            System.out.println("lw t1, 0(t0)");
+            buffer.add("li t1, " + (addr * 4));
+            buffer.add("add t1, t1, s0");
+            buffer.add("lw t1, 0(t0)");
           }
         }
       } else {
@@ -83,49 +83,49 @@ public class SpecialJmp extends Conditionjmp {
       switch (symbol) {
         case ("=="): {
           if (value1 == value2) {
-            System.out.println("j b" + label1);
+            buffer.add("j b" + label1);
           } else {
-            System.out.println("j b" + label2);
+            buffer.add("j b" + label2);
           }
           break;
         }
         case ("!="): {
           if (value1 != value2) {
-            System.out.println("j b" + label1);
+            buffer.add("j b" + label1);
           } else {
-            System.out.println("j b" + label2);
+            buffer.add("j b" + label2);
           }
           break;
         }
         case (">="): {
           if (value1 >= value2) {
-            System.out.println("j b" + label1);
+            buffer.add("j b" + label1);
           } else {
-            System.out.println("j b" + label2);
+            buffer.add("j b" + label2);
           }
           break;
         }
         case ("<="): {
           if (value1 <= value2) {
-            System.out.println("j b" + label1);
+            buffer.add("j b" + label1);
           } else {
-            System.out.println("j b" + label2);
+            buffer.add("j b" + label2);
           }
           break;
         }
         case (">"): {
           if (value1 > value2) {
-            System.out.println("j b" + label1);
+            buffer.add("j b" + label1);
           } else {
-            System.out.println("j b" + label2);
+            buffer.add("j b" + label2);
           }
           break;
         }
         case ("<"): {
           if (value1 < value2) {
-            System.out.println("j b" + label1);
+            buffer.add("j b" + label1);
           } else {
-            System.out.println("j b" + label2);
+            buffer.add("j b" + label2);
           }
           break;
         }
@@ -133,52 +133,52 @@ public class SpecialJmp extends Conditionjmp {
       return;
     }
     if (value1 != null) {
-      System.out.println("li t0, " + value1);
+      buffer.add("li t0, " + value1);
     }
     if (value2 != null) {
-      System.out.println("li t1, " + value2);
+      buffer.add("li t1, " + value2);
     }
     switch (symbol) {
       case ("=="): {
-        System.out.println("beq " + reg_str1 + ", " + reg_str2 + ", cond." + ++cnt);
-        System.out.println("j b" + label2);
-        System.out.println("cond." + cnt + ":");
-        System.out.println("j b" + label1);
+        buffer.add("beq " + reg_str1 + ", " + reg_str2 + ", cond." + ++cnt);
+        buffer.add("j b" + label2);
+        buffer.add("cond." + cnt + ":");
+        buffer.add("j b" + label1);
         break;
       }
       case ("!="): {
-        System.out.println("bne " + reg_str1 + ", " + reg_str2 + ", cond." + ++cnt);
-        System.out.println("j b" + label2);
-        System.out.println("cond." + cnt + ":");
-        System.out.println("j b" + label1);
+        buffer.add("bne " + reg_str1 + ", " + reg_str2 + ", cond." + ++cnt);
+        buffer.add("j b" + label2);
+        buffer.add("cond." + cnt + ":");
+        buffer.add("j b" + label1);
         break;
       }
       case ("<"): {
-        System.out.println("blt " + reg_str1 + ", " + reg_str2 + ", cond." + ++cnt);
-        System.out.println("j b" + label2);
-        System.out.println("cond." + cnt + ":");
-        System.out.println("j b" + label1);
+        buffer.add("blt " + reg_str1 + ", " + reg_str2 + ", cond." + ++cnt);
+        buffer.add("j b" + label2);
+        buffer.add("cond." + cnt + ":");
+        buffer.add("j b" + label1);
         break;
       }
       case (">"): {
-        System.out.println("blt " + reg_str2 + ", " + reg_str1 + ", cond." + ++cnt);
-        System.out.println("j b" + label2);
-        System.out.println("cond." + cnt + ":");
-        System.out.println("j b" + label1);
+        buffer.add("blt " + reg_str2 + ", " + reg_str1 + ", cond." + ++cnt);
+        buffer.add("j b" + label2);
+        buffer.add("cond." + cnt + ":");
+        buffer.add("j b" + label1);
         break;
       }
       case (">="): {
-        System.out.println("bge " + reg_str1 + ", " + reg_str2 + ", cond." + ++cnt);
-        System.out.println("j b" + label2);
-        System.out.println("cond." + cnt + ":");
-        System.out.println("j b" + label1);
+        buffer.add("bge " + reg_str1 + ", " + reg_str2 + ", cond." + ++cnt);
+        buffer.add("j b" + label2);
+        buffer.add("cond." + cnt + ":");
+        buffer.add("j b" + label1);
         break;
       }
       case ("<="): {
-        System.out.println("bge " + reg_str2 + ", " + reg_str1 + ", cond." + ++cnt);
-        System.out.println("j b" + label2);
-        System.out.println("cond." + cnt + ":");
-        System.out.println("j b" + label1);
+        buffer.add("bge " + reg_str2 + ", " + reg_str1 + ", cond." + ++cnt);
+        buffer.add("j b" + label2);
+        buffer.add("cond." + cnt + ":");
+        buffer.add("j b" + label1);
         break;
       }
     }

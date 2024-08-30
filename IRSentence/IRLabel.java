@@ -39,8 +39,8 @@ public class IRLabel extends IRCode {
   @Override
   public void CodegenWithOptim(HashMap<String, Integer> registers, HashMap<Integer, String> register_name)
       throws Exception {
-    System.out.println("");
-    System.out.println("b" + label + ":");
+    buffer.add("");
+    buffer.add("b" + label + ":");
     return;
   }
 

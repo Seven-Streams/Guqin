@@ -78,23 +78,23 @@ public class IRFunc extends IRCode {
   public void CodegenWithOptim(HashMap<String, Integer> registers, HashMap<Integer, String> register_name)
       throws Exception {
     func_num++;
-    System.out.println("");
-    System.out.println(name + ":");
+    buffer.add("");
+    buffer.add(name + ":");
     size *= 4;
     size += 12;
     size /= 16;
     size *= 16;
     now_s0 = 8;
     sp_length = size;
-    System.out.println("li t0, " + size);
-    System.out.println("sub sp, sp, t0");
-    System.out.println("add t1, sp, t0");
-    System.out.println("sw ra, " + (-4) + "(t1)");
-    System.out.println("sw s0, " + (-8) + "(t1)");
+    buffer.add("li t0, " + size);
+    buffer.add("sub sp, sp, t0");
+    buffer.add("add t1, sp, t0");
+    buffer.add("sw ra, " + (-4) + "(t1)");
+    buffer.add("sw s0, " + (-8) + "(t1)");
     for (int i = 0; i <= Integer.min(register_use.get(-func_num), 10); i++) {
-      System.out.println("sw s" + (i + 1) + ", " + (-12 - 4 * i) + "(t1)");
+      buffer.add("sw s" + (i + 1) + ", " + (-12 - 4 * i) + "(t1)");
     }
-    System.out.println("add s0, sp, t0");
+    buffer.add("add s0, sp, t0");
     if (names.size() < 8) {
       for (int i = 0; i < names.size(); i++) {
         if (!registers.containsKey(names.get(i))) {
@@ -103,15 +103,15 @@ public class IRFunc extends IRCode {
         int value = registers.get(names.get(i));
         if (value >= 0) {
           if (!register_name.get(value).equals("a" + i)) {
-            System.out.println("mv " + register_name.get(value) + ", " + "a" + i);
+            buffer.add("mv " + register_name.get(value) + ", " + "a" + i);
           }
         } else {
           if ((value >> 9) == 0) {
-            System.out.println("sw a" + i + " , " + (value * 4) + "(s0)");
+            buffer.add("sw a" + i + " , " + (value * 4) + "(s0)");
           } else {
-            System.out.println("li t0, " + (value * 4));
-            System.out.println("add t0, t0, s0");
-            System.out.println("sw a" + i + ", 0(t0)");
+            buffer.add("li t0, " + (value * 4));
+            buffer.add("add t0, t0, s0");
+            buffer.add("sw a" + i + ", 0(t0)");
           }
         }
       }
@@ -123,15 +123,15 @@ public class IRFunc extends IRCode {
         int value = registers.get(names.get(i));
         if (value >= 0) {
           if (!register_name.get(value).equals("a" + i)) {
-            System.out.println("mv " + register_name.get(value) + ", " + "a" + i);
+            buffer.add("mv " + register_name.get(value) + ", " + "a" + i);
           }
         } else {
           if ((value >> 9) == 0) {
-            System.out.println("sw a" + i + " , " + (value * 4) + "(s0)");
+            buffer.add("sw a" + i + " , " + (value * 4) + "(s0)");
           } else {
-            System.out.println("li t0, " + (value * 4));
-            System.out.println("add t0, t0, s0");
-            System.out.println("sw a" + i + ", 0(t0)");
+            buffer.add("li t0, " + (value * 4));
+            buffer.add("add t0, t0, s0");
+            buffer.add("sw a" + i + ", 0(t0)");
           }
         }
       }
@@ -145,19 +145,19 @@ public class IRFunc extends IRCode {
           target_reg = register_name.get(value);
         }
         if (((i - 8) >> 9) == 0) {
-          System.out.println("lw " + target_reg + ", " + ((i - 8) * 4) + "(s0)");
+          buffer.add("lw " + target_reg + ", " + ((i - 8) * 4) + "(s0)");
         } else {
-          System.out.println("li t0, " + ((i - 8) * 4));
-          System.out.println("add t0, t0, s0");
-          System.out.println("lw " + target_reg + ", 0(t0)");
+          buffer.add("li t0, " + ((i - 8) * 4));
+          buffer.add("add t0, t0, s0");
+          buffer.add("lw " + target_reg + ", 0(t0)");
         }
         if (value < 0) {
           if ((value >> 9) == 0) {
-            System.out.println("sw t0, " + (value * 4) + "(s0)");
+            buffer.add("sw t0, " + (value * 4) + "(s0)");
           } else {
-            System.out.println("li t1, " + (value * 4));
-            System.out.println("add t1, t1, s0");
-            System.out.println("sw t0, 0(t1)");
+            buffer.add("li t1, " + (value * 4));
+            buffer.add("add t1, t1, s0");
+            buffer.add("sw t0, 0(t1)");
           }
         }
       }

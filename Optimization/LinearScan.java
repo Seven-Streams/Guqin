@@ -160,6 +160,7 @@ public class LinearScan {
   public void Codegen() throws Exception {
     int cnt = 0;
     System.out.println(".data");
+    IRCode.buffer.clear();
     for (IRCode code : machine.const_str) {
       code.CodegenWithOptim(null, register_names);
     }
@@ -173,21 +174,13 @@ public class LinearScan {
       if ((code.sentence_number == 0) && (!(code instanceof IRFuncend))) {
         continue;
       }
-      boolean to_init = false;
       if (code instanceof IRFunc) {
         cnt--;
-        IRFunc to_check = (IRFunc) code;
-        if (to_check.name.equals("main")) {
-          to_init = true;
-        }
       }
       code.CodegenWithOptim(registers.get(cnt), register_names);
-      if (to_init) {
-        for (IRCode chars : machine.const_str) {
-          IRChararray init = (IRChararray) chars;
-          init.Init();
-        }
-      }
+    }
+    for(String code: IRCode.buffer) {
+      System.out.println(code);
     }
     return;
   }

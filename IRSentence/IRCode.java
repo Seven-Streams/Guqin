@@ -1,6 +1,7 @@
 package IRSentence;
 import java.util.HashMap;
 import java.util.Stack;
+import java.util.ArrayList;
 import Composer.*;
 import Optimization.NameLabelPair;
 
@@ -38,4 +39,5 @@ public class IRCode {
   public void CodegenWithOptim(HashMap<String, Integer> registers, HashMap<Integer, String> register_name) throws Exception{} 
   public void GlobalConstReplace(HashMap<String, String> mapping){}
   public IRCode GetInline(HashMap<String, String> now_name, HashMap<Integer, Integer> now_label, Composer machine) throws Exception{return new IRCode();}
+  public static ArrayList<String> buffer = new ArrayList<>();
 }

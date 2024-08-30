@@ -259,7 +259,7 @@ public class IRIcmp extends IRCode {
         if ((ins_1 >> 11) == 0) {
           value1 = ins_1;
         } else {
-          System.out.println("li t0, " + ins_1);
+          buffer.add("li t0, " + ins_1);
         }
       } catch (NumberFormatException e) {
         int reg_1 = registers.get(op1);
@@ -267,11 +267,11 @@ public class IRIcmp extends IRCode {
           addr1 = register_name.get(reg_1);
         } else {
           if ((reg_1 >> 9) == 0) {
-            System.out.println("lw t0, " + (reg_1 * 4) + "(s0)");
+            buffer.add("lw t0, " + (reg_1 * 4) + "(s0)");
           } else {
-            System.out.println("li t0, " + (reg_1 * 4));
-            System.out.println("add t0, t0, s0");
-            System.out.println("lw t0, 0(t0)");
+            buffer.add("li t0, " + (reg_1 * 4));
+            buffer.add("add t0, t0, s0");
+            buffer.add("lw t0, 0(t0)");
           }
         }
       }
@@ -288,7 +288,7 @@ public class IRIcmp extends IRCode {
         if ((ins_2 >> 11) == 0) {
           value2 = ins_2;
         } else {
-          System.out.println("li t1, " + ins_2);
+          buffer.add("li t1, " + ins_2);
         }
       } catch (NumberFormatException e) {
         int reg_2 = registers.get(op2);
@@ -296,11 +296,11 @@ public class IRIcmp extends IRCode {
           addr2 = register_name.get(reg_2);
         } else {
           if ((reg_2 >> 9) == 0) {
-            System.out.println("lw t1, " + (reg_2 * 4) + "(s0)");
+            buffer.add("lw t1, " + (reg_2 * 4) + "(s0)");
           } else {
-            System.out.println("li t1, " + (reg_2 * 4));
-            System.out.println("add t1, t1, s0");
-            System.out.println("lw t1, 0(t1)");
+            buffer.add("li t1, " + (reg_2 * 4));
+            buffer.add("add t1, t1, s0");
+            buffer.add("lw t1, 0(t1)");
           }
         }
       }
@@ -315,49 +315,49 @@ public class IRIcmp extends IRCode {
         switch (symbol) {
           case ("=="): {
             if (value1 == value2) {
-              System.out.println("li " + target_str + ", 1");
+              buffer.add("li " + target_str + ", 1");
             } else {
-              System.out.println("li " + target_str + ", 0");
+              buffer.add("li " + target_str + ", 0");
             }
             break;
           }
           case ("!="): {
             if (value1 != value2) {
-              System.out.println("li " + target_str + ", 1");
+              buffer.add("li " + target_str + ", 1");
             } else {
-              System.out.println("li " + target_str + ", 0");
+              buffer.add("li " + target_str + ", 0");
             }
             break;
           }
           case (">="): {
             if (value1 >= value2) {
-              System.out.println("li " + target_str + ", 1");
+              buffer.add("li " + target_str + ", 1");
             } else {
-              System.out.println("li " + target_str + ", 0");
+              buffer.add("li " + target_str + ", 0");
             }
             break;
           }
           case ("<="): {
             if (value1 <= value2) {
-              System.out.println("li " + target_str + ", 1");
+              buffer.add("li " + target_str + ", 1");
             } else {
-              System.out.println("li " + target_str + ", 0");
+              buffer.add("li " + target_str + ", 0");
             }
             break;
           }
           case (">"): {
             if (value1 > value2) {
-              System.out.println("li " + target_str + ", 1");
+              buffer.add("li " + target_str + ", 1");
             } else {
-              System.out.println("li " + target_str + ", 0");
+              buffer.add("li " + target_str + ", 0");
             }
             break;
           }
           case ("<"): {
             if (value1 < value2) {
-              System.out.println("li " + target_str + ", 1");
+              buffer.add("li " + target_str + ", 1");
             } else {
-              System.out.println("li " + target_str + " ,0");
+              buffer.add("li " + target_str + " ,0");
             }
             break;
           }
@@ -368,41 +368,41 @@ public class IRIcmp extends IRCode {
             case ("=="): {
               if (value1 != 0) {
                 value1 = -value1;
-                System.out.println("addi t0, " + addr2 + ", " + value1);
-                System.out.println("seqz " + target_str + ", t0");
+                buffer.add("addi t0, " + addr2 + ", " + value1);
+                buffer.add("seqz " + target_str + ", t0");
               } else {
-                System.out.println("seqz " + target_str + ", " + addr2);
+                buffer.add("seqz " + target_str + ", " + addr2);
               }
               break;
             }
             case ("!="): {
               if (value1 != 0) {
                 value1 = -value1;
-                System.out.println("addi t0, " + addr2 + ", " + value1);
-                System.out.println("snez " + target_str + ", t0");
+                buffer.add("addi t0, " + addr2 + ", " + value1);
+                buffer.add("snez " + target_str + ", t0");
               } else {
-                System.out.println("snez " + target_str + ", " + addr2);
+                buffer.add("snez " + target_str + ", " + addr2);
               }
               break;
             }
             case (">"): {
-              System.out.println("slti " + target_str + ", " + addr2 + ", " + value1);
+              buffer.add("slti " + target_str + ", " + addr2 + ", " + value1);
               break;
             }
             case ("<"): {
-              System.out.println("li " + target_str + ", " + value1);
-              System.out.println("slt " + target_str + ", " + target_str + ", " + addr2);
+              buffer.add("li " + target_str + ", " + value1);
+              buffer.add("slt " + target_str + ", " + target_str + ", " + addr2);
               break;
             }
             case (">="): {
-              System.out.println("li " + target_str + ", " + value1);
-              System.out.println("slt t0, " + target_str + ", " + addr2);
-              System.out.println("xori " + target_str + ", " + "t0" + ", 1");
+              buffer.add("li " + target_str + ", " + value1);
+              buffer.add("slt t0, " + target_str + ", " + addr2);
+              buffer.add("xori " + target_str + ", " + "t0" + ", 1");
               break;
             }
             case ("<="): {
-              System.out.println("slti t0, " + addr2 + ", " + value1);
-              System.out.println("xori " + target_str + ", t0, 1");
+              buffer.add("slti t0, " + addr2 + ", " + value1);
+              buffer.add("xori " + target_str + ", t0, 1");
               break;
             }
             default: {
@@ -414,41 +414,41 @@ public class IRIcmp extends IRCode {
             case ("=="): {
               if (value2 != 0) {
                 value2 = -value2;
-                System.out.println("addi t1, " + addr1 + ", " + value2);
-                System.out.println("seqz " + target_str + ", t1");
+                buffer.add("addi t1, " + addr1 + ", " + value2);
+                buffer.add("seqz " + target_str + ", t1");
               } else {
-                System.out.println("seqz " + target_str + ", " + addr1);
+                buffer.add("seqz " + target_str + ", " + addr1);
               }
               break;
             }
             case ("!="): {
               if (value2 != 0) {
                 value2 = -value2;
-                System.out.println("addi t0, " + addr1 + ", " + value2);
-                System.out.println("snez " + target_str + ", t0");
+                buffer.add("addi t0, " + addr1 + ", " + value2);
+                buffer.add("snez " + target_str + ", t0");
               } else {
-                System.out.println("snez " + target_str + ", " + addr1);
+                buffer.add("snez " + target_str + ", " + addr1);
               }
               break;
             }
             case (">"): {
-              System.out.println("li t1, " + value2);
-              System.out.println("slt " + target_str + ", t1, " + addr1);
+              buffer.add("li t1, " + value2);
+              buffer.add("slt " + target_str + ", t1, " + addr1);
               break;
             }
             case ("<"): {
-              System.out.println("slti " + target_str + ", " + addr1 + ", " + value2);
+              buffer.add("slti " + target_str + ", " + addr1 + ", " + value2);
               break;
             }
             case (">="): {
-              System.out.println("slti t0, " + addr1 + ", " + value2);
-              System.out.println("xori " + target_str + ", t0, 1");
+              buffer.add("slti t0, " + addr1 + ", " + value2);
+              buffer.add("xori " + target_str + ", t0, 1");
               break;
             }
             case ("<="): {
-              System.out.println("li t1, " + value2);
-              System.out.println("slt t0, t1, " + addr1);
-              System.out.println("xori " + target_str + ", t0, 1");
+              buffer.add("li t1, " + value2);
+              buffer.add("slt t0, t1, " + addr1);
+              buffer.add("xori " + target_str + ", t0, 1");
               break;
             }
             default: {
@@ -460,31 +460,31 @@ public class IRIcmp extends IRCode {
     } else {
       switch (symbol) {
         case ("=="): {
-          System.out.println("sub t0, " + addr1 + ", " + addr2);
-          System.out.println("seqz " + target_str + ", t0");
+          buffer.add("sub t0, " + addr1 + ", " + addr2);
+          buffer.add("seqz " + target_str + ", t0");
           break;
         }
         case ("!="): {
-          System.out.println("sub t0, " + addr1 + ", " + addr2);
-          System.out.println("snez " + target_str + ", t0");
+          buffer.add("sub t0, " + addr1 + ", " + addr2);
+          buffer.add("snez " + target_str + ", t0");
           break;
         }
         case (">"): {
-          System.out.println("slt " + target_str + ", " + addr2 + ", " + addr1);
+          buffer.add("slt " + target_str + ", " + addr2 + ", " + addr1);
           break;
         }
         case ("<"): {
-          System.out.println("slt " + target_str + ", " + addr1 + ", " + addr2);
+          buffer.add("slt " + target_str + ", " + addr1 + ", " + addr2);
           break;
         }
         case (">="): {
-          System.out.println("slt t0, " + addr1 + ", " + addr2);
-          System.out.println("xori " + target_str + ", t0, 1");
+          buffer.add("slt t0, " + addr1 + ", " + addr2);
+          buffer.add("xori " + target_str + ", t0, 1");
           break;
         }
         case ("<="): {
-          System.out.println("slt t0, " + addr2 + ", " + addr1);
-          System.out.println("xori " + target_str + ", t0, 1");
+          buffer.add("slt t0, " + addr2 + ", " + addr1);
+          buffer.add("xori " + target_str + ", t0, 1");
           break;
         }
         default: {
@@ -494,11 +494,11 @@ public class IRIcmp extends IRCode {
     }
     if (target_value < 0) {
       if ((target_value >> 9) == 0) {
-        System.out.println("sw t0, " + (target_value * 4) + "(s0)");
+        buffer.add("sw t0, " + (target_value * 4) + "(s0)");
       } else {
-        System.out.println("li t1, " + (target_value * 4));
-        System.out.println("add t1, t1, s0");
-        System.out.println("sw t0, 0(t1)");
+        buffer.add("li t1, " + (target_value * 4));
+        buffer.add("add t1, t1, s0");
+        buffer.add("sw t0, 0(t1)");
       }
     }
     return;

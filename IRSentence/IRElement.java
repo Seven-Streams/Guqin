@@ -204,51 +204,61 @@ public class IRElement extends IRCode {
       src_str = register_name.get(src_value);
     } else {
       if ((src_value >> 9) == 0) {
-
-        System.out.println("lw t0, " + (4 * src_value) + "(s0)");
+        buffer.add("lw t0, " + (4 * src_value) + "(s0)");
       } else {
-        System.out.println("li t0, " + (4 * src_value));
-        System.out.println("add t0, t0, s0");
-        System.out.println("lw t0, 0(t0)");
+        buffer.add("li t0, " + (4 * src_value));
+        buffer.add("add t0, t0, s0");
+        buffer.add("lw t0, 0(t0)");
       }
     }
     if (num2 != null) {
       try {
         int num_i = Integer.parseInt(num2);
         if ((num_i >> 9) == 0) {
+          if (num_i == 0) {
+            if (target_value < 0) {
+              if ((target_value >> 9) == 0) {
+                buffer.add("sw " + src_str + ", " + (target_value * 4) + "(s0)");
+              } else {
+                buffer.add("li t0, " + (target_value * 4));
+                buffer.add("add t0, t0, s0");
+                buffer.add("sw " + src_str + ", 0(t0)");
+              }
+            }
+          }
           if (target_value < 0) {
-            System.out.println("addi t1, " + src_str + ", " + Integer.toString(num_i * 4));
+            buffer.add("addi t1, " + src_str + ", " + Integer.toString(num_i * 4));
           } else {
-            System.out.println(
+            buffer.add(
                 "addi " + register_name.get(target_value) + ", " + src_str + ", " + Integer.toString(num_i * 4));
           }
         } else {
-          System.out.println("li t1, " + (num_i * 4));
+          buffer.add("li t1, " + (num_i * 4));
           if (target_value < 0) {
-            System.out.println("add t1, " + src_str + ", t1");
+            buffer.add("add t1, " + src_str + ", t1");
           } else {
-            System.out.println("add " + register_name.get(target_value) + ", t1, " + src_str);
+            buffer.add("add " + register_name.get(target_value) + ", t1, " + src_str);
           }
         }
       } catch (NumberFormatException e) {
         int value_i = registers.get(num2);
         if (value_i >= 0) {
           String num_str = register_name.get(value_i);
-          System.out.println("slli t1, " + num_str + ", 2");
+          buffer.add("slli t1, " + num_str + ", 2");
         } else {
           if ((value_i >> 9) == 0) {
-            System.out.println("lw t1, " + (value_i * 4) + "(s0)");
+            buffer.add("lw t1, " + (value_i * 4) + "(s0)");
           } else {
-            System.out.println("li t1, " + (value_i * 4));
-            System.out.println("add t1, t1, s0");
-            System.out.println("lw t1, 0(t1)");
+            buffer.add("li t1, " + (value_i * 4));
+            buffer.add("add t1, t1, s0");
+            buffer.add("lw t1, 0(t1)");
           }
-          System.out.println("slli t1, t1, 2");
+          buffer.add("slli t1, t1, 2");
         }
         if (target_value < 0) {
-          System.out.println("add t1, t1, " + src_str);
+          buffer.add("add t1, t1, " + src_str);
         } else {
-          System.out.println("add " + register_name.get(target_value) + ", t1, " + src_str);
+          buffer.add("add " + register_name.get(target_value) + ", t1, " + src_str);
         }
       }
     } else {
@@ -256,48 +266,48 @@ public class IRElement extends IRCode {
         int num_i = Integer.parseInt(num1);
         if ((num_i >> 9) == 0) {
           if (target_value < 0) {
-            System.out.println("addi t1, " + src_str + ", " + Integer.toString(num_i * 4));
+            buffer.add("addi t1, " + src_str + ", " + Integer.toString(num_i * 4));
           } else {
-            System.out.println(
+            buffer.add(
                 "addi " + register_name.get(target_value) + ", " + src_str + ", " + Integer.toString(num_i * 4));
           }
         } else {
-          System.out.println("li t1, " + (num_i * 4));
+          buffer.add("li t1, " + (num_i * 4));
           if (target_value < 0) {
-            System.out.println("add t1, " + src_str + ", t1");
+            buffer.add("add t1, " + src_str + ", t1");
           } else {
-            System.out.println("add " + register_name.get(target_value) + ", t1, " + src_str);
+            buffer.add("add " + register_name.get(target_value) + ", t1, " + src_str);
           }
         }
       } catch (NumberFormatException e) {
         int value_i = registers.get(num1);
         if (value_i >= 0) {
           String from_str = register_name.get(value_i);
-          System.out.println("slli t1, " + from_str + ", 2");
+          buffer.add("slli t1, " + from_str + ", 2");
         } else {
           if ((value_i >> 9) == 0) {
-            System.out.println("lw t1, " + (value_i * 4) + "(s0)");
+            buffer.add("lw t1, " + (value_i * 4) + "(s0)");
           } else {
-            System.out.println("li t1, " + (value_i * 4));
-            System.out.println("add t1, t1, s0");
-            System.out.println("lw t1, 0(t1)");
+            buffer.add("li t1, " + (value_i * 4));
+            buffer.add("add t1, t1, s0");
+            buffer.add("lw t1, 0(t1)");
           }
-          System.out.println("slli t1, t1, 2");
+          buffer.add("slli t1, t1, 2");
         }
         if (target_value < 0) {
-          System.out.println("add t1, t1, " + src_str);
+          buffer.add("add t1, t1, " + src_str);
         } else {
-          System.out.println("add " + register_name.get(target_value) + ", t1, " + src_str);
+          buffer.add("add " + register_name.get(target_value) + ", t1, " + src_str);
         }
       }
     }
     if (target_value < 0) {
       if ((target_value >> 9) == 0) {
-        System.out.println("sw t1, " + (target_value * 4) + "(s0)");
+        buffer.add("sw t1, " + (target_value * 4) + "(s0)");
       } else {
-        System.out.println("li t0, " + (target_value * 4));
-        System.out.println("add t0, t0, s0");
-        System.out.println("sw t1, 0(t0)");
+        buffer.add("li t0, " + (target_value * 4));
+        buffer.add("add t0, t0, s0");
+        buffer.add("sw t1, 0(t0)");
       }
     }
     return;
@@ -386,10 +396,10 @@ public class IRElement extends IRCode {
 
   @Override
   public String ConstCheck(HashMap<String, String> replace) {
-    if(replace.containsKey(num1)) {
+    if (replace.containsKey(num1)) {
       num1 = new String(replace.get(num1));
     }
-    if(num2 != null && replace.containsKey(num2)) {
+    if (num2 != null && replace.containsKey(num2)) {
       num2 = new String(replace.get(num2));
     }
     return null;

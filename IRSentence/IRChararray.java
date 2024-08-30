@@ -44,9 +44,6 @@ public class IRChararray extends IRCode {
     return;
   }
 
-  public void Init() {
-    return;
-  }
 
   @Override
   public void CodegenWithOptim(HashMap<String, Integer> registers, HashMap<Integer, String> register_name)

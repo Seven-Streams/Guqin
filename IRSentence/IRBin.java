@@ -324,12 +324,12 @@ public class IRBin extends IRCode {
         }
       }
       if (target >= 0) {
-        System.out.println("li " + register_name.get(target) + ", " + result);
+        buffer.add("li " + register_name.get(target) + ", " + result);
       } else {
-        System.out.println("li t0, " + result);
-        System.out.println("li t1, " + (target * 4));
-        System.out.println("add t1, t1, s0");
-        System.out.println("sw t0, 0(t1)");
+        buffer.add("li t0, " + result);
+        buffer.add("li t1, " + (target * 4));
+        buffer.add("add t1, t1, s0");
+        buffer.add("sw t0, 0(t1)");
       }
       return;
     }
@@ -341,9 +341,9 @@ public class IRBin extends IRCode {
       int reg_value = is_int1 ? value2 : value1;
       String reg = null;
       if (reg_value < 0) {
-        System.out.println("li t1, " + (reg_value * 4));
-        System.out.println("add t1, t1, s0");
-        System.out.println("lw t1, 0(t1)");
+        buffer.add("li t1, " + (reg_value * 4));
+        buffer.add("add t1, t1, s0");
+        buffer.add("lw t1, 0(t1)");
         reg = "t1";
       } else {
         reg = register_name.get(reg_value);
@@ -356,33 +356,33 @@ public class IRBin extends IRCode {
       }
       switch (symbol) {
         case ("+"): {
-          System.out.println("addi " + target_name + ", " + reg + ", " + const_value);
+          buffer.add("addi " + target_name + ", " + reg + ", " + const_value);
           break;
         }
         case ("&"): {
-          System.out.println("andi " + target_name + ", " + reg + ", " + const_value);
+          buffer.add("andi " + target_name + ", " + reg + ", " + const_value);
           break;
         }
         case ("|"): {
-          System.out.println("ori " + target_name + ", " + reg + ", " + const_value);
+          buffer.add("ori " + target_name + ", " + reg + ", " + const_value);
           break;
         }
         case ("^"): {
-          System.out.println("xori " + target_name + ", " + reg + ", " + const_value);
+          buffer.add("xori " + target_name + ", " + reg + ", " + const_value);
           break;
         }
         default: {
-          System.out.println(symbol);
+          buffer.add(symbol);
           throw new Exception("Unexpected Symbol.");
         }
       }
       if (target < 0) {
         if ((target >> 9) == 0) {
-          System.out.println("sw t0, " + (target * 4) + "(s0)");
+          buffer.add("sw t0, " + (target * 4) + "(s0)");
         } else {
-          System.out.println("li t1, " + (target * 4));
-          System.out.println("add t1, t1, s0");
-          System.out.println("sw t0, 0(t1)");
+          buffer.add("li t1, " + (target * 4));
+          buffer.add("add t1, t1, s0");
+          buffer.add("sw t0, 0(t1)");
         }
       }
       return;
@@ -414,14 +414,14 @@ public class IRBin extends IRCode {
         target_name = register_name.get(target);
       }
       if (const_value == 0) {
-        System.out.println("li " + target_name + ", 0");
+        buffer.add("li " + target_name + ", 0");
         if (target < 0) {
           if ((target >> 9) == 0) {
-            System.out.println("sw t0, " + (target * 4) + "(s0)");
+            buffer.add("sw t0, " + (target * 4) + "(s0)");
           } else {
-            System.out.println("li t1, " + (target * 4));
-            System.out.println("add t1, t1, s0");
-            System.out.println("sw t0, 0(t1)");
+            buffer.add("li t1, " + (target * 4));
+            buffer.add("add t1, t1, s0");
+            buffer.add("sw t0, 0(t1)");
           }
         }
         return;
@@ -429,38 +429,38 @@ public class IRBin extends IRCode {
       if (power) {
         String reg = null;
         if (reg_value < 0) {
-          System.out.println("li t1, " + (reg_value * 4));
-          System.out.println("add t1, t1, s0");
-          System.out.println("lw t1, 0(t1)");
+          buffer.add("li t1, " + (reg_value * 4));
+          buffer.add("add t1, t1, s0");
+          buffer.add("lw t1, 0(t1)");
           reg = "t1";
         } else {
           reg = register_name.get(reg_value);
         }
         switch (symbol) {
           case ("*"): {
-            System.out.println("slli " + target_name + ", " + reg + ", " + (cnt - 1));
+            buffer.add("slli " + target_name + ", " + reg + ", " + (cnt - 1));
             break;
           }
           case ("/"): {
-            System.out.println("srai " + target_name + ", " + reg + ", 31");
-            System.out.println("srli " + target_name + ", " + target_name + ", " + (33 - cnt));
-            System.out.println("add " + target_name + ", " + reg + ", " + target_name);
-            System.out.println("srai " + target_name + ", " + target_name + ", " + (cnt - 1));
+            buffer.add("srai " + target_name + ", " + reg + ", 31");
+            buffer.add("srli " + target_name + ", " + target_name + ", " + (33 - cnt));
+            buffer.add("add " + target_name + ", " + reg + ", " + target_name);
+            buffer.add("srai " + target_name + ", " + target_name + ", " + (cnt - 1));
             break;
           }
           default:
             break;
         }
         if (symbol_const) {
-          System.out.println("neg " + target_name + ", " + target_name);
+          buffer.add("neg " + target_name + ", " + target_name);
         }
         if (target < 0) {
           if ((target >> 9) == 0) {
-            System.out.println("sw t0, " + (target * 4) + "(s0)");
+            buffer.add("sw t0, " + (target * 4) + "(s0)");
           } else {
-            System.out.println("li t1, " + (target * 4));
-            System.out.println("add t1, t1, s0");
-            System.out.println("sw t0, 0(t1)");
+            buffer.add("li t1, " + (target * 4));
+            buffer.add("add t1, t1, s0");
+            buffer.add("sw t0, 0(t1)");
           }
         }
         return;
@@ -472,9 +472,9 @@ public class IRBin extends IRCode {
       int reg_value = is_int1 ? value2 : value1;
       String reg = null;
       if (reg_value < 0) {
-        System.out.println("li t1, " + (reg_value * 4));
-        System.out.println("add t1, t1, s0");
-        System.out.println("lw t1, 0(t1)");
+        buffer.add("li t1, " + (reg_value * 4));
+        buffer.add("add t1, t1, s0");
+        buffer.add("lw t1, 0(t1)");
         reg = "t1";
       } else {
         reg = register_name.get(reg_value);
@@ -487,57 +487,57 @@ public class IRBin extends IRCode {
       }
       switch (symbol) {
         case ("<<"): {
-          System.out.println("slli " + target_name + ", " + reg + ", " + const_value);
+          buffer.add("slli " + target_name + ", " + reg + ", " + const_value);
           break;
         }
         case (">>"): {
-          System.out.println("srli " + target_name + ", " + reg + ", " + const_value);
+          buffer.add("srli " + target_name + ", " + reg + ", " + const_value);
           break;
         }
         case ("-"): {
           const_value = -const_value;
-          System.out.println("addi " + target_name + ", " + reg + ", " + const_value);
+          buffer.add("addi " + target_name + ", " + reg + ", " + const_value);
           break;
         }
         default: {
-          System.out.println(symbol);
+          buffer.add(symbol);
           throw new Exception("Unexpected Symbol.");
         }
       }
       if (target < 0) {
         if ((target >> 9) == 0) {
-          System.out.println("sw t0, " + (target * 4) + "(s0)");
+          buffer.add("sw t0, " + (target * 4) + "(s0)");
         } else {
-          System.out.println("li t1, " + (target * 4));
-          System.out.println("add t1, t1, s0");
-          System.out.println("sw t0, 0(t1)");
+          buffer.add("li t1, " + (target * 4));
+          buffer.add("add t1, t1, s0");
+          buffer.add("sw t0, 0(t1)");
         }
       }
       return;
     }
     if (is_int1) {
-      System.out.println("li t0, " + value1);
+      buffer.add("li t0, " + value1);
       reg_1 = "t0";
     } else {
       if (value1 < 0) {
         if ((value1 >> 9) == 0) {
-          System.out.println("lw t0, " + (value1 * 4) + "(s0)");
+          buffer.add("lw t0, " + (value1 * 4) + "(s0)");
         } else {
-          System.out.println("li t0, " + (value1 * 4));
-          System.out.println("add t0, t0, s0");
-          System.out.println("lw t0, 0(t0)");
+          buffer.add("li t0, " + (value1 * 4));
+          buffer.add("add t0, t0, s0");
+          buffer.add("lw t0, 0(t0)");
         }
         reg_1 = "t0";
       }
     }
     if (is_int2) {
-      System.out.println("li t1, " + value2);
+      buffer.add("li t1, " + value2);
       reg_2 = "t1";
     } else {
       if (value2 < 0) {
-        System.out.println("li t1, " + (value2 * 4));
-        System.out.println("add t1, t1, s0");
-        System.out.println("lw t1, 0(t1)");
+        buffer.add("li t1, " + (value2 * 4));
+        buffer.add("add t1, t1, s0");
+        buffer.add("lw t1, 0(t1)");
         reg_2 = "t1";
       }
     }
@@ -555,47 +555,47 @@ public class IRBin extends IRCode {
     }
     switch (symbol) {
       case ("+"): {
-        System.out.println("add " + target_name + ", " + reg_1 + ", " + reg_2);
+        buffer.add("add " + target_name + ", " + reg_1 + ", " + reg_2);
         break;
       }
       case ("-"): {
-        System.out.println("sub " + target_name + ", " + reg_1 + ", " + reg_2);
+        buffer.add("sub " + target_name + ", " + reg_1 + ", " + reg_2);
         break;
       }
       case ("*"): {
-        System.out.println("mul " + target_name + ", " + reg_1 + ", " + reg_2);
+        buffer.add("mul " + target_name + ", " + reg_1 + ", " + reg_2);
         break;
       }
       case ("/"): {
-        System.out.println("div " + target_name + ", " + reg_1 + ", " + reg_2);
+        buffer.add("div " + target_name + ", " + reg_1 + ", " + reg_2);
         break;
       }
       case ("<<"): {
-        System.out.println("sll " + target_name + ", " + reg_1 + ", " + reg_2);
+        buffer.add("sll " + target_name + ", " + reg_1 + ", " + reg_2);
         break;
       }
       case (">>"): {
-        System.out.println("srl " + target_name + ", " + reg_1 + ", " + reg_2);
+        buffer.add("srl " + target_name + ", " + reg_1 + ", " + reg_2);
         break;
       }
       case ("%"): {
-        System.out.println("rem " + target_name + ", " + reg_1 + ", " + reg_2);
+        buffer.add("rem " + target_name + ", " + reg_1 + ", " + reg_2);
         break;
       }
       case ("&"): {
-        System.out.println("and " + target_name + ", " + reg_1 + ", " + reg_2);
+        buffer.add("and " + target_name + ", " + reg_1 + ", " + reg_2);
         break;
       }
       case ("|"): {
-        System.out.println("or " + target_name + ", " + reg_1 + ", " + reg_2);
+        buffer.add("or " + target_name + ", " + reg_1 + ", " + reg_2);
         break;
       }
       case ("^"): {
-        System.out.println("xor " + target_name + ", " + reg_1 + ", " + reg_2);
+        buffer.add("xor " + target_name + ", " + reg_1 + ", " + reg_2);
         break;
       }
       default: {
-        System.out.println(symbol);
+        buffer.add(symbol);
         throw new Exception("Unexpected Symbol.");
       }
     }

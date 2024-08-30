@@ -34,22 +34,22 @@ public class IRFuncend extends IRCode {
   @Override
   public void CodegenWithOptim(HashMap<String, Integer> registers, HashMap<Integer, String> register_name)
       throws Exception {
-    System.out.println("li a0, 0");
-    System.out.println("j .return" + func_num);
-    System.out.println("");
-    System.out.println(".return" + func_num + ":");
+    buffer.add("li a0, 0");
+    buffer.add("j .return" + func_num);
+    buffer.add("");
+    buffer.add(".return" + func_num + ":");
     if ((sp_length >> 11) == 0) {
-      System.out.println("addi sp, sp, " + sp_length);
+      buffer.add("addi sp, sp, " + sp_length);
     } else {
-      System.out.println("li t0, " + (sp_length));
-      System.out.println("add sp, sp, t0");
+      buffer.add("li t0, " + (sp_length));
+      buffer.add("add sp, sp, t0");
     }
-    System.out.println("lw ra, " + (-4) + "(sp)");
-    System.out.println("lw s0, " + (-8) + "(sp)");
+    buffer.add("lw ra, " + (-4) + "(sp)");
+    buffer.add("lw s0, " + (-8) + "(sp)");
     for (int i = 0; i <= Integer.min(register_use.get(-func_num), 10); i++) {
-      System.out.println("lw s" + (i + 1) + ", " + (-12 - 4 * i) + "(sp)");
+      buffer.add("lw s" + (i + 1) + ", " + (-12 - 4 * i) + "(sp)");
     }
-    System.out.println("ret");
+    buffer.add("ret");
   }
 
   @Override

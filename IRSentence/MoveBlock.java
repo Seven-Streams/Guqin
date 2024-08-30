@@ -38,7 +38,7 @@ public class MoveBlock extends IRCode {
   public void CodegenWithOptim(HashMap<String, Integer> registers, HashMap<Integer, String> register_name)
       throws Exception {
     if (num != null) {
-      System.out.println("b" + num + ":");
+      buffer.add("b" + num + ":");
     }
     for (PseudoMove move : moves) {
       if (move.dead) {
@@ -54,14 +54,14 @@ public class MoveBlock extends IRCode {
         if (des_value >= 0) {
           target = register_name.get(des_value);
         }
-        System.out.println("li " + target + ", " + src_value);
+        buffer.add("li " + target + ", " + src_value);
         if (des_value < 0) {
           if ((des_value >> 9) == 0) {
-            System.out.println("sw t0, " + (des_value * 4) + "(s0)");
+            buffer.add("sw t0, " + (des_value * 4) + "(s0)");
           } else {
-            System.out.println("li t1, " + (des_value * 4));
-            System.out.println("add t1, t1, s0");
-            System.out.println("sw t0, 0(t1)");
+            buffer.add("li t1, " + (des_value * 4));
+            buffer.add("add t1, t1, s0");
+            buffer.add("sw t0, 0(t1)");
           }
         }
       } catch (NumberFormatException e) {
@@ -71,48 +71,48 @@ public class MoveBlock extends IRCode {
           if (des_num == src_num) {
             continue;
           }
-          System.out.println("mv " + register_name.get(des_num) + ", " + register_name.get(src_num));
+          buffer.add("mv " + register_name.get(des_num) + ", " + register_name.get(src_num));
         }
         if ((src_num >= 0) && (des_num < 0)) {
           String reg = register_name.get(src_num);
           if ((des_num >> 9) == 0) {
-            System.out.println("sw " + reg + ", " + (des_num * 4) + "(s0)");
+            buffer.add("sw " + reg + ", " + (des_num * 4) + "(s0)");
           } else {
-            System.out.println("li t1, " + (des_num * 4));
-            System.out.println("add t1, t1, s0");
-            System.out.println("sw " + reg + ", 0(t1)");
+            buffer.add("li t1, " + (des_num * 4));
+            buffer.add("add t1, t1, s0");
+            buffer.add("sw " + reg + ", 0(t1)");
           }
         }
         if ((src_num < 0) && (des_num >= 0)) {
           String reg = register_name.get(des_num);
           if ((src_num >> 9) == 0) {
-            System.out.println("lw " + reg + ", " + (src_num * 4) + "(s0)");
+            buffer.add("lw " + reg + ", " + (src_num * 4) + "(s0)");
           } else {
-            System.out.println("li t1, " + (src_num * 4));
-            System.out.println("add t1, t1, s0");
-            System.out.println("lw " + reg + ", " + "0(t1)");
+            buffer.add("li t1, " + (src_num * 4));
+            buffer.add("add t1, t1, s0");
+            buffer.add("lw " + reg + ", " + "0(t1)");
           }
         }
         if ((src_num < 0) && (des_num < 0)) {
           if ((src_num >> 9) == 0) {
-            System.out.println("lw t0, " + (src_num * 4) + "(s0)");
+            buffer.add("lw t0, " + (src_num * 4) + "(s0)");
           } else {
-            System.out.println("li t1, " + (src_num * 4));
-            System.out.println("add t1, t1, s0");
-            System.out.println("lw t0, " + "0(t1)");
+            buffer.add("li t1, " + (src_num * 4));
+            buffer.add("add t1, t1, s0");
+            buffer.add("lw t0, " + "0(t1)");
           }
           if ((des_num >> 9) == 0) {
-            System.out.println("sw t0, " + (des_num * 4) + "(s0)");
+            buffer.add("sw t0, " + (des_num * 4) + "(s0)");
           } else {
-            System.out.println("li t1, " + (des_num * 4));
-            System.out.println("add t1, t1, s0");
-            System.out.println("sw t0, 0(t1)");
+            buffer.add("li t1, " + (des_num * 4));
+            buffer.add("add t1, t1, s0");
+            buffer.add("sw t0, 0(t1)");
           }
         }
       }
     }
     if (to != null) {
-      System.out.println("j b" + to);
+      buffer.add("j b" + to);
     }
     return;
   }

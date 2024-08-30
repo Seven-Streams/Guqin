@@ -133,35 +133,35 @@ public class IRLoad extends IRCode {
         }
     String addr = "t0";
     if (is_global.containsKey(src)) {
-      System.out.println("lui t0, " + "%hi(" + src.substring(1) + ")");
-      System.out.println("addi t0, t0, %lo(" + src.substring(1) + ")");
+      buffer.add("lui t0, " + "%hi(" + src.substring(1) + ")");
+      buffer.add("addi t0, t0, %lo(" + src.substring(1) + ")");
     } else {
       int place = registers.get(src);
       if (place >= 0) {
         addr = register_name.get(place);
       } else {
         if ((place >> 9) == 0) {
-          System.out.println("lw t0, " + (place * 4) + "(s0)");
+          buffer.add("lw t0, " + (place * 4) + "(s0)");
         } else {
-          System.out.println("li t0, " + (place * 4));
-          System.out.println("add t0, t0, s0");
-          System.out.println("lw t0, 0(t0)");
+          buffer.add("li t0, " + (place * 4));
+          buffer.add("add t0, t0, s0");
+          buffer.add("lw t0, 0(t0)");
         }
       }
     }
     int target_value = registers.get(des);
     if (target_value < 0) {
-      System.out.println("lw t0, 0(" + addr + ")");
+      buffer.add("lw t0, 0(" + addr + ")");
     } else {
-      System.out.println("lw " + register_name.get(target_value) + ", 0(" + addr + ")");
+      buffer.add("lw " + register_name.get(target_value) + ", 0(" + addr + ")");
     }
     if (target_value < 0) {
       if ((target_value >> 9) == 0) {
-        System.out.println("sw t0, " + (target_value * 4) + "(s0)");
+        buffer.add("sw t0, " + (target_value * 4) + "(s0)");
       } else {
-        System.out.println("li t1, " + (target_value * 4));
-        System.out.println("add t1, t1, s0");
-        System.out.println("sw t0, 0(t1)");
+        buffer.add("li t1, " + (target_value * 4));
+        buffer.add("add t1, t1, s0");
+        buffer.add("sw t0, 0(t1)");
       }
     }
     return;

@@ -201,7 +201,7 @@ public class IRFuncall extends IRCode {
         String str = "t0";
         try {
           int num = Integer.parseInt(reg.get(i));
-          System.out.println("li t0, " + num);
+          buffer.add("li t0, " + num);
         } catch (NumberFormatException e) {
           if (!is_global.containsKey(reg.get(i))) {
             int value = registers.get(reg.get(i));
@@ -209,20 +209,20 @@ public class IRFuncall extends IRCode {
               str = register_name.get(value);
             } else {
               if ((value >> 9) == 0) {
-                System.out.println("lw t0, " + (4 * value) + "(s0)");
+                buffer.add("lw t0, " + (4 * value) + "(s0)");
               } else {
-                System.out.println("li t0, " + (4 * value));
-                System.out.println("add t0, t0, s0");
-                System.out.println("lw t0, 0(t0)");
+                buffer.add("li t0, " + (4 * value));
+                buffer.add("add t0, t0, s0");
+                buffer.add("lw t0, 0(t0)");
               }
             }
           } else {
-            System.out.println("lui t0, %hi(" + reg.get(i).substring(1) + ")");
-            System.out.println("addi t0, t0, " + "%lo(" + reg.get(i).substring(1) + ")");
-            System.out.println("lw t0, 0(t0)");
+            buffer.add("lui t0, %hi(" + reg.get(i).substring(1) + ")");
+            buffer.add("addi t0, t0, " + "%lo(" + reg.get(i).substring(1) + ")");
+            buffer.add("lw t0, 0(t0)");
           }
         }
-        System.out.println("sw " + str + ", " + ((i - 8) * 4) + "(sp)");
+        buffer.add("sw " + str + ", " + ((i - 8) * 4) + "(sp)");
       }
     }
     int extra = Integer.max(0, reg.size() - 8);
@@ -234,7 +234,7 @@ public class IRFuncall extends IRCode {
       to_save.add(register_name.get(reg_num));
     }
     for (int i = 0; i < to_save.size(); i++) {
-      System.out.println("sw " + to_save.get(i) + "," + ((i + extra) * 4) + "(sp)");
+      buffer.add("sw " + to_save.get(i) + "," + ((i + extra) * 4) + "(sp)");
     }
     int total = Integer.min(8, reg.size());
     HashMap<Integer, Boolean> danger = new HashMap<>();
@@ -268,58 +268,58 @@ public class IRFuncall extends IRCode {
       }
       try {
         int num = Integer.parseInt(reg.get(i));
-        System.out.println("li " + func_in + ", " + num);
+        buffer.add("li " + func_in + ", " + num);
       } catch (NumberFormatException e) {
         if (CheckLit(reg.get(i))) {
           if (!is_global.containsKey(reg.get(i))) {
             int value = registers.get(reg.get(i));
             if (value >= 0) {
               if (!func_in.equals(register_name.get(value))) {
-                System.out.println("mv " + func_in + ", " + register_name.get(value));
+                buffer.add("mv " + func_in + ", " + register_name.get(value));
               }
             } else {
               if ((value >> 9) == 0) {
-                System.out.println("lw " + func_in + ", " + (4 * value) + "(s0)");
+                buffer.add("lw " + func_in + ", " + (4 * value) + "(s0)");
               } else {
-                System.out.println("li " + func_in + ", " + (value * 4));
-                System.out.println("add " + func_in + ", " + func_in + ", s0");
-                System.out.println("lw " + func_in + ", 0(" + func_in + ")");
+                buffer.add("li " + func_in + ", " + (value * 4));
+                buffer.add("add " + func_in + ", " + func_in + ", s0");
+                buffer.add("lw " + func_in + ", 0(" + func_in + ")");
               }
             }
           } else {
-            System.out.println("lui " + func_in + ", %hi(" + reg.get(i).substring(1) + ")");
-            System.out.println("addi " + func_in + ", " + func_in + ", %lo(" + reg.get(i).substring(1) + ")");
-            System.out.println("lw " + func_in + ", 0(" + func_in + ")");
+            buffer.add("lui " + func_in + ", %hi(" + reg.get(i).substring(1) + ")");
+            buffer.add("addi " + func_in + ", " + func_in + ", %lo(" + reg.get(i).substring(1) + ")");
+            buffer.add("lw " + func_in + ", 0(" + func_in + ")");
           }
         } else {
           if (reg.get(i).equals("true")) {
-            System.out.println("li " + func_in + ", 1");
+            buffer.add("li " + func_in + ", 1");
           } else {
-            System.out.println("li " + func_in + ", 0");
+            buffer.add("li " + func_in + ", 0");
           }
         }
       }
     }
     for (PseudoMove move : moves) {
       if (!move.des.equals(move.src)) {
-        System.out.println("mv " + move.des + ", " + move.src);
+        buffer.add("mv " + move.des + ", " + move.src);
       }
     }
-    System.out.println("call " + func_name);
+    buffer.add("call " + func_name);
     if (target_reg != null) {
       if (registers.containsKey(target_reg)) {
         int value = registers.get(target_reg);
         if (value >= 0) {
           if (!register_name.get(value).equals("a0")) {
-            System.out.println("mv " + register_name.get(value) + ", a0");
+            buffer.add("mv " + register_name.get(value) + ", a0");
           }
         } else {
           if ((value >> 9) == 0) {
-            System.out.println("sw a0, " + (value * 4) + "(s0)");
+            buffer.add("sw a0, " + (value * 4) + "(s0)");
           } else {
-            System.out.println("li t1, " + (value * 4));
-            System.out.println("add t1, t1, s0");
-            System.out.println("sw a0, 0(t1)");
+            buffer.add("li t1, " + (value * 4));
+            buffer.add("add t1, t1, s0");
+            buffer.add("sw a0, 0(t1)");
           }
         }
       }
@@ -329,7 +329,7 @@ public class IRFuncall extends IRCode {
           && to_save.get(i).equals(register_name.get(registers.get(target_reg)))) {
         continue;
       }
-      System.out.println("lw " + to_save.get(i) + "," + ((i + extra) * 4) + "(sp)");
+      buffer.add("lw " + to_save.get(i) + "," + ((i + extra) * 4) + "(sp)");
     }
     return;
   }

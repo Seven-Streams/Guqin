@@ -223,10 +223,6 @@ public class Composer {
       if (generated.get(i) instanceof IRFunc) {
         IRFunc to_check = (IRFunc) (generated.get(i));
         if (to_check.name.equals("main")) {
-          for (IRCode chars : const_str) {
-            IRChararray to_init = (IRChararray) chars;
-            to_init.Init();
-          }
           for (IRCode ini : init) {
             ini.Codegen();
           }

@@ -112,32 +112,32 @@ public class IRReturn extends IRCode {
       if (!(reg.equals("true") || reg.equals("false") || reg.equals("null"))) {
         try {
           int test = Integer.parseInt(reg);
-          System.out.println("li a0, " + test);
+          buffer.add("li a0, " + test);
         } catch (NumberFormatException e) {
           int num = registers.get(reg);
           if (num >= 0) {
             if (!register_name.get(num).equals("a0")) {
-              System.out.println("mv " + "a0, " + register_name.get(num));
+              buffer.add("mv " + "a0, " + register_name.get(num));
             }
           } else {
             if ((num >> 9) == 0) {
-              System.out.println("lw a0, " + (num * 4) + "(s0)");
+              buffer.add("lw a0, " + (num * 4) + "(s0)");
             } else {
-              System.out.println("li t0, " + (num * 4));
-              System.out.println("add t0, t0, s0");
-              System.out.println("lw a0, 0(t0)");
+              buffer.add("li t0, " + (num * 4));
+              buffer.add("add t0, t0, s0");
+              buffer.add("lw a0, 0(t0)");
             }
           }
         }
       } else {
         if (reg.equals("true")) {
-          System.out.println("li a0, 1");
+          buffer.add("li a0, 1");
         } else {
-          System.out.println("li a0, 0");
+          buffer.add("li a0, 0");
         }
       }
     }
-    System.out.println("j .return" + func_num);
+    buffer.add("j .return" + func_num);
     return;
   }
 

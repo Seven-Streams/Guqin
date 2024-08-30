@@ -99,35 +99,35 @@ public class Conditionjmp extends IRCode {
     try {
       int value = Integer.parseInt(reg);
       if (value == 1) {
-        System.out.println("j b" + label1);
+        buffer.add("j b" + label1);
       } else {
-        System.out.println("j b" + label2);
+        buffer.add("j b" + label2);
       }
     } catch (NumberFormatException e) {
       if (CheckLit(reg)) {
         int now_label = ++cnt;
         int value = registers.get(reg);
         if (value >= 0) {
-          System.out.println("beqz " + register_name.get(value) + ", cond." + now_label);
+          buffer.add("beqz " + register_name.get(value) + ", cond." + now_label);
         } else {
           if ((value >> 9) == 0) {
-            System.out.println("lw t0, " + (value * 4) + "(s0)");
+            buffer.add("lw t0, " + (value * 4) + "(s0)");
           } else {
-            System.out.println("li t0, " + (value * 4));
-            System.out.println("add t0, t0, s0");
-            System.out.println("lw t0, 0(t0)");
+            buffer.add("li t0, " + (value * 4));
+            buffer.add("add t0, t0, s0");
+            buffer.add("lw t0, 0(t0)");
           }
-          System.out.println("beqz t0, " + "cond." + now_label);
+          buffer.add("beqz t0, " + "cond." + now_label);
         }
-        System.out.println("j b" + label1);
-        System.out.println("cond." + now_label + ":");
-        System.out.println("j b" + label2);
+        buffer.add("j b" + label1);
+        buffer.add("cond." + now_label + ":");
+        buffer.add("j b" + label2);
         return;
       } else {
         if (reg.equals("true")) {
-          System.out.println("j b" + label1);
+          buffer.add("j b" + label1);
         } else {
-          System.out.println("j b" + label2);
+          buffer.add("j b" + label2);
         }
         return;
       }

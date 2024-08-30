@@ -21,7 +21,7 @@ public class IRjmp extends IRCode {
 
   @Override
   public void Codegen() {
-    System.out.println("j b" + label);
+    buffer.add("j b" + label);
     return;
   }
 
