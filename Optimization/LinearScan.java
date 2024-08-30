@@ -179,6 +179,39 @@ public class LinearScan {
       }
       code.CodegenWithOptim(registers.get(cnt), register_names);
     }
+    HashMap<Integer, Integer> label_place = new HashMap<>();
+    HashMap<String, Integer> cond_place = new HashMap<>();
+    int now_memory = 0;
+    for (String code : IRCode.buffer) {
+      if (code.equals("") || (code.endsWith(":"))) {
+        if (code.startsWith("b")) {
+          try {
+          int label = Integer.parseInt(code.substring(1, code.length() - 1));
+          label_place.put(label, now_memory);
+          }catch(NumberFormatException e){}
+        } else {
+          cond_place.put(code, now_memory);
+        }
+      } else {
+        now_memory++;
+      }
+    }
+    for (int i = IRCode.buffer.size() - 1; i >= 0; i--) {
+      String code = IRCode.buffer.get(i);
+      if (code.contains("cond.") && code.endsWith(":")) {
+        int now = cond_place.get(code);
+        String target_ins = IRCode.buffer.get(i + 1);
+        int target_label = Integer.parseInt(target_ins.substring(3, target_ins.length()));
+        int label = label_place.get(target_label);
+        if(Math.abs(label - now) < 1023) {
+          IRCode.buffer.remove(i + 1);
+          String to_remove = code.substring(0, code.length() - 1);
+          String to_operate = IRCode.buffer.get(i - 2);
+          IRCode.buffer.set(i - 2, to_operate.replace(to_remove, "b" + Integer.toString(target_label)));
+          IRCode.buffer.remove(i);
+        }
+      }
+    }
     for(String code: IRCode.buffer) {
       System.out.println(code);
     }
@@ -436,7 +469,7 @@ public class LinearScan {
           }
         }
       }
-      if(!spilled) {
+      if (!spilled) {
         continue;
       }
       for (int i = 0; i < degree; i++) {
