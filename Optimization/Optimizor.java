@@ -24,6 +24,8 @@ public class Optimizor {
     ADCER.Optim();
     Inline inliner = new Inline(machine);
     inliner.Optim(50);
+    CondUpdate condition = new CondUpdate(machine);
+    condition.Optim();
     LinearScan allocator = new LinearScan(machine);
     allocator.Allocator(27);
     RemoveJmp jp = new RemoveJmp(machine);

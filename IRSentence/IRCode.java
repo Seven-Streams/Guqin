@@ -29,7 +29,7 @@ public class IRCode {
   public static HashMap<Integer, Integer> register_use = null;
   public static HashMap<String, Boolean> is_global = new HashMap<>();
   public static HashMap<String, String> relative_addr = new HashMap<>();
-  public boolean CheckLit(String to_check) {
+  public static boolean CheckLit(String to_check) {
     return(!((to_check.equals("true")) || to_check.equals("false") || to_check.equals("null")));
   }
   public void AliveUseDefCheck(HashMap<String, Boolean> def, HashMap<String, Boolean> use){UseDefCheck(def, use);}

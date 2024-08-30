@@ -85,7 +85,7 @@ public class SpecialJmp extends Conditionjmp {
           if (value1 == value2) {
             System.out.println("j b" + label1);
           } else {
-            System.out.println("j b " + label2);
+            System.out.println("j b" + label2);
           }
           break;
         }
@@ -93,7 +93,7 @@ public class SpecialJmp extends Conditionjmp {
           if (value1 != value2) {
             System.out.println("j b" + label1);
           } else {
-            System.out.println("j b " + label2);
+            System.out.println("j b" + label2);
           }
           break;
         }
@@ -101,7 +101,7 @@ public class SpecialJmp extends Conditionjmp {
           if (value1 >= value2) {
             System.out.println("j b" + label1);
           } else {
-            System.out.println("j b " + label2);
+            System.out.println("j b" + label2);
           }
           break;
         }
@@ -109,7 +109,7 @@ public class SpecialJmp extends Conditionjmp {
           if (value1 <= value2) {
             System.out.println("j b" + label1);
           } else {
-            System.out.println("j b " + label2);
+            System.out.println("j b" + label2);
           }
           break;
         }
@@ -117,7 +117,7 @@ public class SpecialJmp extends Conditionjmp {
           if (value1 > value2) {
             System.out.println("j b" + label1);
           } else {
-            System.out.println("j b " + label2);
+            System.out.println("j b" + label2);
           }
           break;
         }
@@ -125,7 +125,7 @@ public class SpecialJmp extends Conditionjmp {
           if (value1 < value2) {
             System.out.println("j b" + label1);
           } else {
-            System.out.println("j b " + label2);
+            System.out.println("j b" + label2);
           }
           break;
         }
@@ -161,10 +161,10 @@ public class SpecialJmp extends Conditionjmp {
         break;
       }
       case (">"): {
-        System.out.println("blt " + reg_str1 + ", " + reg_str2 + ", cond." + ++cnt);
-        System.out.println("j b" + label1);
-        System.out.println("cond." + cnt + ":");
+        System.out.println("blt " + reg_str2 + ", " + reg_str1 + ", cond." + ++cnt);
         System.out.println("j b" + label2);
+        System.out.println("cond." + cnt + ":");
+        System.out.println("j b" + label1);
         break;
       }
       case (">="): {
@@ -175,10 +175,10 @@ public class SpecialJmp extends Conditionjmp {
         break;
       }
       case ("<="): {
-        System.out.println("bge " + reg_str1 + ", " + reg_str2 + ", cond." + ++cnt);
-        System.out.println("j b" + label1);
-        System.out.println("cond." + cnt + ":");
+        System.out.println("bge " + reg_str2 + ", " + reg_str1 + ", cond." + ++cnt);
         System.out.println("j b" + label2);
+        System.out.println("cond." + cnt + ":");
+        System.out.println("j b" + label1);
         break;
       }
     }
