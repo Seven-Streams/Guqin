@@ -186,9 +186,10 @@ public class LinearScan {
       if (code.equals("") || (code.endsWith(":"))) {
         if (code.startsWith("b")) {
           try {
-          int label = Integer.parseInt(code.substring(1, code.length() - 1));
-          label_place.put(label, now_memory);
-          }catch(NumberFormatException e){}
+            int label = Integer.parseInt(code.substring(1, code.length() - 1));
+            label_place.put(label, now_memory);
+          } catch (NumberFormatException e) {
+          }
         } else {
           cond_place.put(code, now_memory);
         }
@@ -203,7 +204,7 @@ public class LinearScan {
         String target_ins = IRCode.buffer.get(i + 1);
         int target_label = Integer.parseInt(target_ins.substring(3, target_ins.length()));
         int label = label_place.get(target_label);
-        if(Math.abs(label - now) < 1023) {
+        if (Math.abs(label - now) < 1023) {
           IRCode.buffer.remove(i + 1);
           String to_remove = code.substring(0, code.length() - 1);
           String to_operate = IRCode.buffer.get(i - 2);
@@ -212,7 +213,7 @@ public class LinearScan {
         }
       }
     }
-    for(String code: IRCode.buffer) {
+    for (String code : IRCode.buffer) {
       System.out.println(code);
     }
     return;
@@ -307,9 +308,9 @@ public class LinearScan {
         NumberBlocks(nxt);
       }
     }
-    // if (visit_cnt.get(index) < 50) {
-    //   visit.remove(index);
-    // }
+    if (visit_cnt.get(index) < 50) {
+      visit.remove(index);
+    }
     return;
   }
 
@@ -449,27 +450,43 @@ public class LinearScan {
     while (!to_alloc.isEmpty()) {
       Interval now_alloc = to_alloc.poll();
       boolean spilled = true;
-      if (from_to_pair.containsKey(now_alloc.name)) {
-        if (registers.get(func_num).containsKey(from_to_pair.get(now_alloc.name))
-            && (registers.get(func_num).get(from_to_pair.get(now_alloc.name)) >= 0)) {
-          int value = registers.get(func_num).get(from_to_pair.get(now_alloc.name));
-          if ((free.get(value) == null) || free.get(value).end < now_alloc.start) {
-            free.set(value, now_alloc);
-            registers.get(func_num).put(now_alloc.name, value);
-            if (max_register_use.get(func_num) < value) {
-              max_register_use.put(func_num, value);
-            }
-            Map<Integer, HashMap<Integer, Boolean>> submap = calling_use.subMap(now_alloc.start, now_alloc.end);
-            for (Map.Entry<Integer, HashMap<Integer, Boolean>> entry : submap.entrySet()) {
-              if ((now_alloc.start < entry.getKey()) && (now_alloc.end > entry.getKey())) {
-                entry.getValue().put(value, null);
-              }
-            }
-            continue;
+      // if (from_to_pair.containsKey(now_alloc.name)) {
+      // if (registers.get(func_num).containsKey(from_to_pair.get(now_alloc.name))
+      // && (registers.get(func_num).get(from_to_pair.get(now_alloc.name)) >= 0)) {
+      // int value = registers.get(func_num).get(from_to_pair.get(now_alloc.name));
+      // if ((free.get(value) == null) || free.get(value).end < now_alloc.start) {
+      // free.set(value, now_alloc);
+      // registers.get(func_num).put(now_alloc.name, value);
+      // if (max_register_use.get(func_num) < value) {
+      // max_register_use.put(func_num, value);
+      // }
+      // Map<Integer, HashMap<Integer, Boolean>> submap =
+      // calling_use.subMap(now_alloc.start, now_alloc.end);
+      // for (Map.Entry<Integer, HashMap<Integer, Boolean>> entry : submap.entrySet())
+      // {
+      // if ((now_alloc.start < entry.getKey()) && (now_alloc.end > entry.getKey())) {
+      // entry.getValue().put(value, null);
+      // }
+      // }
+      // continue;
+      // }
+      // }
+      // }
+      // if (!spilled) {
+      // continue;
+      // }
+      Map<Integer, HashMap<Integer, Boolean>> submap = calling_use.subMap(now_alloc.start, now_alloc.end);
+      if (submap.isEmpty()) {
+        for (int i = 11; i < degree; i++) {
+          if ((free.get(i) == null) || free.get(i).end < now_alloc.start) {
+            free.set(i, now_alloc);
+            registers.get(func_num).put(now_alloc.name, i);
+            spilled = false;
+            break;
           }
         }
       }
-      if (!spilled) {
+      if(!spilled) {
         continue;
       }
       for (int i = 0; i < degree; i++) {
@@ -480,7 +497,6 @@ public class LinearScan {
           if (max_register_use.get(func_num) < i) {
             max_register_use.put(func_num, i);
           }
-          Map<Integer, HashMap<Integer, Boolean>> submap = calling_use.subMap(now_alloc.start, now_alloc.end);
           for (Map.Entry<Integer, HashMap<Integer, Boolean>> entry : submap.entrySet()) {
             if ((now_alloc.start < entry.getKey()) && (now_alloc.end > entry.getKey())) {
               entry.getValue().put(i, null);
