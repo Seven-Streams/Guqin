@@ -616,11 +616,11 @@ public class IRBin extends IRCode {
     if (target < 0) {
       target = now_depth + target * 4;
       if ((target >> 11) == 0) {
-        System.out.println("sw t0, " + target + "(sp)");
+        buffer.add("sw t0, " + target + "(sp)");
       } else {
-        System.out.println("li t1, " + target);
-        System.out.println("add t1, t1, sp");
-        System.out.println("sw t0, 0(t1)");
+        buffer.add("li t1, " + target);
+        buffer.add("add t1, t1, sp");
+        buffer.add("sw t0, 0(t1)");
       }
     }
     return;
@@ -730,7 +730,7 @@ public class IRBin extends IRCode {
     if (!ok) {
       return null;
     }
-    if(value1 == null || value2 == null) {
+    if (value1 == null || value2 == null) {
       return null;
     }
     switch (symbol) {

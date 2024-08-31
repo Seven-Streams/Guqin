@@ -138,11 +138,13 @@ public class LocalCSE {
         }
         String global_name = null;
         String global_value = null;
+        boolean is_load = false;
         if (code instanceof IRLoad) {
           IRLoad load = (IRLoad) code;
           if (IRCode.is_global.containsKey(load.src)) {
             global_name = new String(load.src);
             global_value = new String(load.des);
+            is_load = true;
           } else {
             continue;
           }
@@ -158,6 +160,7 @@ public class LocalCSE {
               IRStore store = (IRStore) code2;
               if (global_name.equals(store.name)) {
                 global_name = null;
+                break;
               }
               continue;
             }
@@ -220,6 +223,250 @@ public class LocalCSE {
             }
           }
         }
+        if (is_load && global_name == null) {
+          continue;
+        }
+        if (to_check.get(to_check.size() - 1) instanceof IRjmp) {
+          IRjmp jmp = (IRjmp) to_check.get(to_check.size() - 1);
+          if (pre.get(jmp.label).size() == 1) {
+            ArrayList<IRCode> to_check2 = blocks.get(jmp.label);
+            for (int j = 0; j < to_check2.size(); j++) {
+              IRCode code2 = to_check2.get(j);
+              if (code2.dead) {
+                continue;
+              }
+              code2.ConstCheck(value);
+              if (global_name != null) {
+                if (code2 instanceof IRStore) {
+                  IRStore store = (IRStore) code2;
+                  if (global_name.equals(store.name)) {
+                    global_name = null;
+                    break;
+                  }
+                  continue;
+                }
+                if (code2 instanceof IRLoad) {
+                  IRLoad load = (IRLoad) code2;
+                  if (global_name.equals(load.src)) {
+                    ((IRLoad) code2).dead = true;
+                    value.put(new String(load.des), new String(global_value));
+                    for (Integer to : use.get(load.des).keySet()) {
+                      if (!in_queue.containsKey(to)) {
+                        update.add(to);
+                        in_queue.put(to, null);
+                      }
+                    }
+                  }
+                  continue;
+                }
+                if (code2 instanceof IRFuncall) {
+                  break;
+                }
+              }
+              boolean check_repeat = code.RepeatOperation(code2);
+              if (check_repeat) {
+                code2.dead = true;
+                if (code2 instanceof IRBin) {
+                  IRBin bin = (IRBin) code;
+                  IRBin bin2 = (IRBin) code2;
+                  value.put(new String(bin2.target_reg), new String(bin.target_reg));
+                  for (Integer to : use.get(bin2.target_reg).keySet()) {
+                    if (!in_queue.containsKey(to)) {
+                      update.add(to);
+                      in_queue.put(to, null);
+                    }
+                  }
+                  continue;
+                }
+                if (code2 instanceof IRIcmp) {
+                  IRIcmp cmp = (IRIcmp) code;
+                  IRIcmp cmp2 = (IRIcmp) code2;
+                  value.put(new String(cmp2.target_reg), new String(cmp.target_reg));
+                  for (Integer to : use.get(cmp2.target_reg).keySet()) {
+                    if (!in_queue.containsKey(to)) {
+                      update.add(to);
+                      in_queue.put(to, null);
+                    }
+                  }
+                  continue;
+                }
+                if (code2 instanceof IRElement) {
+                  IRElement ele = (IRElement) code;
+                  IRElement ele2 = (IRElement) code2;
+                  value.put(new String(ele2.output), new String(ele.output));
+                  for (Integer to : use.get(ele2.output).keySet()) {
+                    if (!in_queue.containsKey(to)) {
+                      update.add(to);
+                      in_queue.put(to, null);
+                    }
+                  }
+                  continue;
+                }
+              }
+            }
+          }
+        }
+        if (to_check.get(to_check.size() - 1) instanceof Conditionjmp) {
+          Conditionjmp jmp = (Conditionjmp) to_check.get(to_check.size() - 1);
+          String res_name = global_name == null ? null : new String(global_name);
+          String res_value = global_value == null ? null : new String(global_value);
+          if (pre.get(jmp.label1).size() == 1) {
+            ArrayList<IRCode> to_check2 = blocks.get(jmp.label1);
+            for (int j = 0; j < to_check2.size(); j++) {
+              IRCode code2 = to_check2.get(j);
+              if (code2.dead) {
+                continue;
+              }
+              code2.ConstCheck(value);
+              if (global_name != null) {
+                if (code2 instanceof IRStore) {
+                  IRStore store = (IRStore) code2;
+                  if (global_name.equals(store.name)) {
+                    global_name = null;
+                    break;
+                  }
+                  continue;
+                }
+                if (code2 instanceof IRLoad) {
+                  IRLoad load = (IRLoad) code2;
+                  if (global_name.equals(load.src)) {
+                    ((IRLoad) code2).dead = true;
+                    value.put(new String(load.des), new String(global_value));
+                    for (Integer to : use.get(load.des).keySet()) {
+                      if (!in_queue.containsKey(to)) {
+                        update.add(to);
+                        in_queue.put(to, null);
+                      }
+                    }
+                  }
+                  continue;
+                }
+                if (code2 instanceof IRFuncall) {
+                  break;
+                }
+              }
+              boolean check_repeat = code.RepeatOperation(code2);
+              if (check_repeat) {
+                code2.dead = true;
+                if (code2 instanceof IRBin) {
+                  IRBin bin = (IRBin) code;
+                  IRBin bin2 = (IRBin) code2;
+                  value.put(new String(bin2.target_reg), new String(bin.target_reg));
+                  for (Integer to : use.get(bin2.target_reg).keySet()) {
+                    if (!in_queue.containsKey(to)) {
+                      update.add(to);
+                      in_queue.put(to, null);
+                    }
+                  }
+                  continue;
+                }
+                if (code2 instanceof IRIcmp) {
+                  IRIcmp cmp = (IRIcmp) code;
+                  IRIcmp cmp2 = (IRIcmp) code2;
+                  value.put(new String(cmp2.target_reg), new String(cmp.target_reg));
+                  for (Integer to : use.get(cmp2.target_reg).keySet()) {
+                    if (!in_queue.containsKey(to)) {
+                      update.add(to);
+                      in_queue.put(to, null);
+                    }
+                  }
+                  continue;
+                }
+                if (code2 instanceof IRElement) {
+                  IRElement ele = (IRElement) code;
+                  IRElement ele2 = (IRElement) code2;
+                  value.put(new String(ele2.output), new String(ele.output));
+                  for (Integer to : use.get(ele2.output).keySet()) {
+                    if (!in_queue.containsKey(to)) {
+                      update.add(to);
+                      in_queue.put(to, null);
+                    }
+                  }
+                  continue;
+                }
+              }
+            }
+          }
+          global_name = res_name;
+          global_value = res_value;
+          if (pre.get(jmp.label2).size() == 1) {
+            ArrayList<IRCode> to_check2 = blocks.get(jmp.label2);
+            for (int j = 0; j < to_check2.size(); j++) {
+              IRCode code2 = to_check2.get(j);
+              if (code2.dead) {
+                continue;
+              }
+              code2.ConstCheck(value);
+              if (global_name != null) {
+                if (code2 instanceof IRStore) {
+                  IRStore store = (IRStore) code2;
+                  if (global_name.equals(store.name)) {
+                    global_name = null;
+                    break;
+                  }
+                  continue;
+                }
+                if (code2 instanceof IRLoad) {
+                  IRLoad load = (IRLoad) code2;
+                  if (global_name.equals(load.src)) {
+                    ((IRLoad) code2).dead = true;
+                    value.put(new String(load.des), new String(global_value));
+                    for (Integer to : use.get(load.des).keySet()) {
+                      if (!in_queue.containsKey(to)) {
+                        update.add(to);
+                        in_queue.put(to, null);
+                      }
+                    }
+                  }
+                  continue;
+                }
+                if (code2 instanceof IRFuncall) {
+                  break;
+                }
+              }
+              boolean check_repeat = code.RepeatOperation(code2);
+              if (check_repeat) {
+                code2.dead = true;
+                if (code2 instanceof IRBin) {
+                  IRBin bin = (IRBin) code;
+                  IRBin bin2 = (IRBin) code2;
+                  value.put(new String(bin2.target_reg), new String(bin.target_reg));
+                  for (Integer to : use.get(bin2.target_reg).keySet()) {
+                    if (!in_queue.containsKey(to)) {
+                      update.add(to);
+                      in_queue.put(to, null);
+                    }
+                  }
+                  continue;
+                }
+                if (code2 instanceof IRIcmp) {
+                  IRIcmp cmp = (IRIcmp) code;
+                  IRIcmp cmp2 = (IRIcmp) code2;
+                  value.put(new String(cmp2.target_reg), new String(cmp.target_reg));
+                  for (Integer to : use.get(cmp2.target_reg).keySet()) {
+                    if (!in_queue.containsKey(to)) {
+                      update.add(to);
+                      in_queue.put(to, null);
+                    }
+                  }
+                  continue;
+                }
+                if (code2 instanceof IRElement) {
+                  IRElement ele = (IRElement) code;
+                  IRElement ele2 = (IRElement) code2;
+                  value.put(new String(ele2.output), new String(ele.output));
+                  for (Integer to : use.get(ele2.output).keySet()) {
+                    if (!in_queue.containsKey(to)) {
+                      update.add(to);
+                      in_queue.put(to, null);
+                    }
+                  }
+                  continue;
+                }
+              }
+            }
+          }
+        }
       }
       for (int to : graph.get(head).keySet()) {
         if (!visit.containsKey(to)) {
@@ -243,11 +490,13 @@ public class LocalCSE {
         }
         String global_name = null;
         String global_value = null;
+        boolean is_load = false;
         if (code instanceof IRLoad) {
           IRLoad load = (IRLoad) code;
           if (IRCode.is_global.containsKey(load.src)) {
             global_name = new String(load.src);
             global_value = new String(load.des);
+            is_load = true;
           } else {
             continue;
           }
@@ -263,6 +512,7 @@ public class LocalCSE {
               IRStore store = (IRStore) code2;
               if (global_name.equals(store.name)) {
                 global_name = null;
+                break;
               }
               continue;
             }
@@ -320,6 +570,250 @@ public class LocalCSE {
                 }
               }
               continue;
+            }
+          }
+        }
+        if (is_load && global_name == null) {
+          continue;
+        }
+        if (to_check.get(to_check.size() - 1) instanceof IRjmp) {
+          IRjmp jmp = (IRjmp) to_check.get(to_check.size() - 1);
+          if (pre.get(jmp.label).size() == 1) {
+            ArrayList<IRCode> to_check2 = blocks.get(jmp.label);
+            for (int j = 0; j < to_check2.size(); j++) {
+              IRCode code2 = to_check2.get(j);
+              if (code2.dead) {
+                continue;
+              }
+              code2.ConstCheck(value);
+              if (global_name != null) {
+                if (code2 instanceof IRStore) {
+                  IRStore store = (IRStore) code2;
+                  if (global_name.equals(store.name)) {
+                    global_name = null;
+                    break;
+                  }
+                  continue;
+                }
+                if (code2 instanceof IRLoad) {
+                  IRLoad load = (IRLoad) code2;
+                  if (global_name.equals(load.src)) {
+                    ((IRLoad) code2).dead = true;
+                    value.put(new String(load.des), new String(global_value));
+                    for (Integer to : use.get(load.des).keySet()) {
+                      if (!in_queue.containsKey(to)) {
+                        update.add(to);
+                        in_queue.put(to, null);
+                      }
+                    }
+                  }
+                  continue;
+                }
+                if (code2 instanceof IRFuncall) {
+                  break;
+                }
+              }
+              boolean check_repeat = code.RepeatOperation(code2);
+              if (check_repeat) {
+                code2.dead = true;
+                if (code2 instanceof IRBin) {
+                  IRBin bin = (IRBin) code;
+                  IRBin bin2 = (IRBin) code2;
+                  value.put(new String(bin2.target_reg), new String(bin.target_reg));
+                  for (Integer to : use.get(bin2.target_reg).keySet()) {
+                    if (!in_queue.containsKey(to)) {
+                      update.add(to);
+                      in_queue.put(to, null);
+                    }
+                  }
+                  continue;
+                }
+                if (code2 instanceof IRIcmp) {
+                  IRIcmp cmp = (IRIcmp) code;
+                  IRIcmp cmp2 = (IRIcmp) code2;
+                  value.put(new String(cmp2.target_reg), new String(cmp.target_reg));
+                  for (Integer to : use.get(cmp2.target_reg).keySet()) {
+                    if (!in_queue.containsKey(to)) {
+                      update.add(to);
+                      in_queue.put(to, null);
+                    }
+                  }
+                  continue;
+                }
+                if (code2 instanceof IRElement) {
+                  IRElement ele = (IRElement) code;
+                  IRElement ele2 = (IRElement) code2;
+                  value.put(new String(ele2.output), new String(ele.output));
+                  for (Integer to : use.get(ele2.output).keySet()) {
+                    if (!in_queue.containsKey(to)) {
+                      update.add(to);
+                      in_queue.put(to, null);
+                    }
+                  }
+                  continue;
+                }
+              }
+            }
+          }
+        }
+        if (to_check.get(to_check.size() - 1) instanceof Conditionjmp) {
+          Conditionjmp jmp = (Conditionjmp) to_check.get(to_check.size() - 1);
+          String res_name = global_name == null ? null : new String(global_name);
+          String res_value = global_value == null ? null : new String(global_value);
+          if (pre.get(jmp.label1).size() == 1) {
+            ArrayList<IRCode> to_check2 = blocks.get(jmp.label1);
+            for (int j = 0; j < to_check2.size(); j++) {
+              IRCode code2 = to_check2.get(j);
+              if (code2.dead) {
+                continue;
+              }
+              code2.ConstCheck(value);
+              if (global_name != null) {
+                if (code2 instanceof IRStore) {
+                  IRStore store = (IRStore) code2;
+                  if (global_name.equals(store.name)) {
+                    global_name = null;
+                    break;
+                  }
+                  continue;
+                }
+                if (code2 instanceof IRLoad) {
+                  IRLoad load = (IRLoad) code2;
+                  if (global_name.equals(load.src)) {
+                    ((IRLoad) code2).dead = true;
+                    value.put(new String(load.des), new String(global_value));
+                    for (Integer to : use.get(load.des).keySet()) {
+                      if (!in_queue.containsKey(to)) {
+                        update.add(to);
+                        in_queue.put(to, null);
+                      }
+                    }
+                  }
+                  continue;
+                }
+                if (code2 instanceof IRFuncall) {
+                  break;
+                }
+              }
+              boolean check_repeat = code.RepeatOperation(code2);
+              if (check_repeat) {
+                code2.dead = true;
+                if (code2 instanceof IRBin) {
+                  IRBin bin = (IRBin) code;
+                  IRBin bin2 = (IRBin) code2;
+                  value.put(new String(bin2.target_reg), new String(bin.target_reg));
+                  for (Integer to : use.get(bin2.target_reg).keySet()) {
+                    if (!in_queue.containsKey(to)) {
+                      update.add(to);
+                      in_queue.put(to, null);
+                    }
+                  }
+                  continue;
+                }
+                if (code2 instanceof IRIcmp) {
+                  IRIcmp cmp = (IRIcmp) code;
+                  IRIcmp cmp2 = (IRIcmp) code2;
+                  value.put(new String(cmp2.target_reg), new String(cmp.target_reg));
+                  for (Integer to : use.get(cmp2.target_reg).keySet()) {
+                    if (!in_queue.containsKey(to)) {
+                      update.add(to);
+                      in_queue.put(to, null);
+                    }
+                  }
+                  continue;
+                }
+                if (code2 instanceof IRElement) {
+                  IRElement ele = (IRElement) code;
+                  IRElement ele2 = (IRElement) code2;
+                  value.put(new String(ele2.output), new String(ele.output));
+                  for (Integer to : use.get(ele2.output).keySet()) {
+                    if (!in_queue.containsKey(to)) {
+                      update.add(to);
+                      in_queue.put(to, null);
+                    }
+                  }
+                  continue;
+                }
+              }
+            }
+          }
+          global_name = res_name;
+          global_value = res_value;
+          if (pre.get(jmp.label2).size() == 1) {
+            ArrayList<IRCode> to_check2 = blocks.get(jmp.label2);
+            for (int j = 0; j < to_check2.size(); j++) {
+              IRCode code2 = to_check2.get(j);
+              if (code2.dead) {
+                continue;
+              }
+              code2.ConstCheck(value);
+              if (global_name != null) {
+                if (code2 instanceof IRStore) {
+                  IRStore store = (IRStore) code2;
+                  if (global_name.equals(store.name)) {
+                    global_name = null;
+                    break;
+                  }
+                  continue;
+                }
+                if (code2 instanceof IRLoad) {
+                  IRLoad load = (IRLoad) code2;
+                  if (global_name.equals(load.src)) {
+                    ((IRLoad) code2).dead = true;
+                    value.put(new String(load.des), new String(global_value));
+                    for (Integer to : use.get(load.des).keySet()) {
+                      if (!in_queue.containsKey(to)) {
+                        update.add(to);
+                        in_queue.put(to, null);
+                      }
+                    }
+                  }
+                  continue;
+                }
+                if (code2 instanceof IRFuncall) {
+                  break;
+                }
+              }
+              boolean check_repeat = code.RepeatOperation(code2);
+              if (check_repeat) {
+                code2.dead = true;
+                if (code2 instanceof IRBin) {
+                  IRBin bin = (IRBin) code;
+                  IRBin bin2 = (IRBin) code2;
+                  value.put(new String(bin2.target_reg), new String(bin.target_reg));
+                  for (Integer to : use.get(bin2.target_reg).keySet()) {
+                    if (!in_queue.containsKey(to)) {
+                      update.add(to);
+                      in_queue.put(to, null);
+                    }
+                  }
+                  continue;
+                }
+                if (code2 instanceof IRIcmp) {
+                  IRIcmp cmp = (IRIcmp) code;
+                  IRIcmp cmp2 = (IRIcmp) code2;
+                  value.put(new String(cmp2.target_reg), new String(cmp.target_reg));
+                  for (Integer to : use.get(cmp2.target_reg).keySet()) {
+                    if (!in_queue.containsKey(to)) {
+                      update.add(to);
+                      in_queue.put(to, null);
+                    }
+                  }
+                  continue;
+                }
+                if (code2 instanceof IRElement) {
+                  IRElement ele = (IRElement) code;
+                  IRElement ele2 = (IRElement) code2;
+                  value.put(new String(ele2.output), new String(ele.output));
+                  for (Integer to : use.get(ele2.output).keySet()) {
+                    if (!in_queue.containsKey(to)) {
+                      update.add(to);
+                      in_queue.put(to, null);
+                    }
+                  }
+                  continue;
+                }
+              }
             }
           }
         }

@@ -25,7 +25,7 @@ public class IRFuncall extends IRCode {
     }
     System.out.print("call " + func_type + " @" + func_name + "(");
     for (int i = 0; i < reg.size(); i++) {
-      System.out.print(type.get(i) + " " + reg.get(i));
+      System.out.print(" " + reg.get(i));
       if (i != (reg.size() - 1)) {
         System.out.print(", ");
       }
@@ -253,9 +253,21 @@ public class IRFuncall extends IRCode {
     ArrayList<PseudoMove> moves = new ArrayList<>();
     for (int i = 0; i < total; i++) {
       String func_in = null;
-      if (!danger.containsKey(25 - i)) {
-        func_in = register_name.get(25 - i);
-        danger.put(25 - i, null);
+      try {
+        Integer.parseInt(reg.get(i));
+      } catch (NumberFormatException e) {
+        if (CheckLit(reg.get(i))) {
+          if (!is_global.containsKey(reg.get(i))) {
+            int value = registers.get(reg.get(i));
+            if (value >= 0) {
+              danger.remove(value);
+            }
+          }
+        }
+      }
+      if (!danger.containsKey(27 - i)) {
+        func_in = register_name.get(27 - i);
+        danger.put(27 - i, null);
       } else {
         for (int j = 12; j < 28; j++) {
           if (!danger.containsKey(j)) {
@@ -317,7 +329,7 @@ public class IRFuncall extends IRCode {
           }
         } else {
           value = now_depth + (value * 4);
-          if ((value >> 9) == 0) {
+          if ((value >> 11) == 0) {
             buffer.add("sw a0, " + value + "(sp)");
           } else {
             buffer.add("li t1, " + value);
@@ -388,8 +400,8 @@ public class IRFuncall extends IRCode {
 
   @Override
   public String ConstCheck(HashMap<String, String> replace) {
-    for(int i = 0; i < reg.size(); i++) {
-      if(replace.containsKey(reg.get(i))) {
+    for (int i = 0; i < reg.size(); i++) {
+      if (replace.containsKey(reg.get(i))) {
         reg.set(i, new String(replace.get(reg.get(i))));
       }
     }

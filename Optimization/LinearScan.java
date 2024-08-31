@@ -444,7 +444,7 @@ public class LinearScan {
     for (int i = 0; i < degree; i++) {
       free.add(null);
     }
-    int stack_num = -13;
+    int stack_num = -16;
     PriorityQueue<Interval> to_alloc = intervals.get(func_num);
     registers.put(func_num, new HashMap<>());
     while (!to_alloc.isEmpty()) {
@@ -486,7 +486,7 @@ public class LinearScan {
           }
         }
       }
-      if(!spilled) {
+      if (!spilled) {
         continue;
       }
       for (int i = 0; i < degree; i++) {
@@ -533,7 +533,7 @@ public class LinearScan {
           continue;
         }
         for (int to_save : calling_use.get(res.sentence_number).keySet()) {
-          if (to_save > 10) {
+          if (to_save > 11) {
             reg_cnt++;
           }
         }
@@ -555,11 +555,11 @@ public class LinearScan {
       register_names.put(cnt++, "t" + Integer.toString(i));
     }
     register_names.put(cnt++, "ra");
+    register_names.put(cnt++, "gp");
+    register_names.put(cnt++, "tp");
     for (int i = 7; i >= 0; i--) {
       register_names.put(cnt++, "a" + Integer.toString(i));
     }
-    register_names.put(cnt++, "gp");
-    register_names.put(cnt++, "tp");
     register_names.put(cnt++, "t0");
     register_names.put(cnt++, "t1");
     return;
