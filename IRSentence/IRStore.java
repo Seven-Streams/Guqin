@@ -192,11 +192,13 @@ public class IRStore extends IRCode {
         if (registers.get(from) >= 0) {
           src_reg = register_name.get(registers.get(from));
         } else {
-          if((registers.get(from) >> 9) == 0) {
-          buffer.add("lw t0, " + (registers.get(from) * 4) + "(s0)");
+          int value = registers.get(from);
+          value = now_depth + (value * 4);
+          if((value >> 11) == 0) {
+          buffer.add("lw t0, " + value + "(sp)");
           } else {
-            buffer.add("li t1, " + (registers.get(from) * 4));
-            buffer.add("add t1, t1, s0");
+            buffer.add("li t1, " + value);
+            buffer.add("add t1, t1, sp");
             buffer.add("lw t0, 0(t1)");
           }
         }
@@ -217,11 +219,12 @@ public class IRStore extends IRCode {
       if (value >= 0) {
         buffer.add("sw " + src_reg + ", 0(" + register_name.get(value) + ")");
       } else {
-        if ((value >> 9) == 0) {
-          buffer.add("lw t1, " + (4 * value) + "(s0)");
+        value = now_depth + (value * 4);
+        if ((value >> 11) == 0) {
+          buffer.add("lw t1, " + value + "(sp)");
         } else {
-          buffer.add("li t1, " + (value * 4));
-          buffer.add("add t1, t1, s0");
+          buffer.add("li t1, " + value);
+          buffer.add("add t1, t1, sp");
           buffer.add("lw t1, 0(t1)");
         }
         buffer.add("sw " + src_reg + ", 0(t1)");

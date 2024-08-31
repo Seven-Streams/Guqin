@@ -47,11 +47,12 @@ public class SpecialJmp extends Conditionjmp {
         if (addr >= 0) {
           reg_str1 = register_name.get(addr);
         } else {
-          if (((-addr) >> 9) == 0) {
-            buffer.add("lw t0, " + (addr * 4) + "(s0)");
+          addr = now_depth + (addr * 4);
+          if ((addr >> 11) == 0) {
+            buffer.add("lw t0, " + addr + "(sp)");
           } else {
-            buffer.add("li t0, " + (addr * 4));
-            buffer.add("add t0, t0, s0");
+            buffer.add("li t0, " + addr);
+            buffer.add("add t0, t0, sp");
             buffer.add("lw t0, 0(t0)");
           }
         }
@@ -67,11 +68,12 @@ public class SpecialJmp extends Conditionjmp {
         if (addr >= 0) {
           reg_str2 = register_name.get(addr);
         } else {
-          if (((addr) >> 9) == 0) {
-            buffer.add("lw t1, " + (addr * 4) + "(s0)");
+          addr = now_depth + (addr * 4);
+          if (((addr) >> 11) == 0) {
+            buffer.add("lw t1, " + addr + "(sp)");
           } else {
-            buffer.add("li t1, " + (addr * 4));
-            buffer.add("add t1, t1, s0");
+            buffer.add("li t1, " + addr);
+            buffer.add("add t1, t1, sp");
             buffer.add("lw t1, 0(t0)");
           }
         }

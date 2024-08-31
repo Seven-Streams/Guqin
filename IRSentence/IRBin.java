@@ -326,9 +326,10 @@ public class IRBin extends IRCode {
       if (target >= 0) {
         buffer.add("li " + register_name.get(target) + ", " + result);
       } else {
+        target = now_depth + (target * 4);
         buffer.add("li t0, " + result);
-        buffer.add("li t1, " + (target * 4));
-        buffer.add("add t1, t1, s0");
+        buffer.add("li t1, " + target);
+        buffer.add("add t1, t1, sp");
         buffer.add("sw t0, 0(t1)");
       }
       return;
@@ -341,8 +342,9 @@ public class IRBin extends IRCode {
       int reg_value = is_int1 ? value2 : value1;
       String reg = null;
       if (reg_value < 0) {
-        buffer.add("li t1, " + (reg_value * 4));
-        buffer.add("add t1, t1, s0");
+        int res = now_depth + reg_value * 4;
+        buffer.add("li t1, " + res);
+        buffer.add("add t1, t1, sp");
         buffer.add("lw t1, 0(t1)");
         reg = "t1";
       } else {
@@ -377,11 +379,12 @@ public class IRBin extends IRCode {
         }
       }
       if (target < 0) {
-        if ((target >> 9) == 0) {
-          buffer.add("sw t0, " + (target * 4) + "(s0)");
+        target = now_depth + (target * 4);
+        if ((target >> 11) == 0) {
+          buffer.add("sw t0, " + target + "(sp)");
         } else {
-          buffer.add("li t1, " + (target * 4));
-          buffer.add("add t1, t1, s0");
+          buffer.add("li t1, " + target);
+          buffer.add("add t1, t1, sp");
           buffer.add("sw t0, 0(t1)");
         }
       }
@@ -416,11 +419,12 @@ public class IRBin extends IRCode {
       if (const_value == 0) {
         buffer.add("li " + target_name + ", 0");
         if (target < 0) {
-          if ((target >> 9) == 0) {
-            buffer.add("sw t0, " + (target * 4) + "(s0)");
+          target = now_depth + (target * 4);
+          if ((target >> 11) == 0) {
+            buffer.add("sw t0, " + target + "(sp)");
           } else {
-            buffer.add("li t1, " + (target * 4));
-            buffer.add("add t1, t1, s0");
+            buffer.add("li t1, " + target);
+            buffer.add("add t1, t1, sp");
             buffer.add("sw t0, 0(t1)");
           }
         }
@@ -429,8 +433,9 @@ public class IRBin extends IRCode {
       if (power) {
         String reg = null;
         if (reg_value < 0) {
-          buffer.add("li t1, " + (reg_value * 4));
-          buffer.add("add t1, t1, s0");
+          int value = now_depth + (reg_value * 4);
+          buffer.add("li t1, " + value);
+          buffer.add("add t1, t1, sp");
           buffer.add("lw t1, 0(t1)");
           reg = "t1";
         } else {
@@ -455,11 +460,12 @@ public class IRBin extends IRCode {
           buffer.add("neg " + target_name + ", " + target_name);
         }
         if (target < 0) {
-          if ((target >> 9) == 0) {
-            buffer.add("sw t0, " + (target * 4) + "(s0)");
+          target = now_depth + (target * 4);
+          if ((target >> 11) == 0) {
+            buffer.add("sw t0, " + target + "(sp)");
           } else {
-            buffer.add("li t1, " + (target * 4));
-            buffer.add("add t1, t1, s0");
+            buffer.add("li t1, " + target);
+            buffer.add("add t1, t1, sp");
             buffer.add("sw t0, 0(t1)");
           }
         }
@@ -472,8 +478,9 @@ public class IRBin extends IRCode {
       int reg_value = is_int1 ? value2 : value1;
       String reg = null;
       if (reg_value < 0) {
-        buffer.add("li t1, " + (reg_value * 4));
-        buffer.add("add t1, t1, s0");
+        int value = now_depth + (reg_value * 4);
+        buffer.add("li t1, " + value);
+        buffer.add("add t1, t1, sp");
         buffer.add("lw t1, 0(t1)");
         reg = "t1";
       } else {
@@ -505,11 +512,12 @@ public class IRBin extends IRCode {
         }
       }
       if (target < 0) {
-        if ((target >> 9) == 0) {
-          buffer.add("sw t0, " + (target * 4) + "(s0)");
+        target = now_depth + (target * 4);
+        if ((target >> 11) == 0) {
+          buffer.add("sw t0, " + target + "(sp)");
         } else {
-          buffer.add("li t1, " + (target * 4));
-          buffer.add("add t1, t1, s0");
+          buffer.add("li t1, " + target);
+          buffer.add("add t1, t1, sp");
           buffer.add("sw t0, 0(t1)");
         }
       }
@@ -520,11 +528,12 @@ public class IRBin extends IRCode {
       reg_1 = "t0";
     } else {
       if (value1 < 0) {
-        if ((value1 >> 9) == 0) {
-          buffer.add("lw t0, " + (value1 * 4) + "(s0)");
+        int res_value = now_depth + (value1 * 4);
+        if ((res_value >> 11) == 0) {
+          buffer.add("lw t0, " + res_value + "(sp)");
         } else {
-          buffer.add("li t0, " + (value1 * 4));
-          buffer.add("add t0, t0, s0");
+          buffer.add("li t0, " + res_value);
+          buffer.add("add t0, t0, sp");
           buffer.add("lw t0, 0(t0)");
         }
         reg_1 = "t0";
@@ -535,9 +544,14 @@ public class IRBin extends IRCode {
       reg_2 = "t1";
     } else {
       if (value2 < 0) {
-        buffer.add("li t1, " + (value2 * 4));
-        buffer.add("add t1, t1, s0");
-        buffer.add("lw t1, 0(t1)");
+        int res_value = now_depth + (value2 * 4);
+        if ((res_value >> 11) == 0) {
+          buffer.add("lw t1, " + res_value + "(sp)");
+        } else {
+          buffer.add("li t1, " + res_value);
+          buffer.add("add t1, t1, sp");
+          buffer.add("lw t1, 0(t1)");
+        }
         reg_2 = "t1";
       }
     }
@@ -600,11 +614,12 @@ public class IRBin extends IRCode {
       }
     }
     if (target < 0) {
-      if ((target >> 9) == 0) {
-        System.out.println("sw t0, " + (target * 4) + "(s0)");
+      target = now_depth + target * 4;
+      if ((target >> 11) == 0) {
+        System.out.println("sw t0, " + target + "(sp)");
       } else {
-        System.out.println("li t1, " + (target * 4));
-        System.out.println("add t1, t1, s0");
+        System.out.println("li t1, " + target);
+        System.out.println("add t1, t1, sp");
         System.out.println("sw t0, 0(t1)");
       }
     }

@@ -203,11 +203,12 @@ public class IRElement extends IRCode {
     if (src_value >= 0) {
       src_str = register_name.get(src_value);
     } else {
-      if ((src_value >> 9) == 0) {
-        buffer.add("lw t0, " + (4 * src_value) + "(s0)");
+      src_value = now_depth + src_value * 4;
+      if ((src_value >> 11) == 0) {
+        buffer.add("lw t0, " + src_value + "(sp)");
       } else {
-        buffer.add("li t0, " + (4 * src_value));
-        buffer.add("add t0, t0, s0");
+        buffer.add("li t0, " + src_value);
+        buffer.add("add t0, t0, sp");
         buffer.add("lw t0, 0(t0)");
       }
     }
@@ -217,11 +218,12 @@ public class IRElement extends IRCode {
         if ((num_i >> 9) == 0) {
           if (num_i == 0) {
             if (target_value < 0) {
-              if ((target_value >> 9) == 0) {
-                buffer.add("sw " + src_str + ", " + (target_value * 4) + "(s0)");
+              int res_value = now_depth + (target_value * 4);
+              if ((res_value >> 11) == 0) {
+                buffer.add("sw " + src_str + ", " + res_value + "(sp)");
               } else {
-                buffer.add("li t0, " + (target_value * 4));
-                buffer.add("add t0, t0, s0");
+                buffer.add("li t0, " + res_value);
+                buffer.add("add t0, t0, sp");
                 buffer.add("sw " + src_str + ", 0(t0)");
               }
             }
@@ -246,11 +248,12 @@ public class IRElement extends IRCode {
           String num_str = register_name.get(value_i);
           buffer.add("slli t1, " + num_str + ", 2");
         } else {
-          if ((value_i >> 9) == 0) {
-            buffer.add("lw t1, " + (value_i * 4) + "(s0)");
+          value_i = now_depth + (value_i * 4);
+          if ((value_i >> 11) == 0) {
+            buffer.add("lw t1, " + value_i + "(sp)");
           } else {
-            buffer.add("li t1, " + (value_i * 4));
-            buffer.add("add t1, t1, s0");
+            buffer.add("li t1, " + value_i);
+            buffer.add("add t1, t1, sp");
             buffer.add("lw t1, 0(t1)");
           }
           buffer.add("slli t1, t1, 2");
@@ -285,11 +288,12 @@ public class IRElement extends IRCode {
           String from_str = register_name.get(value_i);
           buffer.add("slli t1, " + from_str + ", 2");
         } else {
-          if ((value_i >> 9) == 0) {
-            buffer.add("lw t1, " + (value_i * 4) + "(s0)");
+          value_i = now_depth + (value_i * 4);
+          if ((value_i >> 11) == 0) {
+            buffer.add("lw t1, " + value_i  + "(sp)");
           } else {
-            buffer.add("li t1, " + (value_i * 4));
-            buffer.add("add t1, t1, s0");
+            buffer.add("li t1, " + value_i);
+            buffer.add("add t1, t1, sp");
             buffer.add("lw t1, 0(t1)");
           }
           buffer.add("slli t1, t1, 2");
@@ -302,11 +306,12 @@ public class IRElement extends IRCode {
       }
     }
     if (target_value < 0) {
+      target_value = now_depth + (target_value * 4);
       if ((target_value >> 9) == 0) {
-        buffer.add("sw t1, " + (target_value * 4) + "(s0)");
+        buffer.add("sw t1, " + target_value + "(sp)");
       } else {
-        buffer.add("li t0, " + (target_value * 4));
-        buffer.add("add t0, t0, s0");
+        buffer.add("li t0, " + target_value);
+        buffer.add("add t0, t0, sp");
         buffer.add("sw t1, 0(t0)");
       }
     }

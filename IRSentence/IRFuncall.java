@@ -208,11 +208,12 @@ public class IRFuncall extends IRCode {
             if (value >= 0) {
               str = register_name.get(value);
             } else {
-              if ((value >> 9) == 0) {
-                buffer.add("lw t0, " + (4 * value) + "(s0)");
+              value = now_depth + (value * 4);
+              if ((value >> 11) == 0) {
+                buffer.add("lw t0, " + value + "(sp)");
               } else {
-                buffer.add("li t0, " + (4 * value));
-                buffer.add("add t0, t0, s0");
+                buffer.add("li t0, " + value);
+                buffer.add("add t0, t0, sp");
                 buffer.add("lw t0, 0(t0)");
               }
             }
@@ -278,11 +279,12 @@ public class IRFuncall extends IRCode {
                 buffer.add("mv " + func_in + ", " + register_name.get(value));
               }
             } else {
-              if ((value >> 9) == 0) {
-                buffer.add("lw " + func_in + ", " + (4 * value) + "(s0)");
+              value = now_depth + (value * 4);
+              if ((value >> 11) == 0) {
+                buffer.add("lw " + func_in + ", " + value + "(sp)");
               } else {
-                buffer.add("li " + func_in + ", " + (value * 4));
-                buffer.add("add " + func_in + ", " + func_in + ", s0");
+                buffer.add("li " + func_in + ", " + value);
+                buffer.add("add " + func_in + ", " + func_in + ", sp");
                 buffer.add("lw " + func_in + ", 0(" + func_in + ")");
               }
             }
@@ -314,11 +316,12 @@ public class IRFuncall extends IRCode {
             buffer.add("mv " + register_name.get(value) + ", a0");
           }
         } else {
+          value = now_depth + (value * 4);
           if ((value >> 9) == 0) {
-            buffer.add("sw a0, " + (value * 4) + "(s0)");
+            buffer.add("sw a0, " + value + "(sp)");
           } else {
-            buffer.add("li t1, " + (value * 4));
-            buffer.add("add t1, t1, s0");
+            buffer.add("li t1, " + value);
+            buffer.add("add t1, t1, sp");
             buffer.add("sw a0, 0(t1)");
           }
         }

@@ -94,15 +94,10 @@ public class IRFunc extends IRCode {
       buffer.add("sub sp, sp, t0");
       buffer.add("add t1, sp, t0");
     }
+    now_depth = size;
     buffer.add("sw ra, " + (-4) + "(t1)");
-    buffer.add("sw s0, " + (-8) + "(t1)");
     for (int i = 0; i <= Integer.min(register_use.get(-func_num), 10); i++) {
       buffer.add("sw s" + (i + 1) + ", " + (-12 - 4 * i) + "(t1)");
-    }
-    if(size <= 2047) {
-      buffer.add("addi s0, sp, " + size);
-    } else {
-    buffer.add("add s0, sp, t0");
     }
     if (names.size() < 8) {
       for (int i = 0; i < names.size(); i++) {
@@ -115,11 +110,12 @@ public class IRFunc extends IRCode {
             buffer.add("mv " + register_name.get(value) + ", " + "a" + i);
           }
         } else {
-          if ((value >> 9) == 0) {
-            buffer.add("sw a" + i + " , " + (value * 4) + "(s0)");
+          value = now_depth + (value * 4);
+          if ((value >> 11) == 0) {
+            buffer.add("sw a" + i + " , " + value + "(sp)");
           } else {
-            buffer.add("li t0, " + (value * 4));
-            buffer.add("add t0, t0, s0");
+            buffer.add("li t0, " + value);
+            buffer.add("add t0, t0, sp");
             buffer.add("sw a" + i + ", 0(t0)");
           }
         }
@@ -135,11 +131,12 @@ public class IRFunc extends IRCode {
             buffer.add("mv " + register_name.get(value) + ", " + "a" + i);
           }
         } else {
-          if ((value >> 9) == 0) {
-            buffer.add("sw a" + i + " , " + (value * 4) + "(s0)");
+          value = now_depth + (value * 4);
+          if ((value >> 11) == 0) {
+            buffer.add("sw a" + i + " , " + value + "(sp)");
           } else {
-            buffer.add("li t0, " + (value * 4));
-            buffer.add("add t0, t0, s0");
+            buffer.add("li t0, " + value);
+            buffer.add("add t0, t0, sp");
             buffer.add("sw a" + i + ", 0(t0)");
           }
         }
@@ -153,19 +150,21 @@ public class IRFunc extends IRCode {
         if (value >= 0) {
           target_reg = register_name.get(value);
         }
-        if (((i - 8) >> 9) == 0) {
-          buffer.add("lw " + target_reg + ", " + ((i - 8) * 4) + "(s0)");
+        int place = now_depth + ((i - 8) * 4);
+        if ((place >> 11) == 0) {
+          buffer.add("lw " + target_reg + ", " + place + "(sp)");
         } else {
-          buffer.add("li t0, " + ((i - 8) * 4));
-          buffer.add("add t0, t0, s0");
+          buffer.add("li t0, " + place);
+          buffer.add("add t0, t0, sp");
           buffer.add("lw " + target_reg + ", 0(t0)");
         }
         if (value < 0) {
-          if ((value >> 9) == 0) {
-            buffer.add("sw t0, " + (value * 4) + "(s0)");
+          value = now_depth + value * 4;
+          if ((value >> 11) == 0) {
+            buffer.add("sw t0, " + value + "(sp)");
           } else {
-            buffer.add("li t1, " + (value * 4));
-            buffer.add("add t1, t1, s0");
+            buffer.add("li t1, " + value);
+            buffer.add("add t1, t1, sp");
             buffer.add("sw t0, 0(t1)");
           }
         }

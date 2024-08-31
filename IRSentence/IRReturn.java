@@ -120,11 +120,12 @@ public class IRReturn extends IRCode {
               buffer.add("mv " + "a0, " + register_name.get(num));
             }
           } else {
-            if ((num >> 9) == 0) {
-              buffer.add("lw a0, " + (num * 4) + "(s0)");
+            num = now_depth + (num * 4);
+            if ((num >> 11) == 0) {
+              buffer.add("lw a0, " + num + "(sp)");
             } else {
-              buffer.add("li t0, " + (num * 4));
-              buffer.add("add t0, t0, s0");
+              buffer.add("li t0, " + num);
+              buffer.add("add t0, t0, sp");
               buffer.add("lw a0, 0(t0)");
             }
           }

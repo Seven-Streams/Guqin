@@ -140,11 +140,12 @@ public class IRLoad extends IRCode {
       if (place >= 0) {
         addr = register_name.get(place);
       } else {
+        place = now_depth + (place * 4);
         if ((place >> 9) == 0) {
-          buffer.add("lw t0, " + (place * 4) + "(s0)");
+          buffer.add("lw t0, " + place + "(sp)");
         } else {
-          buffer.add("li t0, " + (place * 4));
-          buffer.add("add t0, t0, s0");
+          buffer.add("li t0, " + place);
+          buffer.add("add t0, t0, sp");
           buffer.add("lw t0, 0(t0)");
         }
       }
@@ -156,11 +157,12 @@ public class IRLoad extends IRCode {
       buffer.add("lw " + register_name.get(target_value) + ", 0(" + addr + ")");
     }
     if (target_value < 0) {
-      if ((target_value >> 9) == 0) {
-        buffer.add("sw t0, " + (target_value * 4) + "(s0)");
+      target_value = now_depth + (target_value * 4);
+      if ((target_value >> 11) == 0) {
+        buffer.add("sw t0, " + target_value + "(sp)");
       } else {
-        buffer.add("li t1, " + (target_value * 4));
-        buffer.add("add t1, t1, s0");
+        buffer.add("li t1, " + target_value);
+        buffer.add("add t1, t1, sp");
         buffer.add("sw t0, 0(t1)");
       }
     }
