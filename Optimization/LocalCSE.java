@@ -140,6 +140,7 @@ public class LocalCSE {
         String global_value = null;
         boolean is_load = false;
         boolean global_load = false;
+        HashMap<String, Boolean> elements = new HashMap<>();
         if (code instanceof IRLoad) {
           IRLoad load = (IRLoad) code;
           is_load = true;
@@ -156,6 +157,15 @@ public class LocalCSE {
           }
           code2.ConstCheck(value);
           if (global_name != null) {
+            if (code2 instanceof IRElement) {
+              IRElement ele = (IRElement) code2;
+              if (ele.num2 == null) {
+                if (ele.src.equals(global_name) || elements.containsKey(ele.src)) {
+                  elements.put(ele.output, null);
+                }
+              }
+              continue;
+            }
             if (code2 instanceof IRStore) {
               IRStore store = (IRStore) code2;
               if (global_load) {
@@ -164,7 +174,10 @@ public class LocalCSE {
                   break;
                 }
               } else {
-                global_name = null;
+                if (!elements.containsKey(store.name)) {
+                  global_name = null;
+                  break;
+                }
               }
               continue;
             }
@@ -241,6 +254,15 @@ public class LocalCSE {
               }
               code2.ConstCheck(value);
               if (global_name != null) {
+                if (code2 instanceof IRElement) {
+                  IRElement ele = (IRElement) code2;
+                  if (ele.num2 == null) {
+                    if (ele.src.equals(global_name) || elements.containsKey(ele.src)) {
+                      elements.put(ele.output, null);
+                    }
+                  }
+                  continue;
+                }
                 if (code2 instanceof IRStore) {
                   IRStore store = (IRStore) code2;
                   if (global_load) {
@@ -249,7 +271,10 @@ public class LocalCSE {
                       break;
                     }
                   } else {
-                    global_name = null;
+                    if (!elements.containsKey(store.name)) {
+                      global_name = null;
+                      break;
+                    }
                   }
                   continue;
                 }
@@ -327,6 +352,15 @@ public class LocalCSE {
               }
               code2.ConstCheck(value);
               if (global_name != null) {
+                if (code2 instanceof IRElement) {
+                  IRElement ele = (IRElement) code2;
+                  if (ele.num2 == null) {
+                    if (ele.src.equals(global_name) || elements.containsKey(ele.src)) {
+                      elements.put(ele.output, null);
+                    }
+                  }
+                  continue;
+                }
                 if (code2 instanceof IRStore) {
                   IRStore store = (IRStore) code2;
                   if (global_load) {
@@ -335,7 +369,10 @@ public class LocalCSE {
                       break;
                     }
                   } else {
-                    global_name = null;
+                    if (!elements.containsKey(store.name)) {
+                      global_name = null;
+                      break;
+                    }
                   }
                   continue;
                 }
@@ -410,6 +447,15 @@ public class LocalCSE {
               }
               code2.ConstCheck(value);
               if (global_name != null) {
+                if (code2 instanceof IRElement) {
+                  IRElement ele = (IRElement) code2;
+                  if (ele.num2 == null) {
+                    if (ele.src.equals(global_name) || elements.containsKey(ele.src)) {
+                      elements.put(ele.output, null);
+                    }
+                  }
+                  continue;
+                }
                 if (code2 instanceof IRStore) {
                   IRStore store = (IRStore) code2;
                   if (global_load) {
@@ -418,7 +464,10 @@ public class LocalCSE {
                       break;
                     }
                   } else {
-                    global_name = null;
+                    if (!elements.containsKey(store.name)) {
+                      global_name = null;
+                      break;
+                    }
                   }
                   continue;
                 }
@@ -508,6 +557,7 @@ public class LocalCSE {
         String global_value = null;
         boolean is_load = false;
         boolean global_load = false;
+        HashMap<String, Boolean> elements = new HashMap<>();
         if (code instanceof IRLoad) {
           IRLoad load = (IRLoad) code;
           global_name = new String(load.src);
@@ -524,6 +574,15 @@ public class LocalCSE {
           }
           code2.ConstCheck(value);
           if (global_name != null) {
+            if (code2 instanceof IRElement) {
+              IRElement ele = (IRElement) code2;
+              if (ele.num2 == null) {
+                if (ele.src.equals(global_name) || elements.containsKey(ele.src)) {
+                  elements.put(ele.output, null);
+                }
+              }
+              continue;
+            }
             if (code2 instanceof IRStore) {
               IRStore store = (IRStore) code2;
               if (global_load) {
@@ -532,7 +591,10 @@ public class LocalCSE {
                   break;
                 }
               } else {
-                global_name = null;
+                if (!elements.containsKey(store.name)) {
+                  global_name = null;
+                  break;
+                }
               }
               continue;
             }
@@ -607,6 +669,15 @@ public class LocalCSE {
               }
               code2.ConstCheck(value);
               if (global_name != null) {
+                if (code2 instanceof IRElement) {
+                  IRElement ele = (IRElement) code2;
+                  if (ele.num2 == null) {
+                    if (ele.src.equals(global_name) || elements.containsKey(ele.src)) {
+                      elements.put(ele.output, null);
+                    }
+                  }
+                  continue;
+                }
                 if (code2 instanceof IRStore) {
                   IRStore store = (IRStore) code2;
                   if (global_load) {
@@ -615,7 +686,10 @@ public class LocalCSE {
                       break;
                     }
                   } else {
-                    global_name = null;
+                    if (!elements.containsKey(store.name)) {
+                      global_name = null;
+                      break;
+                    }
                   }
                   continue;
                 }
@@ -693,6 +767,15 @@ public class LocalCSE {
               }
               code2.ConstCheck(value);
               if (global_name != null) {
+                if (code2 instanceof IRElement) {
+                  IRElement ele = (IRElement) code2;
+                  if (ele.num2 == null) {
+                    if (ele.src.equals(global_name) || elements.containsKey(ele.src)) {
+                      elements.put(ele.output, null);
+                    }
+                  }
+                  continue;
+                }
                 if (code2 instanceof IRStore) {
                   IRStore store = (IRStore) code2;
                   if (global_load) {
@@ -701,7 +784,10 @@ public class LocalCSE {
                       break;
                     }
                   } else {
-                    global_name = null;
+                    if (!elements.containsKey(store.name)) {
+                      global_name = null;
+                      break;
+                    }
                   }
                   continue;
                 }
@@ -776,6 +862,15 @@ public class LocalCSE {
               }
               code2.ConstCheck(value);
               if (global_name != null) {
+                if (code2 instanceof IRElement) {
+                  IRElement ele = (IRElement) code2;
+                  if (ele.num2 == null) {
+                    if (ele.src.equals(global_name) || elements.containsKey(ele.src)) {
+                      elements.put(ele.output, null);
+                    }
+                  }
+                  continue;
+                }
                 if (code2 instanceof IRStore) {
                   IRStore store = (IRStore) code2;
                   if (global_load) {
@@ -784,7 +879,10 @@ public class LocalCSE {
                       break;
                     }
                   } else {
-                    global_name = null;
+                    if (!elements.containsKey(store.name)) {
+                      global_name = null;
+                      break;
+                    }
                   }
                   continue;
                 }
