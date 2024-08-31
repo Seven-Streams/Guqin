@@ -279,6 +279,9 @@ public class IRStore extends IRCode {
     if(replace.containsKey(from)) {
       from = new String(replace.get(from));
     }
+    if(replace.containsKey(name)) {
+      name = new String(replace.get(name));
+    }
     return null;
   }
 }

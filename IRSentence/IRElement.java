@@ -409,4 +409,22 @@ public class IRElement extends IRCode {
     }
     return null;
   }
+
+  @Override
+  public boolean RepeatOperation(IRCode rhs) {
+    if(!(rhs instanceof IRElement)) {
+      return false;
+    }
+    IRElement ele2 = (IRElement)rhs;
+    if(!src.equals(ele2.src)) {
+      return false;
+    }
+    if((num2 != null && ele2.num2 == null) || (num2 == null && ele2.num2 != null)) {
+      return false;
+    }
+    if(num2 != null) {
+      return num2.equals(ele2.num2);
+    }
+    return num1.equals(ele2.num1);
+  }
 }

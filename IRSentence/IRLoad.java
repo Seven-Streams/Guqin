@@ -201,4 +201,12 @@ public class IRLoad extends IRCode {
       UseDefCheck(def, use);
     }
   }
+
+  @Override
+  public String ConstCheck(HashMap<String, String> replace) {
+    if(replace.containsKey(src)) {
+      src = new String(replace.get(src));
+    }
+    return null;
+  }
 }

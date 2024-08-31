@@ -34,6 +34,7 @@ public class IRCode {
   public static boolean CheckLit(String to_check) {
     return(!((to_check.equals("true")) || to_check.equals("false") || to_check.equals("null")));
   }
+  public boolean RepeatOperation(IRCode rhs) {return false;}
   public void AliveUseDefCheck(HashMap<String, Boolean> def, HashMap<String, Boolean> use){UseDefCheck(def, use);}
   public void CheckGlobal(){};
   public String ConstCheck(HashMap<String, String> replace){return null;}

@@ -706,7 +706,10 @@ public class IRBin extends IRCode {
       if (!replace.containsKey(op1)) {
         ok = false;
       } else {
-        value1 = Integer.parseInt(replace.get(op1));
+        try {
+          value1 = Integer.parseInt(replace.get(op1));
+        } catch (NumberFormatException e2) {
+        }
         op1 = new String(replace.get(op1));
       }
     }
@@ -716,12 +719,18 @@ public class IRBin extends IRCode {
       if (!replace.containsKey(op2)) {
         ok = false;
       } else {
-        value2 = Integer.parseInt(replace.get(op2));
+        try {
+          value2 = Integer.parseInt(replace.get(op2));
+        } catch (NumberFormatException e2) {
+        }
         op2 = new String(replace.get(op2));
       }
     }
     int result = 0;
-    if(!ok) {
+    if (!ok) {
+      return null;
+    }
+    if(value1 == null || value2 == null) {
       return null;
     }
     switch (symbol) {
@@ -780,5 +789,28 @@ public class IRBin extends IRCode {
     replace.put(target_reg, Integer.toString(result));
     dead = true;
     return target_reg;
+  }
+
+  @Override
+  public boolean RepeatOperation(IRCode rhs) {
+    if (!(rhs instanceof IRBin)) {
+      return false;
+    }
+    IRBin bin2 = (IRBin) rhs;
+    if (!symbol.equals(bin2.symbol)) {
+      return false;
+    }
+    if (symbol.equals("+") || symbol.equals("*") || symbol.equals("^") || symbol.equals("|") || symbol.equals("&")) {
+      if ((op1.equals(bin2.op1) && op2.equals(bin2.op2)) || (op1.equals(bin2.op2) && op2.equals(bin2.op1))) {
+        return true;
+      }
+    } else {
+      if (op1.equals(bin2.op1) && op2.equals(bin2.op2)) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    return false;
   }
 }

@@ -592,7 +592,10 @@ public class IRIcmp extends IRCode {
         if (!replace.containsKey(op1)) {
           ok = false;
         } else {
-          value1 = Integer.parseInt(replace.get(op1));
+          try {
+            value1 = Integer.parseInt(replace.get(op1));
+          } catch (NumberFormatException e2) {
+          }
           op1 = new String(replace.get(op1));
         }
       } else {
@@ -606,7 +609,11 @@ public class IRIcmp extends IRCode {
         if (!replace.containsKey(op2)) {
           ok = false;
         } else {
-          value2 = Integer.parseInt(replace.get(op2));
+          try {
+            value2 = Integer.parseInt(replace.get(op2));
+          } catch (NumberFormatException e2) {
+
+          }
           op2 = new String(replace.get(op2));
         }
       } else {
@@ -614,6 +621,9 @@ public class IRIcmp extends IRCode {
       }
     }
     if (!ok) {
+      return null;
+    }
+    if (value1 == null || value2 == null) {
       return null;
     }
     int result = 0;
@@ -646,5 +656,28 @@ public class IRIcmp extends IRCode {
     replace.put(target_reg, Integer.toString(result));
     dead = true;
     return target_reg;
+  }
+
+  @Override
+  public boolean RepeatOperation(IRCode rhs) {
+    if (!(rhs instanceof IRIcmp)) {
+      return false;
+    }
+    IRIcmp cmp2 = (IRIcmp) rhs;
+    if (!symbol.equals(cmp2.symbol)) {
+      return false;
+    }
+    if (symbol.equals("==") || symbol.equals("!=")) {
+      if ((op1.equals(cmp2.op1) && op2.equals(cmp2.op2)) || (op1.equals(cmp2.op2) && op2.equals(cmp2.op1))) {
+        return true;
+      }
+    } else {
+      if (op1.equals(cmp2.op1) && op2.equals(cmp2.op2)) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    return false;
   }
 }

@@ -20,6 +20,8 @@ public class Optimizor {
     const_check.Optim();
     SCCP sccp = new SCCP(machine);
     sccp.Optim();
+    LocalCSE cse = new LocalCSE(machine);
+    cse.Optim();
     PhiRemover eraser = new PhiRemover(machine);
     eraser.Remove();
     NaiveADCE ADCER = new NaiveADCE(machine);
