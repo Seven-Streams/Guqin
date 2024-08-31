@@ -35,6 +35,7 @@ Guqin is a kind of Chinese traditional musical instrument. For example, the famo
 - [自伤无色](https://music.163.com/song?id=31460022)
 - [夢花火](https://music.163.com/song?id=28308659)
 - [美しきもの](https://music.163.com/song?id=22782025)
+- [螢塚](https://music.163.com/song?id=32803294)
 
 ## Warning
 
