@@ -85,6 +85,9 @@ public class LocalCSE {
   }
 
   void CSECheck(int index) {
+    for (IRCode code : machine.global) {
+      code.CheckGlobal();
+    }
     HashMap<Integer, Boolean> visit = new HashMap<>();
     HashMap<String, String> value = new HashMap<>();
     HashMap<String, HashMap<Integer, Boolean>> use = new HashMap<>();
@@ -130,8 +133,19 @@ public class LocalCSE {
           continue;
         }
         code.ConstCheck(value);
-        if (!(code instanceof IRBin || code instanceof IRIcmp || code instanceof IRElement)) {
+        if (!(code instanceof IRBin || code instanceof IRIcmp || code instanceof IRElement || code instanceof IRLoad)) {
           continue;
+        }
+        String global_name = null;
+        String global_value = null;
+        if (code instanceof IRLoad) {
+          IRLoad load = (IRLoad) code;
+          if (IRCode.is_global.containsKey(load.src)) {
+            global_name = new String(load.src);
+            global_value = new String(load.des);
+          } else {
+            continue;
+          }
         }
         for (int j = i + 1; j < to_check.size(); j++) {
           IRCode code2 = to_check.get(j);
@@ -139,6 +153,32 @@ public class LocalCSE {
             continue;
           }
           code2.ConstCheck(value);
+          if (global_name != null) {
+            if (code2 instanceof IRStore) {
+              IRStore store = (IRStore) code2;
+              if (global_name.equals(store.name)) {
+                global_name = null;
+              }
+              continue;
+            }
+            if (code2 instanceof IRLoad) {
+              IRLoad load = (IRLoad) code2;
+              if (global_name.equals(load.src)) {
+                ((IRLoad) code2).dead = true;
+                value.put(new String(load.des), new String(global_value));
+                for (Integer to : use.get(load.des).keySet()) {
+                  if (!in_queue.containsKey(to)) {
+                    update.add(to);
+                    in_queue.put(to, null);
+                  }
+                }
+              }
+              continue;
+            }
+            if (code2 instanceof IRFuncall) {
+              break;
+            }
+          }
           boolean check_repeat = code.RepeatOperation(code2);
           if (check_repeat) {
             code2.dead = true;
@@ -198,12 +238,52 @@ public class LocalCSE {
           continue;
         }
         code.ConstCheck(value);
+        if (!(code instanceof IRBin || code instanceof IRIcmp || code instanceof IRElement || code instanceof IRLoad)) {
+          continue;
+        }
+        String global_name = null;
+        String global_value = null;
+        if (code instanceof IRLoad) {
+          IRLoad load = (IRLoad) code;
+          if (IRCode.is_global.containsKey(load.src)) {
+            global_name = new String(load.src);
+            global_value = new String(load.des);
+          } else {
+            continue;
+          }
+        }
         for (int j = i + 1; j < to_check.size(); j++) {
           IRCode code2 = to_check.get(j);
           if (code2.dead) {
             continue;
           }
           code2.ConstCheck(value);
+          if (global_name != null) {
+            if (code2 instanceof IRStore) {
+              IRStore store = (IRStore) code2;
+              if (global_name.equals(store.name)) {
+                global_name = null;
+              }
+              continue;
+            }
+            if (code2 instanceof IRFuncall) {
+              break;
+            }
+            if (code2 instanceof IRLoad) {
+              IRLoad load = (IRLoad) code2;
+              if (global_name.equals(load.src)) {
+                load.dead = true;
+                value.put(new String(load.des), new String(global_value));
+                for (Integer to : use.get(load.des).keySet()) {
+                  if (!in_queue.containsKey(to)) {
+                    update.add(to);
+                    in_queue.put(to, null);
+                  }
+                }
+              }
+              continue;
+            }
+          }
           boolean check_repeat = code.RepeatOperation(code2);
           if (check_repeat) {
             code2.dead = true;
@@ -228,6 +308,18 @@ public class LocalCSE {
                   in_queue.put(to, null);
                 }
               }
+            }
+            if (code2 instanceof IRElement) {
+              IRElement ele = (IRElement) code;
+              IRElement ele2 = (IRElement) code2;
+              value.put(new String(ele2.output), new String(ele.output));
+              for (Integer to : use.get(ele2.output).keySet()) {
+                if (!in_queue.containsKey(to)) {
+                  update.add(to);
+                  in_queue.put(to, null);
+                }
+              }
+              continue;
             }
           }
         }

@@ -407,6 +407,9 @@ public class IRElement extends IRCode {
     if (num2 != null && replace.containsKey(num2)) {
       num2 = new String(replace.get(num2));
     }
+    if(replace.containsKey(src)) {
+      src = new String(replace.get(src));
+    }
     return null;
   }
 

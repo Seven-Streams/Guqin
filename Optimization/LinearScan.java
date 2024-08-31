@@ -540,7 +540,7 @@ public class LinearScan {
         func_res = Integer.max(func_res, (reg_cnt + 2 + Integer.max(0, res.reg.size() - 8)));
       }
       if (code instanceof IRFuncend) {
-        check.size = func_res + stack_variables.get(now_func) + 14;
+        check.size = func_res + stack_variables.get(now_func) + 18;
       }
     }
     return;

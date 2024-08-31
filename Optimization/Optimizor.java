@@ -22,6 +22,7 @@ public class Optimizor {
     sccp.Optim();
     LocalCSE cse = new LocalCSE(machine);
     cse.Optim();
+    // machine.LLVMOutput();
     PhiRemover eraser = new PhiRemover(machine);
     eraser.Remove();
     NaiveADCE ADCER = new NaiveADCE(machine);
