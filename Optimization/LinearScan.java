@@ -548,7 +548,7 @@ public class LinearScan {
 
   void RegisterName() {
     int cnt = 0;
-    for (int i = 0; i <= 11; i++) {
+    for (int i = 1; i <= 11; i++) {
       register_names.put(cnt++, "s" + Integer.toString(i));
     }
     for (int i = 2; i <= 6; i++) {
