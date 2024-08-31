@@ -139,14 +139,14 @@ public class LocalCSE {
         String global_name = null;
         String global_value = null;
         boolean is_load = false;
+        boolean global_load = false;
         if (code instanceof IRLoad) {
           IRLoad load = (IRLoad) code;
+          is_load = true;
+          global_name = new String(load.src);
+          global_value = new String(load.des);
           if (IRCode.is_global.containsKey(load.src)) {
-            global_name = new String(load.src);
-            global_value = new String(load.des);
-            is_load = true;
-          } else {
-            continue;
+            global_load = true;
           }
         }
         for (int j = i + 1; j < to_check.size(); j++) {
@@ -158,9 +158,13 @@ public class LocalCSE {
           if (global_name != null) {
             if (code2 instanceof IRStore) {
               IRStore store = (IRStore) code2;
-              if (global_name.equals(store.name)) {
+              if (global_load) {
+                if (global_name.equals(store.name)) {
+                  global_name = null;
+                  break;
+                }
+              } else {
                 global_name = null;
-                break;
               }
               continue;
             }
@@ -239,9 +243,13 @@ public class LocalCSE {
               if (global_name != null) {
                 if (code2 instanceof IRStore) {
                   IRStore store = (IRStore) code2;
-                  if (global_name.equals(store.name)) {
+                  if (global_load) {
+                    if (global_name.equals(store.name)) {
+                      global_name = null;
+                      break;
+                    }
+                  } else {
                     global_name = null;
-                    break;
                   }
                   continue;
                 }
@@ -321,9 +329,13 @@ public class LocalCSE {
               if (global_name != null) {
                 if (code2 instanceof IRStore) {
                   IRStore store = (IRStore) code2;
-                  if (global_name.equals(store.name)) {
+                  if (global_load) {
+                    if (global_name.equals(store.name)) {
+                      global_name = null;
+                      break;
+                    }
+                  } else {
                     global_name = null;
-                    break;
                   }
                   continue;
                 }
@@ -400,9 +412,13 @@ public class LocalCSE {
               if (global_name != null) {
                 if (code2 instanceof IRStore) {
                   IRStore store = (IRStore) code2;
-                  if (global_name.equals(store.name)) {
+                  if (global_load) {
+                    if (global_name.equals(store.name)) {
+                      global_name = null;
+                      break;
+                    }
+                  } else {
                     global_name = null;
-                    break;
                   }
                   continue;
                 }
@@ -491,14 +507,14 @@ public class LocalCSE {
         String global_name = null;
         String global_value = null;
         boolean is_load = false;
+        boolean global_load = false;
         if (code instanceof IRLoad) {
           IRLoad load = (IRLoad) code;
+          global_name = new String(load.src);
+          global_value = new String(load.des);
+          is_load = true;
           if (IRCode.is_global.containsKey(load.src)) {
-            global_name = new String(load.src);
-            global_value = new String(load.des);
-            is_load = true;
-          } else {
-            continue;
+            global_load = true;
           }
         }
         for (int j = i + 1; j < to_check.size(); j++) {
@@ -510,9 +526,13 @@ public class LocalCSE {
           if (global_name != null) {
             if (code2 instanceof IRStore) {
               IRStore store = (IRStore) code2;
-              if (global_name.equals(store.name)) {
+              if (global_load) {
+                if (global_name.equals(store.name)) {
+                  global_name = null;
+                  break;
+                }
+              } else {
                 global_name = null;
-                break;
               }
               continue;
             }
@@ -589,9 +609,13 @@ public class LocalCSE {
               if (global_name != null) {
                 if (code2 instanceof IRStore) {
                   IRStore store = (IRStore) code2;
-                  if (global_name.equals(store.name)) {
+                  if (global_load) {
+                    if (global_name.equals(store.name)) {
+                      global_name = null;
+                      break;
+                    }
+                  } else {
                     global_name = null;
-                    break;
                   }
                   continue;
                 }
@@ -671,9 +695,13 @@ public class LocalCSE {
               if (global_name != null) {
                 if (code2 instanceof IRStore) {
                   IRStore store = (IRStore) code2;
-                  if (global_name.equals(store.name)) {
+                  if (global_load) {
+                    if (global_name.equals(store.name)) {
+                      global_name = null;
+                      break;
+                    }
+                  } else {
                     global_name = null;
-                    break;
                   }
                   continue;
                 }
@@ -750,9 +778,13 @@ public class LocalCSE {
               if (global_name != null) {
                 if (code2 instanceof IRStore) {
                   IRStore store = (IRStore) code2;
-                  if (global_name.equals(store.name)) {
+                  if (global_load) {
+                    if (global_name.equals(store.name)) {
+                      global_name = null;
+                      break;
+                    }
+                  } else {
                     global_name = null;
-                    break;
                   }
                   continue;
                 }
