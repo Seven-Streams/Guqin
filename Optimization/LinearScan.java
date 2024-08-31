@@ -477,7 +477,7 @@ public class LinearScan {
       // }
       Map<Integer, HashMap<Integer, Boolean>> submap = calling_use.subMap(now_alloc.start, now_alloc.end);
       if (submap.isEmpty()) {
-        for (int i = 11; i < degree; i++) {
+        for (int i = 12; i < degree; i++) {
           if ((free.get(i) == null) || free.get(i).end < now_alloc.start) {
             free.set(i, now_alloc);
             registers.get(func_num).put(now_alloc.name, i);
@@ -548,7 +548,7 @@ public class LinearScan {
 
   void RegisterName() {
     int cnt = 0;
-    for (int i = 1; i <= 11; i++) {
+    for (int i = 0; i <= 11; i++) {
       register_names.put(cnt++, "s" + Integer.toString(i));
     }
     for (int i = 2; i <= 6; i++) {

@@ -96,8 +96,8 @@ public class IRFunc extends IRCode {
     }
     now_depth = size;
     buffer.add("sw ra, " + (-4) + "(t1)");
-    for (int i = 0; i <= Integer.min(register_use.get(-func_num), 10); i++) {
-      buffer.add("sw s" + (i + 1) + ", " + (-12 - 4 * i) + "(t1)");
+    for (int i = 0; i <= Integer.min(register_use.get(-func_num), 11); i++) {
+      buffer.add("sw s" + i + ", " + (-12 - 4 * i) + "(t1)");
     }
     if (names.size() < 8) {
       for (int i = 0; i < names.size(); i++) {

@@ -229,7 +229,7 @@ public class IRFuncall extends IRCode {
     int extra = Integer.max(0, reg.size() - 8);
     ArrayList<String> to_save = new ArrayList<>();
     for (Integer reg_num : to_save_registers.get(sentence_number).keySet()) {
-      if ((reg_num <= 10)) {
+      if ((reg_num <= 11)) {
         continue;
       }
       to_save.add(register_name.get(reg_num));
@@ -253,11 +253,11 @@ public class IRFuncall extends IRCode {
     ArrayList<PseudoMove> moves = new ArrayList<>();
     for (int i = 0; i < total; i++) {
       String func_in = null;
-      if (!danger.containsKey(24 - i)) {
-        func_in = register_name.get(24 - i);
-        danger.put(24 - i, null);
+      if (!danger.containsKey(25 - i)) {
+        func_in = register_name.get(25 - i);
+        danger.put(25 - i, null);
       } else {
-        for (int j = 12; j < 27; j++) {
+        for (int j = 12; j < 28; j++) {
           if (!danger.containsKey(j)) {
             func_in = register_name.get(j);
             PseudoMove move = new PseudoMove(func_in, "a" + i);
