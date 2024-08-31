@@ -29,7 +29,7 @@ public class Optimizor {
     CondUpdate condition = new CondUpdate(machine);
     condition.Optim();
     LinearScan allocator = new LinearScan(machine);
-    allocator.Allocator(27);
+    allocator.Allocator(28);
     RemoveJmp jp = new RemoveJmp(machine);
     jp.Optim();
     allocator.PrintBuiltIn();

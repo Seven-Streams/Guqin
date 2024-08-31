@@ -44,9 +44,12 @@ public class IRFuncend extends IRCode {
       buffer.add("li t0, " + (sp_length));
       buffer.add("add sp, sp, t0");
     }
-    buffer.add("lw ra, " + (-4) + "(sp)");
-    for (int i = 0; i <= Integer.min(register_use.get(-func_num), 10); i++) {
-      buffer.add("lw s" + (i + 1) + ", " + (-12 - 4 * i) + "(sp)");
+    buffer.add("lw ra, -4(sp)");
+    if(register_use.get(-func_num) >= 0) {
+      buffer.add("lw s0, -8(sp)");
+    }
+    for (int i = 1; i <= Integer.min(register_use.get(-func_num), 11); i++) {
+      buffer.add("lw s" + i + ", " + (-8 - 4 * i) + "(sp)");
     }
     buffer.add("ret");
   }
