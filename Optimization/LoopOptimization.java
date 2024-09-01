@@ -256,48 +256,6 @@ public class LoopOptimization {
             }
           }
           if (all_out) {
-            if (code instanceof IRBin) {
-              IRBin bin = (IRBin) code;
-              IRBin new_bin = new IRBin();
-              new_bin.op1 = new String(bin.op1);
-              new_bin.op2 = new String(bin.op2);
-              new_bin.type = new String(bin.type);
-              new_bin.symbol = new String(bin.symbol);
-              new_bin.target_reg = new String(bin.target_reg);
-              new_codes.add(new_bin);
-              bin.dead = true;
-              flag = true;
-              def.remove(bin.target_reg);
-              continue;
-            }
-            if (code instanceof IRIcmp) {
-              IRIcmp cmp = (IRIcmp) code;
-              IRIcmp new_cmp = new IRIcmp();
-              new_cmp.op1 = new String(cmp.op1);
-              new_cmp.op2 = new String(cmp.op2);
-              new_cmp.type = new String(cmp.type);
-              new_cmp.symbol = new String(cmp.symbol);
-              new_cmp.target_reg = new String(cmp.target_reg);
-              new_codes.add(new_cmp);
-              cmp.dead = true;
-              flag = true;
-              def.remove(cmp.target_reg);
-              continue;
-            }
-            // if (code instanceof IRElement) {
-            //   IRElement ele = (IRElement) code;
-            //   IRElement new_ele = new IRElement();
-            //   new_ele.src = new String(ele.src);
-            //   new_ele.output = new String(ele.output);
-            //   new_ele.num1 = new String(ele.num1);
-            //   new_ele.now_type = new String(ele.now_type);
-            //   new_ele.num2 = ele.num2 == null ? null : new String(ele.num2);
-            //   new_codes.add(new_ele);
-            //   ele.dead = true;
-            //   flag = true;
-            //   def.remove(ele.output);
-            //   continue;
-            // }
             if ((!have_funcall) && (code instanceof IRLoad)) {
               IRLoad load = (IRLoad) code;
               if (IRCode.is_global.containsKey(load.src)) {
@@ -374,7 +332,7 @@ public class LoopOptimization {
           pre.get(entry.getKey()).remove(value);
         }
         for (Map.Entry<Integer, HashMap<Integer, Boolean>> loop_inner : loops.entrySet()) {
-          if(loop_inner.getKey() == entry.getKey()) {
+          if (loop_inner.getKey() == entry.getKey()) {
             continue;
           }
           if (loop_inner.getValue().containsKey(entry.getKey())) {

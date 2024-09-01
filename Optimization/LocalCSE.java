@@ -152,6 +152,12 @@ public class LocalCSE {
         }
         for (int j = i + 1; j < to_check.size(); j++) {
           IRCode code2 = to_check.get(j);
+          if ((code2 instanceof IRStore) && (code instanceof IRElement)) {
+            IRElement ele = (IRElement) code;
+            if (ele.num2 != null) {
+              break;
+            }
+          }
           if (code2.dead) {
             continue;
           }
@@ -249,6 +255,12 @@ public class LocalCSE {
             ArrayList<IRCode> to_check2 = blocks.get(jmp.label);
             for (int j = 0; j < to_check2.size(); j++) {
               IRCode code2 = to_check2.get(j);
+              if ((code2 instanceof IRStore) && (code instanceof IRElement)) {
+                IRElement ele = (IRElement) code;
+                if (ele.num2 != null) {
+                  break;
+                }
+              }
               if (code2.dead) {
                 continue;
               }
@@ -347,6 +359,12 @@ public class LocalCSE {
             ArrayList<IRCode> to_check2 = blocks.get(jmp.label1);
             for (int j = 0; j < to_check2.size(); j++) {
               IRCode code2 = to_check2.get(j);
+              if ((code2 instanceof IRStore) && (code instanceof IRElement)) {
+                IRElement ele = (IRElement) code;
+                if (ele.num2 != null) {
+                  break;
+                }
+              }
               if (code2.dead) {
                 continue;
               }
@@ -442,6 +460,12 @@ public class LocalCSE {
             ArrayList<IRCode> to_check2 = blocks.get(jmp.label2);
             for (int j = 0; j < to_check2.size(); j++) {
               IRCode code2 = to_check2.get(j);
+              if ((code2 instanceof IRStore) && (code instanceof IRElement)) {
+                IRElement ele = (IRElement) code;
+                if (ele.num2 != null) {
+                  break;
+                }
+              }
               if (code2.dead) {
                 continue;
               }
@@ -569,6 +593,12 @@ public class LocalCSE {
         }
         for (int j = i + 1; j < to_check.size(); j++) {
           IRCode code2 = to_check.get(j);
+          if ((code2 instanceof IRStore) && (code instanceof IRElement)) {
+            IRElement ele = (IRElement) code;
+            if (ele.num2 != null) {
+              break;
+            }
+          }
           if (code2.dead) {
             continue;
           }
@@ -664,6 +694,12 @@ public class LocalCSE {
             ArrayList<IRCode> to_check2 = blocks.get(jmp.label);
             for (int j = 0; j < to_check2.size(); j++) {
               IRCode code2 = to_check2.get(j);
+              if ((code2 instanceof IRStore) && (code instanceof IRElement)) {
+                IRElement ele = (IRElement) code;
+                if (ele.num2 != null) {
+                  break;
+                }
+              }
               if (code2.dead) {
                 continue;
               }
@@ -762,6 +798,12 @@ public class LocalCSE {
             ArrayList<IRCode> to_check2 = blocks.get(jmp.label1);
             for (int j = 0; j < to_check2.size(); j++) {
               IRCode code2 = to_check2.get(j);
+              if ((code2 instanceof IRStore) && (code instanceof IRElement)) {
+                IRElement ele = (IRElement) code;
+                if (ele.num2 != null) {
+                  break;
+                }
+              }
               if (code2.dead) {
                 continue;
               }
@@ -857,6 +899,12 @@ public class LocalCSE {
             ArrayList<IRCode> to_check2 = blocks.get(jmp.label2);
             for (int j = 0; j < to_check2.size(); j++) {
               IRCode code2 = to_check2.get(j);
+              if ((code2 instanceof IRStore) && (code instanceof IRElement)) {
+                IRElement ele = (IRElement) code;
+                if (ele.num2 != null) {
+                  break;
+                }
+              }
               if (code2.dead) {
                 continue;
               }

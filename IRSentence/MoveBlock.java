@@ -113,7 +113,7 @@ public class MoveBlock extends IRCode {
             buffer.add("sw t0, " + des_num + "(sp)");
           } else {
             buffer.add("li t1, " + des_num);
-            buffer.add("add t1, t1, s0");
+            buffer.add("add t1, t1, sp");
             buffer.add("sw t0, 0(t1)");
           }
           continue;
