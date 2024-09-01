@@ -194,8 +194,8 @@ public class IRStore extends IRCode {
         } else {
           int value = registers.get(from);
           value = now_depth + (value * 4);
-          if((value >> 11) == 0) {
-          buffer.add("lw t0, " + value + "(sp)");
+          if ((value >> 11) == 0) {
+            buffer.add("lw t0, " + value + "(sp)");
           } else {
             buffer.add("li t1, " + value);
             buffer.add("add t1, t1, sp");
@@ -268,7 +268,7 @@ public class IRStore extends IRCode {
 
   @Override
   public void GlobalConstReplace(HashMap<String, String> mapping) {
-    if(mapping.containsKey(from)) {
+    if (mapping.containsKey(from)) {
       from = new String(mapping.get(from));
     }
     return;
@@ -276,10 +276,10 @@ public class IRStore extends IRCode {
 
   @Override
   public String ConstCheck(HashMap<String, String> replace) {
-    if(replace.containsKey(from)) {
+    if (replace.containsKey(from)) {
       from = new String(replace.get(from));
     }
-    if(replace.containsKey(name)) {
+    if (replace.containsKey(name)) {
       name = new String(replace.get(name));
     }
     return null;
