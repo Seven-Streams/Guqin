@@ -70,7 +70,11 @@ public class InnerNode extends ExprNode {
     String target_name = "%reg$" + Integer.toString(++machine.tmp_time);
     IRFuncall buildin_func = new IRFuncall();
     buildin_func.target_reg = target_name;
+    if(name.equals("length")) {
+      buildin_func.func_name = "strlen";
+    } else {
     buildin_func.func_name = "string_" + name;
+    }
     for (ASTNode arg : args) {
       Info res = arg.GenerateIR(machine);
       buildin_func.reg.add(res.reg);

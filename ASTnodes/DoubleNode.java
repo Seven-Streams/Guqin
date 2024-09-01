@@ -304,7 +304,7 @@ public class DoubleNode extends ExprNode {
             func.type.add("ptr");
             func.type.add("ptr");
             func.func_type = "i32";
-            func.func_name = "string_cmp";
+            func.func_name = "strcmp";
             machine.generated.add(func);
             IRIcmp res = new IRIcmp();
             res.op1 = tmp1;
@@ -324,7 +324,7 @@ public class DoubleNode extends ExprNode {
             func.type.add("ptr");
             func.type.add("ptr");
             func.func_type = "i32";
-            func.func_name = "string_cmp";
+            func.func_name = "strcmp";
             machine.generated.add(func);
             IRIcmp res = new IRIcmp();
             res.op1 = tmp1;
@@ -344,7 +344,7 @@ public class DoubleNode extends ExprNode {
             func.type.add("ptr");
             func.type.add("ptr");
             func.func_type = "i32";
-            func.func_name = "string_cmp";
+            func.func_name = "strcmp";
             machine.generated.add(func);
             IRIcmp res = new IRIcmp();
             res.op1 = tmp1;
@@ -362,7 +362,7 @@ public class DoubleNode extends ExprNode {
             func.reg.add(string1.reg);
             func.reg.add(string2.reg);
             func.func_type = "i32";
-            func.func_name = "string_cmp";
+            func.func_name = "strcmp";
             func.type.add("ptr");
             func.type.add("ptr");
             machine.generated.add(func);
@@ -382,7 +382,7 @@ public class DoubleNode extends ExprNode {
             func.reg.add(string1.reg);
             func.reg.add(string2.reg);
             func.func_type = "i32";
-            func.func_name = "string_cmp";
+            func.func_name = "strcmp";
             func.type.add("ptr");
             func.type.add("ptr");
             machine.generated.add(func);
@@ -404,7 +404,7 @@ public class DoubleNode extends ExprNode {
             func.type.add("ptr");
             func.type.add("ptr");
             func.func_type = "i32";
-            func.func_name = "string_cmp";
+            func.func_name = "strcmp";
             machine.generated.add(func);
             IRIcmp res = new IRIcmp();
             res.op1 = tmp1;

@@ -38,7 +38,7 @@ public class PrintNode extends StatNode {
       }
     } else {
       if (change_line) {
-        res.func_name = "println";
+        res.func_name = "puts";
       } else {
         res.func_name = "print";
       }
