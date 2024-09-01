@@ -760,15 +760,11 @@ public class LinearScan {
         "# %bb.0:\r\n" + //
         "\taddi\tsp, sp, -16\r\n" + //
         "\tsw\tra, 12(sp)                      # 4-byte Folded Spill\r\n" + //
-        "\tsw\ts0, 8(sp)                       # 4-byte Folded Spill\r\n" + //
-        "\taddi\ts0, sp, 16\r\n" + //
-        "\tsw\ta0, -12(s0)\r\n" + //
-        "\tlw\ta1, -12(s0)\r\n" + //
+        "\tmv a1, a0\r\n" + //
         "\tlui\ta0, %hi(.L.str)\r\n" + //
         "\taddi\ta0, a0, %lo(.L.str)\r\n" + //
         "\tcall\tprintf\r\n" + //
         "\tlw\tra, 12(sp)                      # 4-byte Folded Reload\r\n" + //
-        "\tlw\ts0, 8(sp)                       # 4-byte Folded Reload\r\n" + //
         "\taddi\tsp, sp, 16\r\n" + //
         "\tret\r\n" + //
         ".Lfunc_end1:\r\n" + //
@@ -781,15 +777,11 @@ public class LinearScan {
         "# %bb.0:\r\n" + //
         "\taddi\tsp, sp, -16\r\n" + //
         "\tsw\tra, 12(sp)                      # 4-byte Folded Spill\r\n" + //
-        "\tsw\ts0, 8(sp)                       # 4-byte Folded Spill\r\n" + //
-        "\taddi\ts0, sp, 16\r\n" + //
-        "\tsw\ta0, -12(s0)\r\n" + //
-        "\tlw\ta1, -12(s0)\r\n" + //
+        "\tmv a1, a0\r\n" + //
         "\tlui\ta0, %hi(.L.str.1)\r\n" + //
         "\taddi\ta0, a0, %lo(.L.str.1)\r\n" + //
         "\tcall\tprintf\r\n" + //
         "\tlw\tra, 12(sp)                      # 4-byte Folded Reload\r\n" + //
-        "\tlw\ts0, 8(sp)                       # 4-byte Folded Reload\r\n" + //
         "\taddi\tsp, sp, 16\r\n" + //
         "\tret\r\n" + //
         ".Lfunc_end2:\r\n" + //
@@ -802,15 +794,11 @@ public class LinearScan {
         "# %bb.0:\r\n" + //
         "\taddi\tsp, sp, -16\r\n" + //
         "\tsw\tra, 12(sp)                      # 4-byte Folded Spill\r\n" + //
-        "\tsw\ts0, 8(sp)                       # 4-byte Folded Spill\r\n" + //
-        "\taddi\ts0, sp, 16\r\n" + //
-        "\tsw\ta0, -12(s0)\r\n" + //
-        "\tlw\ta1, -12(s0)\r\n" + //
+        "\tmv\ta1, a0\r\n" + //
         "\tlui\ta0, %hi(.L.str.2)\r\n" + //
         "\taddi\ta0, a0, %lo(.L.str.2)\r\n" + //
         "\tcall\tprintf\r\n" + //
         "\tlw\tra, 12(sp)                      # 4-byte Folded Reload\r\n" + //
-        "\tlw\ts0, 8(sp)                       # 4-byte Folded Reload\r\n" + //
         "\taddi\tsp, sp, 16\r\n" + //
         "\tret\r\n" + //
         ".Lfunc_end3:\r\n" + //
@@ -823,30 +811,25 @@ public class LinearScan {
         "# %bb.0:\r\n" + //
         "\taddi\tsp, sp, -32\r\n" + //
         "\tsw\tra, 28(sp)                      # 4-byte Folded Spill\r\n" + //
-        "\tsw\ts0, 24(sp)                      # 4-byte Folded Spill\r\n" + //
-        "\taddi\ts0, sp, 32\r\n" + //
-        "\tsw\ta0, -12(s0)\r\n" + //
+        "\tsw\ta0, 20(sp)\r\n" + //
         "\tli\ta0, 15\r\n" + //
         "\tcall\tmalloc\r\n" + //
-        "\tsw\ta0, -16(s0)\r\n" + //
-        "\tlw\ta0, -16(s0)\r\n" + //
-        "\tlw\ta2, -12(s0)\r\n" + //
+        "\tsw\ta0, 16(sp)\r\n" + //
+        "\tlw\ta2, 20(sp)\r\n" + //
         "\tlui\ta1, %hi(.L.str.1)\r\n" + //
         "\taddi\ta1, a1, %lo(.L.str.1)\r\n" + //
         "\tcall\tsprintf\r\n" + //
-        "\tlw\ta0, -16(s0)\r\n" + //
+        "\tlw\ta0, 16(sp)\r\n" + //
         "\tcall\tstrlen\r\n" + //
         "\taddi\ta0, a0, 1\r\n" + //
         "\tcall\tmalloc\r\n" + //
-        "\tsw\ta0, -20(s0)\r\n" + //
-        "\tlw\ta0, -20(s0)\r\n" + //
-        "\tlw\ta1, -16(s0)\r\n" + //
+        "\tsw\ta0, 12(sp)\r\n" + //
+        "\tlw\ta1, 16(sp)\r\n" + //
         "\tcall\tstrcpy\r\n" + //
-        "\tlw\ta0, -16(s0)\r\n" + //
+        "\tlw\ta0, 16(sp)\r\n" + //
         "\tcall\tfree\r\n" + //
-        "\tlw\ta0, -20(s0)\r\n" + //
+        "\tlw\ta0, 12(sp)\r\n" + //
         "\tlw\tra, 28(sp)                      # 4-byte Folded Reload\r\n" + //
-        "\tlw\ts0, 24(sp)                      # 4-byte Folded Reload\r\n" + //
         "\taddi\tsp, sp, 32\r\n" + //
         "\tret\r\n" + //
         ".Lfunc_end4:\r\n" + //
