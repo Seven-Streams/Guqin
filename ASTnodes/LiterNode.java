@@ -2,7 +2,7 @@ package ASTnodes;
 
 import Composer.*;
 import IRSentence.IRChararray;
-import IRSentence.IRLoad;
+import IRSentence.IRLoadStr;
 
 //To make the function of a class more clearly, let "this" be %0.
 public class LiterNode extends ExprNode {
@@ -50,10 +50,9 @@ public class LiterNode extends ExprNode {
       }
       to_add.size = ++str_size;
       machine.const_str.add(to_add);
-      IRLoad to_load = new IRLoad();
-      to_load.type = "ptr";
+      IRLoadStr to_load = new IRLoadStr();
       to_load.des = new String("%reg$" + Integer.toString(++machine.tmp_time));
-      to_load.src = new String(to_add.reg);
+      to_load.str_name = new String(to_add.reg);
       machine.generated.add(to_load);
       res.reg = new String(to_load.des);
       return res;

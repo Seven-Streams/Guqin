@@ -39,8 +39,6 @@ public class IRChararray extends IRCode {
     System.out.print(".asciz \"" + value);
     System.out.println("\"");
     System.out.println(".align 4");
-    System.out.println(reg.substring(1) + ":");
-    System.out.println(".word " + reg.substring(1) + ".data");
     return;
   }
 
