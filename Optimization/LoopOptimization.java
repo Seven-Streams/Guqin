@@ -284,22 +284,22 @@ public class LoopOptimization {
               def.remove(cmp.target_reg);
               continue;
             }
-            if (code instanceof IRElement) {
-              IRElement ele = (IRElement) code;
-              if (ele.num2 == null) {
-                IRElement new_ele = new IRElement();
-                new_ele.src = new String(ele.src);
-                new_ele.output = new String(ele.output);
-                new_ele.num1 = new String(ele.num1);
-                new_ele.now_type = new String(ele.now_type);
-                new_ele.num2 = null;
-                new_codes.add(new_ele);
-                ele.dead = true;
-                flag = true;
-                def.remove(ele.output);
-                continue;
-              }
-            }
+            // if (code instanceof IRElement) {
+            //   IRElement ele = (IRElement) code;
+            //   if (ele.num2 == null) {
+            //     IRElement new_ele = new IRElement();
+            //     new_ele.src = new String(ele.src);
+            //     new_ele.output = new String(ele.output);
+            //     new_ele.num1 = new String(ele.num1);
+            //     new_ele.now_type = new String(ele.now_type);
+            //     new_ele.num2 = null;
+            //     new_codes.add(new_ele);
+            //     ele.dead = true;
+            //     flag = true;
+            //     def.remove(ele.output);
+            //     continue;
+            //   }
+            // }
             if ((!have_funcall) && (code instanceof IRLoad)) {
               IRLoad load = (IRLoad) code;
               if (IRCode.is_global.containsKey(load.src)) {
