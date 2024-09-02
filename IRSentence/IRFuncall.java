@@ -197,6 +197,13 @@ public class IRFuncall extends IRCode {
       return;
     }
     if (func_name.equals("array_size")) {
+      if(!registers.containsKey(reg.get(0))) {
+        System.out.println("Warning: try to apply size function to null.");
+        return;
+      }
+      if(!registers.containsKey(target_reg)) {
+        return;
+      }
       int place = registers.get(reg.get(0));
       String from = place >= 0 ? register_name.get(place) : "t0";
       if (place < 0) {
