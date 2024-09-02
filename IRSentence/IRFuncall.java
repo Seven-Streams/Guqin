@@ -197,11 +197,11 @@ public class IRFuncall extends IRCode {
       return;
     }
     if (func_name.equals("array_size")) {
-      if(!registers.containsKey(reg.get(0))) {
+      if (!registers.containsKey(reg.get(0))) {
         System.out.println("Warning: try to apply size function to null.");
         return;
       }
-      if(!registers.containsKey(target_reg)) {
+      if (!registers.containsKey(target_reg)) {
         return;
       }
       int place = registers.get(reg.get(0));
@@ -390,26 +390,30 @@ public class IRFuncall extends IRCode {
           break;
         }
         case ("string_cat"): {
-          buffer.add("	addi	sp, sp, -32");
-          buffer.add("	sw	a0, 20(sp)");
-          buffer.add("	sw	a1, 16(sp)");
-          buffer.add("	call	strlen");
-          buffer.add("	sw	a0, 8(sp)");
-          buffer.add("	lw	a0, 16(sp)");
-          buffer.add("	call	strlen");
-          buffer.add("	mv	a1, a0");
-          buffer.add("	lw	a0, 8(sp)");
-          buffer.add("	add	a0, a0, a1");
-          buffer.add("	addi	a0, a0, 1");
-          buffer.add("	call	malloc");
-          buffer.add("	sw	a0, 12(sp)");
-          buffer.add("	lw	a1, 20(sp)");
-          buffer.add("	call	strcpy");
-          buffer.add("	lw	a0, 12(sp)");
-          buffer.add("	lw	a1, 16(sp)");
-          buffer.add("	call	strcat");
-          buffer.add("	lw	a0, 12(sp)");
-          buffer.add("	addi	sp, sp, 32");
+          buffer.add("      addi    sp, sp, -16");
+          buffer.add("        sw      s0, 8(sp)");
+          buffer.add("        sw      s1, 4(sp)");
+          buffer.add("        sw      s2, 0(sp)");
+          buffer.add("        mv      s2, a1");
+          buffer.add("        mv      s1, a0");
+          buffer.add("        call    strlen");
+          buffer.add("        mv      s0, a0");
+          buffer.add("        mv      a0, s2");
+          buffer.add("        call    strlen");
+          buffer.add("        add     a0, a0, s0");
+          buffer.add("        addi    a0, a0, 1");
+          buffer.add("        call    malloc");
+          buffer.add("        mv      s0, a0");
+          buffer.add("        mv      a1, s1");
+          buffer.add("        call    strcpy");
+          buffer.add("        mv      a0, s0");
+          buffer.add("        mv      a1, s2");
+          buffer.add("        call    strcat");
+          buffer.add("        mv      a0, s0");
+          buffer.add("        lw      s0, 8(sp)");
+          buffer.add("        lw      s1, 4(sp)");
+          buffer.add("        lw      s2, 0(sp)");
+          buffer.add("        addi    sp, sp, 16");
           break;
         }
         case ("string_ord"): {
@@ -418,57 +422,64 @@ public class IRFuncall extends IRCode {
           break;
         }
         case ("string_substring"): {
-          buffer.add("	addi	sp, sp, -32");
-          buffer.add("	sw	a0, 20(sp)");
-          buffer.add("	sw	a1, 16(sp)");
-          buffer.add("	sw	a2, 12(sp)");
-          buffer.add("	li	a0, 5");
-          buffer.add("	call	malloc");
-          buffer.add("	sw	a0, 8(sp)");
-          buffer.add("	lw	a1, 20(sp)");
-          buffer.add("	lw	a2, 16(sp)");
-          buffer.add("	add	a1, a1, a2");
-          buffer.add("	call	strcpy");
-          buffer.add("	lw	a0, 8(sp)");
-          buffer.add("	lw	a1, 12(sp)");
-          buffer.add("	lw	a2, 16(sp)");
-          buffer.add("	sub	a1, a1, a2");
-          buffer.add("	add	a1, a1, a0");
-          buffer.add("	li	a0, 0");
-          buffer.add("	sb	a0, 0(a1)");
-          buffer.add("	lw	a0, 8(sp)");
-          buffer.add("	call	strlen");
-          buffer.add("	addi	a0, a0, 1");
-          buffer.add("	call	malloc");
-          buffer.add("	sw	a0, 4(sp)");
-          buffer.add("	lw	a1, 8(sp)");
-          buffer.add("	call	strcpy");
-          buffer.add("	lw	a0, 8(sp)");
-          buffer.add("	call	free");
-          buffer.add("	lw	a0, 4(sp)");
-          buffer.add("	addi	sp, sp, 32");
+          buffer.add("        addi    sp, sp, -32");
+          buffer.add("        sw      s0, 24(sp)");
+          buffer.add("        sw      s1, 20(sp)");
+          buffer.add("        sw      s2, 16(sp)");
+          buffer.add("        sw      s3, 12(sp)");
+          buffer.add("        mv      s2, a2");
+          buffer.add("        mv      s1, a1");
+          buffer.add("        mv      s3, a0");
+          buffer.add("        li      a0, 5");
+          buffer.add("        call    malloc");
+          buffer.add("        mv      s0, a0");
+          buffer.add("        add     a1, s3, s1");
+          buffer.add("        call    strcpy");
+          buffer.add("        sub     a0, s2, s1");
+          buffer.add("        add     a0, a0, s0");
+          buffer.add("        sb      zero, 0(a0)");
+          buffer.add("        mv      a0, s0");
+          buffer.add("        call    strlen");
+          buffer.add("        addi    a0, a0, 1");
+          buffer.add("        call    malloc");
+          buffer.add("        mv      s1, a0");
+          buffer.add("        mv      a1, s0");
+          buffer.add("        call    strcpy");
+          buffer.add("        mv      a0, s0");
+          buffer.add("        call    free");
+          buffer.add("        mv      a0, s1");
+          buffer.add("        lw      s0, 24(sp)");
+          buffer.add("        lw      s1, 20(sp)");
+          buffer.add("        lw      s2, 16(sp)");
+          buffer.add("        lw      s3, 12(sp)");
+          buffer.add("        addi    sp, sp, 32");
           break;
         }
         case ("getString"): {
-          buffer.add("	addi	sp, sp, -16");
-          buffer.add("	lui	a0, 1");
-          buffer.add("	call	malloc");
-          buffer.add("	sw	a0, 4(sp)");
-          buffer.add("	mv  a1, a0");
-          buffer.add("	lui	a0, %hi(.L.str)");
-          buffer.add("	addi	a0, a0, %lo(.L.str)");
-          buffer.add("	call	scanf");
-          buffer.add("	lw	a0, 4(sp)");
-          buffer.add("	call	strlen");
-          buffer.add("	addi	a0, a0, 1");
-          buffer.add("	call	malloc");
-          buffer.add("	sw	a0, 0(sp)");
-          buffer.add("	lw	a1, 4(sp)");
-          buffer.add("	call	strcpy");
-          buffer.add("	lw	a0, 4(sp)");
-          buffer.add("	call	free");
-          buffer.add("	lw	a0, 0(sp)");
-          buffer.add("	addi	sp, sp, 16");
+          buffer.add("        addi    sp, sp, -16");
+          buffer.add("        sw      s0, 8(sp)");
+          buffer.add("        sw      s1, 4(sp)");
+          buffer.add("        lui     a0, 1");
+          buffer.add("        call    malloc");
+          buffer.add("        mv      s0, a0");
+          buffer.add("        lui     a0, %hi(.L.str)");
+          buffer.add("        addi    a0, a0, %lo(.L.str)");
+          buffer.add("        mv      a1, s0");
+          buffer.add("        call    scanf");
+          buffer.add("        mv      a0, s0");
+          buffer.add("        call    strlen");
+          buffer.add("        addi    a0, a0, 1");
+          buffer.add("        call    malloc");
+          buffer.add("        mv      s1, a0");
+          buffer.add("        mv      a1, s0");
+          buffer.add("        call    strcpy");
+          buffer.add("        mv      a0, s0");
+          buffer.add("        call    free");
+          buffer.add("        mv      a0, s1");
+          buffer.add("        lw      s0, 8(sp)");
+          buffer.add("        lw      s1, 4(sp)");
+          buffer.add("        addi    sp, sp, 16");
+
           break;
         }
         case ("getInt"): {
@@ -482,53 +493,51 @@ public class IRFuncall extends IRCode {
           break;
         }
         case ("toString"): {
-          buffer.add("addi	sp, sp, -32");
-          buffer.add("sw	a0, 20(sp)");
-          buffer.add("	li	a0, 15");
-          buffer.add("	call	malloc");
-          buffer.add("	sw	a0, 16(sp)");
-          buffer.add("	lw	a2, 20(sp)");
-          buffer.add("	lui	a1, %hi(.L.str.1)");
-          buffer.add("	addi	a1, a1, %lo(.L.str.1)");
-          buffer.add("	call	sprintf");
-          buffer.add("	lw	a0, 16(sp)");
-          buffer.add("	call	strlen");
-          buffer.add("	addi	a0, a0, 1");
-          buffer.add("	call	malloc");
-          buffer.add("	sw	a0, 12(sp)");
-          buffer.add("	lw	a1, 16(sp)");
-          buffer.add("	call	strcpy");
-          buffer.add("	lw	a0, 16(sp)");
-          buffer.add("	call	free");
-          buffer.add("	lw	a0, 12(sp)");
-          buffer.add("	addi	sp, sp, 32");
+          buffer.add("addi	sp, sp, -16");
+          buffer.add("sw	s0, 8(sp)");
+          buffer.add("sw  s1, 4(sp)");
+          buffer.add("mv  s0, a0");
+          buffer.add("li	a0, 15");
+          buffer.add("call	malloc");
+          buffer.add("mv  s1, a0");
+          buffer.add("lui	a1, %hi(.L.str.1)");
+          buffer.add("addi	a1, a1, %lo(.L.str.1)");
+          buffer.add("mv  a2, s0");
+          buffer.add("call	sprintf");
+          buffer.add("mv  a0, s1");
+          buffer.add("call	strlen");
+          buffer.add("addi	a0, a0, 1");
+          buffer.add("call	malloc");
+          buffer.add("mv  s0, a0");
+          buffer.add("mv  a1, s1");
+          buffer.add("call	strcpy");
+          buffer.add("mv  a0, s1");
+          buffer.add("call	free");
+          buffer.add("mv  a0, s0");
+          buffer.add("lw  s0, 8(sp)");
+          buffer.add("lw  s1, 4(sp)");
+          buffer.add("addi	sp, sp, 16");
           break;
         }
         case ("print"): {
-          buffer.add("	addi	sp, sp, -16");
           buffer.add("	mv a1, a0");
           buffer.add("	lui	a0, %hi(.L.str)");
           buffer.add("	addi	a0, a0, %lo(.L.str)");
           buffer.add("	call	printf");
-          buffer.add("	addi	sp, sp, 16");
           break;
         }
         case ("printInt"): {
-          buffer.add("	addi	sp, sp, -16");
           buffer.add("	mv  a1, a0");
           buffer.add("	lui	a0, %hi(.L.str.1)");
           buffer.add("	addi	a0, a0, %lo(.L.str.1)");
           buffer.add("	call	printf");
-          buffer.add("	addi	sp, sp, 16");
           break;
         }
         case ("printlnInt"): {
-          buffer.add("	addi	sp, sp, -16");
           buffer.add("	mv  a1, a0");
           buffer.add("	lui	a0, %hi(.L.str.2)");
           buffer.add("	addi	a0, a0, %lo(.L.str.2)");
           buffer.add("	call	printf");
-          buffer.add("	addi	sp, sp, 16");
         }
       }
     } else {
