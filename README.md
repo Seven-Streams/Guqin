@@ -21,6 +21,7 @@ Guqin is a kind of Chinese traditional musical instrument. For example, the famo
   - [x] Local CSE
   - [x] SCCP
   - [x] Trail Optimization
+  - [x] Loop Invariant Code Motion
   - [ ] to be continued...
 
 ## The songs I love listening when coding
@@ -40,7 +41,4 @@ Guqin is a kind of Chinese traditional musical instrument. For example, the famo
 - [夢花火](https://music.163.com/song?id=28308659)
 - [美しきもの](https://music.163.com/song?id=22782025)
 - [螢塚](https://music.163.com/song?id=32803294)
-
-## Warning
-
-Don't copy my code before the class ends. Otherwise, I **will** find you, no matter where you are.
+- [花葬](https://music.163.com/song?id=30780948)
