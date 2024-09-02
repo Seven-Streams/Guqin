@@ -734,17 +734,6 @@ public class LinearScan {
             "\t.attribute\t4, 16\r\n" + //
             "\t.attribute\t5, \"rv32i2p1_m2p0_a2p1_c2p0\"\r\n" + //
             "\t.file\t\"Inner.c\"\r\n" + //
-            "\t.globl\tprintln                         # -- Begin function println\r\n" + //
-            "\t.p2align\t1\r\n" + //
-            "\t.type\tprintln,@function\r\n" + //
-            "println:                                # @println\r\n" + //
-            "# %bb.0:\r\n" + //
-            "\tmv s0, ra\r\n" + //
-            "\tcall\tputs\r\n" + //
-            "\tmv ra, s0\r\n" + //
-            "\tret\r\n" + //
-            ".Lfunc_end0:\r\n" + //
-            "\t.size\tprintln, .Lfunc_end0-println\r\n" + //
             "                                        # -- End function\r\n" + //
             "\t.globl\tprint                           # -- Begin function print\r\n" + //
             "\t.p2align\t1\r\n" + //
@@ -1038,10 +1027,10 @@ public class LinearScan {
             "\tsw\tra, 28(sp)                      # 4-byte Folded Spill\r\n" + //
             "\tsw\ta0, 20(sp)\r\n" + //
             "\tsw\ta1, 16(sp)\r\n" + //
-            "\tcall\tstring_length\r\n" + //
+            "\tcall\tstrlen\r\n" + //
             "\tsw\ta0, 8(sp)                     # 4-byte Folded Spill\r\n" + //
             "\tlw\ta0, 16(sp)\r\n" + //
-            "\tcall\tstring_length\r\n" + //
+            "\tcall\tstrlen\r\n" + //
             "\tmv\ta1, a0\r\n" + //
             "\tlw\ta0, 8(sp)                     # 4-byte Folded Reload\r\n" + //
             "\tadd\ta0, a0, a1\r\n" + //
@@ -1071,11 +1060,11 @@ public class LinearScan {
             "\tslli\ta0, a0, 2\r\n" + //
             "\taddi\ta0, a0, 4\r\n" + //
             "\tcall\tmalloc\r\n" + //
-            "\tsw\ta0, 0(sp)\r\n" + //
+            "\tmv  a2, a0\r\n" + //
             "\tlw\ta0, 4(sp)\r\n" + //
-            "\tlw\ta1, 0(sp)\r\n" + //
+            "\tmv  a1, a2\r\n" + //
             "\tsw\ta0, 0(a1)\r\n" + //
-            "\tlw\ta0, 0(sp)\r\n" + //
+            "\tmv  a0, a2\r\n" + //
             "\taddi\ta0, a0, 4\r\n" + //
             "\tlw\tra, 12(sp)                      # 4-byte Folded Reload\r\n" + //
             "\taddi\tsp, sp, 16\r\n" + //
@@ -1094,7 +1083,6 @@ public class LinearScan {
             "\tslli\ta0, a0, 2\r\n" + //
             "\taddi\ta0, a0, 4\r\n" + //
             "\tcall\tmalloc\r\n" + //
-            "\tsw\ta0, 0(sp)\r\n" + //
             "  mv  a1, a0\r\n" + //
             "\tlw\ta0, 4(sp)\r\n" + //
             "\tsw\ta0, 0(a1)\r\n" + //

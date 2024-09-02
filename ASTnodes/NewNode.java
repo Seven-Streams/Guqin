@@ -42,7 +42,7 @@ public class NewNode extends ExprNode {
       String output = new String("%reg$" + Integer.toString(++machine.tmp_time));
       return_value.reg = new String(output);
       IRFuncall irfuncall = new IRFuncall();
-      irfuncall.func_name = "MyNew";
+      irfuncall.func_name = "malloc";
       irfuncall.func_type = "ptr";
       irfuncall.target_reg = new String(output);
       irfuncall.reg.add(Integer.toString(size_of_class.get(type)));
@@ -137,7 +137,7 @@ public class NewNode extends ExprNode {
               new_st.target_reg = "%reg$" + Integer.toString(++machine.tmp_time);
               new_st.reg.add(Integer.toString(size_of_class.get(type)));
               new_st.type.add("i32");
-              new_st.func_name = "MyNew";
+              new_st.func_name = "malloc";
               new_st.func_type = "ptr";
               machine.generated.add(new_st);
               IRStore to_store = new IRStore();
@@ -237,7 +237,7 @@ public class NewNode extends ExprNode {
     if (x == (dim - 1)) {
       String real_tmp = "%reg$" + Integer.toString(++machine.tmp_time);
       IRFuncall irfuncall = new IRFuncall();
-      irfuncall.func_name = "MyNew";
+      irfuncall.func_name = "malloc";
       irfuncall.func_type = "ptr";
       irfuncall.target_reg = new String(real_tmp);
       irfuncall.reg.add(Integer.toString(size_of_class.get(type)));

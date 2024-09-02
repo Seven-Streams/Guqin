@@ -196,6 +196,22 @@ public class IRFuncall extends IRCode {
     if (Empty_func.containsKey(func_name)) {
       return;
     }
+    if (func_name.equals("array_size")) {
+      int place = registers.get(reg.get(0));
+      String from = place >= 0 ? register_name.get(place) : "t0";
+      if (place < 0) {
+        place = now_depth + (place * 4);
+        buffer.add("lw t0, " + place + "(sp)");
+      }
+      place = registers.get(target_reg);
+      String to = place >= 0 ? register_name.get(place) : "t0";
+      buffer.add("lw " + to + ", -4(" + from + ")");
+      if (place < 0) {
+        place = now_depth + (place * 4);
+        buffer.add("sw t0, " + place + "(sp)");
+      }
+      return;
+    }
     if (reg.size() > 8) {
       for (int i = 8; i < reg.size(); i++) {
         String str = "t0";
@@ -319,7 +335,198 @@ public class IRFuncall extends IRCode {
         buffer.add("mv " + move.des + ", " + move.src);
       }
     }
-    buffer.add("call " + func_name);
+    if (func_name.equals("getInt") || func_name.equals("toString") || func_name.equals("print")
+        || func_name.equals("printInt") || func_name.equals("printlnInt") || func_name.equals("getString")
+        || func_name.equals("string_substring") || func_name.equals("string_ord") || func_name.equals("string_cat")
+        || func_name.equals("ptr_array") || func_name.equals("int_array") || func_name.equals("string_copy")) {
+      switch (func_name) {
+        case ("string_copy"): {
+          buffer.add("	addi	sp, sp, -16");
+          buffer.add("	sw	a0, 4(sp)");
+          buffer.add("	call	strlen");
+          buffer.add("	addi	a0, a0, 1");
+          buffer.add("	call	malloc");
+          buffer.add("	sw	a0, 0(sp)");
+          buffer.add("	lw	a1, 4(sp)");
+          buffer.add("	call	strcpy");
+          buffer.add("	lw	a0, 0(sp)");
+          buffer.add("	addi	sp, sp, 16");
+          break;
+        }
+        case ("int_array"): {
+          buffer.add("	addi	sp, sp, -16");
+          buffer.add("	sw	a0, 4(sp)");
+          buffer.add("	slli	a0, a0, 2");
+          buffer.add("	addi	a0, a0, 4");
+          buffer.add("	call	malloc");
+          buffer.add("  mv  a1, a0");
+          buffer.add("	lw	a0, 4(sp)");
+          buffer.add("	sw	a0, 0(a1)");
+          buffer.add("	mv  a0, a1");
+          buffer.add("	addi	a0, a0, 4");
+          buffer.add("	addi	sp, sp, 16");
+          break;
+        }
+        case ("ptr_array"): {
+          buffer.add("	addi	sp, sp, -16");
+          buffer.add("	sw	a0, 4(sp)");
+          buffer.add("	slli	a0, a0, 2");
+          buffer.add("	addi	a0, a0, 4");
+          buffer.add("	call	malloc");
+          buffer.add("	mv  a2, a0");
+          buffer.add("	lw	a0, 4(sp)");
+          buffer.add("	mv  a1, a2");
+          buffer.add("	sw	a0, 0(a1)");
+          buffer.add("	mv  a0, a2");
+          buffer.add("	addi	a0, a0, 4");
+          buffer.add("	addi	sp, sp, 16");
+          break;
+        }
+        case ("string_cat"): {
+          buffer.add("	addi	sp, sp, -32");
+          buffer.add("	sw	a0, 20(sp)");
+          buffer.add("	sw	a1, 16(sp)");
+          buffer.add("	call	strlen");
+          buffer.add("	sw	a0, 8(sp)");
+          buffer.add("	lw	a0, 16(sp)");
+          buffer.add("	call	strlen");
+          buffer.add("	mv	a1, a0");
+          buffer.add("	lw	a0, 8(sp)");
+          buffer.add("	add	a0, a0, a1");
+          buffer.add("	addi	a0, a0, 1");
+          buffer.add("	call	malloc");
+          buffer.add("	sw	a0, 12(sp)");
+          buffer.add("	lw	a1, 20(sp)");
+          buffer.add("	call	strcpy");
+          buffer.add("	lw	a0, 12(sp)");
+          buffer.add("	lw	a1, 16(sp)");
+          buffer.add("	call	strcat");
+          buffer.add("	lw	a0, 12(sp)");
+          buffer.add("	addi	sp, sp, 32");
+          break;
+        }
+        case ("string_ord"): {
+          buffer.add("	add	a0, a0, a1");
+          buffer.add("	lbu	a0, 0(a0)");
+          break;
+        }
+        case ("string_substring"): {
+          buffer.add("	addi	sp, sp, -32");
+          buffer.add("	sw	a0, 20(sp)");
+          buffer.add("	sw	a1, 16(sp)");
+          buffer.add("	sw	a2, 12(sp)");
+          buffer.add("	li	a0, 5");
+          buffer.add("	call	malloc");
+          buffer.add("	sw	a0, 8(sp)");
+          buffer.add("	lw	a1, 20(sp)");
+          buffer.add("	lw	a2, 16(sp)");
+          buffer.add("	add	a1, a1, a2");
+          buffer.add("	call	strcpy");
+          buffer.add("	lw	a0, 8(sp)");
+          buffer.add("	lw	a1, 12(sp)");
+          buffer.add("	lw	a2, 16(sp)");
+          buffer.add("	sub	a1, a1, a2");
+          buffer.add("	add	a1, a1, a0");
+          buffer.add("	li	a0, 0");
+          buffer.add("	sb	a0, 0(a1)");
+          buffer.add("	lw	a0, 8(sp)");
+          buffer.add("	call	strlen");
+          buffer.add("	addi	a0, a0, 1");
+          buffer.add("	call	malloc");
+          buffer.add("	sw	a0, 4(sp)");
+          buffer.add("	lw	a1, 8(sp)");
+          buffer.add("	call	strcpy");
+          buffer.add("	lw	a0, 8(sp)");
+          buffer.add("	call	free");
+          buffer.add("	lw	a0, 4(sp)");
+          buffer.add("	addi	sp, sp, 32");
+          break;
+        }
+        case ("getString"): {
+          buffer.add("	addi	sp, sp, -16");
+          buffer.add("	lui	a0, 1");
+          buffer.add("	call	malloc");
+          buffer.add("	sw	a0, 4(sp)");
+          buffer.add("	mv  a1, a0");
+          buffer.add("	lui	a0, %hi(.L.str)");
+          buffer.add("	addi	a0, a0, %lo(.L.str)");
+          buffer.add("	call	scanf");
+          buffer.add("	lw	a0, 4(sp)");
+          buffer.add("	call	strlen");
+          buffer.add("	addi	a0, a0, 1");
+          buffer.add("	call	malloc");
+          buffer.add("	sw	a0, 0(sp)");
+          buffer.add("	lw	a1, 4(sp)");
+          buffer.add("	call	strcpy");
+          buffer.add("	lw	a0, 4(sp)");
+          buffer.add("	call	free");
+          buffer.add("	lw	a0, 0(sp)");
+          buffer.add("	addi	sp, sp, 16");
+          break;
+        }
+        case ("getInt"): {
+          buffer.add("addi	sp, sp, -16");
+          buffer.add("lui	a0, %hi(.L.str.1)");
+          buffer.add("addi	a0, a0, %lo(.L.str.1)");
+          buffer.add("addi	a1, sp, 4");
+          buffer.add("call	scanf");
+          buffer.add("lw	a0, 4(sp)");
+          buffer.add("addi	sp, sp, 16");
+          break;
+        }
+        case ("toString"): {
+          buffer.add("addi	sp, sp, -32");
+          buffer.add("sw	a0, 20(sp)");
+          buffer.add("	li	a0, 15");
+          buffer.add("	call	malloc");
+          buffer.add("	sw	a0, 16(sp)");
+          buffer.add("	lw	a2, 20(sp)");
+          buffer.add("	lui	a1, %hi(.L.str.1)");
+          buffer.add("	addi	a1, a1, %lo(.L.str.1)");
+          buffer.add("	call	sprintf");
+          buffer.add("	lw	a0, 16(sp)");
+          buffer.add("	call	strlen");
+          buffer.add("	addi	a0, a0, 1");
+          buffer.add("	call	malloc");
+          buffer.add("	sw	a0, 12(sp)");
+          buffer.add("	lw	a1, 16(sp)");
+          buffer.add("	call	strcpy");
+          buffer.add("	lw	a0, 16(sp)");
+          buffer.add("	call	free");
+          buffer.add("	lw	a0, 12(sp)");
+          buffer.add("	addi	sp, sp, 32");
+          break;
+        }
+        case ("print"): {
+          buffer.add("	addi	sp, sp, -16");
+          buffer.add("	mv a1, a0");
+          buffer.add("	lui	a0, %hi(.L.str)");
+          buffer.add("	addi	a0, a0, %lo(.L.str)");
+          buffer.add("	call	printf");
+          buffer.add("	addi	sp, sp, 16");
+          break;
+        }
+        case ("printInt"): {
+          buffer.add("	addi	sp, sp, -16");
+          buffer.add("	mv  a1, a0");
+          buffer.add("	lui	a0, %hi(.L.str.1)");
+          buffer.add("	addi	a0, a0, %lo(.L.str.1)");
+          buffer.add("	call	printf");
+          buffer.add("	addi	sp, sp, 16");
+          break;
+        }
+        case ("printlnInt"): {
+          buffer.add("	addi	sp, sp, -16");
+          buffer.add("	mv  a1, a0");
+          buffer.add("	lui	a0, %hi(.L.str.2)");
+          buffer.add("	addi	a0, a0, %lo(.L.str.2)");
+          buffer.add("	call	printf");
+          buffer.add("	addi	sp, sp, 16");
+        }
+      }
+    } else {
+      buffer.add("call " + func_name);
+    }
     if (target_reg != null) {
       if (registers.containsKey(target_reg)) {
         int value = registers.get(target_reg);
