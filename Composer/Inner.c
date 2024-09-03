@@ -5,7 +5,6 @@ int sprintf(char *__restrict s, const char *__restrict format, ...);
 unsigned long strlen(const char *s);
 void *malloc(unsigned long size);
 char *strcpy(char *dest, const char *src);
-void free(void *ptr);
 char *strcat(char *, const char *);
 int strcmp(const char *, const char *);
 void println(const char *str) {
@@ -31,10 +30,7 @@ void printIntln(int x) {
 char *toString(int x) {
   char *buffer = (char *)malloc(15);
   sprintf(buffer, "%d", x);
-  char *output = (char *)malloc(strlen(buffer) + 1);
-  strcpy(output, buffer);
-  free(buffer);
-  return output;
+  return buffer;
 }
 
 int getInt() {
@@ -44,24 +40,18 @@ int getInt() {
 }
 
 char *getString() {
-  char *buffer = (char *)malloc(4096);
+  char *buffer = (char *)malloc(1024);
   scanf("%s", buffer);
-  char *output = (char *)malloc(strlen(buffer) + 1);
-  strcpy(output, buffer);
-  free(buffer);
-  return output;
+  return buffer;
 }
 
 int string_length(char *str) { return strlen(str); }
 
 char *string_substring(char *str, int left, int right) {
-  char *res = (char *)malloc(sizeof(str) + 1);
+  char *res = (char *)malloc(1024);
   strcpy(res, str + left);
   *(res + (right - left)) = 0;
-  char *output = (char *)malloc(strlen(res) + 1);
-  strcpy(output, res);
-  free(res);
-  return output;
+  return res;
 }
 
 int string_parseInt(char *str) {

@@ -450,31 +450,6 @@ public class LinearScan {
     while (!to_alloc.isEmpty()) {
       Interval now_alloc = to_alloc.poll();
       boolean spilled = true;
-      // if (from_to_pair.containsKey(now_alloc.name)) {
-      // if (registers.get(func_num).containsKey(from_to_pair.get(now_alloc.name))
-      // && (registers.get(func_num).get(from_to_pair.get(now_alloc.name)) >= 0)) {
-      // int value = registers.get(func_num).get(from_to_pair.get(now_alloc.name));
-      // if ((free.get(value) == null) || free.get(value).end < now_alloc.start) {
-      // free.set(value, now_alloc);
-      // registers.get(func_num).put(now_alloc.name, value);
-      // if (max_register_use.get(func_num) < value) {
-      // max_register_use.put(func_num, value);
-      // }
-      // Map<Integer, HashMap<Integer, Boolean>> submap =
-      // calling_use.subMap(now_alloc.start, now_alloc.end);
-      // for (Map.Entry<Integer, HashMap<Integer, Boolean>> entry : submap.entrySet())
-      // {
-      // if ((now_alloc.start < entry.getKey()) && (now_alloc.end > entry.getKey())) {
-      // entry.getValue().put(value, null);
-      // }
-      // }
-      // continue;
-      // }
-      // }
-      // }
-      // if (!spilled) {
-      // continue;
-      // }
       Map<Integer, HashMap<Integer, Boolean>> submap = calling_use.subMap(now_alloc.start, now_alloc.end);
       if (submap.isEmpty()) {
         for (int i = 12; i < degree; i++) {

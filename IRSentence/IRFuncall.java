@@ -351,192 +351,183 @@ public class IRFuncall extends IRCode {
         || func_name.equals("ptr_array") || func_name.equals("int_array") || func_name.equals("string_copy")) {
       switch (func_name) {
         case ("string_copy"): {
-          buffer.add("        addi    sp, sp, -16");
+          buffer.add("addi sp, sp, -16");
           if (busy_sreg.containsKey(10)) {
-            buffer.add("        sw      s10, 8(sp)");
+            buffer.add("sw s10, 8(sp)");
           }
           if (busy_sreg.containsKey(11)) {
-            buffer.add("        sw      s11, 4(sp)");
+            buffer.add("sw s11, 4(sp)");
           }
-          buffer.add("        mv      s10, a0");
-          buffer.add("        call    strlen");
-          buffer.add("        addi    a0, a0, 1");
-          buffer.add("        call    malloc");
-          buffer.add("        mv      s11, a0");
-          buffer.add("        mv      a1, s10");
-          buffer.add("        call    strcpy");
-          buffer.add("        mv      a0, s11");
+          buffer.add("mv s10, a0");
+          buffer.add("call strlen");
+          buffer.add("addi a0, a0, 1");
+          buffer.add("call malloc");
+          buffer.add("mv s11, a0");
+          buffer.add("mv a1, s10");
+          buffer.add("call strcpy");
+          buffer.add("mv a0, s11");
           if (busy_sreg.containsKey(10)) {
-            buffer.add("        lw      s10, 8(sp)");
+            buffer.add("lw s10, 8(sp)");
           }
           if (busy_sreg.containsKey(11)) {
-            buffer.add("        lw      s11, 4(sp)");
+            buffer.add("lw s11, 4(sp)");
           }
-          buffer.add("        addi    sp, sp, 16");
+          buffer.add("addi sp, sp, 16");
           break;
         }
         case ("int_array"): {
-          buffer.add("        addi    sp, sp, -16");
+          buffer.add("addi sp, sp, -16");
           if (busy_sreg.containsKey(11)) {
-            buffer.add("        sw      s11, 8(sp)");
+            buffer.add("sw s11, 8(sp)");
           }
-          buffer.add("        mv      s11, a0");
-          buffer.add("        slli    a0, a0, 2");
-          buffer.add("        addi    a0, a0, 4");
-          buffer.add("        call    malloc");
-          buffer.add("        addi    a1, a0, 4");
-          buffer.add("        sw      s11, 0(a0)");
-          buffer.add("        mv      a0, a1");
+          buffer.add("mv s11, a0");
+          buffer.add("slli a0, a0, 2");
+          buffer.add("addi a0, a0, 4");
+          buffer.add("call malloc");
+          buffer.add("addi a1, a0, 4");
+          buffer.add("sw s11, 0(a0)");
+          buffer.add("mv a0, a1");
           if (busy_sreg.containsKey(11)) {
-            buffer.add("        lw      s11, 8(sp)");
+            buffer.add("lw s11, 8(sp)");
           }
-          buffer.add("        addi    sp, sp, 16");
+          buffer.add("addi sp, sp, 16");
           break;
         }
         case ("ptr_array"): {
-          buffer.add("        addi    sp, sp, -16");
+          buffer.add("addi sp, sp, -16");
           if (busy_sreg.containsKey(11)) {
-            buffer.add("        sw      s11, 8(sp)");
+            buffer.add("sw s11, 8(sp)");
           }
-          buffer.add("        mv      s11, a0");
-          buffer.add("        slli    a0, a0, 2");
-          buffer.add("        addi    a0, a0, 4");
-          buffer.add("        call    malloc");
-          buffer.add("        addi    a1, a0, 4");
-          buffer.add("        sw      s11, 0(a0)");
-          buffer.add("        mv      a0, a1");
+          buffer.add("mv s11, a0");
+          buffer.add("slli a0, a0, 2");
+          buffer.add("addi a0, a0, 4");
+          buffer.add("call malloc");
+          buffer.add("addi a1, a0, 4");
+          buffer.add("sw s11, 0(a0)");
+          buffer.add("mv a0, a1");
           if (busy_sreg.containsKey(11)) {
-            buffer.add("        lw      s11, 8(sp)");
+            buffer.add("lw s11, 8(sp)");
           }
-          buffer.add("        addi    sp, sp, 16");
+          buffer.add("addi sp, sp, 16");
           break;
         }
         case ("string_cat"): {
-          buffer.add("      addi    sp, sp, -16");
+          buffer.add(" addi sp, sp, -16");
           if (busy_sreg.containsKey(10)) {
-            buffer.add("        sw      s10, 8(sp)");
+            buffer.add("sw s10, 8(sp)");
           }
           if (busy_sreg.containsKey(11)) {
-            buffer.add("        sw      s11, 4(sp)");
+            buffer.add("sw s11, 4(sp)");
           }
           if (busy_sreg.containsKey(9)) {
-            buffer.add("        sw      s9, 0(sp)");
+            buffer.add("sw s9, 0(sp)");
           }
-          buffer.add("        mv      s9, a1");
-          buffer.add("        mv      s11, a0");
-          buffer.add("        call    strlen");
-          buffer.add("        mv      s10, a0");
-          buffer.add("        mv      a0, s9");
-          buffer.add("        call    strlen");
-          buffer.add("        add     a0, a0, s10");
-          buffer.add("        addi    a0, a0, 1");
-          buffer.add("        call    malloc");
-          buffer.add("        mv      s10, a0");
-          buffer.add("        mv      a1, s11");
-          buffer.add("        call    strcpy");
-          buffer.add("        mv      a0, s10");
-          buffer.add("        mv      a1, s9");
-          buffer.add("        call    strcat");
-          buffer.add("        mv      a0, s10");
+          buffer.add("mv s9, a1");
+          buffer.add("mv s11, a0");
+          buffer.add("call strlen");
+          buffer.add("mv s10, a0");
+          buffer.add("mv a0, s9");
+          buffer.add("call strlen");
+          buffer.add("add  a0, a0, s10");
+          buffer.add("addi a0, a0, 1");
+          buffer.add("call malloc");
+          buffer.add("mv s10, a0");
+          buffer.add("mv a1, s11");
+          buffer.add("call strcpy");
+          buffer.add("mv a0, s10");
+          buffer.add("mv a1, s9");
+          buffer.add("call strcat");
+          buffer.add("mv a0, s10");
           if (busy_sreg.containsKey(10)) {
-            buffer.add("        lw      s10, 8(sp)");
+            buffer.add("lw s10, 8(sp)");
           }
           if (busy_sreg.containsKey(11)) {
-            buffer.add("        lw      s11, 4(sp)");
+            buffer.add("lw s11, 4(sp)");
           }
           if (busy_sreg.containsKey(9)) {
-            buffer.add("        lw      s9, 0(sp)");
+            buffer.add("lw s9, 0(sp)");
           }
-          buffer.add("        addi    sp, sp, 16");
+          buffer.add("addi sp, sp, 16");
           break;
         }
         case ("string_ord"): {
-          buffer.add("	add	a0, a0, a1");
-          buffer.add("	lbu	a0, 0(a0)");
+          buffer.add("add	a0, a0, a1");
+          buffer.add("lbu	a0, 0(a0)");
           break;
         }
         case ("string_substring"): {
-          buffer.add("        addi    sp, sp, -32");
+          buffer.add("addi sp, sp, -32");
           if (busy_sreg.containsKey(10)) {
-            buffer.add("        sw      s10, 24(sp)");
+            buffer.add("sw s10, 24(sp)");
           }
           if (busy_sreg.containsKey(11)) {
-            buffer.add("        sw      s11, 20(sp)");
+            buffer.add("sw s11, 20(sp)");
           }
           if (busy_sreg.containsKey(9)) {
-            buffer.add("        sw      s9, 16(sp)");
+            buffer.add("sw s9, 16(sp)");
           }
           if (busy_sreg.containsKey(8)) {
-            buffer.add("        sw      s8, 12(sp)");
+            buffer.add("sw s8, 12(sp)");
           }
-          buffer.add("        mv      s9, a2");
-          buffer.add("        mv      s11, a1");
-          buffer.add("        mv      s8, a0");
-          buffer.add("        li      a0, 5");
-          buffer.add("        call    malloc");
-          buffer.add("        mv      s10, a0");
-          buffer.add("        add     a1, s8, s11");
-          buffer.add("        call    strcpy");
-          buffer.add("        sub     a0, s9, s11");
-          buffer.add("        add     a0, a0, s10");
-          buffer.add("        sb      zero, 0(a0)");
-          buffer.add("        mv      a0, s10");
-          buffer.add("        call    strlen");
-          buffer.add("        addi    a0, a0, 1");
-          buffer.add("        call    malloc");
-          buffer.add("        mv      s11, a0");
-          buffer.add("        mv      a1, s10");
-          buffer.add("        call    strcpy");
-          buffer.add("        mv      a0, s10");
-          buffer.add("        call    free");
-          buffer.add("        mv      a0, s11");
+          buffer.add("mv s9, a2");
+          buffer.add("mv s11, a1");
+          buffer.add("mv s8, a0");
+          buffer.add("li a0, 1024");
+          buffer.add("call malloc");
+          buffer.add("mv s10, a0");
+          buffer.add("add  a1, s8, s11");
+          buffer.add("call strcpy");
+          buffer.add("sub a0, s9, s11");
+          buffer.add("add a0, a0, s10");
+          buffer.add("sb zero, 0(a0)");
+          buffer.add("mv a0, s10");
           if (busy_sreg.containsKey(10)) {
-            buffer.add("        lw      s10, 24(sp)");
+            buffer.add("lw s10, 24(sp)");
           }
           if (busy_sreg.containsKey(11)) {
-            buffer.add("        lw      s11, 20(sp)");
+            buffer.add("lw s11, 20(sp)");
           }
           if (busy_sreg.containsKey(9)) {
-            buffer.add("        lw      s9, 16(sp)");
+            buffer.add("lw s9, 16(sp)");
           }
           if (busy_sreg.containsKey(8)) {
-            buffer.add("        lw      s8, 12(sp)");
+            buffer.add("lw s8, 12(sp)");
           }
-          buffer.add("        addi    sp, sp, 32");
+          buffer.add("addi sp, sp, 32");
           break;
         }
         case ("getString"): {
-          buffer.add("        addi    sp, sp, -16");
+          buffer.add("addi sp, sp, -16");
           if (busy_sreg.containsKey(10)) {
-            buffer.add("        sw      s10, 8(sp)");
+            buffer.add("sw s10, 8(sp)");
           }
           if (busy_sreg.containsKey(11)) {
-            buffer.add("        sw      s11, 4(sp)");
+            buffer.add("sw s11, 4(sp)");
           }
-          buffer.add("        lui     a0, 1");
-          buffer.add("        call    malloc");
-          buffer.add("        mv      s10, a0");
-          buffer.add("        lui     a0, %hi(.L.str)");
-          buffer.add("        addi    a0, a0, %lo(.L.str)");
-          buffer.add("        mv      a1, s10");
-          buffer.add("        call    scanf");
-          buffer.add("        mv      a0, s10");
-          buffer.add("        call    strlen");
-          buffer.add("        addi    a0, a0, 1");
-          buffer.add("        call    malloc");
-          buffer.add("        mv      s11, a0");
-          buffer.add("        mv      a1, s10");
-          buffer.add("        call    strcpy");
-          buffer.add("        mv      a0, s10");
-          buffer.add("        call    free");
-          buffer.add("        mv      a0, s11");
+          buffer.add("lui  a0, 1");
+          buffer.add("call malloc");
+          buffer.add("mv s10, a0");
+          buffer.add("lui  a0, %hi(.L.str)");
+          buffer.add("addi a0, a0, %lo(.L.str)");
+          buffer.add("mv a1, s10");
+          buffer.add("call scanf");
+          buffer.add("mv a0, s10");
+          buffer.add("call strlen");
+          buffer.add("addi a0, a0, 1");
+          buffer.add("call malloc");
+          buffer.add("mv s11, a0");
+          buffer.add("mv a1, s10");
+          buffer.add("call strcpy");
+          buffer.add("mv a0, s10");
+          buffer.add("call free");
+          buffer.add("mv a0, s11");
           if (busy_sreg.containsKey(10)) {
-            buffer.add("        lw      s10, 8(sp)");
+            buffer.add("lw s10, 8(sp)");
           }
           if (busy_sreg.containsKey(11)) {
-            buffer.add("        lw      s11, 4(sp)");
+            buffer.add("lw s11, 4(sp)");
           }
-          buffer.add("        addi    sp, sp, 16");
+          buffer.add("addi sp, sp, 16");
 
           break;
         }
@@ -553,10 +544,10 @@ public class IRFuncall extends IRCode {
         case ("toString"): {
           buffer.add("addi	sp, sp, -16");
           if (busy_sreg.containsKey(10)) {
-            buffer.add("        sw      s10, 8(sp)");
+            buffer.add("sw s10, 8(sp)");
           }
           if (busy_sreg.containsKey(11)) {
-            buffer.add("        sw      s11, 4(sp)");
+            buffer.add("sw s11, 4(sp)");
           }
           buffer.add("mv  s10, a0");
           buffer.add("li	a0, 15");
@@ -567,43 +558,34 @@ public class IRFuncall extends IRCode {
           buffer.add("mv  a2, s10");
           buffer.add("call	sprintf");
           buffer.add("mv  a0, s11");
-          buffer.add("call	strlen");
-          buffer.add("addi	a0, a0, 1");
-          buffer.add("call	malloc");
-          buffer.add("mv  s10, a0");
-          buffer.add("mv  a1, s11");
-          buffer.add("call	strcpy");
-          buffer.add("mv  a0, s11");
-          buffer.add("call	free");
-          buffer.add("mv  a0, s10");
           if (busy_sreg.containsKey(10)) {
-            buffer.add("        lw      s10, 8(sp)");
+            buffer.add("lw s10, 8(sp)");
           }
           if (busy_sreg.containsKey(11)) {
-            buffer.add("        lw      s11, 4(sp)");
+            buffer.add("lw s11, 4(sp)");
           }
           buffer.add("addi	sp, sp, 16");
           break;
         }
         case ("print"): {
-          buffer.add("	mv a1, a0");
-          buffer.add("	lui	a0, %hi(.L.str)");
-          buffer.add("	addi	a0, a0, %lo(.L.str)");
-          buffer.add("	call	printf");
+          buffer.add("mv a1, a0");
+          buffer.add("lui	a0, %hi(.L.str)");
+          buffer.add("addi	a0, a0, %lo(.L.str)");
+          buffer.add("call	printf");
           break;
         }
         case ("printInt"): {
-          buffer.add("	mv  a1, a0");
-          buffer.add("	lui	a0, %hi(.L.str.1)");
-          buffer.add("	addi	a0, a0, %lo(.L.str.1)");
-          buffer.add("	call	printf");
+          buffer.add("mv  a1, a0");
+          buffer.add("lui	a0, %hi(.L.str.1)");
+          buffer.add("addi	a0, a0, %lo(.L.str.1)");
+          buffer.add("call	printf");
           break;
         }
         case ("printlnInt"): {
-          buffer.add("	mv  a1, a0");
-          buffer.add("	lui	a0, %hi(.L.str.2)");
-          buffer.add("	addi	a0, a0, %lo(.L.str.2)");
-          buffer.add("	call	printf");
+          buffer.add("mv  a1, a0");
+          buffer.add("lui	a0, %hi(.L.str.2)");
+          buffer.add("addi	a0, a0, %lo(.L.str.2)");
+          buffer.add("call	printf");
         }
       }
     } else {
