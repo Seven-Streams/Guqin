@@ -80,30 +80,41 @@ public class PhiRemover {
           new_block.to = machine.label_number;
           new_block2.to = ftpair.to;
           ArrayList<PseudoMove> op2 = new ArrayList<>();
-          for (PseudoMove op : moves.get(ftpair.from).get(ftpair.to)) {
-            boolean danger = false;
-            for(PseudoMove check_op: moves.get(ftpair.from).get(ftpair.to)) {
-              if(op == check_op) {
-                continue;
+          while (!moves.get(ftpair.from).get(ftpair.to).isEmpty()) {
+            ArrayList<PseudoMove> done = new ArrayList<>();
+            for (PseudoMove op : moves.get(ftpair.from).get(ftpair.to)) {
+              boolean danger = false;
+              for (PseudoMove check_op : moves.get(ftpair.from).get(ftpair.to)) {
+                if (op == check_op) {
+                  continue;
+                }
+                if (op.des.equals(check_op.src)) {
+                  danger = true;
+                  break;
+                }
               }
-              if(op.des.equals(check_op.src)) {
-                danger = true;
-                break;
+              if (!danger) {
+                done.add(op);
+                new_block.moves.add(new PseudoMove(op.src, op.des));
               }
             }
-            if(danger) {
-            String res = "%reg$" + Integer.toString(++machine.tmp_time);
-            new_block.moves.add(new PseudoMove(op.src, res));
-            op2.add(new PseudoMove(res, op.des));
+            if (done.isEmpty()) {
+              PseudoMove op = moves.get(ftpair.from).get(ftpair.to).get(0);
+              String res = "%reg$" + Integer.toString(++machine.tmp_time);
+              new_block.moves.add(new PseudoMove(op.src, res));
+              op2.add(new PseudoMove(res, op.des));
+              moves.get(ftpair.from).get(ftpair.to).remove(op);
             } else {
-              new_block.moves.add(new PseudoMove(op.src, op.des));
+              for (PseudoMove op : done) {
+                moves.get(ftpair.from).get(ftpair.to).remove(op);
+              }
             }
           }
           for (PseudoMove op_v : op2) {
             new_block2.moves.add(op_v);
           }
           jmp.label = new_block.num;
-          if(move_buffer.get(ftpair.to) == null) {
+          if (move_buffer.get(ftpair.to) == null) {
             move_buffer.put(ftpair.to, new ArrayList<>());
           }
           move_buffer.get(ftpair.to).add(new_block);
@@ -121,30 +132,41 @@ public class PhiRemover {
           new_block.to = machine.label_number;
           new_block2.to = ftpair.to;
           ArrayList<PseudoMove> op2 = new ArrayList<>();
-          for (PseudoMove op : moves.get(ftpair.from).get(ftpair.to)) {
-            boolean danger = false;
-            for(PseudoMove check_op: moves.get(ftpair.from).get(ftpair.to)) {
-              if(op == check_op) {
-                continue;
+          while (!moves.get(ftpair.from).get(ftpair.to).isEmpty()) {
+            ArrayList<PseudoMove> done = new ArrayList<>();
+            for (PseudoMove op : moves.get(ftpair.from).get(ftpair.to)) {
+              boolean danger = false;
+              for (PseudoMove check_op : moves.get(ftpair.from).get(ftpair.to)) {
+                if (op == check_op) {
+                  continue;
+                }
+                if (op.des.equals(check_op.src)) {
+                  danger = true;
+                  break;
+                }
               }
-              if(op.des.equals(check_op.src)) {
-                danger = true;
-                break;
+              if (!danger) {
+                done.add(op);
+                new_block.moves.add(new PseudoMove(op.src, op.des));
               }
             }
-            if(danger) {
-            String res = "%reg$" + Integer.toString(++machine.tmp_time);
-            new_block.moves.add(new PseudoMove(op.src, res));
-            op2.add(new PseudoMove(res, op.des));
+            if (done.isEmpty()) {
+              PseudoMove op = moves.get(ftpair.from).get(ftpair.to).get(0);
+              String res = "%reg$" + Integer.toString(++machine.tmp_time);
+              new_block.moves.add(new PseudoMove(op.src, res));
+              op2.add(new PseudoMove(res, op.des));
+              moves.get(ftpair.from).get(ftpair.to).remove(op);
             } else {
-              new_block.moves.add(new PseudoMove(op.src, op.des));
+              for (PseudoMove op : done) {
+                moves.get(ftpair.from).get(ftpair.to).remove(op);
+              }
             }
           }
           for (PseudoMove op_v : op2) {
             new_block2.moves.add(op_v);
           }
           condtion_jmp.label1 = new_block.num;
-          if(move_buffer.get(ftpair.to) == null) {
+          if (move_buffer.get(ftpair.to) == null) {
             move_buffer.put(ftpair.to, new ArrayList<>());
           }
           move_buffer.get(ftpair.to).add(new_block);
@@ -159,30 +181,41 @@ public class PhiRemover {
           new_block.to = machine.label_number;
           new_block2.to = ftpair2.to;
           ArrayList<PseudoMove> op2 = new ArrayList<>();
-          for (PseudoMove op : moves.get(ftpair2.from).get(ftpair2.to)) {
-            boolean danger = false;
-            for(PseudoMove check_op: moves.get(ftpair2.from).get(ftpair2.to)) {
-              if(op == check_op) {
-                continue;
+          while (!moves.get(ftpair2.from).get(ftpair2.to).isEmpty()) {
+            ArrayList<PseudoMove> done = new ArrayList<>();
+            for (PseudoMove op : moves.get(ftpair2.from).get(ftpair2.to)) {
+              boolean danger = false;
+              for (PseudoMove check_op : moves.get(ftpair2.from).get(ftpair2.to)) {
+                if (op == check_op) {
+                  continue;
+                }
+                if (op.des.equals(check_op.src)) {
+                  danger = true;
+                  break;
+                }
               }
-              if(op.des.equals(check_op.src)) {
-                danger = true;
-                break;
+              if (!danger) {
+                done.add(op);
+                new_block.moves.add(new PseudoMove(op.src, op.des));
               }
             }
-            if(danger) {
-            String res = "%reg$" + Integer.toString(++machine.tmp_time);
-            new_block.moves.add(new PseudoMove(op.src, res));
-            op2.add(new PseudoMove(res, op.des));
+            if (done.isEmpty()) {
+              PseudoMove op = moves.get(ftpair2.from).get(ftpair2.to).get(0);
+              String res = "%reg$" + Integer.toString(++machine.tmp_time);
+              new_block.moves.add(new PseudoMove(op.src, res));
+              op2.add(new PseudoMove(res, op.des));
+              moves.get(ftpair2.from).get(ftpair2.to).remove(op);
             } else {
-              new_block.moves.add(new PseudoMove(op.src, op.des));
+              for (PseudoMove op : done) {
+                moves.get(ftpair2.from).get(ftpair2.to).remove(op);
+              }
             }
           }
           for (PseudoMove op_v : op2) {
             new_block2.moves.add(op_v);
           }
           condtion_jmp.label2 = new_block.num;
-          if(move_buffer.get(ftpair2.to) == null) {
+          if (move_buffer.get(ftpair2.to) == null) {
             move_buffer.put(ftpair2.to, new ArrayList<>());
           }
           move_buffer.get(new_block2.to).add(new_block);
@@ -190,11 +223,11 @@ public class PhiRemover {
         }
       }
     }
-    for(int i = 0; i < machine.generated.size(); i++) {
-      if(machine.generated.get(i) instanceof IRLabel) {
-        IRLabel code = (IRLabel)machine.generated.get(i);
-        if(move_buffer.containsKey(code.label)) {
-          for(MoveBlock move_block: move_buffer.get(code.label)) {
+    for (int i = 0; i < machine.generated.size(); i++) {
+      if (machine.generated.get(i) instanceof IRLabel) {
+        IRLabel code = (IRLabel) machine.generated.get(i);
+        if (move_buffer.containsKey(code.label)) {
+          for (MoveBlock move_block : move_buffer.get(code.label)) {
             machine.generated.add(i, move_block);
           }
           move_buffer.remove(code.label);
