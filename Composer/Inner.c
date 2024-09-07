@@ -73,7 +73,7 @@ int string_cmp(char *str1, char *str2) { return strcmp(str1, str2); }
 
 char *string_cat(char *str1, char *str2) {
   char *buffer =
-      (char *)(malloc((string_length(str1) + string_length(str2) + 1) * sizeof(char)));
+      (char *)(malloc((strlen(str1) + strlen(str2) + 1) * sizeof(char)));
   strcpy(buffer, str1);
   strcat(buffer, str2);
   return buffer;
