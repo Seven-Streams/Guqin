@@ -424,7 +424,12 @@ public class IRFuncall extends IRCode {
           }
           buffer.add("mv s9, a1");
           buffer.add("mv s11, a0");
-          buffer.add("li a0, 1024");
+          buffer.add("call strlen");
+          buffer.add("mv s10, a0");
+          buffer.add("mv a0, s9");
+          buffer.add("call strlen");
+          buffer.add("add  a0, a0, s10");
+          buffer.add("addi a0, a0, 1");
           buffer.add("call malloc");
           buffer.add("mv s10, a0");
           buffer.add("mv a1, s11");
@@ -432,6 +437,7 @@ public class IRFuncall extends IRCode {
           buffer.add("mv a0, s10");
           buffer.add("mv a1, s9");
           buffer.add("call strcat");
+          buffer.add("mv a0, s10");
           if (busy_sreg.containsKey(10)) {
             buffer.add("lw s10, 8(sp)");
           }
