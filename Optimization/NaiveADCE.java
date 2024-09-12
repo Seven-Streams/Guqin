@@ -37,9 +37,28 @@ public class NaiveADCE {
     InOutCheck();
     DeadCheck();
     Rebuild();
+    CheckEnd();
     RemoveDead();
   }
-
+  void CheckEnd() {
+    boolean has_end = true;
+    for(int i = 0; i < machine.generated.size(); i++) {
+      IRCode code = machine.generated.get(i);
+      if(code instanceof IRFunc) {
+        if(!has_end) {
+          machine.generated.add(i, new IRFuncend());
+          i++;
+        }
+        has_end = false;
+      }
+      if(code instanceof IRFuncend) {
+        has_end = true;
+      }
+    }
+    if(!has_end) {
+      machine.generated.add(new IRFuncend());
+    }
+  }
   void PrintOut() {
     for (int i = -1; i >= func_cnt; i--) {
       System.out.print(i + ":");

@@ -74,10 +74,19 @@ public class RemoveJmp {
       }
     }
     for (int i = -1; i >= func_cnt; i--) {
+      boolean has_end = false;
       TreeMap<Integer, Boolean> code_list = from.get(i);
       int label = code_list.firstKey();
       while (!code_list.isEmpty()) {
         if (blocks.containsKey(label)) {
+          if (!has_end) {
+            for (IRCode code : blocks.get(label)) {
+              if (code instanceof IRFuncend) {
+                has_end = true;
+                break;
+              }
+            }
+          }
           machine.generated.addAll(blocks.get(label));
         }
         code_list.remove(label);
@@ -109,6 +118,9 @@ public class RemoveJmp {
             label = code_list.firstKey();
           }
         }
+      }
+      if(!has_end) {
+        machine.generated.add(new IRFuncend());
       }
     }
     return;
@@ -214,13 +226,17 @@ public class RemoveJmp {
               MoveBlock to_change = (MoveBlock) cat_1.get(cat_1.size() - 1);
               to_change.to = null;
             } else {
-              cat_1.remove(cat_1.size() - 1);
+              if (!(cat_1.get(cat_1.size() - 1) instanceof IRFuncend)) {
+                cat_1.remove(cat_1.size() - 1);
+              }
             }
             if (cat_2.get(0) instanceof MoveBlock) {
               MoveBlock to_change = (MoveBlock) cat_2.get(0);
               to_change.num = null;
             } else {
-              cat_2.remove(0);
+              if (!(cat_2.get(0) instanceof IRFuncend)) {
+                cat_2.remove(0);
+              }
             }
             cat_1.addAll(cat_2);
             graph.put(i, graph.get(res));
@@ -260,13 +276,17 @@ public class RemoveJmp {
               MoveBlock to_change = (MoveBlock) cat_1.get(cat_1.size() - 1);
               to_change.to = null;
             } else {
-              cat_1.remove(cat_1.size() - 1);
+              if (!(cat_1.get(cat_1.size() - 1) instanceof IRFuncend)) {
+                cat_1.remove(cat_1.size() - 1);
+              }
             }
             if (cat_2.get(0) instanceof MoveBlock) {
               MoveBlock to_change = (MoveBlock) cat_2.get(0);
               to_change.num = null;
             } else {
-              cat_2.remove(0);
+              if (!(cat_2.get(0) instanceof IRFuncend)) {
+                cat_2.remove(0);
+              }
             }
             cat_1.addAll(cat_2);
             graph.put(i, graph.get(res));

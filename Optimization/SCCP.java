@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Queue;
 import java.util.LinkedList;
+import java.util.Map;
+
 import Composer.*;
 import IRSentence.*;
 
@@ -23,9 +25,54 @@ public class SCCP {
 
   void Optim() {
     BuildGraph();
+    CheckUntouchable();
+    CheckEnd();
     OptimFunc();
+    CheckEnd();
     RemoveDead();
     ReplaceJmp();
+  }
+
+  void CheckEnd() {
+    for (IRCode code : machine.generated) {
+      if (code instanceof IRFuncend) {
+        code.dead = false;
+      }
+    }
+  }
+
+  void PrintGraph() {
+    for (Map.Entry<Integer, HashMap<Integer, Boolean>> value : graph.entrySet()) {
+      System.out.print(value.getKey() + ":");
+      for (Map.Entry<Integer, Boolean> values : value.getValue().entrySet()) {
+        System.out.print(values.getKey() + " ");
+      }
+      System.out.println();
+    }
+  }
+
+  void CheckUntouchable() {
+    Queue<Integer> untouchable_queue = new LinkedList<>();
+    for (int node : graph.keySet()) {
+      if ((node > 0) && ((!pre.containsKey(node)) || (pre.get(node).isEmpty()))) {
+        untouchable_queue.add(node);
+      }
+    }
+    while (!untouchable_queue.isEmpty()) {
+      int process = untouchable_queue.poll();
+      Queue<IRCode> buffer = new LinkedList<>();
+      HashMap<Integer, Boolean> to_check = graph.get(process);
+      for (int to : to_check.keySet()) {
+        RemoveEdge(process, to, buffer);
+      }
+      graph.remove(process);
+      untouchable.put(process, null);
+      for (IRCode code : blocks.get(process)) {
+        if (!(code instanceof IRFuncend)) {
+          code.dead = true;
+        }
+      }
+    }
   }
 
   void BuildGraph() {
@@ -238,7 +285,9 @@ public class SCCP {
       if (pre.get(to).isEmpty()) {
         untouchable.put(to, null);
         for (IRCode code : blocks.get(to)) {
-          code.dead = true;
+          if (!(code instanceof IRFuncend)) {
+            code.dead = true;
+          }
         }
         if (graph.containsKey(to)) {
           Queue<Integer> to_remove = new LinkedList<>();
