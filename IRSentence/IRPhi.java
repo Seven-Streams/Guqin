@@ -190,7 +190,11 @@ public class IRPhi extends IRCode {
       return null;
     }
     if (values.size() == 1) {
-      replace.put(target, values.get(0));
+      if(replace.containsKey(values.get(0))) {
+      replace.put(target, replace.get(values.get(0)));
+      } else {
+        replace.put(target, values.get(0));
+      }
       dead = true;
       return target;
     }

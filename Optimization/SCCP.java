@@ -140,8 +140,10 @@ public class SCCP {
         String output = code.ConstCheck(value);
         if (output != null) {
           for (String def_v : res_def.keySet()) {
-            for (IRCode influenced : use_relation.get(def_v).keySet()) {
-              to_update.add(influenced);
+            if (use_relation.containsKey(def_v)) {
+              for (IRCode influenced : use_relation.get(def_v).keySet()) {
+                to_update.add(influenced);
+              }
             }
           }
         }

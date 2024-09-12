@@ -22,9 +22,11 @@ public class Optimizor {
     const_check.Optim();
     Inline inliner = new Inline(machine);
     inliner.Optim(50);
-    // SCCP sccp = new SCCP(machine);
-    // sccp.Optim();
-    machine.LLVMOutput();
+    // machine.LLVMOutput();
+    // System.out.println("");
+    SCCP sccp = new SCCP(machine);
+    sccp.Optim();
+    // machine.LLVMOutput();
     LocalCSE cse = new LocalCSE(machine);
     cse.Optim();
     PhiRemover eraser = new PhiRemover(machine);
@@ -37,8 +39,8 @@ public class Optimizor {
     allocator.Allocator(28);
     RemoveJmp jp = new RemoveJmp(machine);
     jp.Optim();
-    // allocator.PrintBuiltIn();
-    // allocator.Codegen();
+    allocator.PrintBuiltIn();
+    allocator.Codegen();
     return;
   }
 }

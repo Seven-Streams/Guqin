@@ -1,5 +1,6 @@
 package Optimization;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import IRSentence.*;
 import Composer.*;
@@ -8,6 +9,7 @@ public class Inline {
   Composer machine = null;
   HashMap<String, Boolean> ready_to_inline = new HashMap<>();
   HashMap<String, Integer> entry = new HashMap<>();
+  ArrayList<IRPhi> phis = new ArrayList<>();
 
   public Inline(Composer _machine) {
     machine = _machine;
@@ -34,6 +36,7 @@ public class Inline {
   }
 
   void FuncCheck(int bound) {
+    phis.clear();
     ready_to_inline.clear();
     entry.clear();
     String name = null;
@@ -46,6 +49,10 @@ public class Inline {
         entry.put(name, i);
         sentence_cnt = 1;
       }
+      if (code instanceof IRPhi) {
+        IRPhi phi = (IRPhi) code;
+        phis.add(phi);
+      }
       if (code instanceof IRFuncend) {
         if (sentence_cnt <= bound) {
           ready_to_inline.put(new String(name), true);
@@ -57,20 +64,45 @@ public class Inline {
   }
 
   void InlineFunc() throws Exception {
+    int now_cnt = 0;
+    int func_cnt = 0;
     for (int i = 0; i < machine.generated.size(); i++) {
       IRCode code = machine.generated.get(i);
+      if (code instanceof IRFunc) {
+        now_cnt = --func_cnt;
+      }
+      if (code instanceof IRLabel) {
+        now_cnt = ((IRLabel) code).label;
+      }
+      if (code instanceof InlineFunc) {
+        InlineFunc inline = (InlineFunc) code;
+        if (inline.operations.get(inline.operations.size() - 1) instanceof IRLabel) {
+          now_cnt = ((IRLabel) (inline.operations.get(inline.operations.size() - 1))).label;
+        } else {
+          now_cnt = ((IRLabel) (inline.operations.get(inline.operations.size() - 2))).label;
+        }
+      }
       if (code instanceof IRFuncall) {
         IRFuncall call = (IRFuncall) code;
         if (ready_to_inline.containsKey(call.func_name) && (ready_to_inline.get(call.func_name))) {
-          InlineFunc to_inline = GetInline(entry.get(call.func_name), call);
+          InlineFunc to_inline = GetInline(entry.get(call.func_name), call, now_cnt);
           machine.generated.set(i, to_inline);
+        }
+        code = machine.generated.get(i);
+        if (code instanceof InlineFunc) {
+          InlineFunc inline = (InlineFunc) code;
+          if (inline.operations.get(inline.operations.size() - 1) instanceof IRLabel) {
+            now_cnt = ((IRLabel) (inline.operations.get(inline.operations.size() - 1))).label;
+          } else {
+            now_cnt = ((IRLabel) (inline.operations.get(inline.operations.size() - 2))).label;
+          }
         }
       }
     }
     return;
   }
 
-  InlineFunc GetInline(int start, IRFuncall calling_info) throws Exception {
+  InlineFunc GetInline(int start, IRFuncall calling_info, int now) throws Exception {
     InlineFunc return_value = new InlineFunc();
     HashMap<Integer, Integer> label_replace = new HashMap<>();
     HashMap<String, String> name_replace = new HashMap<>();
@@ -90,6 +122,9 @@ public class Inline {
     for (int i = (start + 1); i < machine.generated.size(); i++) {
       IRCode code = machine.generated.get(i);
       IRCode to_add = (code.GetInline(name_replace, label_replace, machine));
+      if (to_add instanceof IRPhi) {
+        phis.add((IRPhi) to_add);
+      }
       if (to_add != null) {
         return_value.operations.add(to_add);
       }
@@ -110,6 +145,14 @@ public class Inline {
           IRLabel label = (IRLabel) code;
           now_label = label.label;
         }
+        if (code instanceof InlineFunc) {
+          InlineFunc inline = (InlineFunc) code;
+          if (inline.operations.get(inline.operations.size() - 1) instanceof IRLabel) {
+            now_label = ((IRLabel) (inline.operations.get(inline.operations.size() - 1))).label;
+          } else {
+            now_label = ((IRLabel) (inline.operations.get(inline.operations.size() - 2))).label;
+          }
+        }
         if (code instanceof PseudoMove) {
           return_phi.labels.add(now_label);
           PseudoMove move = (PseudoMove) code;
@@ -122,16 +165,15 @@ public class Inline {
           return_value.operations.remove(i);
         }
       }
-      if (return_phi.values.size() == 1) {
-        IRBin mov = new IRBin();
-        mov.target_reg = new String(calling_info.target_reg);
-        mov.op1 = return_phi.values.get(0);
-        mov.op2 = "0";
-        mov.symbol = "+";
-        mov.type = "what";
-        return_value.operations.add(mov);
-      } else {
-        return_value.operations.add(return_phi);
+      return_value.operations.add(return_phi);
+      phis.add(return_phi);
+    }
+    for (IRPhi phi : phis) {
+      for (int i = 0; i < phi.labels.size(); i++) {
+        if (phi.labels.get(i) == now) {
+          phi.labels.set(i, label_replace.get(0));
+          break;
+        }
       }
     }
     return return_value;
