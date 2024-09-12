@@ -20,24 +20,25 @@ public class Optimizor {
     global_check.Optim();
     ConstFolding const_check = new ConstFolding(machine);
     const_check.Optim();
-    SCCP sccp = new SCCP(machine);
-    sccp.Optim();
+    Inline inliner = new Inline(machine);
+    inliner.Optim(50);
+    // SCCP sccp = new SCCP(machine);
+    // sccp.Optim();
+    machine.LLVMOutput();
     LocalCSE cse = new LocalCSE(machine);
     cse.Optim();
     PhiRemover eraser = new PhiRemover(machine);
     eraser.Remove();
     NaiveADCE ADCER = new NaiveADCE(machine);
     ADCER.Optim();
-    Inline inliner = new Inline(machine);
-    inliner.Optim(50);
     CondUpdate condition = new CondUpdate(machine);
     condition.Optim();
     LinearScan allocator = new LinearScan(machine);
     allocator.Allocator(28);
     RemoveJmp jp = new RemoveJmp(machine);
     jp.Optim();
-    allocator.PrintBuiltIn();
-    allocator.Codegen();
+    // allocator.PrintBuiltIn();
+    // allocator.Codegen();
     return;
   }
 }

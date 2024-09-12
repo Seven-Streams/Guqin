@@ -96,7 +96,7 @@ public class SCCP {
   void Forward(int index) {
     HashMap<Integer, Boolean> visit = new HashMap<>();
     HashMap<String, String> value = new HashMap<>();
-    HashMap<String, HashMap<IRCode, Boolean>> use = new HashMap<>();
+    HashMap<String, HashMap<IRCode, Boolean>> use_relation = new HashMap<>();
     Queue<Integer> my_queue = new LinkedList<>();
     visit.put(index, null);
     my_queue.add(index);
@@ -110,10 +110,10 @@ public class SCCP {
         res_def.clear();
         code.UseDefCheck(res_def, res_use);
         for (String use_v : res_use.keySet()) {
-          if (!use.containsKey(use_v)) {
-            use.put(use_v, new HashMap<>());
+          if (!use_relation.containsKey(use_v)) {
+            use_relation.put(use_v, new HashMap<>());
           }
-          use.get(use_v).put(code, null);
+          use_relation.get(use_v).put(code, null);
         }
       }
       if (graph.containsKey(head)) {
@@ -129,7 +129,7 @@ public class SCCP {
     visit.clear();
     visit.put(index, null);
     my_queue.add(index);
-    Queue<IRCode> uses = new LinkedList<>();
+    Queue<IRCode> to_update = new LinkedList<>();
     while (!my_queue.isEmpty()) {
       int head = my_queue.poll();
       ArrayList<IRCode> to_check = blocks.get(head);
@@ -140,9 +140,8 @@ public class SCCP {
         String output = code.ConstCheck(value);
         if (output != null) {
           for (String def_v : res_def.keySet()) {
-            value.put(def_v, output);
-            for (IRCode influenced : use.get(def_v).keySet()) {
-              uses.add(influenced);
+            for (IRCode influenced : use_relation.get(def_v).keySet()) {
+              to_update.add(influenced);
             }
           }
         }
@@ -153,7 +152,7 @@ public class SCCP {
           deprecated = jmp.const_jmp == 1 ? jmp.label2 : jmp.label1;
           if (reserved != deprecated) {
             int now_index = cond_block.get(code);
-            RemoveEdge(now_index, deprecated, uses);
+            RemoveEdge(now_index, deprecated, to_update);
           }
         }
       }
@@ -166,17 +165,16 @@ public class SCCP {
         }
       }
     }
-    while (!uses.isEmpty()) {
+    while (!to_update.isEmpty()) {
       res_use.clear();
       res_def.clear();
-      IRCode code = uses.poll();
+      IRCode code = to_update.poll();
       code.UseDefCheck(res_def, res_use);
       String result = code.ConstCheck(value);
       if (result != null) {
         for (String def_v : res_def.keySet()) {
-          value.put(def_v, result);
-          for (IRCode influenced : use.get(def_v).keySet()) {
-            uses.add(influenced);
+          for (IRCode influenced : use_relation.get(def_v).keySet()) {
+            to_update.add(influenced);
           }
         }
       }
@@ -187,12 +185,11 @@ public class SCCP {
         deprecated = jmp.const_jmp == 1 ? jmp.label2 : jmp.label1;
         if (reserved != deprecated) {
           int now_index = cond_block.get(code);
-          RemoveEdge(now_index, deprecated, uses);
+          RemoveEdge(now_index, deprecated, to_update);
         }
       }
     }
     return;
-
   }
 
   void RemoveDead() {
@@ -243,10 +240,10 @@ public class SCCP {
         }
         if (graph.containsKey(to)) {
           Queue<Integer> to_remove = new LinkedList<>();
-          for(int des: graph.get(to).keySet()) {
+          for (int des : graph.get(to).keySet()) {
             to_remove.add(des);
           }
-          while(!to_remove.isEmpty()){
+          while (!to_remove.isEmpty()) {
             RemoveEdge(to, to_remove.poll(), check_list);
           }
         }
@@ -261,11 +258,11 @@ public class SCCP {
   }
 
   void ReplaceJmp() {
-    for(int i = 0; i < machine.generated.size(); i++) {
+    for (int i = 0; i < machine.generated.size(); i++) {
       IRCode code = machine.generated.get(i);
-      if(code instanceof Conditionjmp) {
-        Conditionjmp jmp = (Conditionjmp)code;
-        if(jmp.const_jmp != null) {
+      if (code instanceof Conditionjmp) {
+        Conditionjmp jmp = (Conditionjmp) code;
+        if (jmp.const_jmp != null) {
           IRjmp new_jmp = new IRjmp(jmp.const_jmp == 1 ? jmp.label1 : jmp.label2);
           machine.generated.set(i, new_jmp);
         }

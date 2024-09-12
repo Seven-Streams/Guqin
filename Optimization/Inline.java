@@ -14,7 +14,7 @@ public class Inline {
   }
 
   public void Optim(int bound) throws Exception {
-    for(int i = 0; i < 2; i++) {
+    for (int i = 0; i < 2; i++) {
       ready_to_inline.clear();
       CheckGlobal();
       FuncCheck(bound);
@@ -74,6 +74,9 @@ public class Inline {
     InlineFunc return_value = new InlineFunc();
     HashMap<Integer, Integer> label_replace = new HashMap<>();
     HashMap<String, String> name_replace = new HashMap<>();
+    return_value.operations.add(new IRjmp(++machine.label_number));
+    return_value.operations.add(new IRLabel(machine.label_number));
+    label_replace.put(-1, machine.label_number);
     IRFunc declar = (IRFunc) machine.generated.get(start);
     for (int i = 0; i < calling_info.reg.size(); i++) {
       name_replace.put(new String(declar.names.get(i)), new String(calling_info.reg.get(i)));
@@ -97,6 +100,40 @@ public class Inline {
         break;
       }
     }
+    if (calling_info.target_reg != null) {
+      IRPhi return_phi = new IRPhi();
+      return_phi.target = new String(calling_info.target_reg);
+      int now_label = 0;
+      for (int i = 0; i < return_value.operations.size(); i++) {
+        IRCode code = return_value.operations.get(i);
+        if (code instanceof IRLabel) {
+          IRLabel label = (IRLabel) code;
+          now_label = label.label;
+        }
+        if (code instanceof PseudoMove) {
+          return_phi.labels.add(now_label);
+          PseudoMove move = (PseudoMove) code;
+          return_phi.values.add(move.src);
+        }
+      }
+      for (int i = return_value.operations.size() - 1; i >= 0; i--) {
+        IRCode code = return_value.operations.get(i);
+        if (code instanceof PseudoMove) {
+          return_value.operations.remove(i);
+        }
+      }
+      if (return_phi.values.size() == 1) {
+        IRBin mov = new IRBin();
+        mov.target_reg = new String(calling_info.target_reg);
+        mov.op1 = return_phi.values.get(0);
+        mov.op2 = "0";
+        mov.symbol = "+";
+        mov.type = "what";
+        return_value.operations.add(mov);
+      } else {
+        return_value.operations.add(return_phi);
+      }
+    }
     return return_value;
   }
 
@@ -106,9 +143,15 @@ public class Inline {
       if (code instanceof InlineFunc) {
         InlineFunc check = (InlineFunc) code;
         if (check.operations.size() > 1) {
-          IRLabel label = (IRLabel) check.operations.get(check.operations.size() - 1);
-          IRjmp res = new IRjmp(label.label);
-          check.operations.add(check.operations.size() - 1, res);
+          if (check.operations.get(check.operations.size() - 1) instanceof IRLabel) {
+            IRLabel label = (IRLabel) check.operations.get(check.operations.size() - 1);
+            IRjmp res = new IRjmp(label.label);
+            check.operations.add(check.operations.size() - 1, res);
+          } else {
+            IRLabel label = (IRLabel) check.operations.get(check.operations.size() - 2);
+            IRjmp res = new IRjmp(label.label);
+            check.operations.add(check.operations.size() - 2, res);
+          }
           machine.generated.addAll(i + 1, ((InlineFunc) code).operations);
         }
         machine.generated.remove(i);

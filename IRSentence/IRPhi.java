@@ -186,8 +186,13 @@ public class IRPhi extends IRCode {
 
   @Override
   public String ConstCheck(HashMap<String, String> replace) {
-    if(dead) {
+    if (dead) {
       return null;
+    }
+    if (values.size() == 1) {
+      replace.put(target, values.get(0));
+      dead = true;
+      return target;
     }
     boolean not_const = true;
     for (int i = 0; i < values.size(); i++) {
@@ -206,15 +211,15 @@ public class IRPhi extends IRCode {
         }
       }
     }
-    if(not_const) {
+    if (not_const) {
       return null;
     }
     String now = null;
-    for(String value: values) {
-      if(now == null) {
+    for (String value : values) {
+      if (now == null) {
         now = value;
       } else {
-        if(!now.equals(value)) {
+        if (!now.equals(value)) {
           return null;
         }
       }
@@ -222,5 +227,45 @@ public class IRPhi extends IRCode {
     dead = true;
     replace.put(target, now);
     return target;
+  }
+
+  @Override
+  public IRCode GetInline(HashMap<String, String> now_name, HashMap<Integer, Integer> now_label, Composer machine)
+      throws Exception {
+    IRPhi return_value = new IRPhi();
+    if (now_name.containsKey(target)) {
+      return_value.target = new String(now_name.get(target));
+    } else {
+      return_value.target = new String("%reg$" + ++machine.tmp_time);
+      now_name.put(target, "%reg$" + machine.tmp_time);
+    }
+    for (int i = 0; i < values.size(); i++) {
+      if (labels.get(i) < 0) {
+        return_value.labels.add(now_label.get(-1));
+      } else {
+        if (now_label.containsKey(labels.get(i))) {
+          return_value.labels.add(now_label.get(labels.get(i)));
+        } else {
+          return_value.labels.add(++machine.label_number);
+          now_label.put(labels.get(i), machine.label_number);
+        }
+      }
+      try {
+        int value = Integer.parseInt(values.get(i));
+        return_value.values.add(Integer.toString(value));
+      } catch (NumberFormatException e) {
+        if (CheckLit(values.get(i))) {
+          if (now_name.containsKey(values.get(i))) {
+            return_value.values.add(new String(now_name.get(values.get(i))));
+          } else {
+            return_value.values.add(new String("%reg$" + (++machine.tmp_time)));
+            now_name.put(values.get(i), "%reg$" + machine.tmp_time);
+          }
+        } else {
+          return_value.values.add(new String(values.get(i)));
+        }
+      }
+    }
+    return return_value;
   }
 }

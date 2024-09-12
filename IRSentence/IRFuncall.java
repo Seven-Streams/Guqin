@@ -611,7 +611,7 @@ public class IRFuncall extends IRCode {
       }
     }
     for (int i = 0; i < to_save.size(); i++) {
-      if ((target_reg != null) && (registers.get(target_reg) >= 0)
+      if ((target_reg != null) && registers.containsKey(target_reg) && (registers.get(target_reg) >= 0)
           && to_save.get(i).equals(register_name.get(registers.get(target_reg)))) {
         continue;
       }
