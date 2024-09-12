@@ -11,8 +11,11 @@ public class SCCP {
   Composer machine = null;
   public HashMap<Integer, HashMap<Integer, Boolean>> graph = new HashMap<>();
   public HashMap<Integer, HashMap<Integer, Boolean>> pre = new HashMap<>();
+  public HashMap<IRCode, Integer> cond_block = new HashMap<>();
+  // This is used to show which block cond_jmp is from.
   int func_cnt = 0;
   public HashMap<Integer, ArrayList<IRCode>> blocks = new HashMap<>();
+  public HashMap<Integer, Boolean> untouchable = new HashMap<>();
 
   public SCCP(Composer _machine) {
     machine = _machine;
@@ -22,10 +25,15 @@ public class SCCP {
     BuildGraph();
     OptimFunc();
     RemoveDead();
+    ReplaceJmp();
   }
 
   void BuildGraph() {
     graph.clear();
+    pre.clear();
+    cond_block.clear();
+    blocks.clear();
+    untouchable.clear();
     int now = 0;
     HashMap<Integer, Boolean> nxt = null;
     ArrayList<IRCode> buffer = null;
@@ -49,6 +57,7 @@ public class SCCP {
         pre.get(jmp.label).put(now, null);
       }
       if (code instanceof Conditionjmp) {
+        cond_block.put(code, now);
         Conditionjmp jmp = (Conditionjmp) code;
         nxt.put(jmp.label1, null);
         nxt.put(jmp.label2, null);
@@ -87,7 +96,6 @@ public class SCCP {
   void Forward(int index) {
     HashMap<Integer, Boolean> visit = new HashMap<>();
     HashMap<String, String> value = new HashMap<>();
-    // 0:bottom. 1:top. 2:const.
     HashMap<String, HashMap<IRCode, Boolean>> use = new HashMap<>();
     Queue<Integer> my_queue = new LinkedList<>();
     visit.put(index, null);
@@ -117,6 +125,7 @@ public class SCCP {
         }
       }
     }
+    // Build use relationships.
     visit.clear();
     visit.put(index, null);
     my_queue.add(index);
@@ -135,6 +144,16 @@ public class SCCP {
             for (IRCode influenced : use.get(def_v).keySet()) {
               uses.add(influenced);
             }
+          }
+        }
+        if ((code instanceof Conditionjmp) && ((Conditionjmp) code).const_jmp != null) {
+          Conditionjmp jmp = (Conditionjmp) code;
+          int reserved, deprecated;
+          reserved = jmp.const_jmp == 1 ? jmp.label1 : jmp.label2;
+          deprecated = jmp.const_jmp == 1 ? jmp.label2 : jmp.label1;
+          if (reserved != deprecated) {
+            int now_index = cond_block.get(code);
+            RemoveEdge(now_index, deprecated, uses);
           }
         }
       }
@@ -161,14 +180,95 @@ public class SCCP {
           }
         }
       }
+      if ((code instanceof Conditionjmp) && ((Conditionjmp) code).const_jmp != null) {
+        Conditionjmp jmp = (Conditionjmp) code;
+        int reserved, deprecated;
+        reserved = jmp.const_jmp == 1 ? jmp.label1 : jmp.label2;
+        deprecated = jmp.const_jmp == 1 ? jmp.label2 : jmp.label1;
+        if (reserved != deprecated) {
+          int now_index = cond_block.get(code);
+          RemoveEdge(now_index, deprecated, uses);
+        }
+      }
     }
     return;
+
   }
 
   void RemoveDead() {
     for (int i = machine.generated.size() - 1; i >= 0; i--) {
       if (machine.generated.get(i).dead) {
         machine.generated.remove(i);
+      }
+    }
+    return;
+  }
+
+  void RemoveEdge(int from, int to, Queue<IRCode> check_list) {
+    ArrayList<IRCode> buffer_list = new ArrayList<>();
+    if (untouchable.containsKey(to)) {
+      return;
+    }
+    if (graph.containsKey(from)) {
+      graph.get(from).remove(to);
+    }
+    if (pre.containsKey(to)) {
+      pre.get(to).remove(from);
+    }
+    if (blocks.containsKey(to)) {
+      for (IRCode code : blocks.get(to)) {
+        if (code instanceof IRPhi) {
+          IRPhi phi = (IRPhi) code;
+          for (int i = phi.values.size() - 1; i >= 0; i--) {
+            if (phi.labels.get(i) == from) {
+              phi.labels.remove(i);
+              phi.values.remove(i);
+              buffer_list.add(phi);
+              break;
+            }
+          }
+        } else {
+          if (code instanceof IRLabel || code instanceof IRFunc) {
+            continue;
+          }
+          break;
+        }
+      }
+    }
+    if (pre.containsKey(to)) {
+      if (pre.get(to).isEmpty()) {
+        untouchable.put(to, null);
+        for (IRCode code : blocks.get(to)) {
+          code.dead = true;
+        }
+        if (graph.containsKey(to)) {
+          Queue<Integer> to_remove = new LinkedList<>();
+          for(int des: graph.get(to).keySet()) {
+            to_remove.add(des);
+          }
+          while(!to_remove.isEmpty()){
+            RemoveEdge(to, to_remove.poll(), check_list);
+          }
+        }
+      } // Untouchable.
+    }
+    if (!untouchable.containsKey(to)) {
+      for (IRCode code : buffer_list) {
+        check_list.add(code);
+      }
+    }
+    return;
+  }
+
+  void ReplaceJmp() {
+    for(int i = 0; i < machine.generated.size(); i++) {
+      IRCode code = machine.generated.get(i);
+      if(code instanceof Conditionjmp) {
+        Conditionjmp jmp = (Conditionjmp)code;
+        if(jmp.const_jmp != null) {
+          IRjmp new_jmp = new IRjmp(jmp.const_jmp == 1 ? jmp.label1 : jmp.label2);
+          machine.generated.set(i, new_jmp);
+        }
       }
     }
     return;

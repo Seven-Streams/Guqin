@@ -171,14 +171,27 @@ public class LinearScan {
     System.out.println("");
     System.out.println(".text");
     System.out.println(".globl main");
-    for (IRCode code : machine.generated) {
+    boolean last_return = false;
+    for (int i = 0; i < machine.generated.size(); i++) {
+      IRCode code = machine.generated.get(i);
       if ((code.sentence_number == 0) && (!(code instanceof IRFuncend))) {
         continue;
       }
       if (code instanceof IRFunc) {
         cnt--;
       }
+      if(last_return) {
+        if(code instanceof IRFuncend) {
+          IRFuncend end = (IRFuncend)code;
+          end.last_return = true;
+        }
+      }
       code.CodegenWithOptim(registers.get(cnt), register_names);
+      if(code instanceof IRReturn) {
+        last_return = true;
+      } else {
+        last_return = false;
+      }
     }
     HashMap<Integer, Integer> label_place = new HashMap<>();
     HashMap<String, Integer> cond_place = new HashMap<>();

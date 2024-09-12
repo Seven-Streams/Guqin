@@ -2,7 +2,6 @@ package IRSentence;
 
 import java.util.HashMap;
 import java.util.Stack;
-
 import Composer.Composer;
 import Optimization.NameLabelPair;
 
@@ -11,6 +10,7 @@ public class Conditionjmp extends IRCode {
   public int label2 = 0;
   public static int cnt = 0;
   public String reg = null;
+  public Integer const_jmp = null;
 
   @Override
   public void CodePrint() {
@@ -181,6 +181,14 @@ public class Conditionjmp extends IRCode {
   public String ConstCheck(HashMap<String, String> replace) {
     if (replace.containsKey(reg)) {
       reg = new String(replace.get(reg));
+    }
+    try{
+      int res_value = Integer.parseInt(reg);
+      const_jmp = res_value == 0 ? 2 : 1;
+    }catch(NumberFormatException e) {
+      if(!CheckLit(reg)) {
+        const_jmp = reg.equals("true") ? 1 : 2;
+      }
     }
     return null;
   }

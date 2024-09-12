@@ -5,6 +5,8 @@ import java.util.HashMap;
 import Composer.Composer;
 
 public class IRFuncend extends IRCode {
+  public boolean last_return = false;
+
   @Override
   public void CodePrint() {
     System.out.println("}");
@@ -14,8 +16,10 @@ public class IRFuncend extends IRCode {
 
   @Override
   public void Codegen() {
-    System.out.println("li a0, 0");
-    System.out.println("j .return" + func_num);
+    if (!last_return) {
+      System.out.println("li a0, 0");
+      System.out.println("j .return" + func_num);
+    }
     System.out.println("");
     System.out.println(".return" + func_num + ":");
     System.out.println("lw ra, " + (sp_length - 4) + "(sp)");
@@ -34,8 +38,10 @@ public class IRFuncend extends IRCode {
   @Override
   public void CodegenWithOptim(HashMap<String, Integer> registers, HashMap<Integer, String> register_name)
       throws Exception {
-    buffer.add("li a0, 0");
-    buffer.add("j .return" + func_num);
+    if (!last_return) {
+      buffer.add("li a0, 0");
+      buffer.add("j .return" + func_num);
+    }
     buffer.add("");
     buffer.add(".return" + func_num + ":");
     if ((sp_length >> 11) == 0) {
@@ -45,7 +51,7 @@ public class IRFuncend extends IRCode {
       buffer.add("add sp, sp, t0");
     }
     buffer.add("lw ra, -4(sp)");
-    if(register_use.get(-func_num) >= 0) {
+    if (register_use.get(-func_num) >= 0) {
       buffer.add("lw s0, -8(sp)");
     }
     for (int i = 1; i <= Integer.min(register_use.get(-func_num), 11); i++) {
