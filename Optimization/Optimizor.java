@@ -26,7 +26,7 @@ public class Optimizor {
     cse.Optim();
     PhiRemover eraser = new PhiRemover(machine);
     eraser.Remove();
-        Inline inliner = new Inline(machine);
+    Inline inliner = new Inline(machine);
     inliner.Optim(50);
     NaiveADCE ADCER = new NaiveADCE(machine);
     ADCER.Optim();
