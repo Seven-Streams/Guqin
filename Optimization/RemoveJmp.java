@@ -2,6 +2,9 @@ package Optimization;
 
 import Composer.*;
 import java.util.*;
+
+import com.sun.jdi.Value;
+
 import IRSentence.*;
 
 public class RemoveJmp {
@@ -119,7 +122,7 @@ public class RemoveJmp {
           }
         }
       }
-      if(!has_end) {
+      if (!has_end) {
         machine.generated.add(new IRFuncend());
       }
     }
@@ -263,6 +266,9 @@ public class RemoveJmp {
       }
       while (flag) {
         flag = false;
+        if (graph.containsKey(i)) {
+          continue;
+        }
         if (graph.get(i).size() == 1) {
           int res = 0;
           for (int value : graph.get(i).keySet()) {

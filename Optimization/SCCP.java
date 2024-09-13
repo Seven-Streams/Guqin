@@ -62,8 +62,12 @@ public class SCCP {
       int process = untouchable_queue.poll();
       Queue<IRCode> buffer = new LinkedList<>();
       HashMap<Integer, Boolean> to_check = graph.get(process);
+      Queue<Integer> check_buffer = new LinkedList<>();
       for (int to : to_check.keySet()) {
-        RemoveEdge(process, to, buffer);
+        check_buffer.add(to);
+      }
+      while(!check_buffer.isEmpty()) {
+        RemoveEdge(process, check_buffer.poll(), buffer);
       }
       graph.remove(process);
       untouchable.put(process, null);
