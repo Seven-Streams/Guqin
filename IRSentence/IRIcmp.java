@@ -612,7 +612,6 @@ public class IRIcmp extends IRCode {
           try {
             value2 = Integer.parseInt(replace.get(op2));
           } catch (NumberFormatException e2) {
-
           }
           op2 = new String(replace.get(op2));
         }
@@ -627,29 +626,31 @@ public class IRIcmp extends IRCode {
       return null;
     }
     int result = 0;
+    int test1 = value1;
+    int test2 = value2;
     switch (symbol) {
       case ("=="): {
-        result = (value1 == value2) ? 1 : 0;
+        result = (test1 == test2) ? 1 : 0;
         break;
       }
       case ("!="): {
-        result = (value1 != value2) ? 1 : 0;
+        result = (test1 != test2) ? 1 : 0;
         break;
       }
       case (">"): {
-        result = (value1 > value2) ? 1 : 0;
+        result = (test1 > test2) ? 1 : 0;
         break;
       }
       case ("<"): {
-        result = (value1 < value2) ? 1 : 0;
+        result = (test1 < test2) ? 1 : 0;
         break;
       }
       case (">="): {
-        result = (value1 >= value2) ? 1 : 0;
+        result = (test1 >= test2) ? 1 : 0;
         break;
       }
       case ("<="): {
-        result = (value1 <= value2) ? 1 : 0;
+        result = (test1 <= test2) ? 1 : 0;
         break;
       }
     }

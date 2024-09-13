@@ -16,13 +16,11 @@ public class Inline {
   }
 
   public void Optim(int bound) throws Exception {
-    for (int i = 0; i < 2; i++) {
-      ready_to_inline.clear();
-      CheckGlobal();
-      FuncCheck(bound);
-      InlineFunc();
-      EmbeddingInline();
-    }
+    ready_to_inline.clear();
+    CheckGlobal();
+    FuncCheck(bound);
+    InlineFunc();
+    EmbeddingInline();
     return;
   }
 

@@ -22,11 +22,12 @@ public class Optimizor {
     const_check.Optim();
     Inline inliner = new Inline(machine);
     inliner.Optim(50);
-    // machine.LLVMOutput();
-    // System.out.println("");
     SCCP sccp = new SCCP(machine);
     sccp.Optim();
-    // machine.LLVMOutput();
+    inliner = new Inline(machine);
+    sccp = new SCCP(machine);
+    inliner.Optim(50);
+    sccp.Optim();
     LocalCSE cse = new LocalCSE(machine);
     cse.Optim();
     PhiRemover eraser = new PhiRemover(machine);
