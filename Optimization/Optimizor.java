@@ -21,12 +21,12 @@ public class Optimizor {
     ConstFolding const_check = new ConstFolding(machine);
     const_check.Optim();
     Inline inliner = new Inline(machine);
-    inliner.Optim(50);
+    inliner.Optim(30);
     SCCP sccp = new SCCP(machine);
     sccp.Optim();
     inliner = new Inline(machine);
     sccp = new SCCP(machine);
-    inliner.Optim(50);
+    inliner.Optim(30);
     sccp.Optim();
     LocalCSE cse = new LocalCSE(machine);
     cse.Optim();
