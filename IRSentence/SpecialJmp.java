@@ -135,10 +135,18 @@ public class SpecialJmp extends Conditionjmp {
       return;
     }
     if (value1 != null) {
-      buffer.add("li t0, " + value1);
+      if (value1 == 0) {
+        reg_str1 = "x0";
+      } else {
+        buffer.add("li t0, " + value1);
+      }
     }
     if (value2 != null) {
-      buffer.add("li t1, " + value2);
+      if (value2 == 0) {
+        reg_str2 = "x0";
+      } else {
+        buffer.add("li t1, " + value2);
+      }
     }
     switch (symbol) {
       case ("=="): {
