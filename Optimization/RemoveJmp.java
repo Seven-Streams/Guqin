@@ -2,6 +2,7 @@ package Optimization;
 
 import Composer.*;
 import java.util.*;
+
 import IRSentence.*;
 
 public class RemoveJmp {
@@ -213,9 +214,6 @@ public class RemoveJmp {
       boolean flag = true;
       while (flag) {
         flag = false;
-        if (!graph.containsKey(i)) {
-          continue;
-        }
         if (graph.get(i).size() == 1) {
           int res = 0;
           for (int value : graph.get(i).keySet()) {
@@ -229,13 +227,17 @@ public class RemoveJmp {
               MoveBlock to_change = (MoveBlock) cat_1.get(cat_1.size() - 1);
               to_change.to = null;
             } else {
-              cat_1.remove(cat_1.size() - 1);
+              if (!(cat_1.get(cat_1.size() - 1) instanceof IRFuncend)) {
+                cat_1.remove(cat_1.size() - 1);
+              }
             }
             if (cat_2.get(0) instanceof MoveBlock) {
               MoveBlock to_change = (MoveBlock) cat_2.get(0);
               to_change.num = null;
             } else {
-              cat_2.remove(0);
+              if (!(cat_2.get(0) instanceof IRFuncend)) {
+                cat_2.remove(0);
+              }
             }
             cat_1.addAll(cat_2);
             graph.put(i, graph.get(res));
@@ -257,9 +259,12 @@ public class RemoveJmp {
     }
     for (int i = 1; i <= largest_label; i++) {
       boolean flag = true;
+      if (!graph.containsKey(i)) {
+        continue;
+      }
       while (flag) {
         flag = false;
-        if (!graph.containsKey(i)) {
+        if (graph.containsKey(i)) {
           continue;
         }
         if (graph.get(i).size() == 1) {
@@ -275,13 +280,17 @@ public class RemoveJmp {
               MoveBlock to_change = (MoveBlock) cat_1.get(cat_1.size() - 1);
               to_change.to = null;
             } else {
-              cat_1.remove(cat_1.size() - 1);
+              if (!(cat_1.get(cat_1.size() - 1) instanceof IRFuncend)) {
+                cat_1.remove(cat_1.size() - 1);
+              }
             }
             if (cat_2.get(0) instanceof MoveBlock) {
               MoveBlock to_change = (MoveBlock) cat_2.get(0);
               to_change.num = null;
             } else {
-              cat_2.remove(0);
+              if (!(cat_2.get(0) instanceof IRFuncend)) {
+                cat_2.remove(0);
+              }
             }
             cat_1.addAll(cat_2);
             graph.put(i, graph.get(res));
@@ -293,11 +302,9 @@ public class RemoveJmp {
               IRCode.loop_info.put(i, value);
               IRCode.loop_info.remove(res);
             }
-            if (graph.containsKey(i)) {
-              for (int value : graph.get(i).keySet()) {
-                pre.get(value).remove(res);
-                pre.get(value).put(i, null);
-              }
+            for (int value : graph.get(i).keySet()) {
+              pre.get(value).remove(res);
+              pre.get(value).put(i, null);
             }
           }
         }
