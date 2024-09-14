@@ -102,6 +102,7 @@ public class IRFunc extends IRCode {
     for (int i = 1; i <= Integer.min(register_use.get(-func_num), 11); i++) {
       buffer.add("sw s" + i + ", " + (-8 - 4 * i) + "(t1)");
     }
+    buffer.add(name + ".tail:");
     if (names.size() < 8) {
       for (int i = 0; i < names.size(); i++) {
         if (!registers.containsKey(names.get(i))) {

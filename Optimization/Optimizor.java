@@ -40,6 +40,8 @@ public class Optimizor {
     allocator.Allocator(28);
     RemoveJmp jp = new RemoveJmp(machine);
     jp.Optim();
+    Tail tail = new Tail(machine);
+    tail.Optim();
     allocator.PrintBuiltIn();
     allocator.Codegen();
     return;

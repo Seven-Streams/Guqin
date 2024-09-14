@@ -174,20 +174,20 @@ public class LinearScan {
     boolean last_return = false;
     for (int i = 0; i < machine.generated.size(); i++) {
       IRCode code = machine.generated.get(i);
-      if ((code.sentence_number == 0) && (!(code instanceof IRFuncend))) {
+      if ((code.sentence_number == 0) && (!(code instanceof IRFuncend || code instanceof IRTail))) {
         continue;
       }
       if (code instanceof IRFunc) {
         cnt--;
       }
-      if(last_return) {
-        if(code instanceof IRFuncend) {
-          IRFuncend end = (IRFuncend)code;
+      if (last_return) {
+        if (code instanceof IRFuncend) {
+          IRFuncend end = (IRFuncend) code;
           end.last_return = true;
         }
       }
       code.CodegenWithOptim(registers.get(cnt), register_names);
-      if(code instanceof IRReturn) {
+      if (code instanceof IRReturn) {
         last_return = true;
       } else {
         last_return = false;

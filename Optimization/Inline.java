@@ -64,9 +64,12 @@ public class Inline {
   void InlineFunc() throws Exception {
     int now_cnt = 0;
     int func_cnt = 0;
+    String now_name = null;
     for (int i = 0; i < machine.generated.size(); i++) {
       IRCode code = machine.generated.get(i);
       if (code instanceof IRFunc) {
+        IRFunc func = (IRFunc)code;
+        now_name = func.name;
         now_cnt = --func_cnt;
       }
       if (code instanceof IRLabel) {
@@ -81,7 +84,22 @@ public class Inline {
         }
       }
       if (code instanceof IRFuncall) {
+        IRCode check = machine.generated.get(i + 1);
         IRFuncall call = (IRFuncall) code;
+        if(call.func_name.equals(now_name)) {
+          if(call.target_reg == null) {
+            if(check instanceof IRReturn || check instanceof IRFuncend) {
+              continue;
+            }
+          } else {
+            if(check instanceof IRReturn) {
+              IRReturn return_check = (IRReturn)check;
+              if(return_check.reg.equals(call.target_reg)) {
+                continue;
+              }
+            }
+          }
+        }
         if (ready_to_inline.containsKey(call.func_name) && (ready_to_inline.get(call.func_name))) {
           InlineFunc to_inline = GetInline(entry.get(call.func_name), call, now_cnt);
           machine.generated.set(i, to_inline);

@@ -2,7 +2,7 @@
 
 ## What's Guqin?
 
-Guqin is a kind of Chinese traditional musical instrument. For example, the famous song "GuangLinSan" is played by Guqin. I use it to name my compiler, hope it can play your Mx code.
+Guqin is a kind of Chinese traditional musical instrument. For example, the famous song "GuangLinSan" is played by Guqin. I use it to name my compiler, hope it can play your Mx* code.
 
 ## The work I do
 
@@ -22,6 +22,7 @@ Guqin is a kind of Chinese traditional musical instrument. For example, the famo
   - [x] SCCP
   - [x] Trail Optimization
   - [x] Loop Invariant Code Motion
+  - [x] Tail-call Optimization
   - [ ] to be continued...
 
 ## The songs I love listening when coding
