@@ -14,7 +14,7 @@ public class Optimizor {
     call_remover.CheckUnecessaryCalling();
     Mem2Reg M2R = new Mem2Reg(machine);
     M2R.Optim();
-    LoopOptimization loop = new LoopOptimization(machine);
+    LoopOptimization loop = new LoopOptimization(machine, M2R.idom);
     loop.Optim();
     GlobalConst global_check = new GlobalConst(machine);
     global_check.Optim();

@@ -13,7 +13,7 @@ public class LoopOptimization {
   Composer machine = null;
   public HashMap<Integer, HashMap<Integer, Boolean>> graph = new HashMap<>();
   public HashMap<Integer, HashMap<Integer, Boolean>> pre = new HashMap<>();
-  public HashMap<Integer, HashMap<Integer, Boolean>> dominate = new HashMap<>();
+  public HashMap<Integer, Integer> idom = null;
   int func_cnt = 0;
   public HashMap<Integer, Boolean> visit = new HashMap<>();
   public HashMap<Integer, ArrayList<IRCode>> blocks = new HashMap<>();
@@ -21,29 +21,18 @@ public class LoopOptimization {
   public Queue<FromToPair> heads = new LinkedList<>();
   public HashMap<Integer, ArrayList<IRCode>> new_blocks = new HashMap<>();
 
-  public LoopOptimization(Composer _machine) {
+  public LoopOptimization(Composer _machine, HashMap<Integer, Integer> _idom) {
     machine = _machine;
+    idom = _idom;
   }
 
   void Optim() {
     CheckGlobal();
     BuildGraph();
-    BuildDominate();
-    // PrintDominate();
     CheckBackEdge();
     GetLoops();
     LoopOptim();
     Rebuild();
-  }
-
-  void PrintDominate() {
-    for (Map.Entry<Integer, HashMap<Integer, Boolean>> value : dominate.entrySet()) {
-      System.out.println(value.getKey() + ":");
-      for (Map.Entry<Integer, Boolean> values : value.getValue().entrySet()) {
-        System.out.print(values.getKey() + " ");
-      }
-      System.out.println();
-    }
   }
 
   void CheckGlobal() {
@@ -105,74 +94,26 @@ public class LoopOptimization {
     return;
   }
 
-  void BuildDominate() {
-    dominate.clear();
-    ArrayList<Integer> to_init = new ArrayList<>();
-    for (int value : graph.keySet()) {
-      to_init.add(value);
-    }
-    for (int key : graph.keySet()) {
-      HashMap<Integer, Boolean> init_domain = new HashMap<>();
-      for (int value : to_init) {
-        init_domain.put(value, null);
-      }
-      dominate.put(key, init_domain);
-    }
-    for (int i = -1; i >= func_cnt; i--) {
-      boolean update = true;
-      dominate.get(i).clear();
-      dominate.get(i).put(i, null);
-      while (update) {
-        update = false;
-        Queue<Integer> to_visit = new LinkedList<>();
-        for (int value : graph.get(i).keySet()) {
-          to_visit.add(value);
-        }
-        while (!to_visit.isEmpty()) {
-          int now = to_visit.poll();
-          HashMap<Integer, Boolean> from = pre.get(now);
-          HashMap<Integer, Boolean> op = dominate.get(now);
-          int last = op.size();
-          op.clear();
-          ArrayList<Integer> from_point = new ArrayList<>();
-          for (int value : from.keySet()) {
-            from_point.add(value);
-          }
-          for (int to_test : dominate.get(from_point.get(0)).keySet()) {
-            boolean flag = true;
-            for (int j = 1; j < from_point.size(); j++) {
-              if (!dominate.get(from_point.get(j)).containsKey(to_test)) {
-                flag = false;
-                break;
-              }
-            }
-            if (flag) {
-              op.put(to_test, null);
-            }
-          }
-          op.put(now, null);
-          if (last != op.size()) {
-            for (int to_add : graph.get(now).keySet()) {
-              to_visit.add(to_add);
-            }
-            update = true;
-          }
-        }
-      }
-    }
-    return;
-  }
-
   void CheckBackEdge() {
     heads.clear();
     for (Map.Entry<Integer, HashMap<Integer, Boolean>> entry : graph.entrySet()) {
       HashMap<Integer, Boolean> des = entry.getValue();
       for (int value : des.keySet()) {
-        if (dominate.get(entry.getKey()).containsKey(value)) {
-          heads.add(new FromToPair(entry.getKey(), value));
+        int now = entry.getKey();
+        while (idom.containsKey(now)) {
+          if (idom.get(now) == value) {
+            heads.add(new FromToPair(entry.getKey(), value));
+            break;
+          }
+          if (idom.get(now) == now) {
+            break;
+          } else {
+            now = idom.get(now);
+          }
         }
       }
     }
+    return;
   }
 
   void GetLoops() {
@@ -285,20 +226,20 @@ public class LoopOptimization {
               continue;
             }
             // if (code instanceof IRElement) {
-            //   IRElement ele = (IRElement) code;
-            //   if (ele.num2 == null) {
-            //     IRElement new_ele = new IRElement();
-            //     new_ele.src = new String(ele.src);
-            //     new_ele.output = new String(ele.output);
-            //     new_ele.num1 = new String(ele.num1);
-            //     new_ele.now_type = new String(ele.now_type);
-            //     new_ele.num2 = null;
-            //     new_codes.add(new_ele);
-            //     ele.dead = true;
-            //     flag = true;
-            //     def.remove(ele.output);
-            //     continue;
-            //   }
+            // IRElement ele = (IRElement) code;
+            // if (ele.num2 == null) {
+            // IRElement new_ele = new IRElement();
+            // new_ele.src = new String(ele.src);
+            // new_ele.output = new String(ele.output);
+            // new_ele.num1 = new String(ele.num1);
+            // new_ele.now_type = new String(ele.now_type);
+            // new_ele.num2 = null;
+            // new_codes.add(new_ele);
+            // ele.dead = true;
+            // flag = true;
+            // def.remove(ele.output);
+            // continue;
+            // }
             // }
             if ((!have_funcall) && (code instanceof IRLoad)) {
               IRLoad load = (IRLoad) code;
@@ -331,42 +272,50 @@ public class LoopOptimization {
         int new_block_label = ++machine.label_number;
         new_codes.add(0, new IRLabel(new_block_label));
         blocks.put(new_block_label, new_codes);
-        HashMap<Integer, Boolean> dominators = dominate.get(entry.getKey());
         graph.put(new_block_label, new HashMap<>());
         pre.put(new_block_label, new HashMap<>());
         graph.get(new_block_label).put(entry.getKey(), null);
         Queue<Integer> to_remove = new LinkedList<>();
         for (int pre_v : pre.get(entry.getKey()).keySet()) {
-          if (dominators.containsKey(pre_v)) {
-            for (int i = 1; i < blocks.get(entry.getKey()).size(); i++) {
-              IRCode code = blocks.get(entry.getKey()).get(i);
-              if (!(code instanceof IRPhi)) {
-                break;
-              } else {
-                IRPhi phi = (IRPhi) code;
-                for (int j = 0; j < phi.labels.size(); j++) {
-                  if (phi.labels.get(j) == pre_v) {
-                    phi.labels.set(j, new_block_label);
+          int now = entry.getKey();
+          while (idom.containsKey(now)) {
+            if (idom.get(now) == pre_v) {
+              for (int i = 1; i < blocks.get(entry.getKey()).size(); i++) {
+                IRCode code = blocks.get(entry.getKey()).get(i);
+                if (!(code instanceof IRPhi)) {
+                  break;
+                } else {
+                  IRPhi phi = (IRPhi) code;
+                  for (int j = 0; j < phi.labels.size(); j++) {
+                    if (phi.labels.get(j) == pre_v) {
+                      phi.labels.set(j, new_block_label);
+                    }
                   }
                 }
               }
-            }
-            graph.get(pre_v).remove(entry.getKey());
-            graph.get(pre_v).put(new_block_label, null);
-            to_remove.add(pre_v);
-            pre.get(new_block_label).put(pre_v, null);
-            ArrayList<IRCode> pre_codes = blocks.get(pre_v);
-            if (pre_codes.get(pre_codes.size() - 1) instanceof IRjmp) {
-              IRjmp jmp = (IRjmp) pre_codes.get(pre_codes.size() - 1);
-              jmp.label = new_block_label;
-            }
-            if (pre_codes.get(pre_codes.size() - 1) instanceof Conditionjmp) {
-              Conditionjmp jmp = (Conditionjmp) pre_codes.get(pre_codes.size() - 1);
-              if (jmp.label1 == entry.getKey()) {
-                jmp.label1 = new_block_label;
-              } else {
-                jmp.label2 = new_block_label;
+              graph.get(pre_v).remove(entry.getKey());
+              graph.get(pre_v).put(new_block_label, null);
+              to_remove.add(pre_v);
+              pre.get(new_block_label).put(pre_v, null);
+              ArrayList<IRCode> pre_codes = blocks.get(pre_v);
+              if (pre_codes.get(pre_codes.size() - 1) instanceof IRjmp) {
+                IRjmp jmp = (IRjmp) pre_codes.get(pre_codes.size() - 1);
+                jmp.label = new_block_label;
               }
+              if (pre_codes.get(pre_codes.size() - 1) instanceof Conditionjmp) {
+                Conditionjmp jmp = (Conditionjmp) pre_codes.get(pre_codes.size() - 1);
+                if (jmp.label1 == entry.getKey()) {
+                  jmp.label1 = new_block_label;
+                } else {
+                  jmp.label2 = new_block_label;
+                }
+              }
+              break;
+            }
+            if(idom.get(now) == now) {
+              break;
+            } else {
+              now = idom.get(now);
             }
           }
         }

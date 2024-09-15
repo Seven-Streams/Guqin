@@ -1,7 +1,7 @@
 package Optimization;
-
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
@@ -16,13 +16,14 @@ public class Mem2Reg {
   HashMap<Integer, HashMap<String, Boolean>> reserved_variable = new HashMap<>();
   public HashMap<Integer, HashMap<Integer, Boolean>> graph = new HashMap<>();
   public HashMap<Integer, HashMap<Integer, Boolean>> pre = new HashMap<>();
-  public HashMap<Integer, HashMap<Integer, Boolean>> dominate = new HashMap<>();
-  public HashMap<Integer, Integer> Idom = new HashMap<>();
+  public HashMap<Integer, Integer> idom = new HashMap<>();
   public HashMap<Integer, ArrayList<Integer>> frontier = new HashMap<>();
-  public HashMap<Integer, ArrayList<Integer>> Idom_up_down = new HashMap<>();
   public HashMap<String, Stack<NameLabelPair>> new_name = new HashMap<>();
   public HashMap<String, String> alloc_type = new HashMap<>();
   public HashMap<Integer, Boolean> visit = new HashMap<>();
+  public ArrayList<Integer> post_order = new ArrayList<>();
+  public HashMap<Integer, Integer> finger = new HashMap<>();
+  public HashMap<Integer, ArrayList<IRCode>> code_block = new HashMap<>();
 
   public Mem2Reg(Composer _object) {
     object = _object;
@@ -34,14 +35,71 @@ public class Mem2Reg {
     Mem2RegEmpty();
     Mem2RegAssignOnce();
     Mem2RegAssignOneBlock();
+    MakeBlock();
     BuildGraph();
+    GetPostOrder();
     BuildDominate();
-    BuildIdom();
     BuildFrontier();
     ReservePhi();
     RemoveAlloca();
     PhiReOrder();
+    return;
+  }
 
+  void GetPostOrder() {
+    for (int i = -1; i >= func_cnt; i--) {
+      tranverse(i);
+    }
+    Collections.reverse(post_order);
+    return;
+  }
+
+  void MakeBlock() {
+    int cnt = 0;
+    ArrayList<IRCode> check = null;
+    for (IRCode code : object.generated) {
+      if (code instanceof IRClass) {
+        continue;
+      }
+      if (code instanceof IRFunc) {
+        check = new ArrayList<>();
+        code_block.put(--cnt, check);
+        continue;
+      }
+      if (code instanceof IRLabel) {
+        check = new ArrayList<>();
+        int label = ((IRLabel) code).label;
+        code_block.put(label, check);
+      }
+      check.add(code);
+    }
+
+  }
+
+  void tranverse(int index) {
+    visit.put(index, null);
+    Stack<Integer> check_list = new Stack<>();
+    check_list.add(index);
+    while (!check_list.isEmpty()) {
+      int now = check_list.pop();
+      boolean flag = false;
+      if (graph.containsKey(now)) {
+        for (int to : graph.get(now).keySet()) {
+          if (!visit.containsKey(to)) {
+            visit.put(to, null);
+            check_list.add(now);
+            check_list.add(to);
+            flag = true;
+            break;
+          }
+        }
+      }
+      if (!flag) {
+        post_order.add(now);
+        finger.put(now, post_order.size());
+      }
+    }
+    return;
   }
 
   void PhiReOrder() {
@@ -301,123 +359,66 @@ public class Mem2Reg {
   }
 
   void BuildDominate() {
-    ArrayList<Integer> to_init = new ArrayList<>();
-    for (int value : graph.keySet()) {
-      to_init.add(value);
-    }
-    for (int key : graph.keySet()) {
-      HashMap<Integer, Boolean> init_domain = new HashMap<>();
-      for (int value : to_init) {
-        init_domain.put(value, null);
-      }
-      dominate.put(key, init_domain);
-    }
     for (int i = -1; i >= func_cnt; i--) {
-      boolean update = true;
-      dominate.get(i).clear();
-      dominate.get(i).put(i, null);
-      while (update) {
-        update = false;
-        Queue<Integer> to_visit = new LinkedList<>();
-        for (int value : graph.get(i).keySet()) {
-          to_visit.add(value);
+      idom.put(i, i);
+    } // Initialize.
+    boolean changed = true;
+    while (changed) {
+      changed = false;
+      for (int block : post_order) {
+        if (block < 0) {
+          continue;
         }
-        while (!to_visit.isEmpty()) {
-          int now = to_visit.poll();
-          HashMap<Integer, Boolean> from = pre.get(now);
-          HashMap<Integer, Boolean> op = dominate.get(now);
-          int last = op.size();
-          op.clear();
-          ArrayList<Integer> from_point = new ArrayList<>();
-          for (int value : from.keySet()) {
-            from_point.add(value);
+        int new_idom = 0x7fffffff;
+        for (int pre_node : pre.get(block).keySet()) {
+          if (!idom.containsKey(pre_node)) {
+            continue;
           }
-          for (int to_test : dominate.get(from_point.get(0)).keySet()) {
-            boolean flag = true;
-            for (int j = 1; j < from_point.size(); j++) {
-              if (!dominate.get(from_point.get(j)).containsKey(to_test)) {
-                flag = false;
-                break;
-              }
-            }
-            if (flag) {
-              op.put(to_test, null);
-            }
+          if (new_idom == 0x7fffffff) {
+            new_idom = pre_node;
+          } else {
+            new_idom = intersect(new_idom, pre_node);
           }
-          op.put(now, null);
-          if (last != op.size()) {
-            for (int to_add : graph.get(now).keySet()) {
-              to_visit.add(to_add);
-            }
-            update = true;
-          }
+        }
+        if ((!idom.containsKey(block)) || idom.get(block) != new_idom) {
+          idom.put(block, new_idom);
+          changed = true;
         }
       }
     }
     return;
   }
 
-  void PrintDominate() {
-    for (Map.Entry<Integer, HashMap<Integer, Boolean>> value : dominate.entrySet()) {
-      System.out.println(value.getKey() + ":");
-      for (Map.Entry<Integer, Boolean> values : value.getValue().entrySet()) {
-        System.out.print(values.getKey() + " ");
+  int intersect(int node1, int node2) {
+    int finger1 = finger.get(node1);
+    int finger2 = finger.get(node2);
+    while (finger1 != finger2) {
+      while (finger1 < finger2) {
+        node1 = idom.get(node1);
+        finger1 = finger.get(node1);
       }
-      System.out.println();
-    }
-  }
-
-  void BuildIdom() {
-    for (Map.Entry<Integer, HashMap<Integer, Boolean>> entry : dominate.entrySet()) {
-      int size = entry.getValue().size();
-      for (int value : entry.getValue().keySet()) {
-        if ((dominate.get(value).size() + 1) == size) {
-          Idom.put(entry.getKey(), value);
-          if (!Idom_up_down.containsKey(value)) {
-            Idom_up_down.put(value, new ArrayList<>());
-          }
-          Idom_up_down.get(value).add(entry.getKey());
-          break;
-        }
+      while (finger2 < finger1) {
+        node2 = idom.get(node2);
+        finger2 = finger.get(node2);
       }
     }
-    return;
-  }
-
-  void PrintIdom() {
-    for (Map.Entry<Integer, ArrayList<Integer>> entry : Idom_up_down.entrySet()) {
-      System.out.print(entry.getKey() + ":");
-      for (int value : entry.getValue()) {
-        System.out.print(value + " ");
-      }
-      System.out.println();
-    }
-    return;
+    return node1;
   }
 
   void BuildFrontier() {
-    for (int node : graph.keySet()) {
-      frontier.put(node, new ArrayList<>());
-    }
-    for (int node : graph.keySet()) {
-      HashMap<Integer, Boolean> res = new HashMap<>();
-      if (pre.containsKey(node)) {
-        for (int preds : pre.get(node).keySet()) {
-          for (int doms : dominate.get(preds).keySet()) {
-            res.put(doms, null);
+    for (int block : post_order) {
+      if (pre.containsKey(block) && (pre.get(block).size() >= 2)) {
+        for (int pre_node : pre.get(block).keySet()) {
+          int runner = pre_node;
+          while (runner != idom.get(block)) {
+            // System.out.println(runner + "target:" + idom.get(block));
+            if (!frontier.containsKey(runner)) {
+              frontier.put(runner, new ArrayList<>());
+            }
+            frontier.get(runner).add(block);
+            runner = idom.get(runner);
           }
         }
-      }
-      for (int ndom : dominate.get(node).keySet()) {
-        if (res.containsKey(ndom)) {
-          if (ndom == node) {
-            continue;
-          }
-          res.remove(ndom);
-        }
-      }
-      for (int value : res.keySet()) {
-        frontier.get(value).add(node);
       }
     }
     return;
@@ -460,11 +461,13 @@ public class Mem2Reg {
     }
     while (!to_add.isEmpty()) {
       NameLabelPair res = to_add.poll();
-      for (int value : frontier.get(res.label)) {
-        reserved_variable.get(value).put(new String(res.name), null);
-        NameLabelPair new_pair = new NameLabelPair(res.name, value);
-        if (res.label != new_pair.label) {
-          to_add.add(new_pair);
+      if (frontier.containsKey(res.label)) {
+        for (int value : frontier.get(res.label)) {
+          reserved_variable.get(value).put(new String(res.name), null);
+          NameLabelPair new_pair = new NameLabelPair(res.name, value);
+          if (res.label != new_pair.label) {
+            to_add.add(new_pair);
+          }
         }
       }
     }
@@ -472,6 +475,7 @@ public class Mem2Reg {
   }
 
   void RemoveAlloca() {
+    visit.clear();
     HashMap<String, String> reg_value = new HashMap<>();
     for (ArrayList<IRCode> allocs : object.alloc.values()) {
       for (IRCode alloc_raw : allocs) {
@@ -503,174 +507,151 @@ public class Mem2Reg {
 
   void RenamePhi(int index, HashMap<String, String> reg_values) {
     visit.put(index, null);
-    int phi_func = 0;
-    for (int i = 0; i < object.generated.size(); i++) {
-      if (object.generated.get(i) instanceof IRFunc) {
-        if (--phi_func == index) {
-          for (int j = i + 1; j < object.generated.size(); j++) {
-            if (object.generated.get(j) instanceof IRFuncend || object.generated.get(j) instanceof IRLabel) {
+    ArrayList<IRCode> code_list = code_block.get(index);
+    if (index < 0) {
+      for (IRCode code : code_list) {
+        code.UpdateNames(new_name, reg_values, index);
+      }
+      HashMap<Integer, Boolean> next = graph.get(index);
+      for (int nxt : next.keySet()) {
+        ArrayList<IRPhi> phis = object.reserved_phi.get(nxt);
+        for (String to_update : reserved_variable.get(nxt).keySet()) {
+          boolean flag = false;
+          for (IRPhi phi : phis) {
+            if (phi.ori_name.equals(to_update)) {
+              if (!new_name.get(to_update).empty()) {
+                phi.values.add(new String(new_name.get(to_update).peek().name));
+              } else {
+                switch (phi.type) {
+                  case "i32": {
+                    phi.values.add("0");
+                    break;
+                  }
+                  case "i1": {
+                    phi.values.add("false");
+                    break;
+                  }
+                  default: {
+                    phi.values.add("null");
+                    break;
+                  }
+                }
+              }
+              phi.labels.add(index);
+              flag = true;
               break;
             }
-            object.generated.get(j).UpdateNames(new_name, reg_values, index);
           }
-          HashMap<Integer, Boolean> next = graph.get(index);
-          for (int nxt : next.keySet()) {
-            ArrayList<IRPhi> phis = object.reserved_phi.get(nxt);
-            for (String to_update : reserved_variable.get(nxt).keySet()) {
-              boolean flag = false;
-              for (IRPhi phi : phis) {
-                if (phi.ori_name.equals(to_update)) {
-                  if (!new_name.get(to_update).empty()) {
-                    phi.values.add(new String(new_name.get(to_update).peek().name));
-                  } else {
-                    switch (phi.type) {
-                      case "i32": {
-                        phi.values.add("0");
-                        break;
-                      }
-                      case "i1": {
-                        phi.values.add("false");
-                        break;
-                      }
-                      default: {
-                        phi.values.add("null");
-                        break;
-                      }
-                    }
-                  }
-                  phi.labels.add(index);
-                  flag = true;
+          if (!flag) {
+            IRPhi to_add = new IRPhi();
+            to_add.type = alloc_type.get(to_update);
+            to_add.ori_name = new String(to_update);
+            if (!new_name.get(to_update).empty()) {
+              to_add.values.add(new String(new_name.get(to_update).peek().name));
+            } else {
+              switch (to_add.type) {
+                case "i32": {
+                  to_add.values.add("0");
+                  break;
+                }
+                case "i1": {
+                  to_add.values.add("false");
+                  break;
+                }
+                default: {
+                  to_add.values.add("null");
                   break;
                 }
               }
-              if (!flag) {
-                IRPhi to_add = new IRPhi();
-                to_add.type = alloc_type.get(to_update);
-                to_add.ori_name = new String(to_update);
-                if (!new_name.get(to_update).empty()) {
-                  to_add.values.add(new String(new_name.get(to_update).peek().name));
-                } else {
-                  switch (to_add.type) {
-                    case "i32": {
-                      to_add.values.add("0");
-                      break;
-                    }
-                    case "i1": {
-                      to_add.values.add("false");
-                      break;
-                    }
-                    default: {
-                      to_add.values.add("null");
-                      break;
-                    }
-                  }
-                }
-                to_add.labels.add(index);
-                phis.add(to_add);
-              }
             }
+            to_add.labels.add(index);
+            phis.add(to_add);
           }
-          if (graph.containsKey(index)) {
-            for (int dom : graph.get(index).keySet()) {
-              if (!visit.containsKey(dom)) {
-                RenamePhi(dom, reg_values);
-              }
-            }
-          }
-          RenameClear(index);
-          return;
         }
       }
-      if (object.generated.get(i) instanceof IRLabel) {
-        IRLabel _label = (IRLabel) (object.generated.get(i));
-        if (_label.label == index) {
-          ArrayList<IRPhi> to_update_phies = object.reserved_phi.get(index);
-          HashMap<String, Boolean> to_update = reserved_variable.get(index);
-          for (String phi_object : to_update.keySet()) {
-            String update_name = "%phi$" + ++phi_time;
-            new_name.get(phi_object).push(new NameLabelPair(update_name, index));
-            for (IRPhi to_update_phi : to_update_phies) {
-              if (to_update_phi.ori_name.equals(phi_object)) {
-                to_update_phi.target = new String(update_name);
-                break;
-              }
-            }
+    } else {
+      ArrayList<IRPhi> to_update_phies = object.reserved_phi.get(index);
+      HashMap<String, Boolean> to_update = reserved_variable.get(index);
+      for (String phi_object : to_update.keySet()) {
+        String update_name = "%phi$" + ++phi_time;
+        new_name.get(phi_object).push(new NameLabelPair(update_name, index));
+        for (IRPhi to_update_phi : to_update_phies) {
+          if (to_update_phi.ori_name.equals(phi_object)) {
+            to_update_phi.target = new String(update_name);
+            break;
           }
-          for (int j = i + 1; j < object.generated.size(); j++) {
-            if (object.generated.get(j) instanceof IRFuncend || object.generated.get(j) instanceof IRLabel) {
+        }
+      }
+      for (IRCode code : code_list) {
+        code.UpdateNames(new_name, reg_values, index);
+      }
+      HashMap<Integer, Boolean> next = graph.get(index);
+      for (int nxt : next.keySet()) {
+        ArrayList<IRPhi> phis = object.reserved_phi.get(nxt);
+        for (String to_update_string : reserved_variable.get(nxt).keySet()) {
+          boolean flag = false;
+          for (IRPhi phi : phis) {
+            if (phi.ori_name.equals(to_update_string)) {
+              if (!new_name.get(to_update_string).empty()) {
+                phi.values.add(new String(new_name.get(to_update_string).peek().name));
+              } else {
+                switch (phi.type) {
+                  case "i32": {
+                    phi.values.add("0");
+                    break;
+                  }
+                  case "i1": {
+                    phi.values.add("false");
+                    break;
+                  }
+                  default: {
+                    phi.values.add("null");
+                    break;
+                  }
+                }
+              }
+              phi.labels.add(index);
+              flag = true;
               break;
             }
-            object.generated.get(j).UpdateNames(new_name, reg_values, index);
           }
-          HashMap<Integer, Boolean> next = graph.get(index);
-          for (int nxt : next.keySet()) {
-            ArrayList<IRPhi> phis = object.reserved_phi.get(nxt);
-            for (String to_update_string : reserved_variable.get(nxt).keySet()) {
-              boolean flag = false;
-              for (IRPhi phi : phis) {
-                if (phi.ori_name.equals(to_update_string)) {
-                  if (!new_name.get(to_update_string).empty()) {
-                    phi.values.add(new String(new_name.get(to_update_string).peek().name));
-                  } else {
-                    switch (phi.type) {
-                      case "i32": {
-                        phi.values.add("0");
-                        break;
-                      }
-                      case "i1": {
-                        phi.values.add("false");
-                        break;
-                      }
-                      default: {
-                        phi.values.add("null");
-                        break;
-                      }
-                    }
-                  }
-                  phi.labels.add(index);
-                  flag = true;
+          if (!flag) {
+            IRPhi to_add = new IRPhi();
+            to_add.type = alloc_type.get(to_update_string);
+            to_add.ori_name = new String(to_update_string);
+            if (!new_name.get(to_update_string).empty()) {
+              to_add.values.add(new String(new_name.get(to_update_string).peek().name));
+            } else {
+              switch (to_add.type) {
+                case "i32": {
+                  to_add.values.add("0");
+                  break;
+                }
+                case "i1": {
+                  to_add.values.add("false");
+                  break;
+                }
+                default: {
+                  to_add.values.add("null");
                   break;
                 }
               }
-              if (!flag) {
-                IRPhi to_add = new IRPhi();
-                to_add.type = alloc_type.get(to_update_string);
-                to_add.ori_name = new String(to_update_string);
-                if (!new_name.get(to_update_string).empty()) {
-                  to_add.values.add(new String(new_name.get(to_update_string).peek().name));
-                } else {
-                  switch (to_add.type) {
-                    case "i32": {
-                      to_add.values.add("0");
-                      break;
-                    }
-                    case "i1": {
-                      to_add.values.add("false");
-                      break;
-                    }
-                    default: {
-                      to_add.values.add("null");
-                      break;
-                    }
-                  }
-                }
-                to_add.labels.add(index);
-                phis.add(to_add);
-              }
             }
+            to_add.labels.add(index);
+            phis.add(to_add);
           }
-          if (graph.containsKey(index)) {
-            for (int dom : graph.get(index).keySet()) {
-              if (!visit.containsKey(dom)) {
-                RenamePhi(dom, reg_values);
-              }
-            }
-          }
-          RenameClear(index);
-          return;
         }
       }
     }
+    if (graph.containsKey(index)) {
+      for (int dom : graph.get(index).keySet()) {
+        if (!visit.containsKey(dom)) {
+          RenamePhi(dom, reg_values);
+        }
+      }
+    }
+    RenameClear(index);
+    return;
   }
 
   void RenameClear(int index) {
