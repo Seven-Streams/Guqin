@@ -1,4 +1,5 @@
 package Optimization;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Collections;
@@ -505,153 +506,165 @@ public class Mem2Reg {
 
   HashMap<String, String> value = new HashMap<>();
 
-  void RenamePhi(int index, HashMap<String, String> reg_values) {
-    visit.put(index, null);
-    ArrayList<IRCode> code_list = code_block.get(index);
-    if (index < 0) {
-      for (IRCode code : code_list) {
-        code.UpdateNames(new_name, reg_values, index);
-      }
-      HashMap<Integer, Boolean> next = graph.get(index);
-      for (int nxt : next.keySet()) {
-        ArrayList<IRPhi> phis = object.reserved_phi.get(nxt);
-        for (String to_update : reserved_variable.get(nxt).keySet()) {
-          boolean flag = false;
-          for (IRPhi phi : phis) {
-            if (phi.ori_name.equals(to_update)) {
-              if (!new_name.get(to_update).empty()) {
-                phi.values.add(new String(new_name.get(to_update).peek().name));
-              } else {
-                switch (phi.type) {
-                  case "i32": {
-                    phi.values.add("0");
-                    break;
+  void RenamePhi(int src_index, HashMap<String, String> reg_values) {
+    Stack<Integer> check_list = new Stack<>();
+    check_list.add(src_index);
+    while (!check_list.isEmpty()) {
+      int index = check_list.pop();
+      if (!visit.containsKey(index)) {
+        ArrayList<IRCode> code_list = code_block.get(index);
+        if (index < 0) {
+          for (IRCode code : code_list) {
+            code.UpdateNames(new_name, reg_values, index);
+          }
+          HashMap<Integer, Boolean> next = graph.get(index);
+          for (int nxt : next.keySet()) {
+            ArrayList<IRPhi> phis = object.reserved_phi.get(nxt);
+            for (String to_update : reserved_variable.get(nxt).keySet()) {
+              boolean flag = false;
+              for (IRPhi phi : phis) {
+                if (phi.ori_name.equals(to_update)) {
+                  if (!new_name.get(to_update).empty()) {
+                    phi.values.add(new String(new_name.get(to_update).peek().name));
+                  } else {
+                    switch (phi.type) {
+                      case "i32": {
+                        phi.values.add("0");
+                        break;
+                      }
+                      case "i1": {
+                        phi.values.add("false");
+                        break;
+                      }
+                      default: {
+                        phi.values.add("null");
+                        break;
+                      }
+                    }
                   }
-                  case "i1": {
-                    phi.values.add("false");
-                    break;
-                  }
-                  default: {
-                    phi.values.add("null");
-                    break;
-                  }
+                  phi.labels.add(index);
+                  flag = true;
+                  break;
                 }
               }
-              phi.labels.add(index);
-              flag = true;
-              break;
+              if (!flag) {
+                IRPhi to_add = new IRPhi();
+                to_add.type = alloc_type.get(to_update);
+                to_add.ori_name = new String(to_update);
+                if (!new_name.get(to_update).empty()) {
+                  to_add.values.add(new String(new_name.get(to_update).peek().name));
+                } else {
+                  switch (to_add.type) {
+                    case "i32": {
+                      to_add.values.add("0");
+                      break;
+                    }
+                    case "i1": {
+                      to_add.values.add("false");
+                      break;
+                    }
+                    default: {
+                      to_add.values.add("null");
+                      break;
+                    }
+                  }
+                }
+                to_add.labels.add(index);
+                phis.add(to_add);
+              }
             }
           }
-          if (!flag) {
-            IRPhi to_add = new IRPhi();
-            to_add.type = alloc_type.get(to_update);
-            to_add.ori_name = new String(to_update);
-            if (!new_name.get(to_update).empty()) {
-              to_add.values.add(new String(new_name.get(to_update).peek().name));
-            } else {
-              switch (to_add.type) {
-                case "i32": {
-                  to_add.values.add("0");
-                  break;
-                }
-                case "i1": {
-                  to_add.values.add("false");
-                  break;
-                }
-                default: {
-                  to_add.values.add("null");
+        } else {
+          ArrayList<IRPhi> to_update_phies = object.reserved_phi.get(index);
+          HashMap<String, Boolean> to_update = reserved_variable.get(index);
+          for (String phi_object : to_update.keySet()) {
+            String update_name = "%phi$" + ++phi_time;
+            new_name.get(phi_object).push(new NameLabelPair(update_name, index));
+            for (IRPhi to_update_phi : to_update_phies) {
+              if (to_update_phi.ori_name.equals(phi_object)) {
+                to_update_phi.target = new String(update_name);
+                break;
+              }
+            }
+          }
+          for (IRCode code : code_list) {
+            code.UpdateNames(new_name, reg_values, index);
+          }
+          HashMap<Integer, Boolean> next = graph.get(index);
+          for (int nxt : next.keySet()) {
+            ArrayList<IRPhi> phis = object.reserved_phi.get(nxt);
+            for (String to_update_string : reserved_variable.get(nxt).keySet()) {
+              boolean flag = false;
+              for (IRPhi phi : phis) {
+                if (phi.ori_name.equals(to_update_string)) {
+                  if (!new_name.get(to_update_string).empty()) {
+                    phi.values.add(new String(new_name.get(to_update_string).peek().name));
+                  } else {
+                    switch (phi.type) {
+                      case "i32": {
+                        phi.values.add("0");
+                        break;
+                      }
+                      case "i1": {
+                        phi.values.add("false");
+                        break;
+                      }
+                      default: {
+                        phi.values.add("null");
+                        break;
+                      }
+                    }
+                  }
+                  phi.labels.add(index);
+                  flag = true;
                   break;
                 }
               }
+              if (!flag) {
+                IRPhi to_add = new IRPhi();
+                to_add.type = alloc_type.get(to_update_string);
+                to_add.ori_name = new String(to_update_string);
+                if (!new_name.get(to_update_string).empty()) {
+                  to_add.values.add(new String(new_name.get(to_update_string).peek().name));
+                } else {
+                  switch (to_add.type) {
+                    case "i32": {
+                      to_add.values.add("0");
+                      break;
+                    }
+                    case "i1": {
+                      to_add.values.add("false");
+                      break;
+                    }
+                    default: {
+                      to_add.values.add("null");
+                      break;
+                    }
+                  }
+                }
+                to_add.labels.add(index);
+                phis.add(to_add);
+              }
             }
-            to_add.labels.add(index);
-            phis.add(to_add);
           }
         }
       }
-    } else {
-      ArrayList<IRPhi> to_update_phies = object.reserved_phi.get(index);
-      HashMap<String, Boolean> to_update = reserved_variable.get(index);
-      for (String phi_object : to_update.keySet()) {
-        String update_name = "%phi$" + ++phi_time;
-        new_name.get(phi_object).push(new NameLabelPair(update_name, index));
-        for (IRPhi to_update_phi : to_update_phies) {
-          if (to_update_phi.ori_name.equals(phi_object)) {
-            to_update_phi.target = new String(update_name);
+      visit.put(index, null);
+      boolean finished = true;
+      if (graph.containsKey(index)) {
+        for (int dom : graph.get(index).keySet()) {
+          if (!visit.containsKey(dom)) {
+            finished = false;
+            check_list.add(index);
+            check_list.add(dom);
             break;
           }
         }
       }
-      for (IRCode code : code_list) {
-        code.UpdateNames(new_name, reg_values, index);
-      }
-      HashMap<Integer, Boolean> next = graph.get(index);
-      for (int nxt : next.keySet()) {
-        ArrayList<IRPhi> phis = object.reserved_phi.get(nxt);
-        for (String to_update_string : reserved_variable.get(nxt).keySet()) {
-          boolean flag = false;
-          for (IRPhi phi : phis) {
-            if (phi.ori_name.equals(to_update_string)) {
-              if (!new_name.get(to_update_string).empty()) {
-                phi.values.add(new String(new_name.get(to_update_string).peek().name));
-              } else {
-                switch (phi.type) {
-                  case "i32": {
-                    phi.values.add("0");
-                    break;
-                  }
-                  case "i1": {
-                    phi.values.add("false");
-                    break;
-                  }
-                  default: {
-                    phi.values.add("null");
-                    break;
-                  }
-                }
-              }
-              phi.labels.add(index);
-              flag = true;
-              break;
-            }
-          }
-          if (!flag) {
-            IRPhi to_add = new IRPhi();
-            to_add.type = alloc_type.get(to_update_string);
-            to_add.ori_name = new String(to_update_string);
-            if (!new_name.get(to_update_string).empty()) {
-              to_add.values.add(new String(new_name.get(to_update_string).peek().name));
-            } else {
-              switch (to_add.type) {
-                case "i32": {
-                  to_add.values.add("0");
-                  break;
-                }
-                case "i1": {
-                  to_add.values.add("false");
-                  break;
-                }
-                default: {
-                  to_add.values.add("null");
-                  break;
-                }
-              }
-            }
-            to_add.labels.add(index);
-            phis.add(to_add);
-          }
-        }
+      if (finished) {
+        RenameClear(index);
       }
     }
-    if (graph.containsKey(index)) {
-      for (int dom : graph.get(index).keySet()) {
-        if (!visit.containsKey(dom)) {
-          RenamePhi(dom, reg_values);
-        }
-      }
-    }
-    RenameClear(index);
-    return;
   }
 
   void RenameClear(int index) {

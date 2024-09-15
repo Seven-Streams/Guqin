@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Stack;
 import java.util.Queue;
 
 import Composer.Composer;
@@ -125,26 +126,44 @@ public class LoopOptimization {
 
   }
 
-  void BackDfs(int now, int end) {
-    if (!loops.containsKey(end)) {
-      loops.put(end, new HashMap<>());
-    }
-    if (loops.get(end).containsKey(now)) {
-      return;
-    }
-    loops.get(end).put(now, null);
-    if (now == end) {
-      return;
-    }
-    visit.put(now, null);
-    if (pre.containsKey(now)) {
-      for (int to : pre.get(now).keySet()) {
-        if (!visit.containsKey(to)) {
-          BackDfs(to, end);
+  void BackDfs(int start, int end) {
+    HashMap<Integer, HashMap<Integer, Boolean>> last_visit = new HashMap<>();
+    Stack<Integer> check_list = new Stack<>();
+    check_list.add(start);
+    while (!check_list.isEmpty()) {
+      int now = check_list.pop();
+      if (!visit.containsKey(now)) {
+        if (!loops.containsKey(end)) {
+          loops.put(end, new HashMap<>());
+        }
+        if (loops.get(end).containsKey(now)) {
+          continue;
+        }
+        loops.get(end).put(now, null);
+        if (now == end) {
+          continue;
+        }
+        visit.put(now, null);
+      }
+      boolean finish = true;
+      if (pre.containsKey(now)) {
+        for (int to : pre.get(now).keySet()) {
+          if(!last_visit.containsKey(now)) {
+            last_visit.put(now, new HashMap<>());
+          }
+          if (!visit.containsKey(to) && (!last_visit.get(now).containsKey(to))) {
+            last_visit.get(now).put(to, null);
+            check_list.add(now);
+            check_list.add(to);
+            finish = false;
+            break;
+          }
         }
       }
+      if (finish) {
+        visit.remove(now);
+      }
     }
-    visit.remove(now);
     return;
   }
 
@@ -312,7 +331,7 @@ public class LoopOptimization {
               }
               break;
             }
-            if(idom.get(now) == now) {
+            if (idom.get(now) == now) {
               break;
             } else {
               now = idom.get(now);
