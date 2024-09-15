@@ -1,6 +1,7 @@
 package Optimization;
 
 import java.util.ArrayList;
+import java.util.Stack;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -298,32 +299,48 @@ public class LinearScan {
     }
   }
 
-  void NumberBlocks(int index) {
-    int begin = block_entries.get(index);
-    visit.put(index, null);
-    if (!visit_cnt.containsKey(index)) {
-      visit_cnt.put(index, 0);
-    }
-    visit_cnt.put(index, visit_cnt.get(index) + 1);
-    machine.generated.get(begin).sentence_number = ++number;
-    for (int i = begin + 1; i < machine.generated.size(); i++) {
-      if (machine.generated.get(i) instanceof IRLabel || machine.generated.get(i) instanceof IRFunc
-          || machine.generated.get(i) instanceof MoveBlock) {
-        break;
-      } else {
-        machine.generated.get(i).sentence_number = ++number;
-        if (machine.generated.get(i) instanceof IRFuncall) {
-          calling_use.put(number, new HashMap<>());
+  void NumberBlocks(int start) {
+    Stack<Integer> check_list = new Stack<>();
+    HashMap<Integer, HashMap<Integer, Boolean>> last_visit = new HashMap<>();
+    check_list.add(start);
+    while (!check_list.isEmpty()) {
+      int index = check_list.pop();
+      if (!visit.containsKey(index)) {
+        int begin = block_entries.get(index);
+        if (!visit_cnt.containsKey(index)) {
+          visit_cnt.put(index, 0);
+        }
+        visit_cnt.put(index, visit_cnt.get(index) + 1);
+        machine.generated.get(begin).sentence_number = ++number;
+        for (int i = begin + 1; i < machine.generated.size(); i++) {
+          if (machine.generated.get(i) instanceof IRLabel || machine.generated.get(i) instanceof IRFunc
+              || machine.generated.get(i) instanceof MoveBlock) {
+            break;
+          } else {
+            machine.generated.get(i).sentence_number = ++number;
+            if (machine.generated.get(i) instanceof IRFuncall) {
+              calling_use.put(number, new HashMap<>());
+            }
+          }
+        }
+        visit.put(index, null);
+        last_visit.put(index, new HashMap<>());
+      }
+      boolean finished = true;
+      for (int nxt : graph.get(index).keySet()) {
+        if ((!visit.containsKey(nxt)) && (!last_visit.get(index).containsKey(nxt))) {
+          check_list.add(index);
+          check_list.add(nxt);
+          last_visit.get(index).put(nxt, null);
+          finished = false;
+          break;
         }
       }
-    }
-    for (int nxt : graph.get(index).keySet()) {
-      if (!visit.containsKey(nxt)) {
-        NumberBlocks(nxt);
+      if (finished) {
+        if (visit_cnt.get(index) < 50) {
+          visit.remove(index);
+        }
       }
-    }
-    if (visit_cnt.get(index) < 50) {
-      visit.remove(index);
     }
     return;
   }
