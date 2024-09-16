@@ -161,26 +161,26 @@ public class MoveBlock extends IRCode {
       PseudoMove new_move = new PseudoMove("psnull", "psnull");
       try {
         Integer.parseInt(move.src);
-        new_move.src = new String(move.src);
+        new_move.src = (move.src);
       } catch (NumberFormatException e) {
         if (now_name.containsKey(move.src)) {
-          new_move.src = new String(now_name.get(move.src));
+          new_move.src = (now_name.get(move.src));
         } else {
           if ((!CheckLit(move.src)) || (is_global.containsKey(move.src))) {
-            new_move.src = new String(move.src);
+            new_move.src = (move.src);
           } else {
-            new_move.src = new String("%reg$" + (++machine.tmp_time));
+            new_move.src = ("%reg$" + (++machine.tmp_time));
             now_name.put(move.src, new_move.src);
           }
         }
       }
       if (now_name.containsKey(move.des)) {
-        new_move.des = new String(now_name.get(move.des));
+        new_move.des = (now_name.get(move.des));
       } else {
         if ((!CheckLit(move.des)) || (is_global.containsKey(move.des))) {
-          new_move.des = new String(move.des);
+          new_move.des = (move.des);
         } else {
-          new_move.des = new String("%reg$" + (++machine.tmp_time));
+          new_move.des = ("%reg$" + (++machine.tmp_time));
           now_name.put(move.des, new_move.des);
         }
       }

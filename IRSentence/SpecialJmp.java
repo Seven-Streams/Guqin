@@ -9,9 +9,9 @@ public class SpecialJmp extends Conditionjmp {
   public SpecialJmp(int n1, int n2, String _reg, String _reg2, String _symbol) {
     label1 = n1;
     label2 = n2;
-    reg = new String(_reg);
-    reg2 = new String(_reg2);
-    symbol = new String(_symbol);
+    reg = (_reg);
+    reg2 = (_reg2);
+    symbol = (_symbol);
   }
 
   @Override

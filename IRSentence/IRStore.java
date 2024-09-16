@@ -108,7 +108,7 @@ public class IRStore extends IRCode {
       replace.put(name, from);
     }
     while (replace.containsKey(from)) {
-      from = new String(replace.get(from));
+      from = (replace.get(from));
     }
     return;
   }
@@ -133,7 +133,7 @@ public class IRStore extends IRCode {
   @Override
   public void UpdateSingleBlock(HashMap<String, String> single) {
     while (single.containsKey(from)) {
-      from = new String(single.get(from));
+      from = (single.get(from));
     }
     if (single.containsKey(name)) {
       single.put(name, from);
@@ -145,10 +145,10 @@ public class IRStore extends IRCode {
   public void UpdateNames(HashMap<String, Stack<NameLabelPair>> variable_stack, HashMap<String, String> reg_value,
       int now_block) {
     if (variable_stack.containsKey(from)) {
-      from = new String(variable_stack.get(from).peek().name);
+      from = (variable_stack.get(from).peek().name);
     }
     if (reg_value.containsKey(from)) {
-      from = new String(reg_value.get(from));
+      from = (reg_value.get(from));
     }
     if (variable_stack.containsKey(name)) {
       variable_stack.get(name).push(new NameLabelPair(from, now_block));
@@ -269,7 +269,7 @@ public class IRStore extends IRCode {
   @Override
   public void GlobalConstReplace(HashMap<String, String> mapping) {
     if (mapping.containsKey(from)) {
-      from = new String(mapping.get(from));
+      from = (mapping.get(from));
     }
     return;
   }
@@ -277,10 +277,10 @@ public class IRStore extends IRCode {
   @Override
   public String ConstCheck(HashMap<String, String> replace) {
     if (replace.containsKey(from)) {
-      from = new String(replace.get(from));
+      from = (replace.get(from));
     }
     if (replace.containsKey(name)) {
-      name = new String(replace.get(name));
+      name = (replace.get(name));
     }
     return null;
   }

@@ -117,11 +117,11 @@ public class IRPhi extends IRCode {
   @Override
   public void UpdateAssignOnce(HashMap<String, String> replace, HashMap<String, Boolean> deprecated) {
     if (replace.containsKey(target)) {
-      target = new String(replace.get(target));
+      target = (replace.get(target));
     }
     for (int i = 0; i < values.size(); i++) {
       while (replace.containsKey(values.get(i))) {
-        values.set(i, new String(values.get(i)));
+        values.set(i, (values.get(i)));
       }
     }
     return;
@@ -130,11 +130,11 @@ public class IRPhi extends IRCode {
   @Override
   public void UpdateSingleBlock(HashMap<String, String> single) {
     if (single.containsKey(target)) {
-      target = new String(single.get(target));
+      target = (single.get(target));
     }
     for (int i = 0; i < values.size(); i++) {
       while (single.containsKey(values.get(i))) {
-        values.set(i, new String(single.get(values.get(i))));
+        values.set(i, (single.get(values.get(i))));
       }
     }
     return;
@@ -145,10 +145,10 @@ public class IRPhi extends IRCode {
       int now_block) {
     for (int i = 0; i < values.size(); i++) {
       if (variable_stack.containsKey(values.get(i))) {
-        values.set(i, new String(variable_stack.get(values.get(i)).peek().name));
+        values.set(i, (variable_stack.get(values.get(i)).peek().name));
       }
       if (reg_value.containsKey(values.get(i))) {
-        values.set(i, new String(reg_value.get(values.get(i))));
+        values.set(i, (reg_value.get(values.get(i))));
       }
     }
     return;

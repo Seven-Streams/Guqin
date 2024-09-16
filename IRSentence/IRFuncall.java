@@ -135,11 +135,11 @@ public class IRFuncall extends IRCode {
   public void UpdateAssignOnce(HashMap<String, String> replace, HashMap<String, Boolean> deprecated) {
     for (int i = 0; i < reg.size(); i++) {
       while (replace.containsKey(reg.get(i))) {
-        reg.set(i, new String(replace.get(reg.get(i))));
+        reg.set(i, (replace.get(reg.get(i))));
       }
     }
     while (replace.containsKey(target_reg)) {
-      target_reg = new String(replace.get(target_reg));
+      target_reg = (replace.get(target_reg));
     }
     return;
   }
@@ -148,11 +148,11 @@ public class IRFuncall extends IRCode {
   public void UpdateSingleBlock(HashMap<String, String> single) {
     for (int i = 0; i < reg.size(); i++) {
       while (single.containsKey(reg.get(i))) {
-        reg.set(i, new String(single.get(reg.get(i))));
+        reg.set(i, (single.get(reg.get(i))));
       }
     }
     while (single.containsKey(target_reg)) {
-      target_reg = new String(single.get(target_reg));
+      target_reg = (single.get(target_reg));
     }
     return;
   }
@@ -162,10 +162,10 @@ public class IRFuncall extends IRCode {
       int now_block) {
     for (int i = 0; i < reg.size(); i++) {
       if (variable_stack.containsKey(reg.get(i))) {
-        reg.set(i, new String(variable_stack.get(reg.get(i)).peek().name));
+        reg.set(i, (variable_stack.get(reg.get(i)).peek().name));
       }
       if (reg_value.containsKey(reg.get(i))) {
-        reg.set(i, new String(reg_value.get(reg.get(i))));
+        reg.set(i, (reg_value.get(reg.get(i))));
       }
     }
     return;
@@ -663,7 +663,7 @@ public class IRFuncall extends IRCode {
   public void GlobalConstReplace(HashMap<String, String> mapping) {
     for (int i = 0; i < reg.size(); i++) {
       if (mapping.containsKey(reg.get(i))) {
-        reg.set(i, new String(mapping.get(reg.get(i))));
+        reg.set(i, (mapping.get(reg.get(i))));
       }
     }
     return;
@@ -673,7 +673,7 @@ public class IRFuncall extends IRCode {
   public String ConstCheck(HashMap<String, String> replace) {
     for (int i = 0; i < reg.size(); i++) {
       if (replace.containsKey(reg.get(i))) {
-        reg.set(i, new String(replace.get(reg.get(i))));
+        reg.set(i, (replace.get(reg.get(i))));
       }
     }
     return null;

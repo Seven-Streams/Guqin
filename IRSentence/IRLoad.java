@@ -88,7 +88,7 @@ public class IRLoad extends IRCode {
     boolean flag = false;
     while (single.containsKey(src) && (single.get(src) != null)) {
       flag = true;
-      src = new String(single.get(src));
+      src = (single.get(src));
     }
     if (flag) {
       single.put(des, src);
@@ -106,7 +106,7 @@ public class IRLoad extends IRCode {
       return;
     }
     if (reg_value.containsKey(src)) {
-      src = new String(reg_value.get(src));
+      src = (reg_value.get(src));
     }
     return;
   }
@@ -205,7 +205,7 @@ public class IRLoad extends IRCode {
   @Override
   public String ConstCheck(HashMap<String, String> replace) {
     if(replace.containsKey(src)) {
-      src = new String(replace.get(src));
+      src = (replace.get(src));
     }
     return null;
   }

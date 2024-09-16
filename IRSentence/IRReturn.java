@@ -66,7 +66,7 @@ public class IRReturn extends IRCode {
   @Override
   public void UpdateAssignOnce(HashMap<String, String> replace, HashMap<String, Boolean> deprecated) {
     while (replace.containsKey(reg)) {
-      reg = new String(replace.get(reg));
+      reg = (replace.get(reg));
     }
     return;
   }
@@ -74,7 +74,7 @@ public class IRReturn extends IRCode {
   @Override
   public void UpdateSingleBlock(HashMap<String, String> single) {
     while (single.containsKey(reg)) {
-      reg = new String(single.get(reg));
+      reg = (single.get(reg));
     }
     return;
   }
@@ -83,10 +83,10 @@ public class IRReturn extends IRCode {
   public void UpdateNames(HashMap<String, Stack<NameLabelPair>> variable_stack, HashMap<String, String> reg_value,
       int now_block) {
     if (variable_stack.containsKey(reg)) {
-      reg = new String(variable_stack.get(reg).peek().name);
+      reg = (variable_stack.get(reg).peek().name);
     }
     if (reg_value.containsKey(reg)) {
-      reg = new String(reg_value.get(reg));
+      reg = (reg_value.get(reg));
     }
     return;
   }
@@ -171,7 +171,7 @@ public class IRReturn extends IRCode {
   @Override
   public void GlobalConstReplace(HashMap<String, String> mapping) {
     if(mapping.containsKey(reg)) {
-      reg = new String(mapping.get(reg));
+      reg = (mapping.get(reg));
     }
     return;
   }
@@ -179,7 +179,7 @@ public class IRReturn extends IRCode {
   @Override
   public String ConstCheck(HashMap<String, String> replace) {
     if(reg != null && replace.containsKey(reg)) {
-      reg = new String(replace.get(reg));
+      reg = (replace.get(reg));
     }
     return null;
   }

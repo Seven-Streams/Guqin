@@ -28,7 +28,7 @@ public class IRTail extends IRCode {
   }
 
   public IRTail(IRFuncall call) {
-    target_reg = call.target_reg == null ? null : new String(call.target_reg);
+    target_reg = call.target_reg == null ? null : (call.target_reg);
     func_name = call.func_name;
     func_type = call.func_type;
     reg = call.reg;

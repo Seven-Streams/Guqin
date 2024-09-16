@@ -117,16 +117,16 @@ public class IRElement extends IRCode {
   @Override
   public void UpdateAssignOnce(HashMap<String, String> replace, HashMap<String, Boolean> deprecated) {
     while (replace.containsKey(num1)) {
-      num1 = new String(replace.get(num1));
+      num1 = (replace.get(num1));
     }
     while (replace.containsKey(num2)) {
-      num2 = new String(replace.get(num2));
+      num2 = (replace.get(num2));
     }
     while (replace.containsKey(src)) {
-      src = new String(replace.get(src));
+      src = (replace.get(src));
     }
     while (replace.containsKey(output)) {
-      output = new String(replace.get(output));
+      output = (replace.get(output));
     }
     return;
   }
@@ -134,16 +134,16 @@ public class IRElement extends IRCode {
   @Override
   public void UpdateSingleBlock(HashMap<String, String> single) {
     while (single.containsKey(num1)) {
-      num1 = new String(single.get(num1));
+      num1 = (single.get(num1));
     }
     while (single.containsKey(num2)) {
-      num2 = new String(single.get(num2));
+      num2 = (single.get(num2));
     }
     while (single.containsKey(src)) {
-      src = new String(single.get(src));
+      src = (single.get(src));
     }
     while (single.containsKey(output)) {
-      output = new String(single.get(output));
+      output = (single.get(output));
     }
     return;
   }
@@ -152,16 +152,16 @@ public class IRElement extends IRCode {
   public void UpdateNames(HashMap<String, Stack<NameLabelPair>> variable_stack, HashMap<String, String> reg_value,
       int now_block) {
     if (reg_value.containsKey(num1)) {
-      num1 = new String(reg_value.get(num1));
+      num1 = (reg_value.get(num1));
     }
     if (reg_value.containsKey(num2)) {
-      num2 = new String(reg_value.get(num2));
+      num2 = (reg_value.get(num2));
     }
     if (variable_stack.containsKey(src)) {
-      src = new String(variable_stack.get(src).peek().name);
+      src = (variable_stack.get(src).peek().name);
     }
     if (reg_value.containsKey(src)) {
-      src = new String(reg_value.get(src));
+      src = (reg_value.get(src));
     }
   }
 
@@ -391,10 +391,10 @@ public class IRElement extends IRCode {
   @Override
   public void GlobalConstReplace(HashMap<String, String> mapping) {
     if (mapping.containsKey(num1)) {
-      num1 = new String(mapping.get(num1));
+      num1 = (mapping.get(num1));
     }
     if (mapping.containsKey(num2)) {
-      num2 = new String(mapping.get(num2));
+      num2 = (mapping.get(num2));
     }
     return;
   }
@@ -402,13 +402,13 @@ public class IRElement extends IRCode {
   @Override
   public String ConstCheck(HashMap<String, String> replace) {
     if (replace.containsKey(num1)) {
-      num1 = new String(replace.get(num1));
+      num1 = (replace.get(num1));
     }
     if (num2 != null && replace.containsKey(num2)) {
-      num2 = new String(replace.get(num2));
+      num2 = (replace.get(num2));
     }
     if(replace.containsKey(src)) {
-      src = new String(replace.get(src));
+      src = (replace.get(src));
     }
     return null;
   }

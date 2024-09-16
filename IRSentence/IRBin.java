@@ -194,13 +194,13 @@ public class IRBin extends IRCode {
   @Override
   public void UpdateAssignOnce(HashMap<String, String> replace, HashMap<String, Boolean> deprecated) {
     while (replace.containsKey(op1)) {
-      op1 = new String(replace.get(op1));
+      op1 = (replace.get(op1));
     }
     while (replace.containsKey(op2)) {
-      op2 = new String(replace.get(op2));
+      op2 = (replace.get(op2));
     }
     while (replace.containsKey(target_reg)) {
-      target_reg = new String(replace.get(target_reg));
+      target_reg = (replace.get(target_reg));
     }
     return;
   }
@@ -208,13 +208,13 @@ public class IRBin extends IRCode {
   @Override
   public void UpdateSingleBlock(HashMap<String, String> single) {
     while (single.containsKey(op1)) {
-      op1 = new String(single.get(op1));
+      op1 = (single.get(op1));
     }
     while (single.containsKey(op2)) {
-      op2 = new String(single.get(op2));
+      op2 = (single.get(op2));
     }
     while (single.containsKey(target_reg)) {
-      target_reg = new String(single.get(target_reg));
+      target_reg = (single.get(target_reg));
     }
     return;
   }
@@ -223,10 +223,10 @@ public class IRBin extends IRCode {
   public void UpdateNames(HashMap<String, Stack<NameLabelPair>> variable_stack, HashMap<String, String> reg_value,
       int now_block) {
     if (reg_value.containsKey(op1)) {
-      op1 = new String(reg_value.get(op1));
+      op1 = (reg_value.get(op1));
     }
     if (reg_value.containsKey(op2)) {
-      op2 = new String(reg_value.get(op2));
+      op2 = (reg_value.get(op2));
     }
   }
 
@@ -684,10 +684,10 @@ public class IRBin extends IRCode {
   @Override
   public void GlobalConstReplace(HashMap<String, String> mapping) {
     if (mapping.containsKey(op1)) {
-      op1 = new String(mapping.get(op1));
+      op1 = (mapping.get(op1));
     }
     if (mapping.containsKey(op2)) {
-      op2 = new String(mapping.get(op2));
+      op2 = (mapping.get(op2));
     }
     return;
   }
@@ -710,7 +710,7 @@ public class IRBin extends IRCode {
           value1 = Integer.parseInt(replace.get(op1));
         } catch (NumberFormatException e2) {
         }
-        op1 = new String(replace.get(op1));
+        op1 = (replace.get(op1));
       }
     }
     try {
@@ -723,7 +723,7 @@ public class IRBin extends IRCode {
           value2 = Integer.parseInt(replace.get(op2));
         } catch (NumberFormatException e2) {
         }
-        op2 = new String(replace.get(op2));
+        op2 = (replace.get(op2));
       }
     }
     int result = 0;
