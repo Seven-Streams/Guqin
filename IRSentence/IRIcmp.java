@@ -511,47 +511,47 @@ public class IRIcmp extends IRCode {
   public IRCode GetInline(HashMap<String, String> now_name, HashMap<Integer, Integer> now_label, Composer machine)
       throws Exception {
     IRIcmp return_value = new IRIcmp();
-    return_value.symbol = new String(symbol);
-    return_value.type = new String(type);
+    return_value.symbol = symbol;
+    return_value.type = type;
     try {
       Integer.parseInt(op1);
-      return_value.op1 = new String(op1);
+      return_value.op1 = op1;
     } catch (NumberFormatException e) {
       if ((!is_global.containsKey(op1)) && CheckLit(op1)) {
         if (now_name.containsKey(op1)) {
-          return_value.op1 = new String(now_name.get(op1));
+          return_value.op1 = now_name.get(op1);
         } else {
-          return_value.op1 = new String("%reg$" + (++machine.tmp_time));
+          return_value.op1 = "%reg$" + (++machine.tmp_time);
           now_name.put(op1, return_value.op1);
         }
       } else {
-        return_value.op1 = new String(op1);
+        return_value.op1 = op1;
       }
     }
     try {
       Integer.parseInt(op2);
-      return_value.op2 = new String(op2);
+      return_value.op2 = op2;
     } catch (NumberFormatException e) {
       if (!is_global.containsKey(op2) && CheckLit(op2)) {
         if (now_name.containsKey(op2)) {
-          return_value.op2 = new String(now_name.get(op2));
+          return_value.op2 = now_name.get(op2);
         } else {
-          return_value.op2 = new String("%reg$" + (++machine.tmp_time));
+          return_value.op2 = "%reg$" + (++machine.tmp_time);
           now_name.put(op2, return_value.op2);
         }
       } else {
-        return_value.op2 = new String(op2);
+        return_value.op2 = op2;
       }
     }
     if (!(is_global.containsKey(target_reg))) {
       if (now_name.containsKey(target_reg)) {
-        return_value.target_reg = new String(now_name.get(target_reg));
+        return_value.target_reg = now_name.get(target_reg);
       } else {
-        return_value.target_reg = new String("%reg$" + (++machine.tmp_time));
+        return_value.target_reg = "%reg$" + (++machine.tmp_time);
         now_name.put(target_reg, return_value.target_reg);
       }
     } else {
-      target_reg = new String(target_reg);
+      return_value.target_reg = target_reg;
     }
     return return_value;
   }

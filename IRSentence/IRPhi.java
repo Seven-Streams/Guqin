@@ -238,9 +238,9 @@ public class IRPhi extends IRCode {
       throws Exception {
     IRPhi return_value = new IRPhi();
     if (now_name.containsKey(target)) {
-      return_value.target = new String(now_name.get(target));
+      return_value.target = now_name.get(target);
     } else {
-      return_value.target = new String("%reg$" + ++machine.tmp_time);
+      return_value.target = "%reg$" + ++machine.tmp_time;
       now_name.put(target, "%reg$" + machine.tmp_time);
     }
     for (int i = 0; i < values.size(); i++) {
@@ -260,13 +260,13 @@ public class IRPhi extends IRCode {
       } catch (NumberFormatException e) {
         if (CheckLit(values.get(i))) {
           if (now_name.containsKey(values.get(i))) {
-            return_value.values.add(new String(now_name.get(values.get(i))));
+            return_value.values.add(now_name.get(values.get(i)));
           } else {
-            return_value.values.add(new String("%reg$" + (++machine.tmp_time)));
+            return_value.values.add("%reg$" + (++machine.tmp_time));
             now_name.put(values.get(i), "%reg$" + machine.tmp_time);
           }
         } else {
-          return_value.values.add(new String(values.get(i)));
+          return_value.values.add(values.get(i));
         }
       }
     }

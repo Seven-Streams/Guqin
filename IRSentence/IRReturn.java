@@ -149,20 +149,20 @@ public class IRReturn extends IRCode {
       PseudoMove move = new PseudoMove("isnull", "isnull");
       try {
         Integer.parseInt(reg);
-        move.src = new String(reg);
+        move.src = reg;
       } catch (NumberFormatException e) {
         if (is_global.containsKey(reg) || (!CheckLit(reg))) {
-          move.src = new String(reg);
+          move.src = reg;
         } else {
           if (now_name.containsKey(reg)) {
-            move.src = new String(now_name.get(reg));
+            move.src = now_name.get(reg);
           } else {
-            move.src = new String("%reg$" + (++machine.tmp_time));
+            move.src = "%reg$" + (++machine.tmp_time);
             now_name.put(reg, move.src);
           }
         }
       }
-      move.des = new String(now_name.get("return"));
+      move.des = now_name.get("return");
       return move;
     }
     return null;

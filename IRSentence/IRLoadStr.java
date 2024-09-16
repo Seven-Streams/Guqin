@@ -57,14 +57,14 @@ public class IRLoadStr extends IRCode {
   public IRCode GetInline(HashMap<String, String> now_name, HashMap<Integer, Integer> now_label, Composer machine)
       throws Exception {
     IRLoadStr return_value = new IRLoadStr();
-    return_value.str_name = new String(str_name);
+    return_value.str_name = str_name;
     if (now_name.containsKey(des)) {
-      return_value.des = new String(now_name.get(des));
+      return_value.des = now_name.get(des);
     } else {
       if (is_global.containsKey(des)) {
-        return_value.des = new String(des);
+        return_value.des = des;
       } else {
-        return_value.des = new String("%reg$" + (++machine.tmp_time));
+        return_value.des = "%reg$" + (++machine.tmp_time);
         now_name.put(des, return_value.des);
       }
     }

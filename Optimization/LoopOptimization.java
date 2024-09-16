@@ -27,7 +27,19 @@ public class LoopOptimization {
     idom = _idom;
   }
 
-  void Optim() {
+  public void clear() {
+    graph.clear();
+    pre.clear();
+    idom.clear();
+    visit.clear();
+    blocks.clear();
+    loops.clear();
+    heads.clear();
+    new_blocks.clear();
+    return;
+  }
+
+  public void Optim() {
     CheckGlobal();
     BuildGraph();
     CheckBackEdge();

@@ -16,10 +16,13 @@ public class Optimizor {
     M2R.Optim();
     LoopOptimization loop = new LoopOptimization(machine, M2R.idom);
     loop.Optim();
+    M2R.clear();
+    loop.clear();
     GlobalConst global_check = new GlobalConst(machine);
     global_check.Optim();
     ConstFolding const_check = new ConstFolding(machine);
     const_check.Optim();
+    const_check.clear();
     Inline inliner = new Inline(machine);
     inliner.Optim(35);
     SCCP sccp = new SCCP(machine);

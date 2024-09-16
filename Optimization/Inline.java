@@ -53,9 +53,9 @@ public class Inline {
       }
       if (code instanceof IRFuncend) {
         if (sentence_cnt <= bound) {
-          ready_to_inline.put(new String(name), true);
+          ready_to_inline.put(name, true);
         } else {
-          ready_to_inline.put(new String(name), false);
+          ready_to_inline.put(name, false);
         }
       }
     }

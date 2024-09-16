@@ -30,6 +30,20 @@ public class Mem2Reg {
     object = _object;
   }
 
+  public void clear() {
+    reserved_variable.clear();
+    graph.clear();
+    pre.clear();
+    idom.clear();
+    frontier.clear();
+    new_name.clear();
+    alloc_type.clear();
+    visit.clear();
+    post_order.clear();
+    finger.clear();
+    code_block.clear();
+  }
+
   public void Optim() {
     Insert();
     RemoveNaiveUntouchable();

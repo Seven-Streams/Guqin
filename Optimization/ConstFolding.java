@@ -17,6 +17,12 @@ public class ConstFolding {
   HashMap<String, IRCode> def = new HashMap<>();
   HashMap<String, ArrayList<IRCode>> use = new HashMap<>();
 
+  public void clear() {
+    def.clear();
+    use.clear();
+    return;
+  }
+
   public void Optim() {
     HashMap<String, Boolean> res_def = new HashMap<>();
     HashMap<String, Boolean> res_use = new HashMap<>();

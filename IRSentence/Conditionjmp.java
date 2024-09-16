@@ -141,17 +141,17 @@ public class Conditionjmp extends IRCode {
     Conditionjmp return_value = new Conditionjmp();
     try {
       Integer.parseInt(reg);
-      return_value.reg = new String(reg);
+      return_value.reg = reg;
     } catch (NumberFormatException e) {
       if ((CheckLit(reg)) && (!is_global.containsKey(reg))) {
         if (now_name.containsKey(reg)) {
-          return_value.reg = new String(now_name.get(reg));
+          return_value.reg = now_name.get(reg);
         } else {
-          return_value.reg = new String("%reg$" + (++machine.tmp_time));
+          return_value.reg = "%reg$" + (++machine.tmp_time);
           now_name.put(reg, return_value.reg);
         }
       } else {
-        return_value.reg = new String(reg);
+        return_value.reg = reg;
       }
     }
     if (now_label.containsKey(label1)) {
