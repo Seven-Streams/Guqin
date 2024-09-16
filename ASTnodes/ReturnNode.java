@@ -34,9 +34,9 @@ public class ReturnNode extends StatNode {
     IRReturn res = new IRReturn();
     if (!machine.func_type.equals("void")) {
       Info return_value = value.GenerateIR(machine);
-      res.reg = new String(return_value.reg);
+      res.reg = (return_value.reg);
     }
-    res.return_type = new String(machine.func_type);
+    res.return_type = (machine.func_type);
     machine.generated.add(res);
     return new Info();
   }

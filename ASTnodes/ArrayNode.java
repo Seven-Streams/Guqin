@@ -15,7 +15,7 @@ public class ArrayNode extends ASTNode {
       return new Mypair();
     }
     Mypair res = elements.get(0).check();
-    type = new String(res.type);
+    type = (res.type);
     for (ASTNode element : elements) {
       Mypair check = element.check();
       if (res.type.equals(check.type) || res.type.equals("") || check.type.equals("")) {
@@ -91,15 +91,15 @@ public class ArrayNode extends ASTNode {
           ele_store.type = "i1";
         }
       }
-      ele_get.src = new String(to_store);
+      ele_get.src = to_store;
       ele_get.num1 = Integer.toString(cnt++);
-      ele_get.output = new String(store_tmp);
+      ele_get.output = store_tmp;
       machine.generated.add(ele_get);
-      ele_store.from = new String(init_value);
-      ele_store.name = new String(store_tmp);
+      ele_store.from = init_value;
+      ele_store.name = store_tmp;
       machine.generated.add(ele_store);
     }
-    return_value.reg = new String(to_store);
+    return_value.reg = to_store;
     return return_value;
   }
 }

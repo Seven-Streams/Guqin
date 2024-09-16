@@ -32,7 +32,7 @@ public class IdNode extends ExprNode {
   public Info GenerateIR(Composer machine) {
     IRLoad res = new IRLoad();
     String target_reg = "%reg$" + Integer.toString(++machine.tmp_time);
-    res.des = new String(target_reg);
+    res.des = (target_reg);
     for (int i = machine.now_name.size() - 1; i >= 0; i--) {
       if (machine.now_name.get(i) == null) {
         HashMap<String, Integer> class_mem = machine.class_mem_num.get(this_class);
@@ -43,7 +43,7 @@ public class IdNode extends ExprNode {
           ele.num2 =  Integer.toString(machine.class_mem_num.get(this_class).get(id));
           ele.output = "%reg$" +  Integer.toString(++machine.tmp_time);
           ele.src = "%this";
-          res.src = new String(ele.output);
+          res.src = (ele.output);
           machine.generated.add(ele);
           if (to_check.dim != 0) {
             res.type = "ptr";
@@ -68,7 +68,7 @@ public class IdNode extends ExprNode {
       } else {
         if (machine.now_name.get(i).containsKey(id)) {
           TypeNamePair to_check = machine.now_name.get(i).get(id);
-          res.src = new String(to_check.new_name);
+          res.src = (to_check.new_name);
           if (to_check.dim != 0) {
             res.type = "ptr";
           } else {
@@ -116,7 +116,7 @@ public class IdNode extends ExprNode {
       } else {
         if (machine.now_name.get(i).containsKey(id)) {
           TypeNamePair to_check = machine.now_name.get(i).get(id);
-          return_value.reg = new String(to_check.new_name);
+          return_value.reg = (to_check.new_name);
           break;
         }
       }

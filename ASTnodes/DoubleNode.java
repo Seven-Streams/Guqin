@@ -242,7 +242,7 @@ public class DoubleNode extends ExprNode {
           machine.generated.add(new IRLabel(end));
           IRPhi phi = new IRPhi();
           phi.type = "i1";
-          phi.target = new String(return_value.reg);
+          phi.target = return_value.reg;
           phi.labels.add(let0);
           phi.values.add("0");
           phi.labels.add(let1);
@@ -282,7 +282,7 @@ public class DoubleNode extends ExprNode {
           machine.generated.add(new IRLabel(end));
           IRPhi phi = new IRPhi();
           phi.type = "i1";
-          phi.target = new String(return_value.reg);
+          phi.target = return_value.reg;
           phi.labels.add(let0);
           phi.values.add("0");
           phi.labels.add(let1);
@@ -297,7 +297,7 @@ public class DoubleNode extends ExprNode {
         switch (symbol) {
           case ("=="): {
             IRFuncall func = new IRFuncall();
-            String tmp1 = new String("%reg$" + Integer.toString(++machine.tmp_time));
+            String tmp1 = "%reg$" + Integer.toString(++machine.tmp_time);
             func.target_reg = tmp1;
             func.reg.add(string1.reg);
             func.reg.add(string2.reg);
@@ -311,13 +311,13 @@ public class DoubleNode extends ExprNode {
             res.op2 = "0";
             res.symbol = "==";
             res.type = "i32";
-            res.target_reg = new String(return_value.reg);
+            res.target_reg = return_value.reg;
             machine.generated.add(res);
             return return_value;
           }
           case ("!="): {
             IRFuncall func = new IRFuncall();
-            String tmp1 = new String("%reg$" + Integer.toString(++machine.tmp_time));
+            String tmp1 = "%reg$" + Integer.toString(++machine.tmp_time);
             func.target_reg = tmp1;
             func.reg.add(string1.reg);
             func.reg.add(string2.reg);
@@ -331,13 +331,12 @@ public class DoubleNode extends ExprNode {
             res.op2 = "0";
             res.symbol = "!=";
             res.type = "i32";
-            res.target_reg = new String(return_value.reg);
-            machine.generated.add(res);
+            res.target_reg = return_value.reg;
             return return_value;
           }
           case (">="): {
             IRFuncall func = new IRFuncall();
-            String tmp1 = new String("%reg$" + Integer.toString(++machine.tmp_time));
+            String tmp1 = "%reg$" + Integer.toString(++machine.tmp_time);
             func.target_reg = tmp1;
             func.reg.add(string1.reg);
             func.reg.add(string2.reg);
@@ -351,13 +350,13 @@ public class DoubleNode extends ExprNode {
             res.op2 = "0";
             res.symbol = ">=";
             res.type = "i32";
-            res.target_reg = new String(return_value.reg);
+            res.target_reg = return_value.reg;
             machine.generated.add(res);
             return return_value;
           }
           case ("<="): {
             IRFuncall func = new IRFuncall();
-            String tmp1 = new String("%reg$" + Integer.toString(++machine.tmp_time));
+            String tmp1 = "%reg$" + Integer.toString(++machine.tmp_time);
             func.target_reg = tmp1;
             func.reg.add(string1.reg);
             func.reg.add(string2.reg);
@@ -371,13 +370,13 @@ public class DoubleNode extends ExprNode {
             res.op2 = "0";
             res.symbol = "<=";
             res.type = "i32";
-            res.target_reg = new String(return_value.reg);
+            res.target_reg = return_value.reg;
             machine.generated.add(res);
             return return_value;
           }
           case (">"): {
             IRFuncall func = new IRFuncall();
-            String tmp1 = new String("%reg$" + Integer.toString(++machine.tmp_time));
+            String tmp1 = "%reg$" + Integer.toString(++machine.tmp_time);
             func.target_reg = tmp1;
             func.reg.add(string1.reg);
             func.reg.add(string2.reg);
@@ -391,13 +390,13 @@ public class DoubleNode extends ExprNode {
             res.op2 = "0";
             res.symbol = ">";
             res.type = "i32";
-            res.target_reg = new String(return_value.reg);
+            res.target_reg = return_value.reg;
             machine.generated.add(res);
             return return_value;
           }
           case ("<"): {
             IRFuncall func = new IRFuncall();
-            String tmp1 = new String("%reg$" + Integer.toString(++machine.tmp_time));
+            String tmp1 = "%reg$" + Integer.toString(++machine.tmp_time);
             func.target_reg = tmp1;
             func.reg.add(string1.reg);
             func.reg.add(string2.reg);
@@ -411,7 +410,7 @@ public class DoubleNode extends ExprNode {
             res.op2 = "0";
             res.symbol = "<";
             res.type = "i32";
-            res.target_reg = new String(return_value.reg);
+            res.target_reg = return_value.reg;
             machine.generated.add(res);
             return return_value;
           }

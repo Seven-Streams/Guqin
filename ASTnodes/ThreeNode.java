@@ -29,7 +29,7 @@ public class ThreeNode extends ExprNode {
       throw new Exception("Type Mismatch");
     }
     is_left = false;
-    type = new String(res1.type.equals("null") ? res2.type : res1.type);
+    type = (res1.type.equals("null") ? res2.type : res1.type);
     return res1.type.equals("null") ? res2 : res1;
   }
 
@@ -56,7 +56,7 @@ public class ThreeNode extends ExprNode {
     machine.generated.add(new IRjmp(end));
     machine.generated.add(new IRLabel(end));
     IRPhi phi = new IRPhi();
-    phi.target = new String(reg_name);
+    phi.target = (reg_name);
     phi.labels.add(let_1);
     phi.labels.add(let_2);
     phi.values.add(result1.reg);

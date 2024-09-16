@@ -93,7 +93,7 @@ public class FuncNode extends ASTNode {
       }
     }
     if (!in_class) {
-      the_coooool_func.name = new String(id);
+      the_coooool_func.name = id;
       res_args = func_args.get(id);
     } else {
       the_coooool_func.name = this_class + "." + id;
@@ -101,8 +101,8 @@ public class FuncNode extends ASTNode {
       the_coooool_func.names.add("%this");
       res_args = class_func_args.get(this_class).get(id);
     }
-    machine.func_type = new String(the_coooool_func.return_type);
-    machine.func_name = new String(the_coooool_func.name);
+    machine.func_type = (the_coooool_func.return_type);
+    machine.func_name = (the_coooool_func.name);
     machine.alloc.put(machine.func_name, new ArrayList<>());
     for (Mypair arg : res_args) {
       if (arg.dim != 0) {
@@ -130,12 +130,12 @@ public class FuncNode extends ASTNode {
     for (ASTNode arg : args) {
       IdNode arg_id = (IdNode) arg;
       String tmp_string = "%reg$" + Integer.toString(++machine.tmp_time);
-      the_coooool_func.names.add(new String(tmp_string));
+      the_coooool_func.names.add(tmp_string);
       TypeNamePair to_push = new TypeNamePair();
       String this_type = the_coooool_func.types.get(the_coooool_func.names.size() - 1);
       IRAlloc to_alloc = new IRAlloc();
       String alloc_string = "%reg$" + Integer.toString(++machine.tmp_time);
-      to_alloc.type = new String(this_type);
+      to_alloc.type = this_type;
       to_alloc.des = alloc_string;
       allocs.add(to_alloc);
       IRStore to_store = new IRStore();
@@ -143,16 +143,16 @@ public class FuncNode extends ASTNode {
       to_store.name = alloc_string;
       to_store.type = this_type;
       entry.add(to_store);
-      to_push.new_name = new String(alloc_string);
+      to_push.new_name = alloc_string;
       to_push.dim = arg_id.dim;
-      to_push.type = new String(arg_id.type);
-      machine.now_name.peek().put(new String(arg_id.id), to_push);
+      to_push.type = arg_id.type;
+      machine.now_name.peek().put(arg_id.id, to_push);
     }
     machine.generated.add(the_coooool_func);
     for (IRCode ent : entry) {
       machine.generated.add(ent);
     }
-    machine.alloc.put(new String(the_coooool_func.name), allocs);
+    machine.alloc.put(the_coooool_func.name, allocs);
     for (ASTNode stat : stats) {
       stat.GenerateIR(machine);
     }

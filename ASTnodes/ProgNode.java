@@ -147,12 +147,12 @@ public class ProgNode extends ASTNode {
     size_of_class.put("int", 4);
     size_of_class.put("bool", 4);
     IRChararray to_add = new IRChararray();
-    to_add.reg = new String("@.true");
+    to_add.reg = ("@.true");
     to_add.value = "true";
     to_add.size = 5;
     machine.const_str.add(to_add);
     IRChararray to_add1 = new IRChararray();
-    to_add1.reg = new String("@.false");
+    to_add1.reg = ("@.false");
     to_add1.value = "false";
     to_add1.size = 6;
     machine.const_str.add(to_add1);

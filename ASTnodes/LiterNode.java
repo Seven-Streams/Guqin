@@ -34,14 +34,14 @@ public class LiterNode extends ExprNode {
       return res;
     }
     if (type.equals("bool") || type.equals("int")) {
-      res.reg = new String(value);
+      res.reg = (value);
       res.is_const = true;
       return res;
     }
     if (type.equals("string")) {
       IRChararray to_add = new IRChararray();
-      to_add.reg = new String("@.str" + Integer.toString(++machine.str_time));
-      to_add.value = new String(value);
+      to_add.reg = ("@.str" + Integer.toString(++machine.str_time));
+      to_add.value = (value);
       int str_size = 0;
       for (int i = 0; i < value.length(); i++, str_size++) {
         if (value.charAt(i) == '\\') {
@@ -51,10 +51,10 @@ public class LiterNode extends ExprNode {
       to_add.size = ++str_size;
       machine.const_str.add(to_add);
       IRLoadStr to_load = new IRLoadStr();
-      to_load.des = new String("%reg$" + Integer.toString(++machine.tmp_time));
-      to_load.str_name = new String(to_add.reg);
+      to_load.des = ("%reg$" + Integer.toString(++machine.tmp_time));
+      to_load.str_name = (to_add.reg);
       machine.generated.add(to_load);
-      res.reg = new String(to_load.des);
+      res.reg = (to_load.des);
       return res;
     }
     System.out.println("INVALID IN LITER!");

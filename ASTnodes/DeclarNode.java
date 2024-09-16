@@ -87,7 +87,7 @@ public class DeclarNode extends StatNode {
         res.new_name = "@" + ID.get(i) + "." + Integer.toString(machine.scope_time);
         machine.now_name.peek().put(ID.get(i), res);
         IRGlobal to_add = new IRGlobal();
-        to_add.name = new String(res.new_name);
+        to_add.name = res.new_name;
         if (dim != 0) {
           to_add.type = "ptr";
         } else {
@@ -111,7 +111,7 @@ public class DeclarNode extends StatNode {
           Info init_info = Initial.get(i).GenerateIR(machine);
           if (init_info.is_const) {
             if (to_add.type.equals("i32")) {
-              to_add.value = new String(init_info.reg);
+              to_add.value = init_info.reg;
             } else {
               to_add.value = Integer.toString(init_info.reg.equals("true") ? 1 : 0);
             }
@@ -134,7 +134,7 @@ public class DeclarNode extends StatNode {
         res.new_name = "%" + ID.get(i) + "." + Integer.toString(machine.scope_time);
         machine.now_name.peek().put(ID.get(i), res);
         IRAlloc to_add = new IRAlloc();
-        to_add.des = new String(res.new_name);
+        to_add.des = res.new_name;
         if (dim != 0) {
           to_add.type = "ptr";
         } else {

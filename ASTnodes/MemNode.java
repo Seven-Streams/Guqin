@@ -18,7 +18,7 @@ public class MemNode extends ExprNode {
     }
     HashMap<String, Mypair> resed = class_memory.get(to_check.type);
     Mypair res = new Mypair(resed.get(id).type, resed.get(id).dim);
-    type = new String(res.type);
+    type = (res.type);
     dim = res.dim;
     from_type = new Mypair(to_check.type, to_check.dim);
     return res;
@@ -27,17 +27,17 @@ public class MemNode extends ExprNode {
   @Override
   public Info GenerateIR(Composer machine) {
     IRElement ele_res = new IRElement();
-    String target_reg = new String("%reg$" + Integer.toString(++machine.tmp_time));
-    ele_res.now_type = new String("%struct." + from_type.type);
+    String target_reg = ("%reg$" + Integer.toString(++machine.tmp_time));
+    ele_res.now_type = ("%struct." + from_type.type);
     ele_res.output = target_reg;
     HashMap<String, Integer> num_check = machine.class_mem_num.get(from_type.type);
        ele_res.num2 = Integer.toString(num_check.get(id)) ;
     Info from_reg = from.GenerateIR(machine);
     ele_res.src = from_reg.reg;
     machine.generated.add(ele_res);
-    String output_reg = new String("%reg$" + Integer.toString(++machine.tmp_time));
+    String output_reg = ("%reg$" + Integer.toString(++machine.tmp_time));
     IRLoad load_res = new IRLoad();
-    load_res.des = new String(output_reg);
+    load_res.des = (output_reg);
     load_res.src = target_reg;
     if (dim != 0) {
       load_res.type = "ptr";
@@ -66,8 +66,8 @@ public class MemNode extends ExprNode {
   @Override
   public Info GetLeftValuePtr(Composer machine) {
     IRElement ele_res = new IRElement();
-    String target_reg = new String("%reg$" + Integer.toString(++machine.tmp_time));
-    ele_res.now_type = new String("%struct." + from_type.type);
+    String target_reg = ("%reg$" + Integer.toString(++machine.tmp_time));
+    ele_res.now_type = ("%struct." + from_type.type);
     ele_res.output = target_reg;
     HashMap<String, Integer> num_check = machine.class_mem_num.get(from_type.type);
     ele_res.num2 = Integer.toString(num_check.get(id)) ;

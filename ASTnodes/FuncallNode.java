@@ -164,15 +164,15 @@ public class FuncallNode extends ExprNode {
         if (name.equals("size") && (from_dim != 0)) {
           res.func_name = "array_size";
           res.func_type = "i32";
-          res.reg.add(new String(from_reg.reg));
+          res.reg.add(from_reg.reg);
           res.type.add("ptr");
           res.target_reg = "%reg$" + Integer.toString(++machine.tmp_time);
           machine.generated.add(res);
-          return_value.reg = new String(res.target_reg);
+          return_value.reg = res.target_reg;
           return return_value;
         }
         res.func_name = from_type + "." + name;
-        res.reg.add(new String(from_reg.reg));
+        res.reg.add(from_reg.reg);
         res.type.add("ptr");
         return_check = class_func_return.get(from_type).get(name);
         type_check = class_func_args.get(from_type).get(name);

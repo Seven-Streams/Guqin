@@ -44,7 +44,7 @@ public class SingleNode extends ExprNode {
     String output = null;
     Info return_value = new Info();
     if (symbol.equals("!")) {
-      output = new String("%reg$" + ++machine.tmp_time);
+      output = ("%reg$" + ++machine.tmp_time);
       Info res_bool = value.GenerateIR(machine);
       if (res_bool.is_const) {
         return_value.is_const = true;
@@ -53,14 +53,14 @@ public class SingleNode extends ExprNode {
       }
       IRIcmp icmp = new IRIcmp();
       icmp.symbol = "!=";
-      icmp.op1 = new String(res_bool.reg);
-      icmp.op2 = new String("1");
+      icmp.op1 = (res_bool.reg);
+      icmp.op2 = ("1");
       icmp.type = "i1";
       icmp.target_reg = output;
       machine.generated.add(icmp);
     }
     if (symbol.equals("~")) {
-      output = new String("%reg$" + ++machine.tmp_time);
+      output = ("%reg$" + ++machine.tmp_time);
       Info res_int = value.GenerateIR(machine);
       if (res_int.is_const) {
         return_value.is_const = true;
@@ -70,14 +70,14 @@ public class SingleNode extends ExprNode {
       }
       IRBin bin = new IRBin();
       bin.symbol = "^";
-      bin.op1 = new String(res_int.reg);
+      bin.op1 = (res_int.reg);
       bin.op2 = "-1";
       bin.type = "i32";
       bin.target_reg = output;
       machine.generated.add(bin);
     }
     if (symbol.equals("-")) {
-      output = new String("%reg$" + ++machine.tmp_time);
+      output = ("%reg$" + ++machine.tmp_time);
       Info res_int = value.GenerateIR(machine);
       if (res_int.is_const) {
         return_value.is_const = true;
@@ -87,7 +87,7 @@ public class SingleNode extends ExprNode {
       }
       IRBin bin = new IRBin();
       bin.symbol = "-";
-      bin.op2 = new String(res_int.reg);
+      bin.op2 = (res_int.reg);
       bin.op1 = "0";
       bin.type = "i32";
       bin.target_reg = output;
@@ -96,7 +96,7 @@ public class SingleNode extends ExprNode {
     if (symbol.equals("++")) {
       Info res_int = value.GenerateIR(machine);
       Info get_addr = value.GetLeftValuePtr(machine);
-      String add_result = new String("%reg$" + ++machine.tmp_time);
+      String add_result = ("%reg$" + ++machine.tmp_time);
       IRBin bin = new IRBin();
       bin.symbol = "+";
       bin.op1 = res_int.reg;
@@ -105,20 +105,20 @@ public class SingleNode extends ExprNode {
       bin.target_reg = add_result;
       machine.generated.add(bin);
       IRStore st = new IRStore();
-      st.name = new String(get_addr.reg);
+      st.name = (get_addr.reg);
       st.from = add_result;
       st.type = "i32";
       machine.generated.add(st);
       if (symbol_left) {
-        output = new String(add_result);
+        output = (add_result);
       } else {
-        output = new String(res_int.reg);
+        output = (res_int.reg);
       }
     }
     if (symbol.equals("--")) {
       Info res_int = value.GenerateIR(machine);
       Info get_addr = value.GetLeftValuePtr(machine);
-      String sub_result = new String("%reg$" + ++machine.tmp_time);
+      String sub_result = ("%reg$" + ++machine.tmp_time);
       IRBin bin = new IRBin();
       bin.symbol = "-";
       bin.op1 = res_int.reg;
@@ -127,14 +127,14 @@ public class SingleNode extends ExprNode {
       bin.target_reg = sub_result;
       machine.generated.add(bin);
       IRStore st = new IRStore();
-      st.name = new String(get_addr.reg);
+      st.name = (get_addr.reg);
       st.from = sub_result;
       st.type = "i32";
       machine.generated.add(st);
       if (symbol_left) {
-        output = new String(sub_result);
+        output = (sub_result);
       } else {
-        output = new String(res_int.reg);
+        output = (res_int.reg);
       }
     }
     return_value.reg = output;

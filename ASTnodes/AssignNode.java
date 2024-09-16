@@ -9,7 +9,7 @@ public class AssignNode extends ExprNode {
   @Override
   public Mypair check() throws Exception {
     Mypair demanded = values.check();
-    type = new String(demanded.type);
+    type = (demanded.type);
     dim = demanded.dim;
     Mypair output = null;
     for (ASTNode id : ids) {
@@ -63,9 +63,9 @@ public class AssignNode extends ExprNode {
     for(ASTNode to_assign: ids) {
       Info be_assigned = to_assign.GetLeftValuePtr(machine);
       IRStore to_store = new IRStore();
-      to_store.from = new String(value.reg);
-      to_store.name = new String(be_assigned.reg);
-      to_store.type = new String(llvm_type);
+      to_store.from = value.reg;
+      to_store.name = be_assigned.reg;
+      to_store.type = llvm_type;
       machine.generated.add(to_store);
     }
     return new Info();
