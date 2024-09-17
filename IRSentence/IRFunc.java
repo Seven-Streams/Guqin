@@ -77,6 +77,11 @@ public class IRFunc extends IRCode {
   @Override
   public void CodegenWithOptim(HashMap<String, Integer> registers, HashMap<Integer, String> register_name)
       throws Exception {
+    if (name.equals("main")) {
+      main = true;
+    } else {
+      main = false;
+    }
     func_num++;
     buffer.add("");
     buffer.add(name + ":");
@@ -96,7 +101,7 @@ public class IRFunc extends IRCode {
     }
     now_depth = size;
     buffer.add("sw ra, -4(t1)");
-    if(register_use.get(-func_num) >= 0) {
+    if (register_use.get(-func_num) >= 0) {
       buffer.add("sw s0, -8(t1)");
     }
     for (int i = 1; i <= Integer.min(register_use.get(-func_num), 11); i++) {

@@ -22,6 +22,7 @@ public class IRCode {
   public void UseDefCheck(HashMap<String, Boolean> def, HashMap<String, Boolean> use) {}
   public static int now_s0 = 0;
   public static int func_num = 0;
+  public static boolean main = false;
   public static int sp_length = 0;
   public static int now_depth = 0;
   public int sentence_number = 0;
