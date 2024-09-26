@@ -434,7 +434,7 @@ public class Mem2Reg {
             if(idom.containsKey(runner)) {
             runner = idom.get(runner);
             } else {
-              id
+              break;
             }
           }
         }
