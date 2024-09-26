@@ -209,8 +209,10 @@ public class LinearScan {
           cond_place.put(code, now_memory);
         }
       } else {
-        now_memory++;
+        if (code.startsWith("li"))
+          now_memory++;
       }
+      now_memory++;
     }
     for (int i = IRCode.buffer.size() - 1; i >= 0; i--) {
       String code = IRCode.buffer.get(i);
@@ -524,6 +526,13 @@ public class LinearScan {
               for (Map.Entry<Integer, HashMap<Integer, Boolean>> entry : submap.entrySet()) {
                 if ((now_alloc.start < entry.getKey()) && (now_alloc.end > entry.getKey())) {
                   entry.getValue().put(value, null);
+                    int cnt = 0;
+                for (int use_reg : entry.getValue().keySet()) {
+                  if (use_reg > 11) {
+                    cnt++;
+                  }
+                }
+                max_register_use.put(func_num, Integer.max(cnt, max_register_use.get(func_num)));
                 }
               }
               continue;
@@ -555,6 +564,13 @@ public class LinearScan {
             for (Map.Entry<Integer, HashMap<Integer, Boolean>> entry : submap.entrySet()) {
               if ((now_alloc.start < entry.getKey()) && (now_alloc.end > entry.getKey())) {
                 entry.getValue().put(value, null);
+                int cnt = 0;
+                for (int use_reg : entry.getValue().keySet()) {
+                  if (use_reg > 11) {
+                    cnt++;
+                  }
+                }
+                max_register_use.put(func_num, Integer.max(cnt, max_register_use.get(func_num)));
               }
             }
             continue;
@@ -589,6 +605,13 @@ public class LinearScan {
           for (Map.Entry<Integer, HashMap<Integer, Boolean>> entry : submap.entrySet()) {
             if ((now_alloc.start < entry.getKey()) && (now_alloc.end > entry.getKey())) {
               entry.getValue().put(target_res, null);
+                int cnt = 0;
+                for (int use_reg : entry.getValue().keySet()) {
+                  if (use_reg > 11) {
+                    cnt++;
+                  }
+                }
+                max_register_use.put(func_num, Integer.max(cnt, max_register_use.get(func_num)));
             }
           }
           continue;
@@ -605,6 +628,13 @@ public class LinearScan {
           for (Map.Entry<Integer, HashMap<Integer, Boolean>> entry : submap.entrySet()) {
             if ((now_alloc.start < entry.getKey()) && (now_alloc.end > entry.getKey())) {
               entry.getValue().put(i, null);
+                int cnt = 0;
+                for (int use_reg : entry.getValue().keySet()) {
+                  if (use_reg > 11) {
+                    cnt++;
+                  }
+                }
+                max_register_use.put(func_num, Integer.max(cnt, max_register_use.get(func_num)));
             }
           }
           break;
@@ -645,7 +675,7 @@ public class LinearScan {
         func_res = Integer.max(func_res, (reg_cnt + 2 + Integer.max(0, res.reg.size() - 8)));
       }
       if (code instanceof IRFuncend) {
-        check.size = func_res + stack_variables.get(now_func) + 18;
+        check.size = func_res + stack_variables.get(now_func) + Integer.min(max_register_use.get(now_func) + 1, 16);
       }
     }
     return;

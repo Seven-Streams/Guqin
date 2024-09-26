@@ -74,7 +74,7 @@ public class SpecialJmp extends Conditionjmp {
           } else {
             buffer.add("li t1, " + addr);
             buffer.add("add t1, t1, sp");
-            buffer.add("lw t1, 0(t0)");
+            buffer.add("lw t1, 0(t1)");
           }
         }
       } else {
