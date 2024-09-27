@@ -431,8 +431,11 @@ public class Mem2Reg {
               frontier.put(runner, new ArrayList<>());
             }
             frontier.get(runner).add(block);
-            if(idom.containsKey(runner)) {
-            runner = idom.get(runner);
+            if (idom.containsKey(runner)) {
+              if (runner == idom.get(runner)) {
+                break;
+              }
+              runner = idom.get(runner);
             } else {
               break;
             }
