@@ -66,7 +66,7 @@ public class SCCP {
       for (int to : to_check.keySet()) {
         check_buffer.add(to);
       }
-      while(!check_buffer.isEmpty()) {
+      while (!check_buffer.isEmpty()) {
         RemoveEdge(process, check_buffer.poll(), buffer);
       }
       graph.remove(process);
@@ -226,8 +226,10 @@ public class SCCP {
       String result = code.ConstCheck(value);
       if (result != null) {
         for (String def_v : res_def.keySet()) {
-          for (IRCode influenced : use_relation.get(def_v).keySet()) {
-            to_update.add(influenced);
+          if (use_relation.containsKey(def_v)) {
+            for (IRCode influenced : use_relation.get(def_v).keySet()) {
+              to_update.add(influenced);
+            }
           }
         }
       }

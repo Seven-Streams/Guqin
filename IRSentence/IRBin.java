@@ -403,12 +403,12 @@ public class IRBin extends IRCode {
       }
       int test = const_value;
       while (test != 0) {
-        cnt++;
-        test >>= 1;
         if (((test & 1) != 0) && (test != 1)) {
           power = false;
           break;
         }
+        cnt++;
+        test >>= 1;
       }
       String target_name = null;
       if (target < 0) {
